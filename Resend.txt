@@ -1,0 +1,8 @@
+vetcoressen.pe
+your DNS Records
+TXT  resend._domainkey  p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDTATGDbsVDAh03mGloNVuCDXyNuELK9Hq829GU5xxsLWCpezRgVDKh8oqcFy0gmlTHnhYj5AE/YcYe2legXNUAywQxdBVy40AXLlODXLIlUV/loMWMDYRrSvMsx8oFzs0o6043KXIHWbQ6mxEnOMVjqWLYfitJ8sseufrvWE1oRwIDAQAB
+
+
+API Key
+Full Laravel App
+re_DrCCDeBE_HL7CymyTKihxabnSrLc5yFLZ

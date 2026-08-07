@@ -1,0 +1,102 @@
+PUNTO DE VENTA: ERROR 500, MODULO CAIDO POR COMPLETO (maxima prioridad)
+
+Confirmado con conteo exacto: resources/views/livewire/caja/punto-venta.blade.php
+tiene 12 aperturas "<div" y 13 cierres "</div>" entre las lineas 33 y 131
+(la seccion de busqueda/grid de productos), un </div> de mas. Eso rompe el
+elemento raiz unico que Livewire exige y tira "Multiple root elements
+detected". Revisar puntualmente las lineas 129-131 (ahi hay tres </div>
+seguidos); sobra uno. Corregirlo desbloquea todo el modulo de una vez,
+antes de tocar cualquier otra cosa de estilo ahi.
+
+MODALES DE FLUX ROTOS EN TODO EL SISTEMA (nuevo, confirmado por consola)
+
+La consola del navegador (mandada por ti) muestra en el Dashboard:
+"Uncaught ReferenceError: fluxModal is not defined" y por separado
+"Uncaught ReferenceError: Flux is not defined". El x-data="fluxModal(...)"
+que tira el error NO esta escrito a mano en ningun blade (lo busque, no
+aparece en ningun archivo), lo genera automaticamente el propio componente
+<flux:modal> de Flux al compilarse: significa que el JS de Flux no se esta
+cargando o inicializando bien, no es un typo de un desarrollador. El
+layout SI tiene @fluxScripts (esta bien puesto), pero eso no basta si el
+archivo que sirve ese script falla. Esto rompe TODOS los modales de Flux
+del sistema a la vez: el de alerta de stock minimo, el de exito global
+(el que avisa "se guardo correctamente"), y probablemente el de caja
+cerrada tambien.
+Antigravity puede confirmarlo sin depender de una captura: revisar en los
+logs de Laravel o probando directamente la URL que genera @fluxScripts al
+compilar la pagina, para ver si esa ruta interna de Flux responde 200 o
+falla. Si da error, correr php artisan route:clear y php artisan
+route:cache de nuevo, o revisar que el ServiceProvider de livewire/flux
+(version ^2.15 segun composer.json) este registrado. Si responde bien
+pero el error de JS sigue, revisar si el contenido de esa respuesta esta
+corrupto o vacio.
+
+SISTEMA DE TRADUCCION: BUG RAIZ QUE EXPLICA VARIOS SINTOMAS SUELTOS
+
+En public/js/i18n.js, la funcion t() no devuelve algo "falsy" cuando la
+clave no existe en el diccionario, devuelve la clave en mayusculas (por
+eso en Proveedores se ve literal "TABLE.CONTACT" en vez de "Contacto",
+viene de $store.i18n.t('table.contact') en
+proveedor-index.blade.php linea 60). Esto es grave porque en TODO el
+proyecto se usa el patron
+x-text="$store.i18n.t('clave') || 'Texto en español'" esperando que el ||
+funcione cuando la clave falta, pero como t() nunca devuelve falsy, ese ||
+nunca se activa: en cualquier lugar del sistema donde falte una clave, en
+vez del texto en español de respaldo se ve la clave cruda en mayusculas.
+Fix: en la funcion t() de i18n.js, que devuelva null o '' cuando la clave
+no exista en el diccionario, no la clave transformada. Con este solo
+cambio se arreglan de golpe varios textos raros repartidos por todo el
+sistema (Proveedores, Reportes, y cualquier otro que dependa del ||).
+
+CITAS: EL CALENDARIO SE VUELVE A TRABAR
+
+No hay ningun error de JavaScript en consola cuando pasa esto, lo que
+apunta a una peticion que se queda pendiente sin resolver nunca, no a una
+excepcion. Antigravity debe reproducirlo corriendo la aplicacion
+directamente: entrar a Citas y revisar si la llamada a
+getCitasCalendario queda pendiente sin responder (network o logs de
+Laravel). Agregar temporalmente console.log en calendar.js justo antes y
+despues de wire.getCitasCalendario, y Log::info al inicio y al final de
+getCitasCalendario() en CitaIndex.php, para ubicar en que punto exacto se
+traba. Probar tambien en ancho de escritorio ademas de movil angosto
+(~360px): todas las pruebas hasta ahora fueron en vista movil emulada, y
+FullCalendar es conocido por tener problemas de calculo de tamaño dentro
+de contenedores angostos o con altura 'auto'.
+
+DROPDOWN: SIGUE FALLANDO AL ELEGIR OTRA OPCION
+
+El @click.outside ya tiene logica distinta a la de hace 2 rondas, pero el
+sintoma "no hay resultados" sugiere que filteredOptions() esta comparando
+el texto de busqueda contra algo que no coincide con ningun label en ese
+momento. Antigravity debe reproducirlo directamente probando cada formulario que
+use x-vc-dropdown (Punto de Venta, Citas, Roles): abrir el dropdown con
+un valor ya seleccionado, borrar el texto, escribir una busqueda nueva, y
+revisar que $wire.set no se dispare con un valor vacio en ese momento.
+Agregar console.log temporal dentro de filteredOptions() y del
+@click.outside mostrando search y selectedLabel para ver el estado real
+justo cuando aparece "no hay resultados".
+
+PRACTICAS RECOMENDADAS PARA ANTIGRAVITY (TDD y skills reutilizables)
+
+La mayoria de los bugs de esta ronda (el error 500 de Punto de Venta, el
+bug de t(), las claves de mascota_id/cliente_id que no coinciden de
+rondas pasadas) los hubiera agarrado un test automatico basico antes de
+entregar, no hace falta nada sofisticado:
+1. Un test Pest/PHPUnit por cada componente Livewire full-page que solo
+   haga Livewire::test(Componente::class)->assertOk(); eso solo ya
+   atrapa errores 500 como el de hoy antes de que lleguen a produccion.
+   Con Livewire 4 en este proyecto, esto es codigo minimo.
+2. Un comando artisan o script simple que recorra todos los .blade.php de
+   resources/views/livewire y cuente aperturas/cierres de <div> por
+   archivo (el mismo metodo que use arriba), como chequeo rapido antes de
+   cada entrega.
+3. Un test que recorra las claves usadas con $store.i18n.t('...') en los
+   blade contra las claves reales definidas en public/js/i18n.js, para
+   que faltantes como table.contact salten antes de subir el cambio, no
+   despues.
+4. Antes de dar algo por terminado, correr el flujo real una vez (crear
+   cliente, crear cita, hacer una venta, abrir Reportes) igual que un
+   usuario, no solo revisar que el codigo compile.
+Si quieres, esto se puede empaquetar como una skill de Antigravity
+("verificacion-livewire-vetcoressen") que corra estos 3-4 chequeos
+automaticos antes de marcar cualquier tarea como lista.
