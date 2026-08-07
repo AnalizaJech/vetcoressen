@@ -1,0 +1,393 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap");
+@import "material-symbols/outlined.css";
+@import "tailwindcss";
+
+/* Tailwind v4 class-based dark mode */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@source '../views';
+@source '../../app';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views';
+@source '../../vendor/livewire/flux/stubs';
+
+@theme {
+    --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+
+    /* ── Paleta VETCORESSEN (valores base = dark mode Zinc) ── */
+    --color-vc-primary: #059669;
+    --color-vc-primary-light: #34d399;
+    --color-vc-primary-dark: #047857;
+    --color-vc-accent: #d97706;
+    --color-vc-accent-light: #fbbf24;
+    --color-vc-warning: #f59e0b;
+    --color-vc-danger: #ef4444;
+    --color-vc-surface: #18181b;       /* Zinc 900 */
+    --color-vc-surface-alt: #27272a;   /* Zinc 800 */
+    --color-vc-surface-elevated: #3f3f46; /* Zinc 700 */
+    --color-vc-border: rgba(255, 255, 255, 0.08);
+    --color-vc-text: #f8fafc;
+    --color-vc-text-muted: #94a3b8;
+
+    /* Flux Integration - Theme primary buttons as emerald */
+    --color-accent: var(--color-vc-primary);
+    --color-accent-content: #ffffff;
+    --color-accent-foreground: #ffffff;
+
+    /* Premium Zinc para los componentes de Flux */
+    --color-zinc-400: #a1a1aa;
+    --color-zinc-500: #71717a;
+    --color-zinc-800: #27272a;
+    --color-zinc-900: #18181b;
+
+    /* Alias para Tailwind Utilities (--color-* genera bg-*, text-*, border-*, etc.) */
+    --color-vc-text-secondary: var(--color-vc-text-muted);
+    --color-vc-border-subtle: var(--color-vc-border);
+    --color-vc-border-emerald: var(--color-vc-primary);
+    --color-vc-bg: var(--color-vc-surface);
+    --color-vc-emerald: var(--color-vc-primary);
+    --color-vc-emerald-light: var(--color-vc-primary-light);
+    --color-vc-emerald-dark: var(--color-vc-primary-dark);
+    --color-vc-warning-light: var(--color-vc-accent-light);
+    --color-vc-danger-light: #fca5a5;
+    --color-vc-glass-bg: rgba(37, 51, 73, 0.6);
+    --color-vc-emerald-glow: rgba(5, 150, 105, 0.35);
+    --color-vc-surface-hover: var(--color-vc-surface-elevated);
+
+    /* Sombras */
+    --shadow-vc-shadow-glow: 0 0 24px rgba(5, 150, 105, 0.25);
+    --shadow-vc-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* ── Dark mode por defecto ── */
+:root {
+    color-scheme: dark;
+
+    /* ── Alias cortos --vc-* para uso en vistas blade ── */
+    /* Textos */
+    --vc-text: var(--color-vc-text);
+    --vc-text-muted: var(--color-vc-text-muted);
+    --vc-text-secondary: var(--color-vc-text-muted);
+
+    /* Bordes */
+    --vc-border: var(--color-vc-border);
+    --vc-border-subtle: var(--color-vc-border);
+    --vc-border-emerald: var(--color-vc-primary);
+
+    /* Superficies */
+    --vc-surface: var(--color-vc-surface);
+    --vc-surface-alt: var(--color-vc-surface-alt);
+    --vc-surface-elevated: var(--color-vc-surface-elevated);
+    --vc-surface-hover: var(--color-vc-surface-elevated);
+    --vc-bg: var(--color-vc-surface);
+
+    /* Paleta esmeralda (alias de primary) */
+    --vc-emerald: var(--color-vc-primary);
+    --vc-emerald-light: var(--color-vc-primary-light);
+    --vc-emerald-dark: var(--color-vc-primary-dark);
+
+    /* Acento, warning, danger */
+    --vc-accent-light: var(--color-vc-accent-light);
+    --vc-warning: var(--color-vc-warning);
+    --vc-warning-light: var(--color-vc-accent-light);
+    --vc-danger-light: #fca5a5;
+
+    /* Efectos glass/glow (valores propios, sin equivalente base) */
+    --vc-glass-bg: rgba(37, 51, 73, 0.6);
+    --vc-emerald-glow: rgba(5, 150, 105, 0.35);
+    --vc-shadow-glow: 0 0 24px rgba(5, 150, 105, 0.25);
+    --vc-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* ── Modo claro: sobreescribir variables de Tailwind ── */
+html.light {
+    color-scheme: light;
+
+    --color-vc-surface: #ffffff;
+    --color-vc-surface-alt: #f1f5f9;
+    --color-vc-surface-elevated: #ffffff;
+    --color-vc-border: #e2e8f0;
+    --color-vc-text: #0f172a;
+    --color-vc-text-muted: #64748b;
+
+    /* Alias --vc-* que necesitan valor propio en modo claro */
+    --vc-glass-bg: rgba(241, 245, 249, 0.7);
+    --vc-emerald-glow: rgba(5, 150, 105, 0.15);
+    --vc-shadow-glow: 0 0 24px rgba(5, 150, 105, 0.12);
+    --vc-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.1);
+    --vc-danger-light: #fecaca;
+
+    /* Flux overrides para modo claro */
+    --color-zinc-400: #a1a1aa;
+    --color-zinc-500: #71717a;
+    --color-zinc-800: #27272a;
+    --color-zinc-900: #18181b;
+}
+
+.btn-primary {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-weight: 600; border-radius: 0.75rem;
+    transition: background-color 0.15s ease, transform 0.1s ease;
+    color: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+.btn-primary:hover { transform: translateY(-1px); }
+.btn-primary--emerald { background-color: var(--color-vc-primary); }
+.btn-primary--emerald:hover { background-color: var(--color-vc-primary-dark); }
+.btn-primary--red { background-color: var(--color-vc-danger); }
+.btn-primary--red:hover { background-color: #dc2626; }
+.btn-primary--blue { background-color: #2563eb; }
+.btn-primary--blue:hover { background-color: #1d4ed8; }
+.btn-primary--amber { background-color: var(--color-vc-accent); }
+.btn-primary--amber:hover { background-color: var(--color-vc-primary-dark); }
+
+body {
+    @apply bg-vc-surface text-vc-text antialiased;
+}
+
+/* ── Transición global sutil para cambios de color ── */
+* {
+    @apply transition-colors duration-150 ease-in-out;
+}
+
+/* ── Custom Text Selection (usa el primary #059669 = rgb(5,150,105)) ── */
+::selection {
+    background: rgba(5, 150, 105, 0.25);
+    color: inherit;
+}
+.dark ::selection {
+    background: rgba(5, 150, 105, 0.35);
+    color: inherit;
+}
+
+/* ── Scrollbar estilizado ── */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    @apply bg-vc-surface;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-vc-surface-elevated rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-vc-primary;
+}
+
+/* ── Focus ring premium ── */
+*:focus-visible {
+    @apply outline-2 outline-offset-2 outline-vc-primary;
+}
+
+/* ── Table Header Styling ── */
+/* Makes the flux table header distinct from the body */
+table thead th,
+.vc-panel thead th {
+    @apply bg-zinc-50 dark:bg-zinc-800/50 text-zinc-500 dark:text-zinc-400 font-semibold uppercase tracking-wider text-xs px-4 py-3 border-b border-zinc-200 dark:border-zinc-700/50;
+}
+
+table thead {
+    border-bottom: 2px solid var(--color-vc-border);
+}
+
+.vc-panel table {
+    @apply mt-2; /* Slight separation from search/filters */
+}
+
+/* Hide spinners for number inputs */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+/* ── Fix textareas to not stretch and add internal scroll ── */
+textarea {
+    resize: none !important;
+    overflow-y: auto !important;
+}
+
+/* ── Tablas como Cards Stackeadas (siempre, a petición del usuario) ── */
+.vc-responsive-table-container table {
+    display: block !important;
+    width: 100% !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+.vc-responsive-table-container thead {
+    display: none !important;
+}
+.vc-responsive-table-container tbody {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.25rem !important;
+    width: 100% !important;
+}
+.vc-responsive-table-container tr {
+    display: flex !important;
+    flex-direction: column !important;
+    border: 1px solid var(--color-vc-border) !important;
+    border-radius: 16px !important;
+    padding: 1.25rem !important;
+    background: var(--color-vc-surface-alt) !important;
+    box-shadow: var(--shadow-sm) !important;
+    position: relative;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+.vc-responsive-table-container tr:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md) !important;
+}
+.vc-responsive-table-container td {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.1) !important;
+    padding: 0.75rem 0 !important;
+}
+
+/* ── Estilos de Paginación Premium ── */
+.vc-responsive-table-container nav[role="navigation"] {
+    margin-top: 2rem;
+    background: var(--color-vc-surface-alt);
+    padding: 1rem;
+    border-radius: 16px;
+    border: 1px solid var(--color-vc-border);
+}
+.vc-responsive-table-container nav[role="navigation"] > div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    align-items: center;
+}
+.vc-responsive-table-container nav[role="navigation"] p {
+    color: var(--color-vc-text-muted);
+    font-size: 0.875rem;
+}
+.vc-responsive-table-container nav[role="navigation"] a,
+.vc-responsive-table-container nav[role="navigation"] span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.25rem;
+    height: 2.25rem;
+    padding: 0 0.75rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+.vc-responsive-table-container
+    nav[role="navigation"]
+    span[aria-current="page"] {
+    background: var(--color-vc-primary);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+}
+.vc-responsive-table-container nav[role="navigation"] a {
+    background: var(--color-vc-surface);
+    color: var(--color-vc-text);
+    border: 1px solid var(--color-vc-border);
+}
+.vc-responsive-table-container nav[role="navigation"] a:hover {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--color-vc-primary);
+    border-color: rgba(16, 185, 129, 0.4);
+}
+
+/* ══════════════════════════════════════════
+   FULLCALENDAR - Integración con tema VC
+   ══════════════════════════════════════════ */
+#vc-fullcalendar {
+    --fc-border-color: var(--color-vc-border);
+    --fc-button-bg-color: transparent;
+    --fc-button-border-color: var(--color-vc-border);
+    --fc-button-text-color: var(--color-vc-text-muted);
+    --fc-button-hover-bg-color: rgba(5, 150, 105, 0.1);
+    --fc-button-hover-border-color: rgba(5, 150, 105, 0.4);
+    --fc-button-active-bg-color: var(--color-vc-primary);
+    --fc-button-active-border-color: var(--color-vc-primary);
+    --fc-today-bg-color: rgba(5, 150, 105, 0.06);
+    --fc-now-indicator-color: var(--color-vc-primary);
+    --fc-event-border-color: transparent;
+    --fc-neutral-bg-color: transparent;
+    --fc-page-bg-color: transparent;
+    --fc-list-event-hover-bg-color: rgba(5, 150, 105, 0.08);
+}
+
+/* Toolbar y botones */
+#vc-fullcalendar .fc-toolbar-title {
+    font-family: 'Plus Jakarta Sans', 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: var(--color-vc-text);
+}
+
+#vc-fullcalendar .fc-button {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    padding: 0.375rem 0.75rem;
+    transition: all 0.2s ease;
+}
+
+#vc-fullcalendar .fc-button-active,
+#vc-fullcalendar .fc-button:active {
+    background: var(--color-vc-primary) !important;
+    border-color: var(--color-vc-primary) !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+}
+
+/* Encabezados de columna */
+#vc-fullcalendar .fc-col-header-cell {
+    padding: 0.5rem 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-vc-text-muted);
+    background: transparent;
+}
+
+/* Celdas de tiempo */
+#vc-fullcalendar .fc-timegrid-slot-label {
+    font-size: 0.75rem;
+    color: var(--color-vc-text-muted);
+}
+
+/* Eventos */
+#vc-fullcalendar .fc-event {
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+#vc-fullcalendar .fc-event:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+}
+
+/* Indicador de hora actual */
+#vc-fullcalendar .fc-timegrid-now-indicator-line {
+    border-color: var(--color-vc-primary);
+    border-width: 2px;
+}
+
+#vc-fullcalendar .fc-timegrid-now-indicator-arrow {
+    border-top-color: var(--color-vc-primary);
+}

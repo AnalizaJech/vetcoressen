@@ -1,0 +1,326 @@
+<?php
+
+namespace App\Livewire\HistoriasClinicas;
+
+use App\Models\Appointment;
+use App\Models\Customer;
+use App\Models\MedicalRecord;
+use App\Models\Pet;
+use App\Models\Product;
+use App\Models\User;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
+use Livewire\Component;
+
+// Formulario de historia clínica con triaje y prescripciones dinámicas
+#[Layout('components.layouts.app')]
+#[Title('Historia Clínica')]
+class HistoriaClinicaForm extends Component
+{
+    // Identificador para edición
+    public ?int $historiaId = null;
+
+    // Relaciones
+    public string $customer_id = '';
+    public string $pet_id = '';
+    public string $veterinarian_id = '';
+    public string $appointment_id = '';
+
+    // Datos principales
+    public string $fecha_consulta = '';
+    public string $reason = '';
+
+    // Triaje obligatorio
+    public string $weight = '';
+    public string $temperatura = '';
+    public string $frecuencia_cardiaca = '';
+    public string $frecuencia_respiratoria = '';
+
+    // Diagnóstico y tratamiento
+    public string $anamnesis = '';
+    public string $diagnostico_presuntivo = '';
+    public string $tratamiento_indicaciones = '';
+    public string $proxima_cita_recomendada = '';
+    public string $notas_aclaratorias = '';
+
+    public string $alerta_peso = '';
+    public string $alerta_temp = '';
+
+    // Prescripciones dinámicas (array de arrays)
+    public array $prescripciones = [];
+
+    // Reglas de validación
+    protected function rules(): array
+    {
+        return [
+            'pet_id'              => 'required|exists:pets,id',
+            'veterinarian_id'          => 'required|exists:users,id',
+            'appointment_id'                 => 'nullable|exists:appointments,id',
+            'fecha_consulta'                   => 'required|date',
+            'reason'         => 'required|string|max:500',
+            'weight'                    => 'required|numeric|min:0.01|max:999',
+            'temperatura'             => 'required|numeric|min:30|max:45',
+            'frecuencia_cardiaca'     => 'nullable|integer|min:0|max:300',
+            'frecuencia_respiratoria' => 'nullable|integer|min:0|max:200',
+            'anamnesis'               => 'nullable|string|max:2000',
+            'diagnostico_presuntivo'  => 'nullable|string|max:1000',
+            'tratamiento_indicaciones' => 'nullable|string|max:2000',
+            'proxima_cita_recomendada' => 'nullable|date|after:today',
+            // Validación de prescripciones
+            'prescripciones.*.medicamento'   => 'required|string|max:200',
+            'prescripciones.*.dosis'         => 'required|string|max:100',
+            'prescripciones.*.frecuencia'    => 'required|string|max:100',
+            'prescripciones.*.duracion_dias' => 'required|integer|min:1|max:365',
+            'prescripciones.*.via_administracion' => 'nullable|string|max:50',
+            'prescripciones.*.indicaciones'  => 'nullable|string|max:500',
+        ];
+
+        if ($this->pet_id) {
+            $pet = Pet::with('especie')->find($this->pet_id);
+            if ($pet && $pet->especie && in_array($pet->especie->name, ['Exótica', 'Genérica', 'Exótico'])) {
+                $rules['weight'] = 'nullable|numeric|min:0.01|max:999';
+                $rules['temperatura'] = 'nullable|numeric|min:30|max:45';
+            }
+        }
+
+        return $rules;
+    }
+
+    // Cargar datos si es edición
+    public function mount(?int $id = null): void
+    {
+        $this->fecha_consulta = now()->format('Y-m-d');
+
+        // Pre-seleccionar veterinario actual si es veterinario
+        if (auth()->user()->hasRole('veterinario')) {
+            $this->veterinarian_id = (string) auth()->id();
+        }
+
+        if ($id) {
+            $historia = MedicalRecord::with('prescripciones')->findOrFail($id);
+            $this->historiaId = $historia->id;
+            $this->pet_id = (string) $historia->pet_id;
+            $this->veterinarian_id = (string) $historia->veterinarian_id;
+            $this->appointment_id = (string) ($historia->appointment_id ?? '');
+            $this->fecha_consulta = $historia->date->format('Y-m-d');
+            $this->reason = $historia->reason ?? '';
+            $this->weight = (string) $historia->weight;
+            $this->temperatura = (string) $historia->temperature;
+            $this->frecuencia_cardiaca = (string) ($historia->heart_rate ?? '');
+            $this->frecuencia_respiratoria = (string) ($historia->respiratory_rate ?? '');
+            $this->anamnesis = $historia->anamnesis ?? '';
+            $this->diagnostico_presuntivo = $historia->diagnosis_presuntivo ?? '';
+            $this->tratamiento_indicaciones = $historia->treatment_indicaciones ?? '';
+            $this->proxima_cita_recomendada = $historia->proxima_cita_recomendada
+                ? $historia->proxima_cita_recomendada->format('Y-m-d') : '';
+            $this->notas_aclaratorias = $historia->notas_aclaratorias ?? '';
+
+            // Cargar prescripciones existentes
+            foreach ($historia->prescripciones as $rx) {
+                $this->prescripciones[] = [
+                    'id'                 => $rx->id,
+                    'product_id'        => (string) ($rx->product_id ?? ''),
+                    'medicamento'        => $rx->medicamento,
+                    'dosage'              => $rx->dosage,
+                    'frequency'         => $rx->frequency,
+                    'via_administracion' => $rx->via_administracion ?? '',
+                    'duracion_dias'      => $rx->duration_dias ?? 1,
+                    'indicaciones'       => $rx->indicaciones ?? '',
+                ];
+            }
+
+            // Cargar cliente a partir de mascota para cascada
+            $mascota = Pet::find($this->pet_id);
+            if ($mascota) {
+                $this->customer_id = (string) $mascota->customer_id;
+            }
+        }
+    }
+
+    // Cascada: al cambiar cliente, resetear mascota y cita
+    public function updatedClienteId(): void
+    {
+        $this->pet_id = '';
+        $this->appointment_id = '';
+    }
+
+    // Cascada: al cambiar mascota, resetear cita
+    public function updatedPetId(): void
+    {
+        $this->appointment_id = '';
+        $this->updatedWeight();
+    }
+
+    public function updatedWeight(): void
+    {
+        $this->alerta_peso = '';
+        if ($this->pet_id && $this->weight) {
+            $ultimaHistoria = MedicalRecord::where('pet_id', $this->pet_id)
+                                ->when($this->historiaId, fn($q) => $q->where('id', '!=', $this->historiaId))
+                                ->orderBy('date', 'desc')
+                                ->first();
+            if ($ultimaHistoria && $ultimaHistoria->weight > 0) {
+                $cambioPeso = abs($this->weight - $ultimaHistoria->weight) / $ultimaHistoria->weight;
+                if ($cambioPeso > 0.30) {
+                    $this->alerta_peso = 'Advertencia: El peso ha cambiado más del 30% respecto a la última consulta (' . $ultimaHistoria->weight . ' kg).';
+                }
+            }
+        }
+    }
+
+    public function updatedTemperatura(): void
+    {
+        $this->alerta_temp = '';
+        if ($this->temperatura) {
+            if ($this->temperatura < 37.5 || $this->temperatura > 39.5) {
+                $this->alerta_temp = 'Alerta: Temperatura fuera de rango normal (37.5 - 39.5°C).';
+            }
+        }
+    }
+
+    // Agregar fila de prescripción vacía
+    public function agregarPrescripcion(): void
+    {
+        $this->prescripciones[] = [
+            'id'                 => null,
+            'product_id'        => '',
+            'medicamento'        => '',
+            'dosage'              => '',
+            'frequency'         => '',
+            'via_administracion' => 'Oral',
+            'duracion_dias'      => 1,
+            'indicaciones'       => '',
+        ];
+    }
+
+    // Eliminar fila de prescripción
+    public function eliminarPrescripcion(int $index): void
+    {
+        unset($this->prescripciones[$index]);
+        $this->prescripciones = array_values($this->prescripciones);
+    }
+
+    // Autocompletar medicamento al seleccionar producto del inventario
+    public function seleccionarProducto(int $index, int $productoId): void
+    {
+        $producto = Product::find($productoId);
+        if ($producto) {
+            $this->prescripciones[$index]['product_id'] = (string) $productoId;
+            $this->prescripciones[$index]['medicamento'] = $producto->name;
+        }
+    }
+
+    // Guardar historia clínica + prescripciones
+    public function guardar(): void
+    {
+        $this->validate();
+
+        $datos = [
+            'clinic_id'                => 1,
+            'pet_id'                => $this->pet_id,
+            'veterinarian_id'            => $this->veterinarian_id,
+            'appointment_id'                   => $this->appointment_id ?: null,
+            'date'                     => $this->fecha_consulta,
+            'reason'           => $this->reason,
+            'weight'                      => $this->weight,
+            'temperature'               => $this->temperatura,
+            'heart_rate'       => $this->frecuencia_cardiaca ?: null,
+            'respiratory_rate'   => $this->frecuencia_respiratoria ?: null,
+            'anamnesis'                 => $this->anamnesis ?: null,
+            'diagnosis_presuntivo'    => $this->diagnostico_presuntivo ?: null,
+            'treatment_indicaciones'  => $this->tratamiento_indicaciones ?: null,
+            'proxima_cita_recomendada'  => $this->proxima_cita_recomendada ?: null,
+            'notas_aclaratorias'        => $this->notas_aclaratorias ?: null,
+        ];
+
+        if ($this->historiaId) {
+            $historia = MedicalRecord::findOrFail($this->historiaId);
+            
+            // Inmutabilidad a las 24h + Notas Aclaratorias Anexas
+            $paso24h = clone $historia->created_at;
+            $paso24h = $paso24h->diffInHours(now()) >= 24;
+            
+            if ($paso24h && !auth()->user()->hasRole('super_admin')) {
+                $historia->update(['notas_aclaratorias' => $this->notas_aclaratorias]);
+                session()->flash('mensaje', 'Historia clínica bloqueada (24h). Solo se guardaron las Notas Aclaratorias Anexas.');
+                $this->redirect(route('historias.index'), navigate: true);
+                return;
+            }
+
+            $datos['notas_aclaratorias'] = $this->notas_aclaratorias;
+            $historia->update($datos);
+            // Eliminar prescripciones anteriores y recrear
+            $historia->prescripciones()->delete();
+        } else {
+            $historia = MedicalRecord::create($datos);
+        }
+
+        // Crear prescripciones
+        foreach ($this->prescripciones as $rx) {
+            $historia->prescripciones()->create([
+                'clinic_id'        => 1,
+                'product_id'       => $rx['product_id'] ?: null,
+                'medicamento'       => $rx['medicamento'],
+                'dosage'             => $rx['dosage'],
+                'frequency'        => $rx['frequency'],
+                'via_administracion' => $rx['via_administracion'] ?: null,
+                'duracion_dias'     => $rx['duracion_dias'],
+                'indicaciones'      => $rx['indicaciones'] ?: null,
+                'dispensado'        => false,
+            ]);
+        }
+
+        $accion = $this->historiaId ? 'actualizada' : 'registrada';
+        
+        // Enviar notificación de receta si hay prescripciones (nueva historia)
+        if (!empty($this->prescripciones) && !$this->historiaId) {
+            $cliente = Customer::find($this->customer_id);
+            if ($cliente && $cliente->email) {
+                app(\App\Services\EmailNotificationService::class)->sendRecetaNotification(
+                    $cliente->id,
+                    $cliente->email,
+                    new \App\Mail\RecetaMail($historia)
+                );
+            }
+        }
+
+        session()->flash('mensaje', "Historia clínica {$accion} correctamente.");
+        $this->redirect(route('historias.index'), navigate: true);
+    }
+
+    public function render()
+    {
+        // Clientes activos para selección
+        $clientes = Customer::orderBy('first_name')->get();
+
+        // Mascotas del cliente seleccionado
+        $mascotas = $this->customer_id
+            ? Pet::where('customer_id', $this->customer_id)->orderBy('name')->get()
+            : collect();
+
+        // Citas pendientes de la mascota seleccionada
+        $citas = $this->pet_id
+            ? Appointment::where('pet_id', $this->pet_id)
+                ->whereIn('status', ['programada', 'confirmada'])
+                ->orderByDesc('fecha_hora')
+                ->get()
+            : collect();
+
+        // Veterinarios (usuarios con rol veterinario)
+        $veterinarios = User::role('veterinario')->orderBy('name')->get();
+
+        // Productos tipo medicamento para prescripciones
+        $productos = Product::where('type', 'producto')
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
+
+        return view('livewire.historias-clinicas.historia-clinica-form', [
+            'clientes'     => $clientes,
+            'mascotas'     => $mascotas,
+            'citas'        => $citas,
+            'veterinarios' => $veterinarios,
+            'productos'    => $productos,
+        ]);
+    }
+}
