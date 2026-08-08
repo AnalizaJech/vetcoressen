@@ -1,0 +1,93 @@
+╔══════════════════════════════════════════════════════════════════╗
+║              VETCORESSEN — CREDENCIALES DE ACCESO                ║
+║              Sistema de Gestión Veterinaria Premium              ║
+╚══════════════════════════════════════════════════════════════════╝
+
+────────────────────────────────────────────────────────────────────
+  ACCESO AL SISTEMA
+────────────────────────────────────────────────────────────────────
+
+  URL Local:         http://localhost:8000
+  URL Login:         http://localhost:8000/login
+
+  USUARIO ADMINISTRADOR (Super Admin):
+    Email:           admin@vetcoressen.pe
+    Password:        Vetcoressen2026!
+    Rol:             super_admin (Acceso total)
+
+────────────────────────────────────────────────────────────────────
+  ROLES DEL SISTEMA (Spatie Permissions)
+────────────────────────────────────────────────────────────────────
+
+  1. super_admin          → Acceso total a todos los módulos
+  2. administrador        → Todo excepto configuración avanzada
+  3. veterinario          → Clínico: historias, prescripciones, citas
+  4. recepcionista        → Citas, cobros, clientes, mascotas
+  5. auxiliar_veterinario → Solo lectura clínica y vacunación limitada
+
+────────────────────────────────────────────────────────────────────
+  BASE DE DATOS (MySQL)
+────────────────────────────────────────────────────────────────────
+
+  Host:              127.0.0.1
+  Puerto:            3306
+  Base de datos:     vetcoressen
+  Usuario:           root
+  Password:          (vacío)
+
+  Archivo SQL:       /database/database.sql
+  Migraciones:       php artisan migrate --seed
+
+────────────────────────────────────────────────────────────────────
+  APIs Y SERVICIOS EXTERNOS
+────────────────────────────────────────────────────────────────────
+
+  PERUAPI (Consulta DNI/RUC):
+    API Key:         [ELIMINADO_POR_SEGURIDAD]
+    Base URL:        https://peruapi.com
+
+  FASTFOREX (Tipo de Cambio):
+    API Key:         [ELIMINADO_POR_SEGURIDAD]
+    Base URL:        https://api.fastforex.io
+
+  COUNTRY STATE CITY API (Ubicaciones):
+    API Key:         [ELIMINADO_POR_SEGURIDAD]
+    Base URL:        https://api.countrystatecity.in/v1
+
+  RESEND (Emails):
+    API Key:         [ELIMINADO_POR_SEGURIDAD]
+
+  TWILIO (SMS / WhatsApp):
+    SID:             [ELIMINADO_POR_SEGURIDAD]
+    Token:           [ELIMINADO_POR_SEGURIDAD]
+    From (SMS):      +19478370534
+    From (WhatsApp): whatsapp:+14155238886
+    Messaging SID:   [ELIMINADO_POR_SEGURIDAD]
+
+  NUBEFACT (Facturación SUNAT):
+    Token:           (Pendiente de configuración)
+    URL:             (Pendiente de configuración)
+
+────────────────────────────────────────────────────────────────────
+  COMANDOS RÁPIDOS
+────────────────────────────────────────────────────────────────────
+
+  Instalar dependencias:     composer install && npm install
+  Crear base de datos:       php artisan migrate --seed
+  Iniciar servidor:          php artisan serve
+  Iniciar Vite (assets):     npm run dev
+
+────────────────────────────────────────────────────────────────────
+  STACK TECNOLÓGICO
+────────────────────────────────────────────────────────────────────
+
+  Backend:           PHP 8.2+ / Laravel 12
+  Frontend:          Livewire v4 / Flux UI v2.15
+  Estilos:           Tailwind CSS v4 (CDN)
+  Base de datos:     MySQL / MariaDB
+  Permisos:          Spatie Laravel Permission v6
+
+════════════════════════════════════════════════════════════════════
+  NOTA: Este archivo contiene credenciales sensibles.
+  NO subir a repositorios públicos. Agregado a .gitignore.
+════════════════════════════════════════════════════════════════════

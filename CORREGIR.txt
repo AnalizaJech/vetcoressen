@@ -1,102 +1,93 @@
-PUNTO DE VENTA: ERROR 500, MODULO CAIDO POR COMPLETO (maxima prioridad)
+CORREOS (RESEND): EL PROBLEMA ES LA COLA, NO EL CODIGO
 
-Confirmado con conteo exacto: resources/views/livewire/caja/punto-venta.blade.php
-tiene 12 aperturas "<div" y 13 cierres "</div>" entre las lineas 33 y 131
-(la seccion de busqueda/grid de productos), un </div> de mas. Eso rompe el
-elemento raiz unico que Livewire exige y tira "Multiple root elements
-detected". Revisar puntualmente las lineas 129-131 (ahi hay tres </div>
-seguidos); sobra uno. Corregirlo desbloquea todo el modulo de una vez,
-antes de tocar cualquier otra cosa de estilo ahi.
+sendCitaNotification y sendPagoNotification ya estan conectadas en
+CitaForm.php y PuntoVenta.php, eso quedo bien. El motivo de que no llegue
+nada es que SendEmailJob se despacha con ->onQueue('emails'), una cola con
+NOMBRE PROPIO, y ademas la cola por defecto en .env no es 'sync'. Eso
+significa que los correos se quedan esperando en la tabla jobs para
+siempre a menos que haya un proceso de worker corriendo, y si ese worker
+corre sin indicar la cola, tampoco los toma. Esto no es un bug de codigo,
+es que falta correr:
+php artisan queue:work --queue=emails,default
+Este comando tiene que quedar corriendo en una terminal aparte (o como
+servicio) mientras se prueba el sistema, sino ningun correo va a salir
+nunca sin importar que tan bien este el codigo. Para desarrollo local mas
+simple, alternativa: cambiar QUEUE_CONNECTION=sync en el .env, asi los
+correos se envian al toque sin necesitar un worker corriendo (recomendado
+solo para pruebas locales, no para produccion).
 
-MODALES DE FLUX ROTOS EN TODO EL SISTEMA (nuevo, confirmado por consola)
+CAJA: KPIs CON BUG DE MAYUSCULAS Y SIN FILTROS
 
-La consola del navegador (mandada por ti) muestra en el Dashboard:
-"Uncaught ReferenceError: fluxModal is not defined" y por separado
-"Uncaught ReferenceError: Flux is not defined". El x-data="fluxModal(...)"
-que tira el error NO esta escrito a mano en ningun blade (lo busque, no
-aparece en ningun archivo), lo genera automaticamente el propio componente
-<flux:modal> de Flux al compilarse: significa que el JS de Flux no se esta
-cargando o inicializando bien, no es un typo de un desarrollador. El
-layout SI tiene @fluxScripts (esta bien puesto), pero eso no basta si el
-archivo que sirve ese script falla. Esto rompe TODOS los modales de Flux
-del sistema a la vez: el de alerta de stock minimo, el de exito global
-(el que avisa "se guardo correctamente"), y probablemente el de caja
-cerrada tambien.
-Antigravity puede confirmarlo sin depender de una captura: revisar en los
-logs de Laravel o probando directamente la URL que genera @fluxScripts al
-compilar la pagina, para ver si esa ruta interna de Flux responde 200 o
-falla. Si da error, correr php artisan route:clear y php artisan
-route:cache de nuevo, o revisar que el ServiceProvider de livewire/flux
-(version ^2.15 segun composer.json) este registrado. Si responde bien
-pero el error de JS sigue, revisar si el contenido de esa respuesta esta
-corrupto o vacio.
+En CajaIndex.php (lineas 46-47) el codigo filtra
+->where('payment_method', 'efectivo') y 'tarjeta' en minuscula, pero el
+valor real guardado en la base de datos es EFECTIVO y TARJETA en
+mayuscula (linea 48 con YAPE_PLIN/TRANSFERENCIA si esta bien escrito en
+mayuscula). Por eso el desglose de efectivo y tarjeta siempre muestra 0
+aunque haya ventas de ese tipo, aunque el total general si es correcto.
+Cambiar 'efectivo' y 'tarjeta' a 'EFECTIVO' y 'TARJETA' arregla ese
+desglose. Ademas, agregar filtros a la vista de Caja (por fecha, por
+metodo de pago, por vendedor) y ordenar la lista por mas reciente primero
+si no lo esta ya.
 
-SISTEMA DE TRADUCCION: BUG RAIZ QUE EXPLICA VARIOS SINTOMAS SUELTOS
+REPORTES: FALTA LA UI PARA CAMBIAR DE PERIODO
 
-En public/js/i18n.js, la funcion t() no devuelve algo "falsy" cuando la
-clave no existe en el diccionario, devuelve la clave en mayusculas (por
-eso en Proveedores se ve literal "TABLE.CONTACT" en vez de "Contacto",
-viene de $store.i18n.t('table.contact') en
-proveedor-index.blade.php linea 60). Esto es grave porque en TODO el
-proyecto se usa el patron
-x-text="$store.i18n.t('clave') || 'Texto en español'" esperando que el ||
-funcione cuando la clave falta, pero como t() nunca devuelve falsy, ese ||
-nunca se activa: en cualquier lugar del sistema donde falte una clave, en
-vez del texto en español de respaldo se ve la clave cruda en mayusculas.
-Fix: en la funcion t() de i18n.js, que devuelva null o '' cuando la clave
-no exista en el diccionario, no la clave transformada. Con este solo
-cambio se arreglan de golpe varios textos raros repartidos por todo el
-sistema (Proveedores, Reportes, y cualquier otro que dependa del ||).
+ReporteIndex.php ya tiene la logica lista para 4 periodos (hoy,
+semana_actual, mes_actual, año_actual) en la propiedad $periodo, pero no
+hay ningun boton ni tab en la vista que la cambie, se queda fijo en
+mes_actual siempre. Agregar 4 botones/tabs (Hoy, Semana, Mes, Año) con
+wire:click="$set('periodo', 'hoy')" (y asi con cada uno) para que el
+modulo deje de ser estatico.
 
-CITAS: EL CALENDARIO SE VUELVE A TRABAR
+CALENDARIO DE CITAS: RANGO DE HORAS Y TAMAÑO DE CELDA
 
-No hay ningun error de JavaScript en consola cuando pasa esto, lo que
-apunta a una peticion que se queda pendiente sin resolver nunca, no a una
-excepcion. Antigravity debe reproducirlo corriendo la aplicacion
-directamente: entrar a Citas y revisar si la llamada a
-getCitasCalendario queda pendiente sin responder (network o logs de
-Laravel). Agregar temporalmente console.log en calendar.js justo antes y
-despues de wire.getCitasCalendario, y Log::info al inicio y al final de
-getCitasCalendario() en CitaIndex.php, para ubicar en que punto exacto se
-traba. Probar tambien en ancho de escritorio ademas de movil angosto
-(~360px): todas las pruebas hasta ahora fueron en vista movil emulada, y
-FullCalendar es conocido por tener problemas de calculo de tamaño dentro
-de contenedores angostos o con altura 'auto'.
+resources/js/calendar.js tiene slotMinTime: '00:00:00', es decir el
+calendario de dia/semana arranca a medianoche y muestra las 24 horas del
+dia, con slots de 15 minutos: son 96 franjas por dia, por eso cada celda
+sale diminuta y no entra la card de la cita. Poner un rango realista del
+horario de atencion de la clinica, por ejemplo:
+slotMinTime: '07:00:00',
+slotMaxTime: '21:00:00',
+Con menos horas visibles cada celda tiene mucho mas alto disponible. Si
+la clinica atiende emergencias fuera de ese horario, esas citas igual se
+pueden ver entrando al detalle, no hace falta que el calendario completo
+muestre el dia entero por eso.
 
-DROPDOWN: SIGUE FALLANDO AL ELEGIR OTRA OPCION
+VOUCHER: FALTAN ICONOS, Y ARREGLAR IMPRESION/VISUALIZACION
 
-El @click.outside ya tiene logica distinta a la de hace 2 rondas, pero el
-sintoma "no hay resultados" sugiere que filteredOptions() esta comparando
-el texto de busqueda contra algo que no coincide con ningun label en ese
-momento. Antigravity debe reproducirlo directamente probando cada formulario que
-use x-vc-dropdown (Punto de Venta, Citas, Roles): abrir el dropdown con
-un valor ya seleccionado, borrar el texto, escribir una busqueda nueva, y
-revisar que $wire.set no se dispare con un valor vacio en ese momento.
-Agregar console.log temporal dentro de filteredOptions() y del
-@click.outside mostrando search y selectedLabel para ver el estado real
-justo cuando aparece "no hay resultados".
+resources/views/livewire/caja/voucher.blade.php practicamente no tiene
+iconos (solo 1 en 89 lineas). Agregar iconos de Material Symbols
+consistentes con el resto del sistema en los datos de contacto, metodo de
+pago, fecha, etc. Revisar tambien la vista de impresion (probablemente
+falte un @media print en el CSS para que al imprimir no salga el sidebar
+ni los botones, solo el comprobante) y que el diseño en pantalla se vea
+como un recibo real, no como un formulario mas.
 
-PRACTICAS RECOMENDADAS PARA ANTIGRAVITY (TDD y skills reutilizables)
+MODAL DE ATENCION AL INVENTARIO: BOTON SIN EL MISMO ENFASIS
 
-La mayoria de los bugs de esta ronda (el error 500 de Punto de Venta, el
-bug de t(), las claves de mascota_id/cliente_id que no coinciden de
-rondas pasadas) los hubiera agarrado un test automatico basico antes de
-entregar, no hace falta nada sofisticado:
-1. Un test Pest/PHPUnit por cada componente Livewire full-page que solo
-   haga Livewire::test(Componente::class)->assertOk(); eso solo ya
-   atrapa errores 500 como el de hoy antes de que lleguen a produccion.
-   Con Livewire 4 en este proyecto, esto es codigo minimo.
-2. Un comando artisan o script simple que recorra todos los .blade.php de
-   resources/views/livewire y cuente aperturas/cierres de <div> por
-   archivo (el mismo metodo que use arriba), como chequeo rapido antes de
-   cada entrega.
-3. Un test que recorra las claves usadas con $store.i18n.t('...') en los
-   blade contra las claves reales definidas en public/js/i18n.js, para
-   que faltantes como table.contact salten antes de subir el cambio, no
-   despues.
-4. Antes de dar algo por terminado, correr el flujo real una vez (crear
-   cliente, crear cita, hacer una venta, abrir Reportes) igual que un
-   usuario, no solo revisar que el codigo compile.
-Si quieres, esto se puede empaquetar como una skill de Antigravity
-("verificacion-livewire-vetcoressen") que corra estos 3-4 chequeos
-automaticos antes de marcar cualquier tarea como lista.
+El boton de "ver mas"/accion dentro del modal de alerta de stock minimo
+en el Dashboard debe usar la misma clase btn-primary btn-primary--amber
+que ya se definio para el boton de Inventario del dashboard, para que
+tengan el mismo peso visual en vez de verse como cosas distintas.
+
+CONEXION CITAS - HISTORIA CLINICA (plan de flujo)
+
+Hoy MedicalRecord ya tiene appointment_id listo para guardar el vinculo,
+pero no hay ningun boton que conecte una cosa con la otra: HistoriaClinicaForm
+solo recibe $id para editar, no recibe la cita de origen para precargar
+datos al crear una nueva. Flujo propuesto:
+1. En la card/fila de cada cita de HOY con estado Confirmada, agregar un
+   boton "Iniciar Atencion" (solo visible el dia de la cita, para
+   veterinario/recepcion).
+2. Al hacer clic: cambiar el estado de la cita a "En Progreso" y navegar
+   directo a la creacion de Historia Clinica, pasando el appointment_id
+   por la URL (ej /historias/nueva?cita={id}).
+3. HistoriaClinicaForm debe aceptar ese parametro en mount() y precargar
+   automaticamente cliente_id, mascota_id, veterinario_id y
+   appointment_id desde la cita, para que el veterinario no tenga que
+   volver a buscarlos a mano.
+4. Al guardar la historia clinica, si tiene appointment_id, cambiar el
+   estado de esa cita a "Completada" automaticamente.
+5. En el listado de citas, si una cita ya tiene una historia clinica
+   ligada (buscar por appointment_id), mostrar "Ver Historia Clinica" en
+   vez de "Iniciar Atencion", para no crear una historia duplicada por
+   la misma cita.
