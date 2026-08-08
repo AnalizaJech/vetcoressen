@@ -15,7 +15,8 @@ class CajaIndex extends Component
 {
     use WithPagination;
 
-    // Resumen del día
+    // Resumen
+    public string $filtroTiempo = 'hoy'; // 'hoy', 'semana', 'mes', 'anio'
     public float $totalVentasHoy = 0;
     public int $cantidadVentasHoy = 0;
     public float $totalEfectivo = 0;
@@ -32,20 +33,33 @@ class CajaIndex extends Component
         $this->cargarResumen();
     }
 
-    // Calcular resumen de ventas del día actual
+    // Calcular resumen de ventas del periodo actual
     public function cargarResumen(): void
     {
         $hoy = now()->toDateString();
+        $fechaInicio = match ($this->filtroTiempo) {
+            'hoy' => now()->startOfDay(),
+            'semana' => now()->startOfWeek(),
+            'mes' => now()->startOfMonth(),
+            'anio' => now()->startOfYear(),
+            default => now()->startOfDay(),
+        };
 
-        $ventasHoy = Sale::whereDate('created_at', $hoy)
-            ->where('status', 'completada')
+        $ventasPeriodo = Sale::whereDate('created_at', '>=', $fechaInicio)
+            ->whereDate('created_at', '<=', $hoy)
+            ->where('status', 'PAGADO')
             ->get();
 
-        $this->cantidadVentasHoy = $ventasHoy->count();
-        $this->totalVentasHoy = $ventasHoy->sum('total');
-        $this->totalEfectivo = $ventasHoy->where('payment_method', 'efectivo')->sum('total');
-        $this->totalTarjeta = $ventasHoy->where('payment_method', 'tarjeta')->sum('total');
-        $this->totalDigital = $ventasHoy->whereIn('payment_method', ['YAPE_PLIN', 'TRANSFERENCIA'])->sum('total');
+        $this->cantidadVentasHoy = $ventasPeriodo->count();
+        $this->totalVentasHoy = $ventasPeriodo->sum('total');
+        $this->totalEfectivo = $ventasPeriodo->where('payment_method', 'EFECTIVO')->sum('total');
+        $this->totalTarjeta = $ventasPeriodo->where('payment_method', 'TARJETA')->sum('total');
+        $this->totalDigital = $ventasPeriodo->whereIn('payment_method', ['YAPE_PLIN', 'TRANSFERENCIA'])->sum('total');
+    }
+
+    public function updatedFiltroTiempo(): void
+    {
+        $this->cargarResumen();
     }
 
     public function verVenta(int $id): void
@@ -124,9 +138,19 @@ class CajaIndex extends Component
 
     public function render()
     {
-        // Últimas ventas del día
+        $hoy = now()->toDateString();
+        $fechaInicio = match ($this->filtroTiempo) {
+            'hoy' => now()->startOfDay(),
+            'semana' => now()->startOfWeek(),
+            'mes' => now()->startOfMonth(),
+            'anio' => now()->startOfYear(),
+            default => now()->startOfDay(),
+        };
+
+        // Ventas del periodo
         $ventasRecientes = Sale::with('cliente', 'cajero')
-            ->whereDate('created_at', now()->toDateString())
+            ->whereDate('created_at', '>=', $fechaInicio)
+            ->whereDate('created_at', '<=', $hoy)
             ->orderByDesc('created_at')
             ->paginate(20);
 

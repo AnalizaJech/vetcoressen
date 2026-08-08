@@ -46,10 +46,10 @@ window.initVetCalendar = function (el, wire) {
         locale: document.documentElement.lang || 'es',
         firstDay: 1, // Lunes
         
-        // Horarios visibles
-        slotMinTime: '00:00:00',
-        slotMaxTime: '24:00:00',
-        slotDuration: '00:15:00',
+        // Horarios visibles (rango de atención de la clínica)
+        slotMinTime: '07:00:00',
+        slotMaxTime: '21:00:00',
+        slotDuration: '00:30:00',
         slotLabelFormat: {
             hour: 'numeric',
             minute: '2-digit',
@@ -66,8 +66,8 @@ window.initVetCalendar = function (el, wire) {
         allDaySlot: false,
         nowIndicator: true,
         navLinks: true, // Mantener funcionalidad para ir al día
-        slotDuration: '01:00:00', // Un bloque por hora
-        contentHeight: 'auto', // Permitir que las celdas se estiren según el CSS (6rem)
+        height: 'auto',
+        contentHeight: 600,
         dayMaxEvents: 3,
         
         // Drag & drop habilitado
@@ -77,7 +77,7 @@ window.initVetCalendar = function (el, wire) {
         
         // Estirar eventos y evitar solapamiento
         slotEventOverlap: false,
-        eventMinHeight: 70,
+        eventMinHeight: 90,
         
         selectable: true,
         select: function(info) {
@@ -142,7 +142,7 @@ window.initVetCalendar = function (el, wire) {
 
                 return {
                     html: `
-                        <div class="flex items-center justify-between w-full p-2 py-3">
+                        <div class="flex items-center justify-between w-full p-3 py-4">
                             <div class="flex flex-col gap-1.5">
                                 <span class="font-bold text-sm text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
                                     ${props.mascota} 
@@ -187,15 +187,16 @@ window.initVetCalendar = function (el, wire) {
 
             return {
                 html: `
-                    <div class="p-1.5 flex flex-col min-h-full leading-tight relative">
-                        <div class="absolute top-1 right-1 text-[9px] font-bold opacity-80 bg-black/10 px-1 rounded-sm">${arg.timeText}</div>
-                        <div class="flex items-center gap-1 font-bold text-[10px] uppercase tracking-wide opacity-90 mb-1 w-[80%]">
-                            <span class="material-symbols-outlined text-[12px]">${props.status === 'EMERGENCIA' ? 'emergency' : (props.status === 'PENDIENTE' ? 'schedule' : (props.status === 'CONFIRMADA' ? 'check_circle' : 'pets'))}</span>
-                            <span class="truncate">${props.status}</span>
+                    <div class="p-2 flex flex-col h-auto min-h-full leading-tight">
+                        <div class="flex justify-between items-start mb-2 gap-2 border-b border-black/10 pb-2">
+                            <div class="flex items-center gap-1.5 font-bold text-[10px] uppercase tracking-wide opacity-90 truncate">
+                                <span class="material-symbols-outlined text-[14px]">${props.status === 'EMERGENCIA' ? 'emergency' : (props.status === 'PENDIENTE' ? 'schedule' : (props.status === 'CONFIRMADA' ? 'check_circle' : 'pets'))}</span>
+                                <span class="truncate">${props.status}</span>
+                            </div>
                         </div>
-                        <div class="font-extrabold text-xs truncate mb-0.5 w-[80%]">${props.mascota}</div>
-                        <div class="text-[10px] truncate opacity-90 font-medium">${props.cliente}</div>
-                        ${arg.view.type.includes('timeGrid') ? `<div class="text-[10px] mt-auto truncate opacity-75 pt-1">${props.reason}</div>` : ''}
+                        <div class="font-extrabold text-xs mb-1.5 whitespace-normal break-words">${props.mascota}</div>
+                        <div class="text-[10px] opacity-90 font-medium whitespace-normal break-words">${props.cliente}</div>
+                        ${arg.view.type.includes('timeGrid') ? `<div class="text-[10px] mt-1 pt-1 opacity-75 border-t border-black/10 whitespace-normal break-words line-clamp-2">${props.reason}</div>` : ''}
                     </div>
                 `
             };

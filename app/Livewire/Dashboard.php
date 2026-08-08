@@ -17,12 +17,27 @@ use Livewire\Component;
 #[Title('Dashboard')]
 class Dashboard extends Component
 {
+    public string $filtroTiempo = 'semana'; // 'hoy', 'semana', 'mes', 'anio'
+    public string $filtroTiempoCitas = 'hoy'; // 'hoy', 'semana', 'mes', 'anio'
+
     public function render()
     {
         $hoy = Carbon::today();
+        $ahora = Carbon::now();
+        $enDosHoras = Carbon::now()->addHours(2);
 
-        // KPI: Ingresos del día (ventas con estado pagado/completado)
-        $ingresosDia = Sale::whereDate('created_at', $hoy)
+        // Determinar fecha de inicio según filtro de ingresos
+        $fechaInicio = match ($this->filtroTiempo) {
+            'hoy' => Carbon::today(),
+            'semana' => Carbon::today()->startOfWeek(),
+            'mes' => Carbon::today()->startOfMonth(),
+            'anio' => Carbon::today()->startOfYear(),
+            default => Carbon::today()->subDays(6), // 'semana' móvil por defecto
+        };
+
+        // KPI: Ingresos (según filtro)
+        $ingresosDia = Sale::whereDate('created_at', '>=', $fechaInicio)
+            ->whereDate('created_at', '<=', $hoy)
             ->where('status', 'PAGADO')
             ->sum('total');
 
@@ -50,50 +65,133 @@ class Dashboard extends Component
             ->whereDate('fecha_hora', '<=', $hoy)
             ->count();
 
-        // Últimas 5 ventas
+        // Últimas 5 ventas (podrían filtrarse también, pero usualmente son solo las 'últimas')
         $ultimasVentas = Sale::with(['cliente', 'cajero'])
+            ->whereDate('created_at', '>=', $fechaInicio)
+            ->whereDate('created_at', '<=', $hoy)
             ->orderByDesc('created_at')
             ->limit(5)
             ->get();
 
-        // Gráfico semanal - ingresos de los últimos 7 días
-        $diasAtras = Carbon::today()->subDays(6);
-        $ventasAgrupadas = Sale::where('status', 'PAGADO')
-            ->whereDate('created_at', '>=', $diasAtras)
-            ->selectRaw('DATE(created_at) as fecha, SUM(total) as suma')
-            ->groupBy('fecha')
-            ->pluck('suma', 'fecha');
+        // Gráfico - ingresos del periodo seleccionado
+        $ingresosGrafico = collect();
+        if ($this->filtroTiempo === 'hoy') {
+            $ventasAgrupadas = Sale::where('status', 'PAGADO')
+                ->whereDate('created_at', $hoy)
+                ->selectRaw('DATE_FORMAT(created_at, "%H:00") as fecha, SUM(total) as suma')
+                ->groupBy('fecha')
+                ->pluck('suma', 'fecha');
 
-        $ingresosSemana = collect();
-        for ($i = 6; $i >= 0; $i--) {
-            $dia = Carbon::today()->subDays($i);
-            $fechaStr = $dia->toDateString();
-            $total = $ventasAgrupadas->get($fechaStr, 0);
+            for ($i = 0; $i < 24; $i++) {
+                $horaStr = str_pad($i, 2, '0', STR_PAD_LEFT) . ':00';
+                $total = $ventasAgrupadas->get($horaStr, 0);
+                $ingresosGrafico->push([
+                    'dia'   => str_pad($i, 2, '0', STR_PAD_LEFT) . 'h',
+                    'date' => $horaStr,
+                    'total' => (float) $total,
+                ]);
+            }
+        } elseif ($this->filtroTiempo === 'anio') {
+            $diasAtras = Carbon::today()->startOfYear();
+            $ventasAgrupadas = Sale::where('status', 'PAGADO')
+                ->whereDate('created_at', '>=', $diasAtras)
+                ->selectRaw('DATE_FORMAT(created_at, "%Y-%m") as fecha, SUM(total) as suma')
+                ->groupBy('fecha')
+                ->pluck('suma', 'fecha');
+            
+            for ($i = 1; $i <= 12; $i++) {
+                $mes = Carbon::today()->startOfYear()->addMonths($i - 1);
+                $fechaStr = $mes->format('Y-m');
+                $total = $ventasAgrupadas->get($fechaStr, 0);
 
-            $ingresosSemana->push([
-                'dia'   => $dia->translatedFormat('D'),
-                'date' => $dia->format('d/m'),
-                'total' => (float) $total,
-            ]);
+                $ingresosGrafico->push([
+                    'dia'   => $mes->translatedFormat('M'),
+                    'date' => $mes->format('m/Y'),
+                    'total' => (float) $total,
+                ]);
+            }
+        } elseif ($this->filtroTiempo === 'mes') {
+            $diasAtras = Carbon::today()->startOfMonth();
+            $diasIterar = Carbon::today()->daysInMonth;
+            
+            $ventasAgrupadas = Sale::where('status', 'PAGADO')
+                ->whereDate('created_at', '>=', $diasAtras)
+                ->whereDate('created_at', '<=', Carbon::today()->endOfMonth())
+                ->selectRaw('DATE(created_at) as fecha, SUM(total) as suma')
+                ->groupBy('fecha')
+                ->pluck('suma', 'fecha');
+
+            for ($i = 1; $i <= $diasIterar; $i++) {
+                $dia = Carbon::today()->startOfMonth()->addDays($i - 1);
+                $fechaStr = $dia->toDateString();
+                $total = $ventasAgrupadas->get($fechaStr, 0);
+
+                $ingresosGrafico->push([
+                    'dia'   => $dia->format('d/m'),
+                    'date' => $dia->format('d/m'),
+                    'total' => (float) $total,
+                ]);
+            }
+        } else {
+            // Semana (por defecto últimos 7 días)
+            $diasAtras = Carbon::today()->subDays(6);
+            $ventasAgrupadas = Sale::where('status', 'PAGADO')
+                ->whereDate('created_at', '>=', $diasAtras)
+                ->selectRaw('DATE(created_at) as fecha, SUM(total) as suma')
+                ->groupBy('fecha')
+                ->pluck('suma', 'fecha');
+
+            for ($i = 6; $i >= 0; $i--) {
+                $dia = Carbon::today()->subDays($i);
+                $fechaStr = $dia->toDateString();
+                $total = $ventasAgrupadas->get($fechaStr, 0);
+
+                $ingresosGrafico->push([
+                    'dia'   => $dia->translatedFormat('D'),
+                    'date' => $dia->format('d/m'),
+                    'total' => (float) $total,
+                ]);
+            }
         }
 
         // Valor máximo para escalar el gráfico
-        $maxIngreso = $ingresosSemana->max('total') ?: 1;
+        $maxIngreso = $ingresosGrafico->max('total') ?: 1;
 
         // Estadísticas rápidas para el panel inferior
         $totalClientes = Customer::where('is_active', true)->count();
         $totalMascotas = Pet::where('fallecido', false)->count();
 
         // Obtener tipo de cambio USD a PEN
-        // Obtener tipo de cambio USD a PEN con fallback para evitar S/ 0.00
         $tipoCambio = app(\App\Services\CurrencyService::class)->getExchangeRate('PEN', 'USD') ?? 3.75;
 
-        // Próximas citas de hoy (para acceso rápido en dashboard)
+        // Citas (Basado en $filtroTiempoCitas)
+        $fechaInicioCitas = match ($this->filtroTiempoCitas) {
+            'hoy' => Carbon::today(),
+            'semana' => Carbon::today()->startOfWeek(),
+            'mes' => Carbon::today()->startOfMonth(),
+            'anio' => Carbon::today()->startOfYear(),
+            default => Carbon::today(),
+        };
+
+        $fechaFinCitas = match ($this->filtroTiempoCitas) {
+            'hoy' => Carbon::today()->endOfDay(),
+            'semana' => Carbon::today()->endOfWeek(),
+            'mes' => Carbon::today()->endOfMonth(),
+            'anio' => Carbon::today()->endOfYear(),
+            default => Carbon::today()->endOfDay(),
+        };
+
         $citasHoy = Appointment::with(['mascota', 'veterinario'])
-            ->whereDate('fecha_hora', $hoy)
+            ->whereBetween('fecha_hora', [$fechaInicioCitas, $fechaFinCitas])
             ->whereIn('status', ['PENDIENTE', 'CONFIRMADA', 'EN_PROGRESO'])
             ->orderBy('fecha_hora')
-            ->limit(5)
+            ->get(); // Fetch all based on filter
+
+        // Alerta de Citas Próximas (dentro de las próximas 2 horas)
+        $citasProximas = Appointment::with(['mascota', 'veterinario'])
+            ->whereBetween('fecha_hora', [$ahora, $enDosHoras])
+            ->whereIn('status', ['PENDIENTE', 'CONFIRMADA'])
+            ->orderBy('fecha_hora')
             ->get();
 
         return view('livewire.dashboard', [
@@ -104,12 +202,13 @@ class Dashboard extends Component
             'lotesProximosVencer' => $lotesProximosVencer,
             'internados'        => $internados,
             'ultimasVentas'     => $ultimasVentas,
-            'ingresosSemana'    => $ingresosSemana,
+            'ingresosSemana'    => $ingresosGrafico,
             'maxIngreso'        => $maxIngreso,
             'totalClientes'     => $totalClientes,
             'totalMascotas'     => $totalMascotas,
             'tipoCambio'        => $tipoCambio,
             'citasHoy'          => $citasHoy,
+            'citasProximas'     => $citasProximas,
         ]);
     }
 }

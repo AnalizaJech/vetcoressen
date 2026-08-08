@@ -193,7 +193,9 @@
 
             <div class="flex justify-end mt-4 w-full">
                 <flux:modal.close class="w-full sm:w-auto">
-                    <flux:button variant="filled" class="w-full"><span x-text="$store.i18n.t('btn.close') === 'btn.close' ? 'Cerrar' : $store.i18n.t('btn.close')">Cerrar</span></flux:button>
+                    <button type="button" class="btn-primary bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300 border-none px-4 py-2 font-medium flex items-center justify-center gap-2 w-full">
+                        <span x-text="$store.i18n.t('btn.close') === 'btn.close' ? 'Cerrar' : $store.i18n.t('btn.close')">Cerrar</span>
+                    </button>
                 </flux:modal.close>
             </div>
         </div>

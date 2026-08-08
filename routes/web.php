@@ -50,6 +50,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/appointments', CitaIndex::class)->name('citas.index');
         Route::get('/appointments/create', CitaForm::class)->name('citas.crear')->middleware('permission:create_appointments');
         Route::get('/appointments/{id}/edit', CitaForm::class)->name('citas.editar')->middleware('permission:edit_appointments');
+        Route::get('/appointments/{id}/pdf', [\App\Http\Controllers\PdfController::class, 'cita'])->name('citas.pdf');
     });
 
     // Inventario

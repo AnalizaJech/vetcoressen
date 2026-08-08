@@ -161,7 +161,10 @@
                 class="vc-dropdown-item"
                 :class="{ 'active': option.value == $root.dataset.selected }"
                 @click="
+                    @if($attributes->wire('model')->value())
                     $wire.set('{{ $attributes->wire('model')->value() }}', option.value);
+                    $wire.$commit();
+                    @endif
                     let translated = window.Alpine.store('i18n')?.t(option.label) || option.label;
                     selectedLabel = translated;
                     search = translated;

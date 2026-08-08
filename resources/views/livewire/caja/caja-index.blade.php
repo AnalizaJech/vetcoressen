@@ -12,7 +12,20 @@
                 <flux:subheading><span x-text="$store.i18n.t('page.cashierSub')"></span></flux:subheading>
             </div>
         </div>
-        <div class="w-full sm:w-auto mt-2 sm:mt-0">
+        <div class="w-full sm:w-auto mt-2 sm:mt-0 flex flex-col sm:flex-row items-center gap-3">
+            <div class="w-40">
+                <x-vc-dropdown 
+                    wire:model.live="filtroTiempo"
+                    :options="[
+                        ['value' => 'hoy', 'label' => 'Hoy'],
+                        ['value' => 'semana', 'label' => 'Esta Semana'],
+                        ['value' => 'mes', 'label' => 'Este Mes'],
+                        ['value' => 'anio', 'label' => 'Este Año']
+                    ]"
+                    :selected="$filtroTiempo"
+                    placeholder="Filtrar"
+                />
+            </div>
             <a href="{{ route('caja.venta') }}" class="w-full sm:w-auto btn-primary justify-center">
                 <span class="material-symbols-outlined icon-sm">add</span>
                 <span x-text="$store.i18n.t('btn.newSale')"></span>
@@ -25,7 +38,9 @@
         {{-- Total del día --}}
         <div class="kpi-card">
             <div class="flex items-center justify-between mb-3">
-                <span class="text-xs font-medium uppercase tracking-wide" style="color: var(--vc-text-muted);" x-text="$store.i18n.t('kpi.dailyTotal')"></span>
+                <span class="text-xs font-medium uppercase tracking-wide" style="color: var(--vc-text-muted);">
+                    {{ match($filtroTiempo) { 'hoy' => 'Total del Día', 'semana' => 'Total de la Semana', 'mes' => 'Total del Mes', 'anio' => 'Total del Año', default => 'Total' } }}
+                </span>
                 <div class="kpi-icon kpi-icon--emerald">
                     <span class="material-symbols-outlined">payments</span>
                 </div>
@@ -71,7 +86,9 @@
     {{-- ═══ Tabla de ventas del día ═══ --}}
     <div class="mb-6">
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-bold font-display" style="color: var(--vc-text);" x-text="$store.i18n.t('kpi.todaySales')"></h2>
+            <h2 class="text-lg font-bold font-display" style="color: var(--vc-text);">
+                {{ match($filtroTiempo) { 'hoy' => 'Ventas del Día', 'semana' => 'Ventas de la Semana', 'mes' => 'Ventas del Mes', 'anio' => 'Ventas del Año', default => 'Ventas' } }}
+            </h2>
         </div>
 
     <x-vc-table-layout 
@@ -197,7 +214,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div class="space-y-4">
                         <div>
-                            <p class="text-xs font-bold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase mb-1">Cliente</p>
+                            <p class="text-xs font-bold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase mb-1 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">person</span> Cliente</p>
                             <p class="font-medium text-zinc-800 dark:text-zinc-200">
                                 {{ $ventaVer->cliente?->nombre_completo ?? 'Walk-in / Cliente General' }}
                             </p>
@@ -206,23 +223,23 @@
                             @endif
                         </div>
                         <div>
-                            <p class="text-xs font-bold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase mb-1">Método de Pago</p>
+                            <p class="text-xs font-bold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase mb-1 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">payments</span> Método de Pago</p>
                             <p class="font-medium text-zinc-800 dark:text-zinc-200">{{ str_replace('_', ' ', $ventaVer->payment_method) }}</p>
                         </div>
                     </div>
                     <div class="space-y-4">
                         <div>
-                            <p class="text-xs font-bold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase mb-1">Cajero</p>
+                            <p class="text-xs font-bold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase mb-1 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">support_agent</span> Cajero</p>
                             <p class="font-medium text-zinc-800 dark:text-zinc-200">{{ $ventaVer->cajero->name }}</p>
                         </div>
                         <div>
-                            <p class="text-xs font-bold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase mb-1">Comprobante</p>
+                            <p class="text-xs font-bold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase mb-1 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">receipt</span> Comprobante</p>
                             <p class="font-medium text-zinc-800 dark:text-zinc-200">{{ $ventaVer->tipo_comprobante }}</p>
                         </div>
                     </div>
                 </div>
 
-                <h3 class="text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-3">Detalle de Productos</h3>
+                <h3 class="text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-3 flex items-center gap-2"><span class="material-symbols-outlined text-[18px] text-zinc-400">shopping_cart</span> Detalle de Productos</h3>
                 <div class="border border-zinc-200 dark:border-zinc-700 rounded-xl overflow-hidden">
                     <table class="w-full text-left text-sm">
                         <thead class="bg-zinc-50 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400">
@@ -254,7 +271,7 @@
 
                 <div class="mt-6 flex justify-end">
                     <flux:modal.close>
-                        <flux:button variant="ghost">Cerrar</flux:button>
+                        <flux:button variant="ghost" class="flex items-center gap-1">Cerrar</flux:button>
                     </flux:modal.close>
                 </div>
             </div>
