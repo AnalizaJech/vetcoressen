@@ -3,6 +3,7 @@
 namespace App\Livewire\Citas;
 
 use App\Models\Appointment;
+use App\Models\MedicalRecord;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
@@ -70,6 +71,11 @@ class CitaIndex extends Component
         $this->dispatch('calendar-refresh');
     }
 
+    public function updatedVistaActiva($value): void
+    {
+        $this->dispatch('vista-cambiada', $value);
+    }
+
     public function updatedFiltroEstado(): void
     {
         $this->resetPage();
@@ -94,14 +100,41 @@ class CitaIndex extends Component
     {
         $cita = Appointment::findOrFail($id);
         $cita->update(['status' => $nuevoEstado]);
+        
+        $this->citaVer = $cita; // Actualizar contexto del modal si se queda abierto
+        $this->js("Flux.modal('ver-cita').close()"); // Usar API correcta de Flux para cerrar modal
+        $this->dispatch('calendar-refresh');
+        
         session()->flash('mensaje', "Cita actualizada a «{$nuevoEstado}».");
+    }
+
+    // Iniciar atención: cambiar cita a EN_PROGRESO y navegar a crear HC con datos precargados
+    public function iniciarAtencion(int $id)
+    {
+        $cita = Appointment::findOrFail($id);
+
+        // Solo permitir desde estado CONFIRMADA o EN_PROGRESO
+        if (!in_array($cita->status, ['CONFIRMADA', 'EN_PROGRESO'])) {
+            session()->flash('mensaje', 'Solo se puede iniciar atención desde una cita confirmada.');
+            return;
+        }
+
+        // Verificar que no exista ya una historia clínica para esta cita
+        if (MedicalRecord::where('appointment_id', $id)->exists()) {
+            session()->flash('mensaje', 'Esta cita ya tiene una historia clínica vinculada.');
+            return;
+        }
+
+        $cita->update(['status' => 'EN_PROGRESO']);
+
+        return $this->redirect(route('historias.crear') . '?cita=' . $id, navigate: true);
     }
 
     public function eliminar(): void
     {
         if (!$this->citaEliminarId) return;
         
-        $cita = Appointment::findOrFail($this->citaEliminarId)->delete();
+        Appointment::findOrFail($this->citaEliminarId)->delete();
         session()->flash('mensaje', 'Cita eliminada correctamente.');
     }
 
@@ -212,7 +245,7 @@ class CitaIndex extends Component
 
     public function render()
     {
-        $citas = Appointment::with(['cliente', 'mascota', 'veterinario'])
+        $citas = Appointment::with(['cliente', 'mascota', 'veterinario', 'historiaClinica'])
             ->when($this->filtroEstado, fn ($q) => $q->where('status', $this->filtroEstado))
             ->when($this->filtroFecha, fn ($q) => $q->whereDate('fecha_hora', $this->filtroFecha))
             ->when($this->filtroHora, fn ($q) => $q->whereTime('fecha_hora', $this->filtroHora . ':00'))

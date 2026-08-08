@@ -135,6 +135,19 @@ class HistoriaClinicaForm extends Component
                 $this->customer_id = (string) $mascota->customer_id;
             }
         }
+
+        // Precargar datos desde cita de origen (flujo "Iniciar Atención")
+        $citaId = request()->query('cita');
+        if ($citaId && !$id) {
+            $cita = Appointment::with(['cliente', 'mascota'])->find($citaId);
+            if ($cita) {
+                $this->appointment_id = (string) $cita->id;
+                $this->customer_id = (string) $cita->customer_id;
+                $this->pet_id = (string) $cita->pet_id;
+                $this->veterinarian_id = (string) ($cita->veterinarian_id ?? auth()->id());
+                $this->reason = $cita->reason ?? '';
+            }
+        }
     }
 
     // Cascada: al cambiar cliente, resetear mascota y cita
@@ -149,6 +162,18 @@ class HistoriaClinicaForm extends Component
     {
         $this->appointment_id = '';
         $this->updatedWeight();
+    }
+
+    public function seleccionarCita(int $citaId): void
+    {
+        $cita = Appointment::find($citaId);
+        if ($cita) {
+            $this->appointment_id = (string) $cita->id;
+            $this->veterinarian_id = (string) ($cita->veterinarian_id ?? auth()->id());
+            $this->reason = $cita->reason ?? '';
+            // If the user wants date to be the appointment date, we can set it:
+            $this->fecha_consulta = $cita->fecha_hora ? $cita->fecha_hora->format('Y-m-d') : now()->format('Y-m-d');
+        }
     }
 
     public function updatedWeight(): void
@@ -200,13 +225,15 @@ class HistoriaClinicaForm extends Component
         $this->prescripciones = array_values($this->prescripciones);
     }
 
-    // Autocompletar medicamento al seleccionar producto del inventario
-    public function seleccionarProducto(int $index, int $productoId): void
+    public function updatedPrescripciones($name, $value)
     {
-        $producto = Product::find($productoId);
-        if ($producto) {
-            $this->prescripciones[$index]['product_id'] = (string) $productoId;
-            $this->prescripciones[$index]['medicamento'] = $producto->name;
+        // $name will be something like "0.product_id"
+        if (str_ends_with($name, '.product_id') && $value) {
+            $index = explode('.', $name)[0];
+            $producto = Product::find((int) $value);
+            if ($producto) {
+                $this->prescripciones[$index]['medicamento'] = $producto->name;
+            }
         }
     }
 
@@ -281,6 +308,14 @@ class HistoriaClinicaForm extends Component
                     $cliente->email,
                     new \App\Mail\RecetaMail($historia)
                 );
+            }
+        }
+
+        // Si la HC tiene cita vinculada y es nueva, marcar la cita como COMPLETADA
+        if ($this->appointment_id && !$this->historiaId) {
+            $citaVinculada = Appointment::find($this->appointment_id);
+            if ($citaVinculada) {
+                $citaVinculada->update(['status' => 'COMPLETADA']);
             }
         }
 

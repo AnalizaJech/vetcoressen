@@ -239,7 +239,10 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {{-- Columna 1: Info General --}}
                 <div class="space-y-4">
-                    <h3 class="text-sm font-semibold text-zinc-900 dark:text-white uppercase tracking-wider mb-2" x-text="$store.i18n.t('form.basicInfo') || 'Información Básica'"></h3>
+                    <h3 class="text-sm font-semibold text-zinc-900 dark:text-white uppercase tracking-wider mb-2 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[16px]">info</span>
+                        <span x-text="$store.i18n.t('form.basicInfo') || 'Información Básica'">Información Básica</span>
+                    </h3>
                     
                     @if($productoVer->type === 'Medicamento')
                         <div class="flex flex-col">
@@ -278,7 +281,7 @@
 
                 {{-- Columna 2: Stock y Precio --}}
                 <div class="space-y-4">
-                    <h3 class="text-sm font-semibold text-zinc-900 dark:text-white uppercase tracking-wider mb-2">Precios y Stock</h3>
+                    <h3 class="text-sm font-semibold text-zinc-900 dark:text-white uppercase tracking-wider mb-2 flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">payments</span> Precios y Stock</h3>
                     
                     <div>
                         <div class="flex justify-between items-center mb-2">
@@ -309,7 +312,7 @@
                     
                     @if(in_array(trim(strtoupper($productoVer->type)), ['MEDICAMENTO', 'ALIMENTO']))
                     <div class="pt-4 mt-2 border-t border-zinc-200 dark:border-zinc-700">
-                        <span class="text-xs text-zinc-500 dark:text-zinc-400 uppercase font-semibold tracking-wider block mb-2">Lotes Activos</span>
+                        <span class="text-xs text-zinc-500 dark:text-zinc-400 uppercase font-semibold tracking-wider mb-2 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">inventory</span> Lotes Activos</span>
                         <div class="space-y-2">
                             @php
                                 $lotes = $productoVer->productBatches->where('stock_actual', '>', 0)->sortBy('fecha_vencimiento');
@@ -335,7 +338,7 @@
 
             @if($productoVer->notes)
             <div class="pt-4 border-t border-zinc-200 dark:border-zinc-700">
-                <span class="text-xs text-zinc-500 dark:text-zinc-400 uppercase font-semibold tracking-wider block mb-1">Notas / Observaciones</span>
+                <span class="text-xs text-zinc-500 dark:text-zinc-400 uppercase font-semibold tracking-wider mb-1 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">notes</span> Notas / Observaciones</span>
                 <p class="text-sm text-zinc-700 dark:text-zinc-300">
                     {{ $productoVer->notes }}
                 </p>
@@ -344,7 +347,9 @@
 
             <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-zinc-200 dark:border-zinc-700">
                 <flux:modal.close>
-                    <flux:button variant="ghost"><span x-text="$store.i18n.t('btn.close') === 'btn.close' ? 'Cerrar' : $store.i18n.t('btn.close')">Cerrar</span></flux:button>
+                    <button type="button" class="btn-primary bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300 border-none px-4 py-2 font-medium flex items-center gap-2">
+                        <span x-text="$store.i18n.t('btn.close') === 'btn.close' ? 'Cerrar' : $store.i18n.t('btn.close')">Cerrar</span>
+                    </button>
                 </flux:modal.close>
             </div>
         </div>

@@ -56,4 +56,10 @@ class Appointment extends Model
     {
         return $this->belongsTo(User::class, 'veterinarian_id');
     }
+
+    // Relación inversa: una cita puede tener una historia clínica vinculada
+    public function historiaClinica(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(\App\Models\MedicalRecord::class, 'appointment_id');
+    }
 }

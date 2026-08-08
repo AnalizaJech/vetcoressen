@@ -183,10 +183,11 @@
 
             <div class="pt-4 border-t border-zinc-100 dark:border-zinc-700/50 flex justify-end">
                 <flux:modal.close>
-                    <flux:button variant="ghost" icon="close"><span x-text="$store.i18n.t('btn.cancel') || 'Cerrar'">Cerrar</span></flux:button>
+                    <flux:button variant="ghost"><span x-text="$store.i18n.t('btn.cancel') || 'Cerrar'">Cerrar</span></flux:button>
                 </flux:modal.close>
             </div>
         </div>
         @endif
     </flux:modal>
 </div>
+

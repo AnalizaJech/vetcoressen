@@ -4,7 +4,20 @@
     <div x-data="{
         alertasPendientes: {{ $alertasInventario + $lotesProximosVencer->count() }},
         alertaIds: '{{ $productosEnAlerta->pluck("id")->sort()->join(",") }},{{ $lotesProximosVencer->pluck("id")->sort()->join(",") }}',
+        citasProximasCount: {{ $citasProximas->count() }},
+        citasIds: '{{ $citasProximas->pluck("id")->sort()->join(",") }}',
         mostrarAlerta() {
+            if (this.citasProximasCount > 0) {
+                const vistasCitas = sessionStorage.getItem('alerta_citas_ids') || '';
+                if (vistasCitas !== this.citasIds) {
+                    setTimeout(() => {
+                        Flux.modal('alerta-citas-proximas').show();
+                        sessionStorage.setItem('alerta_citas_ids', this.citasIds);
+                    }, 250);
+                    return; // Solo muestra una alerta al cargar
+                }
+            }
+
             if (this.alertasPendientes > 0) {
                 const vistas = sessionStorage.getItem('alerta_stock_ids') || '';
                 if (vistas !== this.alertaIds) {
@@ -51,7 +64,9 @@
         {{-- Ingresos del día --}}
         <div class="kpi-card kpi-card--emerald animate-fade-in">
             <div class="flex items-center justify-between mb-3">
-                <span class="text-xs font-medium uppercase tracking-wide" style="color: var(--vc-text-muted);" x-text="$store.i18n.t('kpi.todayRevenue')"></span>
+                <span class="text-xs font-medium uppercase tracking-wide" style="color: var(--vc-text-muted);">
+                    {{ match($filtroTiempo) { 'hoy' => 'Ingresos Hoy', 'semana' => 'Ingresos Última Semana', 'mes' => 'Ingresos Este Mes', 'anio' => 'Ingresos Este Año', default => 'Ingresos' } }}
+                </span>
                 <div class="kpi-icon kpi-icon--emerald">
                     <span class="material-symbols-outlined">payments</span>
                 </div>
@@ -104,31 +119,42 @@
 
         {{-- Gráfico de ingresos semanales --}}
         <div class="vc-panel animate-slide-up">
-            <div class="flex items-center justify-between mb-5">
-                <h2 class="text-lg font-extrabold font-display text-zinc-900 dark:text-zinc-100" x-text="$store.i18n.t('kpi.weeklyRevenue')"></h2>
-                <span class="badge badge-emerald">
-                    <span class="material-symbols-outlined text-sm">date_range</span>
-                    <span x-text="$store.i18n.t('kpi.last7days')"></span>
-                </span>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+                <h2 class="text-lg font-extrabold font-display text-zinc-900 dark:text-zinc-100" x-text="$store.i18n.t('kpi.revenueChart') || 'Ingresos'"></h2>
+                <div class="w-32">
+                    <x-vc-dropdown 
+                        wire:model.live="filtroTiempo"
+                        :options="[
+                            ['value' => 'hoy', 'label' => 'Hoy'],
+                            ['value' => 'semana', 'label' => 'Última Semana'],
+                            ['value' => 'mes', 'label' => 'Este Mes'],
+                            ['value' => 'anio', 'label' => 'Este Año']
+                        ]"
+                        :selected="$filtroTiempo"
+                        placeholder="Filtrar"
+                    />
+                </div>
             </div>
 
-            <div class="flex items-end gap-3" style="height: 180px;">
-                @foreach($ingresosSemana as $dia)
-                    @php
-                        $porcentaje = $maxIngreso > 0 ? ($dia['total'] / $maxIngreso) * 100 : 0;
-                        $alturaMin = $dia['total'] > 0 ? max($porcentaje, 8) : 4;
-                    @endphp
-                    <div class="flex-1 flex flex-col items-center gap-1.5">
-                        <span class="text-xs font-medium hidden sm:block" style="color: var(--vc-text-muted);">
-                            {{ $dia['total'] > 0 ? 'S/' . number_format($dia['total'], 0) : '-' }}
-                        </span>
-                        <div
-                            class="w-full rounded-lg transition-all duration-500"
-                            style="height: {{ $alturaMin }}%; min-height: 4px; background: {{ $dia['total'] > 0 ? 'linear-gradient(to top, var(--vc-emerald-dark), var(--vc-emerald-light))' : 'rgba(255,255,255,0.05)' }}; box-shadow: {{ $dia['total'] > 0 ? 'var(--vc-shadow-glow)' : 'none' }};"
-                        ></div>
-                        <span class="text-xs font-medium" style="color: var(--vc-text-muted);">{{ $dia['dia'] }}</span>
-                    </div>
-                @endforeach
+            <div class="w-full overflow-x-auto custom-scrollbar">
+                <div class="flex items-end gap-3 min-w-max pb-2" style="height: 180px;">
+                    @foreach($ingresosSemana as $dia)
+                        @php
+                            $porcentaje = $maxIngreso > 0 ? ($dia['total'] / $maxIngreso) * 100 : 0;
+                            $alturaMin = $dia['total'] > 0 ? max($porcentaje, 8) : 4;
+                        @endphp
+                        <div class="flex-1 flex flex-col items-center gap-1.5" style="min-width: 40px;">
+                            <span class="text-xs font-medium" style="color: var(--vc-text-muted);">
+                                {{ $dia['total'] > 0 ? 'S/' . number_format($dia['total'], 0) : '-' }}
+                            </span>
+                            <div
+                                class="w-full rounded-lg transition-all duration-500"
+                                style="height: {{ $alturaMin }}%; min-height: 4px; background: {{ $dia['total'] > 0 ? 'linear-gradient(to top, var(--vc-emerald-dark), var(--vc-emerald-light))' : 'rgba(255,255,255,0.05)' }}; box-shadow: {{ $dia['total'] > 0 ? 'var(--vc-shadow-glow)' : 'none' }}; min-width: 24px;"
+                            ></div>
+                            <span class="text-[10px] font-medium" style="color: var(--vc-text-muted);">{{ $dia['dia'] }}</span>
+                        </div>
+                    @endforeach
+                </div>
             </div>
         </div>
 
@@ -136,10 +162,10 @@
         <div class="vc-panel animate-slide-up" style="animation-delay: 0.1s;">
             <div class="flex items-center justify-between mb-5">
                 <h2 class="text-lg font-extrabold font-display text-zinc-900 dark:text-zinc-100" x-text="$store.i18n.t('kpi.recentSales')"></h2>
-                <span class="badge badge-emerald">
-                    <span class="material-symbols-outlined text-sm">receipt_long</span>
-                    <span x-text="$store.i18n.t('kpi.recent')"></span>
-                </span>
+                <div class="flex gap-3">
+                    <a href="{{ route('caja.index') }}" class="text-xs font-medium flex items-center gap-1" style="color: var(--vc-text-muted);"><span>Ver todas</span></a>
+                    <a href="{{ route('reportes.index') }}" class="text-xs font-medium flex items-center gap-1" style="color: var(--vc-emerald-light);"><span>Ver Reportes</span> <span class="material-symbols-outlined text-[14px]">arrow_forward</span></a>
+                </div>
             </div>
 
             @if($ultimasVentas->isEmpty())
@@ -151,14 +177,13 @@
                     <p class="vc-empty-text" x-text="$store.i18n.t('empty.noSalesSub')"></p>
                 </div>
             @else
-                <div class="table-container">
+                <div class="table-container max-h-[300px] overflow-y-auto pr-2 scrollbar-thin">
                     <table class="vc-table">
                         <thead>
                             <tr>
                                 <th x-text="$store.i18n.t('table.client')"></th>
-                                <th x-text="$store.i18n.t('table.total')"></th>
-                                <th x-text="$store.i18n.t('table.status')"></th>
-                                <th class="hidden sm:table-cell" x-text="$store.i18n.t('table.date')"></th>
+                                <th class="text-right" x-text="$store.i18n.t('table.total')"></th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -166,11 +191,12 @@
                                 <tr>
                                     <td class="font-medium" style="color: var(--vc-text);">
                                         {{ $venta->cliente?->nombre_completo ?? 'Cliente general' }}
+                                        <div class="text-[10px]" style="color: var(--vc-text-muted);">{{ $venta->created_at->format('d/m/Y h:i A') }}</div>
                                     </td>
-                                    <td class="font-semibold" style="color: var(--vc-emerald-light);">
+                                    <td class="font-semibold text-right" style="color: var(--vc-emerald-light);">
                                         S/ {{ number_format($venta->total, 2) }}
                                     </td>
-                                    <td>
+                                    <td class="text-right">
                                         @php
                                             $estadoClase = match($venta->status) {
                                                 'PAGADO' => 'badge-emerald',
@@ -179,10 +205,7 @@
                                                 default => 'badge-blue',
                                             };
                                         @endphp
-                                        <span class="badge {{ $estadoClase }}" x-text="$store.i18n.t('status.{{ $venta->status }}')">{{ $venta->status }}</span>
-                                    </td>
-                                    <td class="text-xs hidden sm:table-cell" style="color: var(--vc-text-muted);">
-                                        {{ $venta->created_at->format('d/m/Y h:i A') }}
+                                        <span class="badge {{ $estadoClase }} text-[10px]" x-text="$store.i18n.t('status.{{ $venta->status }}')">{{ $venta->status }}</span>
                                     </td>
                                 </tr>
                             @endforeach
@@ -193,11 +216,26 @@
         </div>
     </div>
 
-    {{-- ═══ Próximas citas de hoy ═══ --}}
+    {{-- ═══ Próximas citas ═══ --}}
     <div class="vc-panel animate-slide-up mb-8" style="animation-delay: 0.2s;">
-        <div class="flex items-center justify-between mb-5">
-            <h2 class="text-lg font-extrabold font-display text-zinc-900 dark:text-zinc-100" x-text="$store.i18n.t('kpi.forToday') || 'Próximas citas de hoy'"></h2>
-            <a href="{{ route('citas.index') }}" class="text-xs font-medium flex items-center gap-1" style="color: var(--vc-emerald-light);"><span x-text="$store.i18n.t('btn.view') || 'Ver todas'"></span> <span class="material-symbols-outlined text-[14px]">arrow_forward</span></a>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+            <h2 class="text-lg font-extrabold font-display text-zinc-900 dark:text-zinc-100" x-text="$store.i18n.t('kpi.appointments') || 'Citas Programadas'"></h2>
+            <div class="flex items-center gap-3">
+                <div class="w-32">
+                    <x-vc-dropdown 
+                        wire:model.live="filtroTiempoCitas"
+                        :options="[
+                            ['value' => 'hoy', 'label' => 'Hoy'],
+                            ['value' => 'semana', 'label' => 'Esta Semana'],
+                            ['value' => 'mes', 'label' => 'Este Mes'],
+                            ['value' => 'anio', 'label' => 'Este Año']
+                        ]"
+                        :selected="$filtroTiempoCitas"
+                        placeholder="Filtrar"
+                    />
+                </div>
+                <a href="{{ route('citas.index') }}" class="text-xs font-medium flex items-center gap-1" style="color: var(--vc-emerald-light);"><span x-text="$store.i18n.t('btn.view') || 'Ver todas'"></span> <span class="material-symbols-outlined text-[14px]">arrow_forward</span></a>
+            </div>
         </div>
 
         @if($citasHoy->isEmpty())
@@ -205,20 +243,20 @@
                 <div class="vc-empty-icon">
                     <span class="material-symbols-outlined">event_available</span>
                 </div>
-                <p class="vc-empty-title" x-text="$store.i18n.t('empty.noAppointments') || 'Sin citas para hoy'"></p>
-                <p class="vc-empty-text" x-text="$store.i18n.t('empty.noAppointmentsSub') || 'La agenda del día aparecerá aquí'"></p>
+                <p class="vc-empty-title" x-text="$store.i18n.t('empty.noAppointments') || 'Sin citas'"></p>
+                <p class="vc-empty-text" x-text="$store.i18n.t('empty.noAppointmentsSub') || 'No hay citas para el periodo seleccionado'"></p>
             </div>
         @else
-            <div class="space-y-2">
+            <div class="space-y-2 max-h-72 overflow-y-auto custom-scrollbar pr-2">
                 @foreach($citasHoy as $citaHoy)
                     <div class="flex items-center justify-between p-3 rounded-xl transition-colors" style="background: var(--vc-glass-bg); border: 1px solid var(--vc-border);">
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background-color: var(--color-vc-amber-light, rgba(245, 158, 11, 0.1)); color: var(--color-vc-amber);">
+                            <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style="background-color: var(--color-vc-amber-light, rgba(245, 158, 11, 0.1)); color: var(--color-vc-amber);">
                                 <span class="material-symbols-outlined">schedule</span>
                             </div>
                             <div>
-                                <p class="text-sm font-semibold" style="color: var(--vc-text);">{{ $citaHoy->fecha_hora->format('H:i') }} - {{ $citaHoy->mascota?->name ?? '-' }}</p>
-                                <p class="text-xs" style="color: var(--vc-text-muted);">{{ $citaHoy->veterinario?->name ?? '-' }} · <span x-text="{{ $citaHoy->reason ? '\''.$citaHoy->reason.'\'' : '$store.i18n.t(\'table.noReason\')' }}"></span></p>
+                                <p class="text-sm font-semibold" style="color: var(--vc-text);">{{ $citaHoy->fecha_hora->format('d/m H:i') }} - {{ $citaHoy->mascota?->name ?? '-' }}</p>
+                                <p class="text-xs line-clamp-1" style="color: var(--vc-text-muted);">{{ $citaHoy->veterinario?->name ?? '-' }} · <span x-text="{{ $citaHoy->reason ? '\''.$citaHoy->reason.'\'' : '$store.i18n.t(\'table.noReason\')' }}"></span></p>
                             </div>
                         </div>
                         @php
@@ -229,7 +267,7 @@
                                 default => 'badge-zinc',
                             };
                         @endphp
-                        <span class="badge {{ $estadoClaseCita }}" x-text="$store.i18n.t('status.{{ $citaHoy->status }}') || '{{ $citaHoy->status }}'"></span>
+                        <span class="badge {{ $estadoClaseCita }} shrink-0" x-text="$store.i18n.t('status.{{ $citaHoy->status }}') || '{{ $citaHoy->status }}'"></span>
                     </div>
                 @endforeach
             </div>
@@ -403,18 +441,70 @@
                 <!-- Botones de Acción -->
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mt-4">
                     <flux:modal.close class="w-full sm:w-auto">
-                        <button type="button" class="w-full sm:w-auto px-4 py-2 text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl font-medium transition-colors">
-                            <span x-text="$store.i18n.t('btn.understood') || 'Cerrar'"></span>
-                        </button>
+                        <flux:button variant="ghost" class="w-full sm:w-auto">
+                            <span x-text="$store.i18n.t('btn.understood') || 'Entendido'"></span>
+                        </flux:button>
                     </flux:modal.close>
                     <a href="{{ route('inventario.index') }}" class="w-full sm:w-auto">
-                        <button type="button" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-white rounded-xl shadow-sm hover:shadow transition-all px-4 py-2 font-medium flex items-center justify-center gap-2">
+                        <button type="button" class="btn-primary btn-primary--amber w-full sm:w-auto justify-center px-4 py-2 font-medium flex items-center gap-2">
                             <span class="material-symbols-outlined icon-sm">archive</span>
-                            <span x-text="$store.i18n.t('btn.replenishStock') || 'Ir a Inventario'"></span>
+                            <span x-text="$store.i18n.t('btn.replenishStock') || 'Reponer Stock'"></span>
                         </button>
                     </a>
                 </div>
             </div>
+    </flux:modal>
+    @endif
+
+    @if($citasProximas->count() > 0)
+    <flux:modal name="alerta-citas-proximas" class="min-w-[22rem] sm:min-w-[24rem]">
+        <div class="text-center pb-2">
+            <div class="mx-auto w-16 h-16 bg-blue-100 dark:bg-blue-500/20 text-blue-500 rounded-full flex items-center justify-center mb-4 shadow-sm border border-blue-200 dark:border-blue-500/30">
+                <span class="material-symbols-outlined text-3xl">event_upcoming</span>
+            </div>
+            
+            <h2 class="text-xl font-extrabold font-display text-zinc-900 dark:text-zinc-100 mb-2">
+                Citas Próximas
+            </h2>
+            
+            <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">
+                Tienes {{ $citasProximas->count() }} cita(s) programada(s) para las próximas 2 horas.
+            </p>
+
+            <div class="bg-blue-50/50 dark:bg-blue-500/10 rounded-xl p-4 mb-6 border border-blue-100 dark:border-blue-500/20 text-left">
+                <ul class="space-y-3">
+                    @foreach($citasProximas as $citaProxima)
+                    <li class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-blue-500 text-xl">schedule</span>
+                            <div>
+                                <p class="text-sm font-semibold text-zinc-800 dark:text-zinc-200 line-clamp-1" title="{{ $citaProxima->mascota?->name }}">{{ Str::limit($citaProxima->mascota?->name ?? 'Mascota', 30) }}</p>
+                                <p class="text-xs text-zinc-500">{{ $citaProxima->veterinario?->name }}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="badge badge-blue font-bold text-xs flex items-center gap-1 justify-end">{{ $citaProxima->fecha_hora->format('H:i') }}</span>
+                        </div>
+                    </li>
+                    @endforeach
+                </ul>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mt-4">
+                <flux:modal.close class="w-full sm:w-auto">
+                    <button type="button" class="w-full sm:w-auto px-4 py-2 text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl font-medium transition-colors">
+                        <span>Cerrar</span>
+                    </button>
+                </flux:modal.close>
+                <a href="{{ route('citas.index') }}" class="w-full sm:w-auto">
+                    <button type="button" class="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white rounded-xl shadow-sm hover:shadow transition-all px-4 py-2 font-medium flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined icon-sm">calendar_month</span>
+                        <span>Ir a Citas</span>
+                    </button>
+                </a>
+            </div>
+        </div>
     </flux:modal>
     @endif
     </div>

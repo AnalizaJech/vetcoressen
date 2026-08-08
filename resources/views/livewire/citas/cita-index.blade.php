@@ -150,17 +150,38 @@
     </div>
 
     {{-- ════ VISTA CALENDARIO ════ --}}
-    @if($vistaActiva === 'calendario')
+    <div x-show="$wire.vistaActiva === 'calendario'" class="animate-fade-in" x-cloak>
+        <style>
+            /* Ocultar texto de horas en la primera columna según petición del usuario */
+            .fc-theme-standard .fc-timegrid-axis-cushion {
+                display: none !important;
+            }
+            .fc-theme-standard .fc-timegrid-axis {
+                width: 20px !important;
+            }
+            .fc-timegrid-slot-label-cushion {
+                display: none !important;
+            }
+            /* Permitir que el contenido del evento se ajuste sin romper el layout absoluto */
+            .fc-v-event .fc-event-main-frame {
+                min-height: 100%;
+            }
+            .fc-timegrid-event .fc-event-main {
+                padding: 4px;
+                overflow-y: auto;
+            }
+        </style>
         <div 
             wire:ignore 
             x-data="vcCalendar()" 
-            x-init="initCalendar()"
+            x-init="initCalendar($refs.calendarEl)"
             @calendar-refresh.window="refreshCalendar()"
-            class="vc-panel p-4 md:p-6 animate-fade-in"
+            @vista-cambiada.window="if ($event.detail === 'calendario') setTimeout(() => updateSize(), 150)"
+            class="vc-panel p-4 md:p-6"
         >
-            <div id="calendar" class="min-h-[600px]"></div>
+            <div x-ref="calendarEl" class="min-h-[600px]"></div>
         </div>
-    @endif
+    </div>
 
     {{-- ═══ VISTA LISTA (CARDS) ═══ --}}
     @if($vistaActiva === 'lista')
@@ -248,24 +269,10 @@
 
                         {{-- Acciones --}}
                         <div class="pt-4 border-t border-zinc-100 dark:border-zinc-800 flex justify-end gap-1.5 items-center">
-                            <button type="button" class="vc-btn-action vc-btn-view" data-vc-tooltip="Ver" x-bind:data-vc-tooltip="$store.i18n.t('btn.view') || 'Ver'" 
+                            <button type="button" class="btn-primary w-full sm:w-auto justify-center" 
                                 @click="$wire.ver({{ $cita->id }}).then(() => Flux.modal('ver-cita').show())">
-                                <span class="material-symbols-outlined text-lg">visibility</span>
-                            </button>
-                            <a href="{{ route('citas.editar', $cita->id) }}" class="vc-btn-action vc-btn-edit tooltip" data-tip="Editar" x-bind:data-vc-tooltip="$store.i18n.t('btn.edit') || 'Editar'">
-                                <span class="material-symbols-outlined text-lg">edit</span>
-                            </a>
-                            <flux:dropdown>
-                                <button type="button" class="vc-btn-action bg-zinc-50 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-700 dark:bg-zinc-800/50 dark:text-zinc-400 dark:hover:bg-zinc-700 dark:hover:text-zinc-200 tooltip" data-tip="Más opciones" x-bind:data-vc-tooltip="$store.i18n.t('btn.more') || 'Más opciones'">
-                                    <span class="material-symbols-outlined text-lg">more_horiz</span>
-                                </button>
-                                <flux:menu>
-                                    <flux:menu.item wire:click="cambiarEstado({{ $cita->id }}, 'CONFIRMADA')" icon="check-circle">Confirmar</flux:menu.item>
-                                    <flux:menu.item wire:click="cambiarEstado({{ $cita->id }}, 'EN_PROGRESO')" icon="play-circle">Iniciar</flux:menu.item>
-                                </flux:menu>
-                            </flux:dropdown>
-                            <button type="button" @click="$wire.citaEliminarId = {{ $cita->id }}; Flux.modal('confirmar-eliminar').show()" class="vc-btn-action vc-btn-delete" x-bind:data-vc-tooltip="$store.i18n.t('btn.delete') || 'Eliminar'">
-                                <span class="material-symbols-outlined text-lg">delete</span>
+                                <span class="material-symbols-outlined text-sm">visibility</span>
+                                <span x-text="$store.i18n.t('btn.view') || 'Ver Detalles'"></span>
                             </button>
                         </div>
                     </div>
@@ -506,18 +513,42 @@
             </div>
             @endif
             
-            <div class="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-6 border-t border-zinc-200 dark:border-zinc-700">
-                <flux:modal.close class="w-full sm:w-auto">
-                    <flux:button variant="ghost" class="w-full">Cerrar</flux:button>
-                </flux:modal.close>
-                <button type="button" @click="$wire.citaEliminarId = {{ $citaVer->id }}; Flux.modal('ver-cita').close(); Flux.modal('confirmar-eliminar').show()" class="btn-danger w-full sm:w-auto justify-center">
-                    <span class="material-symbols-outlined icon-sm">delete</span>
-                    Eliminar
-                </button>
-                <a href="{{ route('citas.editar', $citaVer->id) }}" class="btn-primary w-full sm:w-auto justify-center flex items-center gap-2">
-                    <span class="material-symbols-outlined icon-sm">edit</span>
-                    Editar Cita
-                </a>
+            <div class="flex flex-col sm:flex-row flex-wrap justify-end gap-3 pt-6 border-t border-zinc-200 dark:border-zinc-700">
+                <div class="flex-1 flex gap-2">
+                    <a href="{{ route('citas.pdf', $citaVer->id) }}" target="_blank" class="w-full sm:w-auto px-4 py-2 bg-zinc-600 hover:bg-zinc-700 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center gap-2 transition-all">
+                        <span class="material-symbols-outlined icon-sm">picture_as_pdf</span>
+                        Descargar PDF
+                    </a>
+                </div>
+                <div class="flex flex-col-reverse sm:flex-row gap-2">
+                    @if($citaVer->status === 'PENDIENTE')
+                        <button type="button" wire:click="cambiarEstado({{ $citaVer->id }}, 'CONFIRMADA')" class="w-full sm:w-auto px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center gap-2 transition-all">
+                            <span class="material-symbols-outlined icon-sm">check_circle</span>
+                            Confirmar
+                        </button>
+                    @endif
+
+                    @if($citaVer->historiaClinica)
+                        <a href="{{ route('historias.ver', $citaVer->historiaClinica->id) }}" class="w-full sm:w-auto px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center gap-2 transition-all">
+                            <span class="material-symbols-outlined icon-sm">description</span>
+                            Ver HC
+                        </a>
+                    @elseif(in_array($citaVer->status, ['CONFIRMADA', 'EN_PROGRESO']) && $citaVer->fecha_hora?->isToday())
+                        <button type="button" wire:click="iniciarAtencion({{ $citaVer->id }})" class="w-full sm:w-auto px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center gap-2 transition-all">
+                            <span class="material-symbols-outlined icon-sm">clinical_notes</span>
+                            Iniciar Atención
+                        </button>
+                    @endif
+
+                    <a href="{{ route('citas.editar', $citaVer->id) }}" class="w-full sm:w-auto px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center gap-2 transition-all">
+                        <span class="material-symbols-outlined icon-sm">edit</span>
+                        Editar
+                    </a>
+                    
+                    <button type="button" @click="$wire.citaEliminarId = {{ $citaVer->id }}; Flux.modal('ver-cita').close(); Flux.modal('confirmar-eliminar').show()" class="btn-danger w-full sm:w-auto justify-center">
+                        <span class="material-symbols-outlined icon-sm">delete</span>
+                    </button>
+                </div>
             </div>
         </div>
         @endif
@@ -528,11 +559,11 @@
 @script
 <script>
     Alpine.data('vcCalendar', () => ({
-        initCalendar() {
+        initCalendar(el) {
             let retries = 0;
             const tryInit = () => {
                 if (window.initVetCalendar) {
-                    window.initVetCalendar(document.getElementById('calendar'), $wire);
+                    window.initVetCalendar(el, $wire);
                 } else if (retries < 50) {
                     retries++;
                     setTimeout(tryInit, 200);
@@ -543,6 +574,11 @@
         refreshCalendar() {
             if (window._vcActiveCalendar) {
                 window._vcActiveCalendar.refetchEvents();
+            }
+        },
+        updateSize() {
+            if (window._vcActiveCalendar) {
+                window._vcActiveCalendar.updateSize();
             }
         }
     }));
@@ -821,14 +857,20 @@ html.dark .fc .fc-list-day-cushion {
 .fc-theme-standard .fc-timegrid-axis-cushion {
     max-width: none !important;
     padding: 0 8px !important;
+    font-size: 11px !important;
+    color: var(--vc-text-muted) !important;
 }
 .fc-timegrid-slot-label-cushion {
     padding-right: 8px !important;
     white-space: nowrap !important;
+    font-size: 11px !important;
+    color: var(--vc-text-muted) !important;
 }
 /* Forzar un ancho mínimo para la columna de horas */
 .fc-theme-standard .fc-timegrid-axis-frame,
 .fc-timegrid-slot-label-frame {
-    min-width: 85px !important;
+    min-width: 60px !important;
+    width: 60px !important;
+    max-width: 60px !important;
 }
 </style>
