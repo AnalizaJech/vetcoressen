@@ -43,6 +43,23 @@ class HistoriaClinicaForm extends Component
     public string $proxima_cita_recomendada = '';
     public string $notas_aclaratorias = '';
 
+    // Examen físico general
+    public string $examen_mucosas = '';
+    public string $examen_linfonodos = '';
+    public string $condicion_corporal = '';
+    public string $nivel_dolor = '';
+    public string $nivel_hidratacion = '';
+
+    // Examen por sistemas
+    public string $examen_piel_pelaje = '';
+    public string $examen_ojos_oidos = '';
+    public string $examen_cardiovascular = '';
+    public string $examen_respiratorio = '';
+    public string $examen_digestivo = '';
+    public string $examen_musculoesqueletico = '';
+    public string $examen_neurologico = '';
+    public string $examen_urinario = '';
+
     public string $alerta_peso = '';
     public string $alerta_temp = '';
 
@@ -66,6 +83,20 @@ class HistoriaClinicaForm extends Component
             'diagnostico_presuntivo'  => 'nullable|string|max:1000',
             'tratamiento_indicaciones' => 'nullable|string|max:2000',
             'proxima_cita_recomendada' => 'nullable|date|after:today',
+            // Examen físico
+            'examen_mucosas'          => 'nullable|string|max:50',
+            'examen_linfonodos'       => 'nullable|string|max:50',
+            'condicion_corporal'      => 'nullable|integer|min:1|max:9',
+            'nivel_dolor'             => 'nullable|integer|min:0|max:10',
+            'nivel_hidratacion'       => 'nullable|string|max:30',
+            'examen_piel_pelaje'      => 'nullable|string|max:1000',
+            'examen_ojos_oidos'       => 'nullable|string|max:1000',
+            'examen_cardiovascular'   => 'nullable|string|max:1000',
+            'examen_respiratorio'     => 'nullable|string|max:1000',
+            'examen_digestivo'        => 'nullable|string|max:1000',
+            'examen_musculoesqueletico' => 'nullable|string|max:1000',
+            'examen_neurologico'      => 'nullable|string|max:1000',
+            'examen_urinario'         => 'nullable|string|max:1000',
             // Validación de prescripciones
             'prescripciones.*.medicamento'   => 'required|string|max:200',
             'prescripciones.*.dosis'         => 'required|string|max:100',
@@ -115,6 +146,21 @@ class HistoriaClinicaForm extends Component
                 ? $historia->proxima_cita_recomendada->format('Y-m-d') : '';
             $this->notas_aclaratorias = $historia->notas_aclaratorias ?? '';
 
+            // Cargar examen físico
+            $this->examen_mucosas = $historia->examen_mucosas ?? '';
+            $this->examen_linfonodos = $historia->examen_linfonodos ?? '';
+            $this->condicion_corporal = (string) ($historia->condicion_corporal ?? '');
+            $this->nivel_dolor = (string) ($historia->nivel_dolor ?? '');
+            $this->nivel_hidratacion = $historia->nivel_hidratacion ?? '';
+            $this->examen_piel_pelaje = $historia->examen_piel_pelaje ?? '';
+            $this->examen_ojos_oidos = $historia->examen_ojos_oidos ?? '';
+            $this->examen_cardiovascular = $historia->examen_cardiovascular ?? '';
+            $this->examen_respiratorio = $historia->examen_respiratorio ?? '';
+            $this->examen_digestivo = $historia->examen_digestivo ?? '';
+            $this->examen_musculoesqueletico = $historia->examen_musculoesqueletico ?? '';
+            $this->examen_neurologico = $historia->examen_neurologico ?? '';
+            $this->examen_urinario = $historia->examen_urinario ?? '';
+
             // Cargar prescripciones existentes
             foreach ($historia->prescripciones as $rx) {
                 $this->prescripciones[] = [
@@ -146,6 +192,7 @@ class HistoriaClinicaForm extends Component
                 $this->pet_id = (string) $cita->pet_id;
                 $this->veterinarian_id = (string) ($cita->veterinarian_id ?? auth()->id());
                 $this->reason = $cita->reason ?? '';
+                $this->fecha_consulta = $cita->fecha_hora ? $cita->fecha_hora->format('Y-m-d') : now()->format('Y-m-d');
             }
         }
     }
@@ -253,6 +300,21 @@ class HistoriaClinicaForm extends Component
             'temperature'               => $this->temperatura,
             'heart_rate'       => $this->frecuencia_cardiaca ?: null,
             'respiratory_rate'   => $this->frecuencia_respiratoria ?: null,
+            // Examen físico
+            'examen_mucosas'             => $this->examen_mucosas ?: null,
+            'examen_linfonodos'          => $this->examen_linfonodos ?: null,
+            'condicion_corporal'         => $this->condicion_corporal ?: null,
+            'nivel_dolor'                => $this->nivel_dolor !== '' ? (int) $this->nivel_dolor : null,
+            'nivel_hidratacion'          => $this->nivel_hidratacion ?: null,
+            'examen_piel_pelaje'         => $this->examen_piel_pelaje ?: null,
+            'examen_ojos_oidos'          => $this->examen_ojos_oidos ?: null,
+            'examen_cardiovascular'      => $this->examen_cardiovascular ?: null,
+            'examen_respiratorio'        => $this->examen_respiratorio ?: null,
+            'examen_digestivo'           => $this->examen_digestivo ?: null,
+            'examen_musculoesqueletico'  => $this->examen_musculoesqueletico ?: null,
+            'examen_neurologico'         => $this->examen_neurologico ?: null,
+            'examen_urinario'            => $this->examen_urinario ?: null,
+            // Diagnóstico
             'anamnesis'                 => $this->anamnesis ?: null,
             'diagnosis_presuntivo'    => $this->diagnostico_presuntivo ?: null,
             'treatment_indicaciones'  => $this->tratamiento_indicaciones ?: null,
@@ -344,8 +406,8 @@ class HistoriaClinicaForm extends Component
         // Veterinarios (usuarios con rol veterinario)
         $veterinarios = User::role('veterinario')->orderBy('name')->get();
 
-        // Productos tipo medicamento para prescripciones
-        $productos = Product::where('type', 'producto')
+        // Productos tipo medicamento o producto para prescripciones
+        $productos = Product::whereIn('type', ['producto', 'Producto', 'Medicamento', 'medicamento'])
             ->where('is_active', true)
             ->orderBy('name')
             ->get();

@@ -43,6 +43,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/pets', MascotaIndex::class)->name('mascotas.index');
         Route::get('/pets/create', MascotaForm::class)->name('mascotas.crear')->middleware('permission:create_pets');
         Route::get('/pets/{id}/edit', MascotaForm::class)->name('mascotas.editar')->middleware('permission:edit_pets');
+        Route::get('/pets/{id}/history/pdf', [\App\Http\Controllers\PdfController::class, 'historialMascota'])->name('mascotas.historial.pdf');
     });
 
     // Citas
@@ -67,6 +68,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/medical-records/create', HistoriaClinicaForm::class)->name('historias.crear')->middleware('permission:create_records');
         Route::get('/medical-records/{id}/edit', HistoriaClinicaForm::class)->name('historias.editar')->middleware('permission:edit_records');
         Route::get('/medical-records/{id}/view', \App\Livewire\HistoriasClinicas\HistoriaClinicaView::class)->name('historias.ver');
+        Route::get('/medical-records/{id}/pdf', [\App\Http\Controllers\PdfController::class, 'historia'])->name('historias.pdf');
     });
 
     // Caja / Punto de Venta

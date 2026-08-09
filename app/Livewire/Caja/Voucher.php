@@ -11,7 +11,7 @@ class Voucher extends Component
 
     public function mount($id)
     {
-        $this->venta = Sale::with(['cliente', 'detalles.producto'])->findOrFail($id);
+        $this->venta = Sale::with(['cliente', 'detalles.producto', 'clinica', 'cajero'])->findOrFail($id);
     }
 
     public function render()

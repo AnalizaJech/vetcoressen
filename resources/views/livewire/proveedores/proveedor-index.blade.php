@@ -23,7 +23,6 @@
             icon="local_shipping"
             emptyTitle="Sin proveedores"
             emptyText="No hay proveedores que coincidan con la búsqueda."
-            :searchable="true"
             searchModel="busqueda"
             searchPlaceholder="Buscar por empresa, RUC, contacto..."
         >
@@ -78,14 +77,14 @@
                         {{-- Acciones --}}
                         <div class="pt-4 border-t border-zinc-100 dark:border-zinc-800 flex justify-end gap-1.5 items-center">
                             <button type="button" class="vc-btn-action vc-btn-view" data-vc-tooltip="Ver" x-bind:data-vc-tooltip="$store.i18n.t('btn.view') || 'Ver'" 
-                                @click="$wire.ver({{ $proveedor->id }}); Flux.modal('ver-proveedor').show()">
+                                wire:click="ver({{ $proveedor->id }})">
                                 <span class="material-symbols-outlined text-lg">visibility</span>
                             </button>
                             <a href="{{ route('proveedores.editar', $proveedor) }}" class="vc-btn-action vc-btn-edit" data-vc-tooltip="Editar" x-bind:data-vc-tooltip="$store.i18n.t('btn.edit') || 'Editar'">
                                 <span class="material-symbols-outlined text-lg">edit</span>
                             </a>
                             <button type="button" class="vc-btn-action vc-btn-delete" data-vc-tooltip="Eliminar" x-bind:data-vc-tooltip="$store.i18n.t('btn.delete') || 'Eliminar'"
-                                @click="$wire.confirmDeletion({{ $proveedor->id }}); Flux.modal('confirmar-eliminacion').show()">
+                                @click="$wire.confirmDeletion({{ $proveedor->id }}).then(() => Flux.modal('confirmar-eliminacion').show())">
                                 <span class="material-symbols-outlined text-lg">delete</span>
                             </button>
                         </div>
@@ -183,11 +182,12 @@
 
             <div class="pt-4 border-t border-zinc-100 dark:border-zinc-700/50 flex justify-end">
                 <flux:modal.close>
-                    <flux:button variant="ghost"><span x-text="$store.i18n.t('btn.cancel') || 'Cerrar'">Cerrar</span></flux:button>
+                    <flux:button variant="ghost"><span>Cerrar</span></flux:button>
                 </flux:modal.close>
             </div>
         </div>
         @endif
     </flux:modal>
 </div>
+
 

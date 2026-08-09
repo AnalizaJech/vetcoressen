@@ -23,7 +23,6 @@
             icon="storefront"
             emptyTitle="Sin sucursales"
             emptyText="No hay sucursales registradas o que coincidan con la búsqueda."
-            :searchable="true"
             searchModel="busqueda"
             searchPlaceholder="Buscar por nombre, dirección..."
         >

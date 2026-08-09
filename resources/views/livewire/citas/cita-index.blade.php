@@ -190,9 +190,8 @@
             icon="calendar_month"
             emptyTitle="Sin citas"
             emptyText="No hay citas que coincidan con los filtros."
-            :searchable="true"
             searchModel="busqueda"
-            x-bind:searchPlaceholder="$store.i18n.t('btn.search') || 'Buscar...'"
+            searchPlaceholder="Buscar mascota, cliente..."
         >
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
                 @foreach($citas as $cita)
@@ -872,5 +871,45 @@ html.dark .fc .fc-list-day-cushion {
     min-width: 60px !important;
     width: 60px !important;
     max-width: 60px !important;
+}
+
+/* Premium Styling for FullCalendar Popovers (+X more) */
+.fc-popover {
+    background-color: var(--vc-surface) !important;
+    border: 1px solid var(--vc-border) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
+    overflow: hidden;
+    z-index: 50 !important;
+}
+.dark .fc-popover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.5) !important;
+}
+.fc-popover-header {
+    background-color: var(--vc-surface-alt) !important;
+    color: var(--vc-text) !important;
+    padding: 10px 12px !important;
+    font-weight: bold !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+}
+.fc-popover-title {
+    font-size: 14px !important;
+}
+.fc-popover-close {
+    opacity: 0.7 !important;
+    cursor: pointer !important;
+    transition: opacity 0.2s !important;
+}
+.fc-popover-close:hover {
+    opacity: 1 !important;
+}
+.fc-popover-body {
+    padding: 8px !important;
+}
+.fc-more-popover .fc-event {
+    margin-bottom: 4px !important;
+    border-radius: 6px !important;
 }
 </style>

@@ -28,6 +28,14 @@ class MedicalRecord extends Model
         'clinic_id', 'pet_id', 'veterinarian_id', 'appointment_id',
         'date', 'reason',
         'weight', 'temperature', 'heart_rate', 'respiratory_rate',
+        // Examen físico general
+        'examen_mucosas', 'examen_linfonodos', 'condicion_corporal',
+        'nivel_dolor', 'nivel_hidratacion',
+        // Examen por sistemas
+        'examen_piel_pelaje', 'examen_ojos_oidos', 'examen_cardiovascular',
+        'examen_respiratorio', 'examen_digestivo', 'examen_musculoesqueletico',
+        'examen_neurologico', 'examen_urinario',
+        // Diagnóstico y tratamiento
         'anamnesis', 'diagnostico_presuntivo', 'tratamiento_indicaciones',
         'proxima_cita_recomendada',
         'notas_aclaratorias',
@@ -50,7 +58,12 @@ class MedicalRecord extends Model
 
     public function mascota(): BelongsTo
     {
-        return $this->belongsTo(Pet::class);
+        return $this->belongsTo(Pet::class, 'pet_id');
+    }
+
+    public function pet(): BelongsTo
+    {
+        return $this->belongsTo(Pet::class, 'pet_id');
     }
 
     public function veterinario(): BelongsTo
