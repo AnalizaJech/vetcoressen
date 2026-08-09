@@ -35,9 +35,8 @@
         emptyTitleKey="empty.noRoles"
         emptyText="No hay roles que coincidan con los filtros."
         emptyTextKey="empty.noRolesSub"
-        :searchable="true"
         searchModel="busqueda"
-        x-bind:searchPlaceholder="$store.i18n.t('btn.search') || 'Buscar...'"
+        searchPlaceholder="Buscar rol..."
         searchPlaceholderKey="placeholder.searchRoles"
     >
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">

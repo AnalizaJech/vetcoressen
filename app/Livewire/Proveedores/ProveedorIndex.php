@@ -36,6 +36,7 @@ class ProveedorIndex extends Component
     public function ver(int $id): void
     {
         $this->proveedorVer = Supplier::findOrFail($id);
+        $this->dispatch('modal-show', name: 'ver-proveedor');
     }
 
     public function eliminar(): void

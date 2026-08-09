@@ -36,9 +36,8 @@
         emptyTitleKey="empty.noUsers"
         emptyText="No hay usuarios que coincidan con los filtros."
         emptyTextKey="empty.noUsersSub"
-        :searchable="true"
         searchModel="busqueda"
-        x-bind:searchPlaceholder="$store.i18n.t('btn.search') || 'Buscar...'"
+        searchPlaceholder="Buscar usuario, nombre, email..."
         searchPlaceholderKey="placeholder.searchUsers"
     >
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
@@ -204,7 +203,7 @@
                 {{-- Botones de Acción Modal Ver --}}
                 <div class="flex items-center justify-end gap-3 pt-4 border-t border-zinc-200 dark:border-zinc-700">
                     <flux:modal.close>
-                        <button type="button" class="btn-primary bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300 border-none px-4 py-2 font-medium flex items-center justify-center gap-2">Cerrar</button>
+                        <button type="button" class="bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300 border-none px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors">Cerrar</button>
                     </flux:modal.close>
                 </div>
             </div>

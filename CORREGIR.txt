@@ -1,93 +1,64 @@
-CORREOS (RESEND): EL PROBLEMA ES LA COLA, NO EL CODIGO
+VOUCHER: POR QUE NO IMPRIME EN A4 (encontrado)
 
-sendCitaNotification y sendPagoNotification ya estan conectadas en
-CitaForm.php y PuntoVenta.php, eso quedo bien. El motivo de que no llegue
-nada es que SendEmailJob se despacha con ->onQueue('emails'), una cola con
-NOMBRE PROPIO, y ademas la cola por defecto en .env no es 'sync'. Eso
-significa que los correos se quedan esperando en la tabla jobs para
-siempre a menos que haya un proceso de worker corriendo, y si ese worker
-corre sin indicar la cola, tampoco los toma. Esto no es un bug de codigo,
-es que falta correr:
-php artisan queue:work --queue=emails,default
-Este comando tiene que quedar corriendo en una terminal aparte (o como
-servicio) mientras se prueba el sistema, sino ningun correo va a salir
-nunca sin importar que tan bien este el codigo. Para desarrollo local mas
-simple, alternativa: cambiar QUEUE_CONNECTION=sync en el .env, asi los
-correos se envian al toque sin necesitar un worker corriendo (recomendado
-solo para pruebas locales, no para produccion).
+voucher.blade.php usa el layout guest.blade.php, cuyo <body> tiene
+class="h-screen overflow-hidden ... flex items-center justify-center" y
+adentro un <main class="relative ... h-full overflow-y-auto">. El CSS de
+impresion del voucher solo resetea el body (height:auto,
+overflow:visible), pero NO resetea el <main>: como main sigue con
+position relative + altura fija + overflow controlado, el
+#voucher-imprimible (que es position:absolute) queda atrapado dentro del
+main en vez de ocupar la hoja completa, por eso no aparece el comprobante
+al imprimir. Fix, agregar "main" al reset dentro del @media print del
+voucher:
 
-CAJA: KPIs CON BUG DE MAYUSCULAS Y SIN FILTROS
+body, main {
+    background: white !important;
+    height: auto !important;
+    overflow: visible !important;
+    position: static !important;
+}
 
-En CajaIndex.php (lineas 46-47) el codigo filtra
-->where('payment_method', 'efectivo') y 'tarjeta' en minuscula, pero el
-valor real guardado en la base de datos es EFECTIVO y TARJETA en
-mayuscula (linea 48 con YAPE_PLIN/TRANSFERENCIA si esta bien escrito en
-mayuscula). Por eso el desglose de efectivo y tarjeta siempre muestra 0
-aunque haya ventas de ese tipo, aunque el total general si es correcto.
-Cambiar 'efectivo' y 'tarjeta' a 'EFECTIVO' y 'TARJETA' arregla ese
-desglose. Ademas, agregar filtros a la vista de Caja (por fecha, por
-metodo de pago, por vendedor) y ordenar la lista por mas reciente primero
-si no lo esta ya.
+(agregar esa regla junto a la que ya existe para "body" en el
+@media print de voucher.blade.php, dejando el resto igual).
 
-REPORTES: FALTA LA UI PARA CAMBIAR DE PERIODO
+BOTON DE IMPRIMIR: POR QUE NO SE VE
 
-ReporteIndex.php ya tiene la logica lista para 4 periodos (hoy,
-semana_actual, mes_actual, año_actual) en la propiedad $periodo, pero no
-hay ningun boton ni tab en la vista que la cambie, se queda fijo en
-mes_actual siempre. Agregar 4 botones/tabs (Hoy, Semana, Mes, Año) con
-wire:click="$set('periodo', 'hoy')" (y asi con cada uno) para que el
-modulo deje de ser estatico.
+El boton "Imprimir Comprobante" esta arriba de todo el contenido del
+voucher, y como el layout centra todo verticalmente en una pantalla fija
+(h-screen, overflow-hidden en el body), si el comprobante es mas alto que
+la pantalla el boton puede quedar fuera de la vista inicial. Cambiar su
+posicion a fija/flotante para que siempre se vea sin importar el scroll:
 
-CALENDARIO DE CITAS: RANGO DE HORAS Y TAMAÑO DE CELDA
+.print-btn-container {
+    position: sticky;
+    top: 1rem;
+    z-index: 20;
+}
 
-resources/js/calendar.js tiene slotMinTime: '00:00:00', es decir el
-calendario de dia/semana arranca a medianoche y muestra las 24 horas del
-dia, con slots de 15 minutos: son 96 franjas por dia, por eso cada celda
-sale diminuta y no entra la card de la cita. Poner un rango realista del
-horario de atencion de la clinica, por ejemplo:
-slotMinTime: '07:00:00',
-slotMaxTime: '21:00:00',
-Con menos horas visibles cada celda tiene mucho mas alto disponible. Si
-la clinica atiende emergencias fuera de ese horario, esas citas igual se
-pueden ver entrando al detalle, no hace falta que el calendario completo
-muestre el dia entero por eso.
+PATRON PARA CUALQUIER OTRA VISTA DE IMPRESION (historia clinica, etc)
 
-VOUCHER: FALTAN ICONOS, Y ARREGLAR IMPRESION/VISUALIZACION
+Cuando se construya la vista de imprimir historia clinica u otro
+documento, usar el mismo patron ya corregido arriba (reset de body Y main,
+contenido con fondo blanco y texto negro fijo, no depender de las
+variables del tema oscuro), para no repetir este mismo bug en cada vista
+nueva que se imprima.
 
-resources/views/livewire/caja/voucher.blade.php practicamente no tiene
-iconos (solo 1 en 89 lineas). Agregar iconos de Material Symbols
-consistentes con el resto del sistema en los datos de contacto, metodo de
-pago, fecha, etc. Revisar tambien la vista de impresion (probablemente
-falte un @media print en el CSS para que al imprimir no salga el sidebar
-ni los botones, solo el comprobante) y que el diseño en pantalla se vea
-como un recibo real, no como un formulario mas.
+CORREO (RESEND): RECORDATORIO
 
-MODAL DE ATENCION AL INVENTARIO: BOTON SIN EL MISMO ENFASIS
+El codigo ya esta conectado (sendCitaNotification, sendPagoNotification).
+Si sigue sin llegar nada, lo primero a confirmar es que haya un worker de
+colas corriendo escuchando la cola 'emails'
+(php artisan queue:work --queue=emails,default), o cambiar
+QUEUE_CONNECTION a sync para pruebas locales; sin eso ningun correo sale
+sin importar que tan bien este configurada la API key.
 
-El boton de "ver mas"/accion dentro del modal de alerta de stock minimo
-en el Dashboard debe usar la misma clase btn-primary btn-primary--amber
-que ya se definio para el boton de Inventario del dashboard, para que
-tengan el mismo peso visual en vez de verse como cosas distintas.
+CITAS - HISTORIA CLINICA: VERIFICAR LO YA CONSTRUIDO
 
-CONEXION CITAS - HISTORIA CLINICA (plan de flujo)
-
-Hoy MedicalRecord ya tiene appointment_id listo para guardar el vinculo,
-pero no hay ningun boton que conecte una cosa con la otra: HistoriaClinicaForm
-solo recibe $id para editar, no recibe la cita de origen para precargar
-datos al crear una nueva. Flujo propuesto:
-1. En la card/fila de cada cita de HOY con estado Confirmada, agregar un
-   boton "Iniciar Atencion" (solo visible el dia de la cita, para
-   veterinario/recepcion).
-2. Al hacer clic: cambiar el estado de la cita a "En Progreso" y navegar
-   directo a la creacion de Historia Clinica, pasando el appointment_id
-   por la URL (ej /historias/nueva?cita={id}).
-3. HistoriaClinicaForm debe aceptar ese parametro en mount() y precargar
-   automaticamente cliente_id, mascota_id, veterinario_id y
-   appointment_id desde la cita, para que el veterinario no tenga que
-   volver a buscarlos a mano.
-4. Al guardar la historia clinica, si tiene appointment_id, cambiar el
-   estado de esa cita a "Completada" automaticamente.
-5. En el listado de citas, si una cita ya tiene una historia clinica
-   ligada (buscar por appointment_id), mostrar "Ver Historia Clinica" en
-   vez de "Iniciar Atencion", para no crear una historia duplicada por
-   la misma cita.
+Ya hay rastros de la conexion (referencias a la cita en
+HistoriaClinicaForm.php y en cita-index.blade.php). Antes de seguir
+agregando cosas nuevas ahi, verificar contra el flujo de 5 pasos ya dado
+en la ronda anterior (boton Iniciar Atencion, precarga de cliente/mascota/
+veterinario desde la cita, marcar la cita como Completada al guardar la
+historia, mostrar "Ver Historia Clinica" en vez de "Iniciar Atencion" si
+ya existe una) cual de los 5 pasos falta o quedo a medias, en vez de
+rehacerlo de cero.

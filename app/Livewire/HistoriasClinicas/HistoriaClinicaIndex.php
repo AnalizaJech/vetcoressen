@@ -19,11 +19,16 @@ class HistoriaClinicaIndex extends Component
     #[Url]
     public string $busqueda = '';
 
-    // ID pendiente de eliminar (modal de confirmación)
-    public ?int $historiaEliminarId = null;
+    #[Url]
+    public string $especie_id = '';
 
-    // Resetear paginación al buscar
+    // Resetear paginación al buscar o filtrar
     public function updatedBusqueda(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedEspecieId(): void
     {
         $this->resetPage();
     }
@@ -33,32 +38,54 @@ class HistoriaClinicaIndex extends Component
     {
         $historia = MedicalRecord::findOrFail($id);
         $historia->delete();
+        $this->historiaEliminarId = null;
         session()->flash('mensaje', 'Historia clínica eliminada correctamente.');
     }
 
     public function render()
     {
-        $historias = MedicalRecord::query()
-            ->with(['mascota.cliente', 'veterinario'])
+        // Traemos a los clientes paginados, solo si tienen mascotas, y cargamos sus mascotas con sus historias clínicas ordenadas
+        $clientes = \App\Models\Customer::query()
+            ->with([
+                'mascotas' => function ($q) {
+                    $q->with([
+                        'historiasClinicas' => function ($q2) {
+                            $q2->orderByDesc('date')->with('veterinario');
+                        },
+                        'especie',
+                        'raza'
+                    ]);
+                }
+            ])
+            ->whereHas('mascotas', function ($q) {
+                if ($this->especie_id) {
+                    $q->where('species_id', $this->especie_id);
+                }
+            })
             ->when($this->busqueda, function ($q) {
                 $q->where(function ($sub) {
-                    // Búsqueda por mascota, cliente o diagnóstico
-                    $sub->whereHas('mascota', fn ($m) =>
-                        $m->where('name', 'like', "%{$this->busqueda}%")
-                    )
-                    ->orWhereHas('mascota.cliente', fn ($c) =>
-                        $c->where('first_name', 'like', "%{$this->busqueda}%")
-                          ->orWhere('last_name', 'like', "%{$this->busqueda}%")
-                    )
-                    ->orWhere('diagnostico_presuntivo', 'like', "%{$this->busqueda}%")
-                    ->orWhere('reason', 'like', "%{$this->busqueda}%");
+                    // Búsqueda por cliente
+                    $sub->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$this->busqueda}%"])
+                        ->orWhere('numero_documento', 'like', "%{$this->busqueda}%")
+                        // O por nombre de mascota
+                        ->orWhereHas('mascotas', fn ($m) => $m->where('name', 'like', "%{$this->busqueda}%"));
                 });
             })
-            ->orderByDesc('date')
-            ->paginate(15);
+            // Ordenar por el que tenga historias clínicas más recientes
+            ->orderByDesc(
+                \App\Models\MedicalRecord::select('date')
+                    ->join('pets', 'medical_records.pet_id', '=', 'pets.id')
+                    ->whereColumn('pets.customer_id', 'customers.id')
+                    ->orderByDesc('date')
+                    ->limit(1)
+            )
+            ->paginate(12);
+
+        $especies = \App\Models\Species::orderBy('name')->get();
 
         return view('livewire.historias-clinicas.historia-clinica-index', [
-            'historias' => $historias,
+            'clientes' => $clientes,
+            'especies' => $especies,
         ]);
     }
 }

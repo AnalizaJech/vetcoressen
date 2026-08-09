@@ -196,6 +196,7 @@
                     citasData: @js($citasChartData)
                  })"
                  @periodo-updated.window="updateCharts($event.detail)"
+                 wire:ignore
             >
                 <div class="vc-panel">
                     <h3 class="text-lg font-extrabold text-zinc-900 dark:text-zinc-100 mb-4 flex items-center gap-2">

@@ -54,7 +54,7 @@
                         @php
                             $hcClienteOpts = [];
                             foreach ($clientes as $cli) {
-                                $hcClienteOpts[] = ['value' => (string)$cli->id, 'label' => $cli->name_completo];
+                                $hcClienteOpts[] = ['value' => (string)$cli->id, 'label' => $cli->nombre_completo];
                             }
                         @endphp
                         <x-vc-dropdown
@@ -117,11 +117,7 @@
                 {{-- Fecha --}}
                 <flux:field>
                     <flux:label class="mb-2 font-medium"><span x-text="$store.i18n.t('table.date')"></span></flux:label>
-                    <flux:input type="date" wire:model="fecha_consulta" class="h-[42px]">
-                        <x-slot:iconLeading>
-                            <span class="material-symbols-outlined text-[18px]">calendar_today</span>
-                        </x-slot:iconLeading>
-                    </flux:input>
+                    <x-vc-date-picker wire:model.live="fecha_consulta" x-bind:placeholder="$store.i18n.t('table.date')" />
                     <flux:error name="fecha_consulta" />
                 </flux:field>
             </div>
@@ -193,6 +189,173 @@
             </div>
         </div>
 
+        {{-- Seccion: Examen Físico --}}
+        <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 lg:p-8 shadow-sm"
+             x-data="{ openSystems: {} }">
+            <div class="flex items-center justify-between mb-6 pb-4 border-b border-zinc-100 dark:border-zinc-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-500/10 flex items-center justify-center text-teal-600 dark:text-teal-400">
+                        <span class="material-symbols-outlined">stethoscope</span>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-zinc-800 dark:text-zinc-200">Examen Físico</h3>
+                        <p class="text-xs text-zinc-500 dark:text-zinc-400">Evaluación por sistemas — todos los campos son opcionales</p>
+                    </div>
+                </div>
+                <span class="badge badge-zinc text-xs">Opcional</span>
+            </div>
+
+            {{-- Fila 1: Selectores rápidos --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 mb-6">
+                {{-- Mucosas --}}
+                <flux:field>
+                    <flux:label class="mb-2 font-medium">Mucosas</flux:label>
+                    <x-vc-dropdown
+                        wire:model="examen_mucosas"
+                        :options="[
+                            ['value' => 'Rosadas', 'label' => '🟢 Rosadas (Normal)'],
+                            ['value' => 'Pálidas', 'label' => '⚪ Pálidas'],
+                            ['value' => 'Ictéricas', 'label' => '🟡 Ictéricas'],
+                            ['value' => 'Cianóticas', 'label' => '🔵 Cianóticas'],
+                            ['value' => 'Congestivas', 'label' => '🔴 Congestivas'],
+                        ]"
+                        :selected="$examen_mucosas"
+                        placeholder="Seleccionar"
+                        icon="visibility"
+                    />
+                </flux:field>
+
+                {{-- Linfonodos --}}
+                <flux:field>
+                    <flux:label class="mb-2 font-medium">Linfonodos</flux:label>
+                    <x-vc-dropdown
+                        wire:model="examen_linfonodos"
+                        :options="[
+                            ['value' => 'Normal', 'label' => '🟢 Normal'],
+                            ['value' => 'Reactivos', 'label' => '🟡 Reactivos'],
+                            ['value' => 'Aumentados', 'label' => '🔴 Aumentados'],
+                        ]"
+                        :selected="$examen_linfonodos"
+                        placeholder="Seleccionar"
+                        icon="adjust"
+                    />
+                </flux:field>
+
+                {{-- Hidratación --}}
+                <flux:field>
+                    <flux:label class="mb-2 font-medium">Hidratación</flux:label>
+                    <x-vc-dropdown
+                        wire:model="nivel_hidratacion"
+                        :options="[
+                            ['value' => 'Normal', 'label' => '🟢 Normal'],
+                            ['value' => 'Leve', 'label' => '🟡 Deshidratación Leve'],
+                            ['value' => 'Moderada', 'label' => '🟠 Deshidratación Moderada'],
+                            ['value' => 'Severa', 'label' => '🔴 Deshidratación Severa'],
+                        ]"
+                        :selected="$nivel_hidratacion"
+                        placeholder="Seleccionar"
+                        icon="water_drop"
+                    />
+                </flux:field>
+
+                {{-- Condición Corporal (BCS) --}}
+                <flux:field>
+                    <flux:label class="mb-2 font-medium">Condición Corporal</flux:label>
+                    <x-vc-dropdown
+                        wire:model="condicion_corporal"
+                        :options="[
+                            ['value' => '1', 'label' => '1 — Emaciado'],
+                            ['value' => '2', 'label' => '2 — Muy delgado'],
+                            ['value' => '3', 'label' => '3 — Delgado'],
+                            ['value' => '4', 'label' => '4 — Bajo peso'],
+                            ['value' => '5', 'label' => '5 — Ideal'],
+                            ['value' => '6', 'label' => '6 — Sobrepeso leve'],
+                            ['value' => '7', 'label' => '7 — Sobrepeso'],
+                            ['value' => '8', 'label' => '8 — Obeso'],
+                            ['value' => '9', 'label' => '9 — Obesidad mórbida'],
+                        ]"
+                        :selected="$condicion_corporal"
+                        placeholder="BCS (1-9)"
+                        icon="fitness_center"
+                    />
+                </flux:field>
+
+                {{-- Nivel de Dolor --}}
+                <flux:field>
+                    <flux:label class="mb-2 font-medium">Nivel de Dolor</flux:label>
+                    <x-vc-dropdown
+                        wire:model="nivel_dolor"
+                        :options="[
+                            ['value' => '0', 'label' => '0 — Sin dolor'],
+                            ['value' => '1', 'label' => '1 — Mínimo'],
+                            ['value' => '2', 'label' => '2 — Leve'],
+                            ['value' => '3', 'label' => '3 — Leve-Moderado'],
+                            ['value' => '4', 'label' => '4 — Moderado'],
+                            ['value' => '5', 'label' => '5 — Moderado'],
+                            ['value' => '6', 'label' => '6 — Moderado-Severo'],
+                            ['value' => '7', 'label' => '7 — Severo'],
+                            ['value' => '8', 'label' => '8 — Severo'],
+                            ['value' => '9', 'label' => '9 — Muy Severo'],
+                            ['value' => '10', 'label' => '10 — Insoportable'],
+                        ]"
+                        :selected="$nivel_dolor"
+                        placeholder="Escala 0-10"
+                        icon="sentiment_stressed"
+                    />
+                </flux:field>
+            </div>
+
+            {{-- Fila 2: Examen por sistemas (accordion colapsable) --}}
+            <div class="border border-zinc-200 dark:border-zinc-700 rounded-xl overflow-hidden divide-y divide-zinc-200 dark:divide-zinc-700">
+                @php
+                    $sistemas = [
+                        ['key' => 'piel', 'icon' => 'dermatology', 'label' => 'Piel y Pelaje', 'model' => 'examen_piel_pelaje', 'placeholder' => 'Estado del pelaje, alopecia, dermatitis, parásitos externos...'],
+                        ['key' => 'ojos', 'icon' => 'visibility', 'label' => 'Ojos y Oídos', 'model' => 'examen_ojos_oidos', 'placeholder' => 'Secreción, enrojecimiento, opacidad, otitis...'],
+                        ['key' => 'cardio', 'icon' => 'cardiology', 'label' => 'Cardiovascular', 'model' => 'examen_cardiovascular', 'placeholder' => 'Ritmo cardíaco, soplos, pulso...'],
+                        ['key' => 'resp', 'icon' => 'pulmonology', 'label' => 'Respiratorio', 'model' => 'examen_respiratorio', 'placeholder' => 'Ruidos respiratorios, disnea, tos...'],
+                        ['key' => 'digestivo', 'icon' => 'gastroenterology', 'label' => 'Digestivo / Abdomen', 'model' => 'examen_digestivo', 'placeholder' => 'Palpación abdominal, dolor, distensión, diarrea...'],
+                        ['key' => 'musculo', 'icon' => 'skeleton', 'label' => 'Musculoesquelético', 'model' => 'examen_musculoesqueletico', 'placeholder' => 'Claudicación, dolor articular, rango de movimiento...'],
+                        ['key' => 'neuro', 'icon' => 'neurology', 'label' => 'Neurológico', 'model' => 'examen_neurologico', 'placeholder' => 'Nivel de conciencia, reflejos, propiocepción, convulsiones...'],
+                        ['key' => 'urinario', 'icon' => 'nephrology', 'label' => 'Urinario / Genital', 'model' => 'examen_urinario', 'placeholder' => 'Palpación renal/vesical, secreciones, poliuria/polidipsia...'],
+                    ];
+                @endphp
+
+                @foreach($sistemas as $sistema)
+                    <div>
+                        {{-- Cabecera del accordion --}}
+                        <button type="button"
+                            class="w-full flex items-center justify-between px-4 py-3 text-left transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
+                            x-on:click="openSystems['{{ $sistema['key'] }}'] = !openSystems['{{ $sistema['key'] }}']"
+                        >
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-teal-500 text-lg">{{ $sistema['icon'] }}</span>
+                                <span class="text-sm font-semibold text-zinc-700 dark:text-zinc-300">{{ $sistema['label'] }}</span>
+                                {{-- Indicador de que tiene contenido --}}
+                                @if($this->{$sistema['model']})
+                                    <span class="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
+                                @endif
+                            </div>
+                            <span class="material-symbols-outlined text-zinc-400 text-lg transition-transform duration-200"
+                                  x-bind:class="openSystems['{{ $sistema['key'] }}'] ? 'rotate-180' : ''"
+                            >expand_more</span>
+                        </button>
+
+                        {{-- Contenido colapsable --}}
+                        <div x-show="openSystems['{{ $sistema['key'] }}']"
+                             x-collapse
+                             class="px-4 pb-4 pt-1">
+                            <flux:textarea
+                                wire:model="{{ $sistema['model'] }}"
+                                placeholder="{{ $sistema['placeholder'] }}"
+                                rows="2"
+                                class="resize-none text-sm"
+                            />
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
         {{-- Seccion: Anamnesis y Diagnostico --}}
         <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 lg:p-8 shadow-sm">
             <div class="flex items-center gap-3 mb-6 pb-4 border-b border-zinc-100 dark:border-zinc-800">
@@ -223,11 +386,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <flux:field>
                         <flux:label class="mb-2 font-medium"><span x-text="$store.i18n.t('form.nextAppointment')"></span></flux:label>
-                        <flux:input wire:model="proxima_cita_recomendada" type="date" class="h-[42px]">
-                            <x-slot:iconLeading>
-                                <span class="material-symbols-outlined text-[18px]">event</span>
-                            </x-slot:iconLeading>
-                        </flux:input>
+                        <x-vc-date-picker wire:model.live="proxima_cita_recomendada" minDate="today" x-bind:placeholder="$store.i18n.t('form.nextAppointment')" />
                     </flux:field>
 
                     <flux:field>
@@ -248,9 +407,11 @@
                     <h3 class="text-lg font-bold text-zinc-800 dark:text-zinc-200" x-text="$store.i18n.t('form.prescriptions')"></h3>
                 </div>
 
+                @if(count($prescripciones) > 0)
                 <flux:button wire:click="agregarPrescripcion" variant="ghost" size="sm" icon="plus" class="hover:bg-violet-50 dark:hover:bg-violet-500/10 hover:text-violet-600 dark:hover:text-violet-400">
                     <span x-text="$store.i18n.t('btn.addMedication')"></span>
                 </flux:button>
+                @endif
             </div>
 
             @if(count($prescripciones) === 0)
@@ -259,8 +420,8 @@
                     <flux:text size="sm" class="text-zinc-500 dark:text-zinc-400 block mb-3">
                         <span x-text="$store.i18n.t('empty.noPrescriptions')"></span>
                     </flux:text>
-                    <flux:button wire:click="agregarPrescripcion" variant="ghost" size="sm">
-                        + Añadir primera prescripción
+                    <flux:button wire:click="agregarPrescripcion" class="bg-violet-600 hover:bg-violet-700 text-white font-medium rounded-xl shadow-sm">
+                        + Añadir prescripción
                     </flux:button>
                 </div>
             @else
@@ -285,7 +446,11 @@
                                     @php
                                         $productosOpts = [];
                                         foreach ($productos as $prod) {
-                                            $productosOpts[] = ['value' => (string)$prod->id, 'label' => $prod->name];
+                                            $label = $prod->name;
+                                            if ($prod->type === 'producto' && ($prod->presentacion || $prod->principio_activo)) {
+                                                $label .= ' - ' . $prod->presentacion . ($prod->principio_activo ? ' ('.$prod->principio_activo.')' : '');
+                                            }
+                                            $productosOpts[] = ['value' => (string)$prod->id, 'label' => $label];
                                         }
                                     @endphp
                                     <div x-data="{ prodPh: 'Buscar producto...' }">

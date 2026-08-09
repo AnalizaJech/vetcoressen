@@ -30,9 +30,8 @@
         icon="inventory_2"
         emptyTitle="Sin productos"
         emptyText="No hay productos que coincidan con los filtros."
-        :searchable="true"
         searchModel="busqueda"
-        x-bind:searchPlaceholder="$store.i18n.t('btn.search') || 'Buscar...'"
+        searchPlaceholder="Buscar producto, categoría..."
     >
         <x-slot:filters>
             <x-vc-dropdown
@@ -347,9 +346,9 @@
 
             <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-zinc-200 dark:border-zinc-700">
                 <flux:modal.close>
-                    <button type="button" class="btn-primary bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300 border-none px-4 py-2 font-medium flex items-center gap-2">
+                    <flux:button variant="ghost">
                         <span x-text="$store.i18n.t('btn.close') === 'btn.close' ? 'Cerrar' : $store.i18n.t('btn.close')">Cerrar</span>
-                    </button>
+                    </flux:button>
                 </flux:modal.close>
             </div>
         </div>

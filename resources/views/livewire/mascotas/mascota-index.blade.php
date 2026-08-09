@@ -26,13 +26,12 @@
         icon="pets"
         emptyTitle="Sin mascotas"
         emptyText="No hay mascotas que coincidan con los filtros."
-        :searchable="true"
         searchModel="busqueda"
-        x-bind:searchPlaceholder="$store.i18n.t('btn.search') || 'Buscar...'"
+        searchPlaceholder="Buscar mascota, especie, raza..."
     >
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
             @foreach($mascotas as $mascota)
-                <div class="vc-card flex flex-col justify-between p-5 rounded-2xl bg-white dark:bg-vc-surface border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-md transition-shadow relative">
+                <div wire:key="mascota-{{ $mascota->id }}" class="vc-card flex flex-col justify-between p-5 rounded-2xl bg-white dark:bg-vc-surface border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-md transition-shadow relative">
                     {{-- Avatar y Nombre --}}
                     <div class="flex items-center gap-4 mb-5">
                         <div class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0">
@@ -82,6 +81,9 @@
 
                     {{-- Acciones --}}
                     <div class="pt-4 border-t border-zinc-100 dark:border-zinc-800 flex justify-end gap-1.5 items-center">
+                        <a href="{{ route('historias.index', ['busqueda' => $mascota->name]) }}" class="vc-btn-action p-1.5 rounded-lg flex items-center gap-1 transition-colors hover:bg-purple-50 dark:hover:bg-purple-500/10 text-purple-600" data-vc-tooltip="Historias Clínicas" x-bind:data-vc-tooltip="$store.i18n.t('page.records') || 'Historias Clínicas'">
+                            <span class="material-symbols-outlined text-[18px]">clinical_notes</span>
+                        </a>
                         <button type="button" class="vc-btn-action vc-btn-view" data-vc-tooltip="Ver" x-bind:data-vc-tooltip="$store.i18n.t('btn.view') || 'Ver'" 
                             wire:click="ver({{ $mascota->id }})">
                             <span class="material-symbols-outlined text-lg">visibility</span>
@@ -247,11 +249,14 @@
 
             <div class="flex justify-end mt-4 w-full">
                 <flux:modal.close class="w-full sm:w-auto">
-                    <flux:button variant="filled" class="w-full"><span x-text="$store.i18n.t('btn.close') === 'btn.close' ? 'Cerrar' : $store.i18n.t('btn.close')">Cerrar</span></flux:button>
+                    <button type="button" class="bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300 border-none px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 w-full transition-colors">
+                        <span>Cerrar</span>
+                    </button>
                 </flux:modal.close>
             </div>
         </div>
         @endif
     </flux:modal>
 </div>
+
 

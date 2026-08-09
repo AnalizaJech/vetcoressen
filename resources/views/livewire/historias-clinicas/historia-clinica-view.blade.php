@@ -11,7 +11,11 @@
                 <span class="material-symbols-outlined icon-sm">edit</span>
                 Editar
             </a>
-            <button onclick="window.print()" class="btn-primary text-sm flex items-center gap-2">
+            <a href="{{ route('historias.pdf', $historia->id) }}" target="_blank" class="btn-primary text-sm flex items-center gap-2">
+                <span class="material-symbols-outlined icon-sm">picture_as_pdf</span>
+                Descargar PDF
+            </a>
+            <button onclick="window.print()" class="btn-secondary text-sm flex items-center gap-2">
                 <span class="material-symbols-outlined icon-sm">print</span>
                 Imprimir
             </button>
@@ -52,12 +56,16 @@
                 </div>
                 <div>
                     <h3 class="font-semibold text-zinc-900 mb-2 border-b pb-1">Datos del Propietario</h3>
-                    <div class="grid grid-cols-[100px_1fr] gap-y-1">
-                        <span class="text-zinc-500">Nombre:</span> <span class="font-medium">{{ $historia->pet->customer->name_completo ?? 'N/A' }}</span>
-                        <span class="text-zinc-500">DNI/RUC:</span> <span>{{ $historia->pet->customer->document_number ?? 'N/A' }}</span>
-                        <span class="text-zinc-500">Teléfono:</span> <span>{{ $historia->pet->customer->phone ?? 'N/A' }}</span>
-                        <span class="text-zinc-500">Email:</span> <span>{{ $historia->pet->customer->email ?? 'N/A' }}</span>
-                        <span class="text-zinc-500">Dirección:</span> <span>{{ $historia->pet->customer->address ?? 'N/A' }}</span>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="flex flex-col gap-1 text-sm">
+                            <span class="text-zinc-500">Nombre:</span> <span class="font-medium">{{ $historia->pet->cliente->nombre_completo ?? 'N/A' }}</span>
+                            <span class="text-zinc-500">DNI/RUC:</span> <span>{{ $historia->pet->cliente->numero_documento ?? 'N/A' }}</span>
+                        </div>
+                        <div class="flex flex-col gap-1 text-sm">
+                            <span class="text-zinc-500">Teléfono:</span> <span>{{ $historia->pet->cliente->phone ?? 'N/A' }}</span>
+                            <span class="text-zinc-500">Email:</span> <span>{{ $historia->pet->cliente->email ?? 'N/A' }}</span>
+                            <span class="text-zinc-500">Dirección:</span> <span>{{ $historia->pet->cliente->address ?? 'N/A' }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -78,8 +86,8 @@
                         <p class="text-sm whitespace-pre-wrap">{{ $historia->reason ?? 'No especificado' }}</p>
                     </div>
                     <div>
-                        <h4 class="text-sm font-semibold text-zinc-700 mb-1">Signos Clínicos:</h4>
-                        <p class="text-sm whitespace-pre-wrap">{{ $historia->symptoms ?? 'No especificados' }}</p>
+                        <h4 class="text-sm font-semibold text-zinc-700 mb-1">Anamnesis / Signos Clínicos:</h4>
+                        <p class="text-sm whitespace-pre-wrap">{{ $historia->anamnesis ?? 'No especificados' }}</p>
                     </div>
                 </div>
             </div>
@@ -91,7 +99,7 @@
                     Diagnóstico
                 </h3>
                 <div class="bg-emerald-50/50 rounded p-4 border border-emerald-100">
-                    <p class="text-sm whitespace-pre-wrap font-medium">{{ $historia->diagnosis ?? 'No especificado' }}</p>
+                    <p class="text-sm whitespace-pre-wrap font-medium">{{ $historia->diagnostico_presuntivo ?? 'No especificado' }}</p>
                 </div>
             </div>
 
@@ -99,22 +107,22 @@
             <div>
                 <h3 class="text-lg font-bold text-blue-700 mb-3 flex items-center gap-2">
                     <span class="material-symbols-outlined text-blue-500">vaccines</span>
-                    Tratamiento y Receta
+                    Tratamiento e Indicaciones
                 </h3>
                 <div class="bg-blue-50/50 rounded p-4 border border-blue-100">
-                    <p class="text-sm whitespace-pre-wrap">{{ $historia->treatment ?? 'Ninguno' }}</p>
+                    <p class="text-sm whitespace-pre-wrap">{{ $historia->tratamiento_indicaciones ?? 'Ninguno' }}</p>
                 </div>
             </div>
 
             {{-- Observaciones adicionales --}}
-            @if($historia->notes)
+            @if($historia->notas_aclaratorias)
             <div>
                 <h3 class="text-lg font-bold text-zinc-900 mb-3 flex items-center gap-2">
                     <span class="material-symbols-outlined text-zinc-400">note_alt</span>
                     Notas Adicionales
                 </h3>
                 <div class="bg-white rounded p-4 border border-zinc-200">
-                    <p class="text-sm whitespace-pre-wrap">{{ $historia->notes }}</p>
+                    <p class="text-sm whitespace-pre-wrap">{{ $historia->notas_aclaratorias }}</p>
                 </div>
             </div>
             @endif
@@ -124,7 +132,7 @@
         {{-- Firma --}}
         <div class="bg-white border-t border-zinc-200 p-6 pt-12 flex justify-end">
             <div class="text-center w-64 border-t border-zinc-400 pt-2">
-                <p class="font-bold text-zinc-900">{{ $historia->veterinarian->name }} {{ $historia->veterinarian->last_name }}</p>
+                <p class="font-bold text-zinc-900">{{ $historia->veterinario->name ?? '' }} {{ $historia->veterinario->last_name ?? '' }}</p>
                 <p class="text-sm text-zinc-500">Médico Veterinario</p>
                 <p class="text-xs text-zinc-400 mt-1">CMVP: ____________</p>
             </div>
