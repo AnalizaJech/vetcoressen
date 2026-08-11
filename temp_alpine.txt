@@ -1,0 +1,35 @@
+
+    {{-- CSS Design System --}}
+    <link rel="stylesheet" href="{{ asset('css/vetcoressen.css') }}">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    {{-- Theme & i18n Scripts (antes de Alpine para registrar stores) --}}
+    <script src="{{ asset('js/theme.js') }}"></script>
+    <script src="{{ asset('js/i18n.js') }}"></script>
+
+    @livewireStyles
+</head>
+<body class="h-screen overflow-hidden overflow-x-hidden font-sans antialiased selection:bg-emerald-500 selection:text-white" style="background-color: var(--vc-bg); color: var(--vc-text);" x-data="{ sidebarOpen: false, clinicName: '{{ addslashes(\App\Models\Clinic::first()->name ?? config('app.name')) }}' }" @clinic-updated.window="clinicName = $event.detail[0].name">
+
+    <div class="h-screen overflow-hidden flex flex-col md:flex-row md:p-4 md:gap-4">
+        {{-- Overlay Movil con Glass Blur --}}
+        <div x-show="sidebarOpen" @click="sidebarOpen = false" x-cloak class="fixed inset-0 z-40 bg-black/70 md:hidden backdrop-blur-md transition-opacity"></div>
+
+        {{-- ═══ SIDEBAR ═══ --}}
+        <aside class="fixed md:static inset-y-0 left-0 z-50 w-64 vc-glass-sidebar border-r md:border flex flex-col transition-transform duration-300 ease-in-out shrink-0 vc-mobile-sidebar md:rounded-3xl shadow-sm overflow-hidden" :class="{'is-open': sidebarOpen}" style="border-color: var(--vc-border);">
+            @php
+                $clinic = \App\Models\Clinic::first();
+                $clinicName = $clinic->name ?? config('app.name');
+                $clinicLogo = $clinic->logo ? asset('storage/' . $clinic->logo) : asset('favicon.svg');
+            @endphp
+            {{-- Brand / Logo --}}
+            <div class="h-16 flex items-center justify-between px-5" style="border-bottom: 1px solid var(--vc-border);">
+                <a href="{{ route('dashboard') }}" class="flex items-center gap-3.5 group focus:outline-none">
+                    <div class="vc-sidebar-logo shrink-0" style="background: transparent;">
+                    <img src="{{ $clinicLogo }}" alt="{{ $clinicName }} Logo" class="w-12 h-12 object-contain">
+                </div>
+                    <div class="flex flex-col">
+                        <span class="font-extrabold text-base tracking-wider font-display" style="color: var(--vc-text);" x-text="clinicName"></span>
+                        <span class="text-[10px] font-medium tracking-widest uppercase" style="color: var(--vc-emerald-light); opacity: 0.8;" x-text="$store.i18n.t('sidebar.clinic')"></span>
+                    </div>
+                </a>

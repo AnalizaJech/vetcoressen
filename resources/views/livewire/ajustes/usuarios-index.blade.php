@@ -108,7 +108,7 @@
 </div>
 
     {{-- Modal Ver Usuario --}}
-    <flux:modal :closable="false" name="ver-usuario" class="w-[90vw] md:w-full max-w-2xl">
+    <flux:modal :closable="false" name="ver-usuario" class="w-[90vw] md:w-full max-w-2xl overflow-y-auto max-h-[85vh]">
         @if($usuarioVer)
             <div class="space-y-6">
                 {{-- Cabecera del Modal --}}
@@ -202,7 +202,7 @@
                 
                 {{-- Botones de Acción Modal Ver --}}
                 <div class="flex items-center justify-end gap-3 pt-4 border-t border-zinc-200 dark:border-zinc-700">
-                    <flux:modal.close>
+                    <flux:modal.close class="overflow-y-auto max-h-[85vh]">
                         <button type="button" class="bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300 border-none px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors">Cerrar</button>
                     </flux:modal.close>
                 </div>
@@ -215,7 +215,7 @@
     </flux:modal>
 
     {{-- Modal de confirmacion eliminar --}}
-    <flux:modal :closable="false" name="confirmar-eliminar-usuario" class="w-[90vw] md:w-full max-w-md">
+    <flux:modal :closable="false" name="confirmar-eliminar-usuario" class="min-w-88 overflow-y-auto max-h-[85vh]">
         <div class="space-y-6">
             <div class="flex flex-col items-center justify-center text-center space-y-5">
                 <div class="w-20 h-20 bg-red-100/50 dark:bg-red-500/20 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center border border-red-200 dark:border-red-500/30 shadow-sm shadow-red-500/10">

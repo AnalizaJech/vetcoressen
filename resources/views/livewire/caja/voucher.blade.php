@@ -1,19 +1,19 @@
-<div class="voucher-wrapper">
+<div class="voucher-wrapper bg-zinc-100 dark:bg-zinc-900 min-h-screen w-full py-12 px-4 relative overflow-y-auto">
 <style>
     @media print {
-        @page { size: A4 landscape; margin: 10mm; }
+        @page { size: A4 portrait; margin: 15mm 20mm; }
         body { 
             -webkit-print-color-adjust: exact !important; 
             print-color-adjust: exact !important; 
+            background: white !important;
         }
         body * { visibility: hidden; }
         body, main { background: white !important; height: auto !important; overflow: visible !important; position: static !important; }
         #voucher-imprimible, #voucher-imprimible * { visibility: visible; }
         #voucher-imprimible {
             position: absolute;
-            left: 0; top: 0; width: 100%; height: 100%;
+            left: 0; top: 0; width: 100%;
             margin: 0 !important; padding: 0 !important; box-shadow: none !important; border: none !important;
-            display: flex; flex-direction: column; justify-content: space-between;
         }
         .print-btn-container { display: none !important; }
     }
@@ -32,7 +32,6 @@
                 if ($num == 100) return 'CIEN';
                 
                 $letras = '';
-                
                 if ($num >= 1000) {
                     $miles = floor($num / 1000);
                     $num = $num % 1000;
@@ -68,143 +67,163 @@
                 return trim($letras);
             }
         };
-        
         return $formatter->convertir(floor($numero));
     }
+
+    $isFactura = str_contains(strtolower($venta->tipo_comprobante), 'factura') || (strlen(preg_replace('/[^0-9]/', '', $venta->cliente->numero_documento ?? '')) === 11 && str_starts_with($venta->cliente->numero_documento ?? '', '20'));
+    $tipoDoc = $isFactura ? 'FACTURA ELECTRÓNICA' : 'BOLETA DE VENTA ELECTRÓNICA';
+    $serie = $isFactura ? 'F001' : 'B001';
+    $numero = str_pad($venta->numero_comprobante ?? $venta->id, 8, '0', STR_PAD_LEFT);
 @endphp
 
-<div class="print-btn-container mb-4 text-center mt-6 sticky top-4 z-20">
-    <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-6 rounded-lg shadow-md flex items-center gap-2 mx-auto transition-colors">
-        <span class="material-symbols-outlined">print</span>
-        Imprimir Comprobante
-    </button>
-</div>
+<div class="w-full max-w-[800px] mx-auto flex flex-col gap-6 mt-8">
 
-<div id="voucher-imprimible" class="w-full print:max-w-none mx-auto bg-white text-black p-8 print:p-0 shadow-xl print:shadow-none mb-12 print:mb-0 font-sans text-base border border-zinc-200 print:border-none">
-    
-    {{-- HEADER --}}
-    <div class="flex flex-col md:flex-row justify-between items-start mb-6 gap-6 md:gap-0">
-        <div class="w-full md:w-7/12 pr-4">
-            <h1 class="font-extrabold text-2xl uppercase tracking-tight mb-1 text-black">{{ mb_strtoupper($venta->clinica->razon_social ?? config('app.name', 'VetCoressen') . ' S.A.C.') }}</h1>
-            <p class="font-bold text-sm uppercase mb-2 text-zinc-900">{{ $venta->clinica->name ?? 'Veterinaria y Pet Shop' }}</p>
-            <p class="text-sm text-zinc-900 leading-snug mb-0.5">{{ $venta->clinica->address ?? 'Av. Principal 123, Ciudad, Departamento, Perú' }}</p>
-            <p class="text-sm text-zinc-900 leading-snug">Tel: {{ $venta->clinica->phone ?? '01-1234567' }} | Correo: {{ $venta->clinica->email ?? 'contacto@vetcoressen.com' }}</p>
-        </div>
-        <div class="w-full md:w-5/12">
-            <div class="border-2 border-black rounded-lg text-center py-3 px-2">
-                <p class="font-bold text-lg text-black">R.U.C. {{ $venta->clinica->ruc ?? '20123456789' }}</p>
-                @php
-                    $isFactura = str_contains(strtolower($venta->tipo_comprobante), 'factura') || (strlen(preg_replace('/[^0-9]/', '', $venta->cliente->numero_documento ?? '')) === 11 && str_starts_with($venta->cliente->numero_documento ?? '', '20'));
-                    $tipoDoc = $isFactura ? 'FACTURA ELECTRÓNICA' : 'BOLETA DE VENTA ELECTRÓNICA';
-                    $serie = $isFactura ? 'F001' : 'B001';
-                    $numero = str_pad($venta->numero_comprobante ?? $venta->id, 6, '0', STR_PAD_LEFT);
-                @endphp
-                <p class="font-bold text-xl uppercase border-y-2 border-black my-2 py-1.5 text-black" style="background-color: #f4f4f5 !important; -webkit-print-color-adjust: exact;">{{ $tipoDoc }}</p>
-                <p class="font-bold text-xl tracking-widest text-black">{{ $serie }}-{{ $numero }}</p>
-            </div>
-        </div>
-    </div>
-
-    {{-- CLIENT INFO --}}
-    {{-- CLIENT INFO --}}
-    <div class="border border-black rounded-lg p-5 mb-6 text-sm text-black">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-4">
-            <!-- Columna Izquierda -->
-            <div>
-                <div class="grid grid-cols-12 gap-y-2">
-                    <div class="col-span-12 sm:col-span-4 font-bold">Fecha de Emisión</div>
-                    <div class="col-span-12 sm:col-span-8 uppercase sm:before:content-[':\00a0']">{{ $venta->created_at->setTimezone('America/Lima')->format('d/m/Y h:i A') }}</div>
-                    
-                    <div class="col-span-12 sm:col-span-4 font-bold">Señor(es)</div>
-                    <div class="col-span-12 sm:col-span-8 uppercase sm:before:content-[':\00a0']">{{ $venta->cliente->nombre_completo ?? 'CLIENTE GENERAL / PUBLICO EN GENERAL' }}</div>
-                    
-                    <div class="col-span-12 sm:col-span-4 font-bold">{{ $isFactura ? 'RUC' : 'DNI/CE' }}</div>
-                    <div class="col-span-12 sm:col-span-8 sm:before:content-[':\00a0']">{{ $venta->cliente->numero_documento ?? '00000000' }}</div>
+    <div id="voucher-imprimible" class="w-full bg-white text-zinc-800 p-12 font-sans text-sm rounded-[2rem] shadow-2xl shadow-zinc-200/50 border border-zinc-200/80 print:shadow-none print:border-none print:rounded-none mx-auto relative overflow-hidden">
+        
+        {{-- Header --}}
+        <div class="flex justify-between items-start mb-8">
+            <div class="w-2/3 pr-6">
+                <div class="flex items-center gap-4 mb-4">
+                    <img src="{{ asset('img/logo.png') }}" onerror="this.style.display='none'" class="h-16 w-auto object-contain">
+                    <div>
+                        <h1 class="font-extrabold text-3xl tracking-tight text-zinc-900 leading-none">{{ mb_strtoupper($venta->clinica->razon_social ?? config('app.name', 'VetCoressen') . ' S.A.C.') }}</h1>
+                        <p class="font-bold text-sm uppercase text-zinc-600 mt-1.5">{{ $venta->clinica->name ?? 'Veterinaria y Pet Shop' }}</p>
+                    </div>
                 </div>
-            </div>
-            <!-- Columna Derecha -->
-            <div>
-                <div class="grid grid-cols-12 gap-y-2">
-                    <div class="col-span-12 sm:col-span-4 font-bold">Dirección</div>
-                    <div class="col-span-12 sm:col-span-8 uppercase sm:before:content-[':\00a0']">{{ $venta->cliente->direccion ?? '-' }}</div>
-                    
-                    <div class="col-span-12 sm:col-span-4 font-bold">Moneda</div>
-                    <div class="col-span-12 sm:col-span-8 sm:before:content-[':\00a0']">SOLES</div>
-                    
-                    <div class="col-span-12 sm:col-span-4 font-bold">Observación</div>
-                    <div class="col-span-12 sm:col-span-8 uppercase sm:before:content-[':\00a0']">Pago en {{ str_replace('_', ' ', $venta->payment_method ?? 'EFECTIVO') }} - {{ $venta->cajero->name ?? 'Cajero' }}</div>
+                <div class="text-[13px] text-zinc-700 space-y-1.5 pl-1">
+                    <p class="uppercase"><span class="font-bold text-zinc-900 mr-1">Dirección:</span> {{ $venta->clinica->address ?? 'AV. PRINCIPAL 123, LIMA, PERÚ' }}</p>
+                    <p class="uppercase"><span class="font-bold text-zinc-900 mr-1">Teléfono:</span> {{ $venta->clinica->phone ?? '01-1234567' }}</p>
+                    <p class="uppercase"><span class="font-bold text-zinc-900 mr-1">Correo:</span> {{ $venta->clinica->email ?? 'contacto@vetcoressen.com' }}</p>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- TABLE --}}
-    <div class="border border-black rounded-lg mb-6 overflow-hidden flex-grow">
-        <table class="w-full text-sm text-left text-black">
-            <thead class="border-b-2 border-black uppercase text-sm" style="background-color: #d4d4d8 !important; color: black !important; -webkit-print-color-adjust: exact;">
-                <tr>
-                    <th class="py-2.5 px-3 font-bold text-center border-r border-zinc-600 w-24">CANTIDAD</th>
-                    <th class="py-2.5 px-3 font-bold text-center border-r border-zinc-600 w-32">UNIDAD</th>
-                    <th class="py-2.5 px-3 font-bold border-r border-zinc-600">DESCRIPCIÓN</th>
-                    <th class="py-2.5 px-3 font-bold text-right border-r border-zinc-600 w-32">P. UNITARIO</th>
-                    <th class="py-2.5 px-3 font-bold text-right w-32">IMPORTE</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($venta->detalles as $detalle)
-                <tr class="border-b border-zinc-300 last:border-b-0">
-                    <td class="py-3 px-3 text-center border-r border-black">{{ $detalle->quantity }}</td>
-                    <td class="py-3 px-3 text-center border-r border-black">NIU</td>
-                    <td class="py-3 px-3 border-r border-black uppercase">{{ $detalle->producto?->name ?? ($detalle->description ?? 'SERVICIO VETERINARIO') }}</td>
-                    <td class="py-3 px-3 text-right border-r border-black">{{ number_format($detalle->precio_final_unitario, 2) }}</td>
-                    <td class="py-3 px-3 text-right font-bold">{{ number_format($detalle->subtotal, 2) }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-
-    {{-- TOTALS & FOOTER --}}
-    <div class="flex flex-col md:flex-row justify-between items-start gap-8">
-        {{-- Left side: Amount in words and SUNAT text --}}
-        <div class="w-full md:w-7/12 flex flex-col justify-between">
-            <div class="mb-4">
-                <p class="text-sm uppercase"><span class="font-bold">SON:</span> {{ numeroALetras($venta->total) }} Y {{ explode('.', number_format($venta->total, 2, '.', ''))[1] }}/100 SOLES</p>
             </div>
             
-            <div class="border border-black rounded-lg p-4 text-xs text-center mt-auto uppercase font-medium">
-                Esta es una representación impresa de la {{ strtolower($tipoDoc) }}, generada en el Sistema de SUNAT. Puede verificarla utilizando su clave SOL.
+            <div class="w-1/3">
+                <div class="border border-zinc-300 rounded-xl text-center overflow-hidden">
+                    <div class="py-3 px-2 bg-zinc-50 border-b border-zinc-300">
+                        <p class="font-bold text-lg text-zinc-900">RUC: {{ $venta->clinica->ruc ?? '20123456789' }}</p>
+                    </div>
+                    <div class="bg-zinc-800 text-white py-2" style="-webkit-print-color-adjust: exact; background-color: #27272a !important;">
+                        <p class="font-bold text-sm uppercase tracking-wider">{{ $tipoDoc }}</p>
+                    </div>
+                    <div class="py-3 px-2 bg-white">
+                        <p class="font-bold text-xl tracking-widest text-zinc-900">{{ $serie }}-{{ $numero }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Client Details --}}
+        <div class="bg-zinc-50/80 rounded-2xl p-6 mb-8 border border-zinc-200 shadow-sm">
+            <div class="grid grid-cols-12 gap-y-4 gap-x-6 text-[13px]">
+                <div class="col-span-12 sm:col-span-6 grid grid-cols-12 gap-3">
+                    <div class="col-span-5 font-bold text-zinc-700">Fecha de Emisión:</div>
+                    <div class="col-span-7 uppercase text-zinc-900 font-semibold">{{ $venta->created_at->setTimezone('America/Lima')->format('d/m/Y') }}</div>
+                    
+                    <div class="col-span-5 font-bold text-zinc-700">Señor(es):</div>
+                    <div class="col-span-7 uppercase text-zinc-900 font-semibold">{{ $venta->cliente->nombre_completo ?? 'CLIENTE GENERAL / PUBLICO EN GENERAL' }}</div>
+                    
+                    <div class="col-span-5 font-bold text-zinc-700">Dirección:</div>
+                    <div class="col-span-7 uppercase text-zinc-900 font-semibold">{{ $venta->cliente->direccion ?? '-' }}</div>
+                </div>
+                
+                <div class="col-span-12 sm:col-span-6 grid grid-cols-12 gap-3">
+                    <div class="col-span-5 font-bold text-zinc-700">Forma de Pago:</div>
+                    <div class="col-span-7 uppercase text-zinc-900 font-semibold">CONTADO</div>
+                    
+                    <div class="col-span-5 font-bold text-zinc-700">{{ $isFactura ? 'RUC' : 'DNI/CE' }}:</div>
+                    <div class="col-span-7 uppercase text-zinc-900 font-semibold">{{ $venta->cliente->numero_documento ?? '00000000' }}</div>
+                    
+                    <div class="col-span-5 font-bold text-zinc-700">Moneda:</div>
+                    <div class="col-span-7 uppercase text-zinc-900 font-semibold">SOLES</div>
+                </div>
+
+                <div class="col-span-12 grid grid-cols-12 gap-2 border-t border-zinc-200 pt-3 mt-1">
+                    <div class="col-span-12 sm:col-span-2 font-semibold text-zinc-600">Observación:</div>
+                    <div class="col-span-12 sm:col-span-10 uppercase text-zinc-900 font-medium">PAGO EN {{ str_replace('_', ' ', $venta->payment_method ?? 'EFECTIVO') }} - {{ $venta->cajero->name ?? 'CAJERO' }}</div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Items Table --}}
+        <div class="mb-8 rounded-xl overflow-hidden border border-zinc-300">
+            <table class="w-full text-[13px] text-left">
+                <thead class="uppercase text-white font-extrabold bg-zinc-800" style="-webkit-print-color-adjust: exact; background-color: #27272a !important; color: white !important;">
+                    <tr>
+                        <th class="py-4 px-5 text-center w-24 border-r border-zinc-600 text-white" style="border-color: #3f3f46 !important; color: white !important;">CANTIDAD</th>
+                        <th class="py-4 px-5 text-center w-28 border-r border-zinc-600 text-white" style="border-color: #3f3f46 !important; color: white !important;">UNIDAD</th>
+                        <th class="py-4 px-5 border-r border-zinc-600 text-white" style="border-color: #3f3f46 !important; color: white !important;">DESCRIPCIÓN</th>
+                        <th class="py-4 px-5 text-right w-32 border-r border-zinc-600 text-white" style="border-color: #3f3f46 !important; color: white !important;">V. UNITARIO</th>
+                        <th class="py-4 px-5 text-right w-32 text-white" style="color: white !important;">TOTAL</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-zinc-200">
+                    @foreach($venta->detalles as $detalle)
+                    <tr class="bg-white">
+                        <td class="py-4 px-5 text-center font-bold text-zinc-800">{{ number_format($detalle->quantity, 2) }}</td>
+                        <td class="py-4 px-5 text-center text-zinc-600 font-medium">NIU</td>
+                        <td class="py-4 px-5 uppercase text-zinc-900 font-bold">{{ $detalle->producto?->name ?? ($detalle->description ?? 'SERVICIO VETERINARIO') }}</td>
+                        <td class="py-4 px-5 text-right text-zinc-700 font-medium">{{ number_format($detalle->precio_final_unitario, 2) }}</td>
+                        <td class="py-4 px-5 text-right font-extrabold text-zinc-900">{{ number_format($detalle->subtotal, 2) }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        {{-- Footer Totals --}}
+        <div class="flex flex-col sm:flex-row items-start justify-between gap-8 mb-8">
+            <div class="w-full sm:w-7/12">
+                <div class="bg-zinc-50 p-4 rounded-xl border border-zinc-200 mb-4">
+                    <p class="font-bold text-xs uppercase text-zinc-700 leading-relaxed">
+                        SON: {{ numeroALetras($venta->total) }} Y {{ explode('.', number_format($venta->total, 2, '.', ''))[1] }}/100 SOLES
+                    </p>
+                </div>
+                <div class="text-[10px] text-zinc-500">
+                    <p>Representación impresa de comprobante electrónico.</p>
+                    <p>Consulte su validez en www.sunat.gob.pe</p>
+                </div>
+            </div>
+            
+            <div class="w-full sm:w-5/12">
+                <div class="bg-zinc-50 rounded-xl border border-zinc-200 p-4 text-xs">
+                    @php
+                        $total = $venta->total;
+                        $subtotal = $total / 1.18;
+                        $igv = $total - $subtotal;
+                    @endphp
+                    <div class="flex justify-between py-1.5">
+                        <div class="font-medium text-zinc-600">Sub Total Ventas:</div>
+                        <div class="font-semibold text-zinc-900 text-right">S/ {{ number_format($subtotal, 2) }}</div>
+                    </div>
+                    <div class="flex justify-between py-1.5">
+                        <div class="font-medium text-zinc-600">Descuentos:</div>
+                        <div class="font-semibold text-zinc-900 text-right">S/ 0.00</div>
+                    </div>
+                    <div class="flex justify-between py-1.5 border-b border-zinc-200 mb-1.5 pb-2">
+                        <div class="font-medium text-zinc-600">IGV (18%):</div>
+                        <div class="font-semibold text-zinc-900 text-right">S/ {{ number_format($igv, 2) }}</div>
+                    </div>
+                    <div class="flex justify-between py-2 mt-1 bg-zinc-800 text-white rounded-lg px-3" style="-webkit-print-color-adjust: exact; background-color: #27272a !important; color: white !important;">
+                        <div class="font-bold uppercase tracking-wide" style="color: white !important;">Importe Total:</div>
+                        <div class="font-bold text-right" style="color: white !important;">S/ {{ number_format($total, 2) }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Document Verification Text --}}
+        <div class="flex justify-center items-center gap-4 text-center mt-10 pt-6 border-t border-zinc-200">
+            <div class="text-center max-w-sm mx-auto">
+                <p class="text-[10px] text-zinc-500 leading-tight">Este comprobante puede ser verificado utilizando la clave SOL en el sistema de SUNAT.</p>
             </div>
         </div>
         
-        {{-- Right side: Totals Box --}}
-        <div class="w-full md:w-5/12 border border-black rounded-lg text-sm overflow-hidden">
-            @php
-                $total = $venta->total;
-                $subtotal = $total / 1.18;
-                $igv = $total - $subtotal;
-            @endphp
-            <div class="grid grid-cols-2 border-b border-zinc-300">
-                <div class="py-1.5 px-3 font-bold text-right border-r border-zinc-300">Op. Gravadas :</div>
-                <div class="py-1.5 px-3 text-right">S/ {{ number_format($subtotal, 2) }}</div>
-            </div>
-            <div class="grid grid-cols-2 border-b border-zinc-300">
-                <div class="py-1.5 px-3 font-bold text-right border-r border-zinc-300">Op. Inafectas :</div>
-                <div class="py-1.5 px-3 text-right">S/ 0.00</div>
-            </div>
-            <div class="grid grid-cols-2 border-b border-zinc-300">
-                <div class="py-1.5 px-3 font-bold text-right border-r border-zinc-300">Op. Exoneradas :</div>
-                <div class="py-1.5 px-3 text-right">S/ 0.00</div>
-            </div>
-            <div class="grid grid-cols-2 border-b border-zinc-300">
-                <div class="py-1.5 px-3 font-bold text-right border-r border-zinc-300">IGV (18%) :</div>
-                <div class="py-1.5 px-3 text-right">S/ {{ number_format($igv, 2) }}</div>
-            </div>
-            <div class="grid grid-cols-2 bg-zinc-200" style="background-color: #e4e4e7 !important;">
-                <div class="py-2 px-3 font-bold text-right border-r border-zinc-300 text-black">Importe Total :</div>
-                <div class="py-2 px-3 text-right font-bold text-sm text-black">S/ {{ number_format($total, 2) }}</div>
-            </div>
-        </div>
+    </div>
+    
+    <div class="fixed bottom-6 right-6 z-[100] print-btn-container" style="z-index: 9999;">
+        <button onclick="window.print()" class="w-14 h-14 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center transition-all">
+            <span class="material-symbols-outlined text-[24px]">print</span>
+        </button>
     </div>
 </div>
 </div>

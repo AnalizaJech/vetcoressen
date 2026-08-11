@@ -58,7 +58,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <flux:field>
                     <flux:label><span x-text="$store.i18n.t('form.petName')"></span></flux:label>
-                    <flux:input wire:model="name" x-bind:placeholder="$store.i18n.t('placeholder.petName') || 'Luna'" />
+                    <flux:input wire:model="name" placeholder="placeholder.petName" />
                     <flux:error name="name" />
                 </flux:field>
 
@@ -141,7 +141,7 @@
 
                 <flux:field>
                     <flux:label><span x-text="$store.i18n.t('form.currentWeight')"></span></flux:label>
-                    <flux:input wire:model="peso_actual" type="number" step="0.01" x-bind:placeholder="$store.i18n.t('placeholder.weight') || '15.5'" />
+                    <flux:input wire:model="peso_actual" type="number" step="0.01" placeholder="placeholder.weight" />
                 </flux:field>
 
                 <flux:field class="flex items-end">
@@ -155,7 +155,7 @@
             <div class="mt-4">
                 <flux:field>
                     <flux:label><span x-text="$store.i18n.t('form.medicalNotes')"></span></flux:label>
-                    <flux:textarea wire:model="medical_notes" rows="3" x-bind:placeholder="$store.i18n.t('placeholder.notes') || 'Observaciones...'" />
+                    <flux:textarea wire:model="medical_notes" rows="3" placeholder="placeholder.notes" />
                 </flux:field>
             </div>
         </div>
@@ -183,7 +183,7 @@
 
     {{-- Modal de confirmacion de actualizacion --}}
     @if($mascotaId)
-    <flux:modal :closable="false" name="confirmar-actualizacion" class="w-[90vw] md:w-full max-w-md">
+    <flux:modal :closable="false" name="confirmar-actualizacion" class="min-w-88 overflow-y-auto max-h-[85vh]">
         <div class="space-y-6">
             <div class="flex flex-col items-center justify-center text-center space-y-5">
                 <div class="w-20 h-20 bg-violet-100/50 dark:bg-violet-500/20 text-violet-600 dark:text-violet-400 rounded-full flex items-center justify-center border border-violet-200 dark:border-violet-500/30 shadow-sm shadow-violet-500/10">

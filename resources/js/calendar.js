@@ -33,17 +33,10 @@ window.initVetCalendar = function (el, wire) {
             right: 'timeGridDay,timeGridWeek,dayGridMonth,listWeek',
         },
 
-        // Botones en español
-        buttonText: {
-            today: 'Hoy',
-            month: 'Mes',
-            week: 'Semana',
-            day: 'Día',
-            list: 'Lista',
-        },
+
 
         // Configuración regional
-        locale: document.documentElement.lang || 'es',
+        locale: localStorage.getItem('vc_locale') || document.documentElement.lang || 'es',
         firstDay: 1, // Lunes
         
         // Horarios visibles (rango de atención de la clínica)

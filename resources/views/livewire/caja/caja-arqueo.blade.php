@@ -47,7 +47,7 @@
                     <flux:separator class="my-4" />
 
                     <div class="flex justify-end">
-                        <flux:modal.trigger name="cerrar-caja">
+                        <flux:modal.trigger name="cerrar-caja" class="overflow-y-auto max-h-[85vh]">
                             <button type="button" class="btn-primary btn-primary--red justify-center px-6 py-2">
                                 <span class="material-symbols-outlined icon-sm">lock</span>
                                 Cerrar Caja
@@ -55,7 +55,7 @@
                         </flux:modal.trigger>
                     </div>
 
-                    <flux:modal name="cerrar-caja" class="min-w-md overflow-hidden p-0!">
+                    <flux:modal name="cerrar-caja" class="min-w-md overflow-y-auto max-h-[85vh] p-0!">
                         <form wire:submit.prevent="cerrarCaja">
                             <!-- Header decorativo -->
                             <div class="h-24 bg-linear-to-br from-red-500 to-rose-600 flex items-center justify-center relative">
@@ -105,7 +105,7 @@
                     </div>
 
                     <div class="flex justify-center mt-6">
-                        <flux:modal.trigger name="abrir-caja">
+                        <flux:modal.trigger name="abrir-caja" class="overflow-y-auto max-h-[85vh]">
                             <button class="w-full sm:w-auto btn-primary btn-primary--emerald justify-center px-8 py-3">
                                 <span class="material-symbols-outlined icon-sm">lock_open</span>
                                 Abrir Caja
@@ -113,7 +113,7 @@
                         </flux:modal.trigger>
                     </div>
 
-                    <flux:modal name="abrir-caja" class="min-w-md overflow-hidden p-0!">
+                    <flux:modal name="abrir-caja" class="min-w-md overflow-y-auto max-h-[85vh] p-0!">
                         <form wire:submit.prevent="abrirCaja">
                             <!-- Header decorativo -->
                             <div class="h-24 bg-linear-to-br from-emerald-400 to-teal-500 flex items-center justify-center relative">

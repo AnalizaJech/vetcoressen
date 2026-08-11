@@ -113,11 +113,11 @@
                         <x-vc-dropdown
                             wire:model="estado"
                             :options="[
-                                ['value' => 'PENDIENTE', 'label' => 'status.PENDIENTE'],
-                                ['value' => 'CONFIRMADA', 'label' => 'status.CONFIRMADA'],
-                                ['value' => 'EN_PROGRESO', 'label' => 'status.EN_PROGRESO'],
-                                ['value' => 'COMPLETADA', 'label' => 'status.COMPLETADA'],
-                                ['value' => 'CANCELADA', 'label' => 'status.CANCELADA'],
+                                ['value' => 'PENDIENTE', 'label' => 'status.pending'],
+                                ['value' => 'CONFIRMADA', 'label' => 'status.confirmed'],
+                                ['value' => 'EN_PROGRESO', 'label' => 'status.inProgress'],
+                                ['value' => 'COMPLETADA', 'label' => 'status.completed'],
+                                ['value' => 'CANCELADA', 'label' => 'status.cancelled'],
                             ]"
                             :selected="$estado"
                             placeholder="form.select"
@@ -129,13 +129,13 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <flux:field>
                     <flux:label><span x-text="$store.i18n.t('form.consultReason')"></span></flux:label>
-                    <flux:textarea wire:model="motivo" rows="3" x-bind:placeholder="$store.i18n.t('form.reasonPlaceholder') || 'Reason...'" />
+                    <flux:textarea wire:model="motivo" rows="3" x-bind:placeholder="$store.i18n.t('form.reasonPlaceholder') || 'Describa el motivo de la consulta...'" />
                     <flux:error name="motivo" />
                 </flux:field>
 
                 <flux:field>
                     <flux:label><span x-text="$store.i18n.t('form.notes')"></span></flux:label>
-                    <flux:textarea wire:model="notas" rows="3" placeholder="Notas adicionales sobre la cita (opcional)" />
+                    <flux:textarea wire:model="notas" rows="3" x-bind:placeholder="$store.i18n.t('form.notesPlaceholder') || 'Escribe notas adicionales...'" />
                 </flux:field>
             </div>
         </div>
@@ -148,16 +148,16 @@
             
             @if(!$citaId)
                 <button type="button" 
-                        class="w-full sm:w-auto btn-primary justify-center" style="background: linear-gradient(135deg, #ef4444, #b91c1c);"
+                        class="w-full sm:w-auto btn-danger justify-center"
                         wire:click="guardarEmergencia"
                         wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="guardarEmergencia" class="flex items-center gap-2">
                         <span class="material-symbols-outlined icon-sm">emergency</span>
-                        <span>Emergencia Rápida</span>
+                        <span x-text="$store.i18n.t('btn.emergency', 'Emergencia Rápida')"></span>
                     </span>
                     <span wire:loading wire:target="guardarEmergencia" class="flex items-center gap-2">
                         <span class="material-symbols-outlined icon-sm vc-spinner">progress_activity</span>
-                        <span>Registrando...</span>
+                        <span x-text="$store.i18n.t('btn.registering', 'Registrando...')"></span>
                     </span>
                 </button>
             @endif
@@ -180,7 +180,7 @@
 
     {{-- Modal de confirmacion de actualizacion --}}
     @if($citaId)
-    <flux:modal :closable="false" name="confirmar-actualizacion" class="w-[90vw] md:w-full max-w-md">
+    <flux:modal :closable="false" name="confirmar-actualizacion" class="min-w-88 overflow-y-auto max-h-[85vh]">
         <div class="space-y-6">
             <div class="flex flex-col items-center justify-center text-center space-y-5">
                 <div class="w-20 h-20 bg-violet-100/50 dark:bg-violet-500/20 text-violet-600 dark:text-violet-400 rounded-full flex items-center justify-center border border-violet-200 dark:border-violet-500/30 shadow-sm shadow-violet-500/10">

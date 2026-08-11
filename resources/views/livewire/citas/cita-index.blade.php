@@ -15,32 +15,32 @@
         </div>
         <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto mt-2 sm:mt-0">
             {{-- Toggle Vista Lista / Calendario --}}
-            <div class="flex items-center bg-zinc-100 dark:bg-vc-surface-alt rounded-xl p-1 border border-zinc-200 dark:border-zinc-700">
+            <div class="flex items-center bg-zinc-200/50 dark:bg-zinc-800/80 rounded-full p-1 border border-zinc-300/50 dark:border-zinc-700/50 backdrop-blur-md shadow-inner gap-1">
                 <button 
                     wire:click="$set('vistaActiva', 'calendario')" 
-                    class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 flex items-center gap-1.5 {{ $vistaActiva === 'calendario' ? 'bg-vc-primary text-white shadow-sm' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200' }}"
+                    x-bind:title="$store.i18n.t('citas.vistaCalendario') || 'Calendario'"
+                    class="w-10 h-10 rounded-full transition-all duration-300 flex items-center justify-center {{ $vistaActiva === 'calendario' ? 'bg-white dark:bg-zinc-700 text-emerald-600 dark:text-emerald-400 shadow-md ring-1 ring-black/5 dark:ring-white/10 scale-105' : 'text-zinc-500 hover:text-zinc-700 hover:bg-zinc-300/30 dark:hover:text-zinc-300 dark:hover:bg-zinc-600/30' }}"
                 >
-                    <span class="material-symbols-outlined text-[16px]">calendar_month</span>
-                    Calendario
+                    <span class="material-symbols-outlined text-[22px] {{ $vistaActiva === 'calendario' ? 'animate-pop font-bold' : '' }}">calendar_month</span>
                 </button>
                 <button 
                     wire:click="$set('vistaActiva', 'lista')" 
-                    class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 flex items-center gap-1.5 {{ $vistaActiva === 'lista' ? 'bg-vc-primary text-white shadow-sm' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200' }}"
+                    x-bind:title="$store.i18n.t('citas.vistaLista') || 'Lista'"
+                    class="w-10 h-10 rounded-full transition-all duration-300 flex items-center justify-center {{ $vistaActiva === 'lista' ? 'bg-white dark:bg-zinc-700 text-emerald-600 dark:text-emerald-400 shadow-md ring-1 ring-black/5 dark:ring-white/10 scale-105' : 'text-zinc-500 hover:text-zinc-700 hover:bg-zinc-300/30 dark:hover:text-zinc-300 dark:hover:bg-zinc-600/30' }}"
                 >
-                    <span class="material-symbols-outlined text-[16px]">view_list</span>
-                    Lista
+                    <span class="material-symbols-outlined text-[22px] {{ $vistaActiva === 'lista' ? 'animate-pop font-bold' : '' }}">view_list</span>
                 </button>
             </div>
 
-            <flux:modal.trigger name="reasignar-modal">
+            <flux:modal.trigger name="reasignar-modal" class="overflow-y-auto max-h-[85vh]">
                 <flux:button variant="subtle" icon="arrows-right-left">
-                    Reasignación Masiva
+                    <span x-text="$store.i18n.t('btn.massReassign') || 'Reasignación Masiva'">Reasignación Masiva</span>
                 </flux:button>
             </flux:modal.trigger>
-            <flux:modal.trigger name="emergencia-modal">
+            <flux:modal.trigger name="emergencia-modal" class="overflow-y-auto max-h-[85vh]">
                 <button type="button" class="w-full sm:w-auto px-4 py-2 bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center gap-2 transition-all border border-red-600 dark:border-red-500">
                     <span class="material-symbols-outlined icon-sm">emergency</span>
-                    <span>Cita Emergencia</span>
+                    <span x-text="$store.i18n.t('btn.emergencyAppt') || 'Cita Emergencia'">Cita Emergencia</span>
                 </button>
             </flux:modal.trigger>
             <a href="{{ route('citas.crear') }}" class="w-full sm:w-auto btn-primary justify-center">
@@ -54,37 +54,37 @@
     <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 w-full mb-6">
         @php
             $estadoOptions = [
-                ['value' => '', 'label' => 'Estado (Todos)'],
-                ['value' => 'PENDIENTE', 'label' => 'Pendiente'],
-                ['value' => 'CONFIRMADA', 'label' => 'Confirmada'],
-                ['value' => 'EN_PROGRESO', 'label' => 'En Progreso'],
-                ['value' => 'COMPLETADA', 'label' => 'Completada'],
-                ['value' => 'CANCELADA', 'label' => 'Cancelada'],
-                ['value' => 'EMERGENCIA', 'label' => 'Emergencia'],
+                ['value' => '', 'label' => 'status.all'],
+                ['value' => 'PENDIENTE', 'label' => 'status.pending'],
+                ['value' => 'CONFIRMADA', 'label' => 'status.confirmed'],
+                ['value' => 'EN_PROGRESO', 'label' => 'status.inProgress'],
+                ['value' => 'COMPLETADA', 'label' => 'status.completed'],
+                ['value' => 'CANCELADA', 'label' => 'status.cancelled'],
+                ['value' => 'EMERGENCIA', 'label' => 'status.emergency'],
             ];
         @endphp
-        <div x-data="{ ph: $store.i18n.t('table.status') || 'Estado' }" class="col-span-1">
+        <div class="col-span-1">
             <x-vc-dropdown
                 wire:model.live="filtroEstado"
                 :options="$estadoOptions"
                 :selected="$filtroEstado"
-                x-bind:placeholder="ph"
+                placeholder="table.status"
                 class="w-full"
             />
         </div>
 
         @php
-            $vetOptions = [['value' => '', 'label' => 'Veterinario (Todos)']];
+            $vetOptions = [['value' => '', 'label' => 'table.allVets']];
             foreach ($veterinarios as $vet) {
                 $vetOptions[] = ['value' => (string)$vet->id, 'label' => $vet->name];
             }
         @endphp
-        <div x-data="{ ph: $store.i18n.t('table.veterinarian') || 'Veterinario' }" class="col-span-1">
+        <div class="col-span-1">
             <x-vc-dropdown
                 wire:model.live="filtroVeterinario"
                 :options="$vetOptions"
                 :selected="$filtroVeterinario"
-                x-bind:placeholder="ph"
+                placeholder="table.veterinarian"
                 searchable
                 class="w-full"
             />
@@ -94,7 +94,7 @@
             <div class="col-span-1">
                 <x-vc-date-picker 
                     wire:model.live="filtroFecha" 
-                    placeholder="Fecha"
+                    x-bind:placeholder="$store.i18n.t('table.date') || 'Fecha'"
                     class="w-full"
                 />
             </div>
@@ -102,40 +102,40 @@
             <div class="col-span-1">
                 <x-vc-time-picker 
                     wire:model.live="filtroHora" 
-                    placeholder="Hora"
+                    x-bind:placeholder="$store.i18n.t('table.time') || 'Hora'"
                     class="w-full"
                 />
             </div>
 
             @php
-                $clienteOptions = [['value' => '', 'label' => 'Cliente (Todos)']];
+                $clienteOptions = [['value' => '', 'label' => 'table.allClients']];
                 foreach ($clientes as $cliente) {
                     $clienteOptions[] = ['value' => (string)$cliente->id, 'label' => $cliente->first_name . ' ' . $cliente->last_name];
                 }
             @endphp
-            <div x-data="{ ph: $store.i18n.t('table.client') || 'Cliente' }" class="col-span-1 md:col-span-2 lg:col-span-1">
+            <div class="col-span-1 md:col-span-2 lg:col-span-1">
                 <x-vc-dropdown
                     wire:model.live="filtroCliente"
                     :options="$clienteOptions"
                     :selected="$filtroCliente"
-                    x-bind:placeholder="ph"
+                    placeholder="table.client"
                     searchable
                     class="w-full"
                 />
             </div>
 
             @php
-                $mascotaOptions = [['value' => '', 'label' => 'Mascota (Todas)']];
+                $mascotaOptions = [['value' => '', 'label' => 'table.allPets']];
                 foreach ($mascotas as $mascota) {
                     $mascotaOptions[] = ['value' => (string)$mascota->id, 'label' => $mascota->name];
                 }
             @endphp
-            <div x-data="{ ph: $store.i18n.t('table.pet') || 'Mascota' }" class="col-span-1">
+            <div class="col-span-1">
                 <x-vc-dropdown
                     wire:model.live="filtroMascota"
                     :options="$mascotaOptions"
                     :selected="$filtroMascota"
-                    x-bind:placeholder="ph"
+                    placeholder="table.pet"
                     searchable
                     class="w-full"
                 />
@@ -144,7 +144,7 @@
 
         @if($filtroEstado || $filtroFecha || $filtroHora || $filtroVeterinario || $filtroCliente || $filtroMascota)
             <div class="col-span-full">
-                <flux:button variant="ghost" wire:click="limpiarFiltros" icon="x-mark" class="text-zinc-500 w-full sm:w-auto">Limpiar Filtros</flux:button>
+                <flux:button variant="ghost" wire:click="limpiarFiltros" icon="x-mark" class="text-zinc-500 w-full sm:w-auto"><span x-text="$store.i18n.t('btn.clearFilters') || 'Limpiar Filtros'">Limpiar Filtros</span></flux:button>
             </div>
         @endif
     </div>
@@ -152,7 +152,7 @@
     {{-- ════ VISTA CALENDARIO ════ --}}
     <div x-show="$wire.vistaActiva === 'calendario'" class="animate-fade-in" x-cloak>
         <style>
-            /* Ocultar texto de horas en la primera columna según petición del usuario */
+            /* Ocultar texto de horas en la primera columna */
             .fc-theme-standard .fc-timegrid-axis-cushion {
                 display: none !important;
             }
@@ -170,6 +170,14 @@
                 padding: 4px;
                 overflow-y: auto;
             }
+            
+            /* Correcciones de color para modo claro/oscuro (Gris claro no se veía el texto) */
+            .fc-col-header-cell-cushion, .fc-daygrid-day-number { color: #374151; }
+            .dark .fc-col-header-cell-cushion, .dark .fc-daygrid-day-number { color: #f4f4f5; }
+            .dark .fc-theme-standard th, .dark .fc-theme-standard td, .dark .fc-theme-standard .fc-scrollgrid { border-color: #3f3f46; }
+            .dark .fc-day-today { background-color: #27272a !important; }
+            .dark .fc-timegrid-slot-lane { border-color: #3f3f46; }
+            .dark .fc-list-day-cushion { background-color: #27272a; color: #f4f4f5; }
         </style>
         <div 
             wire:ignore 
@@ -188,10 +196,10 @@
         <x-vc-table-layout 
             :data="$citas"
             icon="calendar_month"
-            emptyTitle="Sin citas"
-            emptyText="No hay citas que coincidan con los filtros."
+            emptyTitle="table.empty"
+            emptyText="table.emptyText"
             searchModel="busqueda"
-            searchPlaceholder="Buscar mascota, cliente..."
+            searchPlaceholder="table.searchClientPet"
         >
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
                 @foreach($citas as $cita)
@@ -211,7 +219,7 @@
                         <div class="absolute top-4 right-4">
                             <span class="{{ $estadoConfig['color'] }} border px-2 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider flex items-center gap-1 shadow-sm">
                                 <span class="material-symbols-outlined text-[14px]">{{ $estadoConfig['icon'] }}</span>
-                                <span x-text="$store.i18n.t('status.{{ strtolower($cita->status) }}') || '{{ $cita->status }}'"></span>
+                                <span x-text="$store.i18n.t('status.' + '{{ strtolower($cita->status) }}') || '{{ $cita->status }}'"></span>
                             </span>
                         </div>
 
@@ -284,48 +292,27 @@
         </x-vc-table-layout>
     @endif
 
-    {{-- Modal Eliminar --}}
-    <flux:modal :closable="false" name="confirmar-eliminar" class="w-[90vw] md:w-full max-w-md">
-        <div class="space-y-6">
+    {{-- Modal Reasignación Masiva --}}
+    <flux:modal :closable="true" name="reasignar-modal" class="min-w-[26rem] overflow-y-auto max-h-[85vh]">
+        <form wire:submit.prevent="reasignarMasivo" class="space-y-6">
             <div class="flex flex-col items-center justify-center text-center space-y-5">
-                <div class="w-20 h-20 bg-red-100/50 dark:bg-red-500/20 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center border border-red-200 dark:border-red-500/30 shadow-sm shadow-red-500/10">
-                    <span class="material-symbols-outlined text-[48px]" style="font-variation-settings: 'FILL' 1, 'wght' 700;">warning</span>
+                <div class="w-20 h-20 bg-blue-100/50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center border border-blue-200 dark:border-blue-500/30 shadow-sm shadow-blue-500/10">
+                    <span class="material-symbols-outlined text-[48px]" style="font-variation-settings: 'FILL' 1, 'wght' 700;">sync_alt</span>
                 </div>
                 <div>
-                    <h2 class="text-2xl font-extrabold text-zinc-900 dark:text-white" x-text="$store.i18n.t('modal.confirmDelete') || 'Eliminar Cita'"></h2>
-                    <p class="mt-3 text-sm text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto leading-relaxed" x-text="$store.i18n.t('modal.confirmDeleteMsg') || 'Esta acción no se puede revertir.'"></p>
+                    <h2 class="text-2xl font-extrabold text-zinc-900 dark:text-white" x-text="$store.i18n.t('modal.massReassign') || 'Reasignación Masiva de Citas'"></h2>
+                    <p class="mt-3 text-sm text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto leading-relaxed" x-text="$store.i18n.t('modal.massReassignSub') || 'Mueva todas las citas de un veterinario a otro.'"></p>
                 </div>
-            </div>
-            <div class="flex flex-col-reverse sm:flex-row gap-3 w-full mt-6">
-                <flux:spacer class="hidden sm:block" />
-                <flux:modal.close class="w-full sm:w-auto">
-                    <flux:button variant="ghost" class="w-full font-medium"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'"></span></flux:button>
-                </flux:modal.close>
-                <button type="button" class="w-full sm:w-auto btn-danger font-medium justify-center" wire:click="eliminar" x-on:click="Flux.modal('confirmar-eliminar').close()">
-                    <span x-text="$store.i18n.t('btn.delete') || 'Eliminar'"></span>
-                </button>
-            </div>
-        </div>
-    </flux:modal>
-
-    {{-- Modal Reasignación Masiva --}}
-    <flux:modal :closable="false" name="reasignar-modal" class="min-w-120">
-        <form wire:submit.prevent="reasignarMasivo" class="space-y-6">
-            <div>
-                <flux:heading size="lg">Reasignación Masiva de Citas</flux:heading>
-                <flux:subheading>
-                    Mueva todas las citas pendientes o confirmadas de un veterinario a otro para una fecha específica.
-                </flux:subheading>
             </div>
             
             <div class="space-y-4">
                 <flux:field>
-                    <flux:label>Fecha</flux:label>
+                    <flux:label><span x-text="$store.i18n.t('form.date') || 'Fecha'">Fecha</span></flux:label>
                     <x-vc-date-picker wire:model="reasignar_fecha" />
                     <flux:error name="reasignar_fecha" />
                 </flux:field>
                 <flux:field>
-                    <flux:label>Veterinario Origen (Inasistente)</flux:label>
+                    <flux:label><span x-text="$store.i18n.t('form.originVet') || 'Veterinario Origen (Inasistente)'">Veterinario Origen (Inasistente)</span></flux:label>
                     @php
                         $vetOptions = [];
                         foreach ($veterinarios as $vet) {
@@ -336,51 +323,54 @@
                         wire:model="reasignar_origen"
                         :options="$vetOptions"
                         :selected="$reasignar_origen"
-                        placeholder="Seleccione veterinario"
+                        placeholder="form.selectVet"
                         icon="medical_services"
                     />
                     <flux:error name="reasignar_origen" />
                 </flux:field>
                 <flux:field>
-                    <flux:label>Veterinario Destino (Reemplazo)</flux:label>
+                    <flux:label><span x-text="$store.i18n.t('form.destVet') || 'Veterinario Destino (Reemplazo)'">Veterinario Destino (Reemplazo)</span></flux:label>
                     <x-vc-dropdown
                         wire:model="reasignar_destino"
                         :options="$vetOptions"
                         :selected="$reasignar_destino"
-                        placeholder="Seleccione veterinario"
+                        placeholder="form.selectVet"
                         icon="medical_services"
                     />
                     <flux:error name="reasignar_destino" />
                 </flux:field>
             </div>
 
-            <div class="flex gap-2 justify-end">
+            <div class="flex gap-2 justify-end pt-4 border-t border-zinc-200 dark:border-zinc-700">
                 <flux:modal.close>
                     <flux:button variant="ghost"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'"></span></flux:button>
                 </flux:modal.close>
                 <button type="submit" class="btn-primary justify-center">
                     <span class="material-symbols-outlined icon-sm">sync_alt</span>
-                    <span>Reasignar</span>
+                    <span x-text="$store.i18n.t('btn.reassign') || 'Reasignar'">Reasignar</span>
                 </button>
             </div>
         </form>
     </flux:modal>
 
     {{-- Modal Cita de Emergencia --}}
-    <flux:modal :closable="false" name="emergencia-modal" class="min-w-120">
+    <flux:modal :closable="true" name="emergencia-modal" class="min-w-[26rem] overflow-y-auto max-h-[85vh]">
         <form wire:submit.prevent="crearEmergencia" class="space-y-6">
-            <div>
-                <flux:heading size="lg" class="text-red-600">Crear Cita de Emergencia</flux:heading>
-                <flux:subheading>
-                    Genera una cita inmediatamente sin asignar veterinario. Todos los veterinarios verán esta alerta.
-                </flux:subheading>
+            <div class="flex flex-col items-center justify-center text-center space-y-5">
+                <div class="w-20 h-20 bg-red-100/50 dark:bg-red-500/20 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center border border-red-200 dark:border-red-500/30 shadow-sm shadow-red-500/10">
+                    <span class="material-symbols-outlined text-[48px]" style="font-variation-settings: 'FILL' 1, 'wght' 700;">emergency</span>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-extrabold text-zinc-900 dark:text-white" x-text="$store.i18n.t('modal.createEmergency') || 'Crear Cita de Emergencia'"></h2>
+                    <p class="mt-3 text-sm text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto leading-relaxed" x-text="$store.i18n.t('modal.createEmergencySub') || 'Genera una cita inmediatamente sin asignar veterinario.'"></p>
+                </div>
             </div>
             
             <div class="space-y-4">
                 <flux:field>
-                    <flux:label>Cliente (Dueño)</flux:label>
+                    <flux:label><span x-text="$store.i18n.t('form.client') || 'Cliente (Dueño)'">Cliente (Dueño)</span></flux:label>
                     @php
-                        $clienteOptionsEmergencia = [['value' => '', 'label' => 'Seleccione cliente']];
+                        $clienteOptionsEmergencia = [['value' => '', 'label' => 'form.selectClient']];
                         foreach ($clientes as $cliente) {
                             $clienteOptionsEmergencia[] = ['value' => (string)$cliente->id, 'label' => $cliente->first_name . ' ' . $cliente->last_name];
                         }
@@ -389,7 +379,7 @@
                         wire:model.live="emergencia_cliente_id"
                         :options="$clienteOptionsEmergencia"
                         :selected="$emergencia_cliente_id"
-                        placeholder="Seleccione cliente"
+                        placeholder="form.selectClient"
                         searchable
                         icon="person"
                     />
@@ -397,9 +387,9 @@
                 </flux:field>
 
                 <flux:field>
-                    <flux:label>Mascota</flux:label>
+                    <flux:label><span x-text="$store.i18n.t('form.pet') || 'Mascota'">Mascota</span></flux:label>
                     @php
-                        $mascotaOptionsEmergencia = [['value' => '', 'label' => 'Seleccione mascota']];
+                        $mascotaOptionsEmergencia = [['value' => '', 'label' => 'form.selectPet']];
                         $mascotasDisponibles = $emergencia_cliente_id ? \App\Models\Pet::where('customer_id', $emergencia_cliente_id)->get() : [];
                         foreach ($mascotasDisponibles as $mascota) {
                             $mascotaOptionsEmergencia[] = ['value' => (string)$mascota->id, 'label' => $mascota->name];
@@ -409,7 +399,7 @@
                         wire:model="emergencia_mascota_id"
                         :options="$mascotaOptionsEmergencia"
                         :selected="$emergencia_mascota_id"
-                        placeholder="Seleccione mascota"
+                        placeholder="form.selectPet"
                         searchable
                         icon="pets"
                     />
@@ -417,27 +407,27 @@
                 </flux:field>
             </div>
 
-            <div class="flex gap-2 justify-end">
+            <div class="flex gap-2 justify-end pt-4 border-t border-zinc-200 dark:border-zinc-700">
                 <flux:modal.close>
                     <flux:button variant="ghost"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'"></span></flux:button>
                 </flux:modal.close>
-                <button type="submit" class="btn-primary flex items-center justify-center gap-2" style="background-color: var(--color-vc-danger); border-color: var(--color-vc-danger); color: white;">
+                <button type="submit" class="btn-danger flex items-center justify-center gap-2 font-medium">
                     <span class="material-symbols-outlined icon-sm">emergency</span>
-                    <span>Crear Emergencia</span>
+                    <span x-text="$store.i18n.t('btn.createEmergency') || 'Crear Emergencia'">Crear Emergencia</span>
                 </button>
             </div>
         </form>
     </flux:modal>
 
     {{-- Modal Ver Cita --}}
-    <flux:modal :closable="true" name="ver-cita" class="w-[90vw] md:w-full max-w-2xl">
+    <flux:modal :closable="true" name="ver-cita" class="w-[90vw] md:w-full max-w-2xl overflow-y-auto max-h-[85vh]">
         @if($citaVer)
         <div class="space-y-6">
             <div class="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-700 pb-4">
-                <flux:heading size="lg">Detalles de la Cita</flux:heading>
+                <flux:heading size="lg"><span x-text="$store.i18n.t('modal.appointmentDetails') || 'Detalles de la Cita'">Detalles de la Cita</span></flux:heading>
                 <div class="flex items-center gap-2">
                     <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-300">
-                        {{ $citaVer->status }}
+                        <span x-text="$store.i18n.t('status.' + '{{ strtolower($citaVer->status) }}') || '{{ $citaVer->status }}'"></span>
                     </span>
                 </div>
             </div>
@@ -445,7 +435,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="space-y-4">
                     <h3 class="text-xs font-bold text-vc-primary uppercase tracking-wider flex items-center gap-2">
-                        <span class="material-symbols-outlined text-sm">info</span> Información General
+                        <span class="material-symbols-outlined text-sm">info</span> <span x-text="$store.i18n.t('form.generalInfo') || 'Información General'">Información General</span>
                     </h3>
                     <ul class="space-y-3 p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-700/50">
                         <li class="flex items-start gap-3">
@@ -453,7 +443,7 @@
                                 <span class="material-symbols-outlined text-sm">event</span>
                             </div>
                             <div>
-                                <p class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">Fecha y Hora</p>
+                                <p class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold" x-text="$store.i18n.t('table.dateTime') || 'Fecha y Hora'">Fecha y Hora</p>
                                 <p class="text-sm font-medium text-zinc-800 dark:text-zinc-200">{{ $citaVer->fecha_hora?->format('d/m/Y H:i') }}</p>
                             </div>
                         </li>
@@ -462,7 +452,7 @@
                                 <span class="material-symbols-outlined text-sm">person</span>
                             </div>
                             <div>
-                                <p class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">Cliente</p>
+                                <p class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold" x-text="$store.i18n.t('table.client') || 'Cliente'">Cliente</p>
                                 <p class="text-sm font-medium text-zinc-800 dark:text-zinc-200">{{ $citaVer->cliente?->nombre_completo }}</p>
                             </div>
                         </li>
@@ -471,7 +461,7 @@
                                 <span class="material-symbols-outlined text-sm">pets</span>
                             </div>
                             <div>
-                                <p class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">Mascota</p>
+                                <p class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold" x-text="$store.i18n.t('table.pet') || 'Mascota'">Mascota</p>
                                 <p class="text-sm font-bold text-vc-primary dark:text-vc-primary-light">{{ $citaVer->mascota?->name }}</p>
                             </div>
                         </li>
@@ -479,7 +469,7 @@
                 </div>
                 <div class="space-y-4">
                     <h3 class="text-xs font-bold text-vc-primary uppercase tracking-wider flex items-center gap-2">
-                        <span class="material-symbols-outlined text-sm">medical_services</span> Detalles Clínicos
+                        <span class="material-symbols-outlined text-sm">medical_services</span> <span x-text="$store.i18n.t('form.clinicalDetails') || 'Detalles Clínicos'">Detalles Clínicos</span>
                     </h3>
                     <ul class="space-y-3 p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-700/50 h-[calc(100%-2rem)]">
                         <li class="flex items-start gap-3">
@@ -487,8 +477,14 @@
                                 <span class="material-symbols-outlined text-sm">stethoscope</span>
                             </div>
                             <div>
-                                <p class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">Veterinario</p>
-                                <p class="text-sm font-medium text-zinc-800 dark:text-zinc-200">{{ $citaVer->veterinario?->name ?? 'No asignado' }}</p>
+                                <p class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold" x-text="$store.i18n.t('table.veterinarian') || 'Veterinario'">Veterinario</p>
+                                <p class="text-sm font-medium text-zinc-800 dark:text-zinc-200">
+                                    @if($citaVer->veterinario)
+                                        {{ $citaVer->veterinario->name }}
+                                    @else
+                                        <span x-text="$store.i18n.t('form.notAssigned') || 'No asignado'">No asignado</span>
+                                    @endif
+                                </p>
                             </div>
                         </li>
                         <li class="flex items-start gap-3">
@@ -496,7 +492,7 @@
                                 <span class="material-symbols-outlined text-sm">assignment</span>
                             </div>
                             <div>
-                                <p class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">Motivo</p>
+                                <p class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold" x-text="$store.i18n.t('table.reason') || 'Motivo'">Motivo</p>
                                 <p class="text-sm font-medium text-zinc-800 dark:text-zinc-200">{{ $citaVer->reason }}</p>
                             </div>
                         </li>
@@ -506,7 +502,7 @@
             @if($citaVer->notes)
             <div class="mt-4 p-4 rounded-xl bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/30">
                 <p class="text-[10px] font-bold text-amber-600 dark:text-amber-500 mb-2 uppercase tracking-wider flex items-center gap-2">
-                    <span class="material-symbols-outlined text-sm">sticky_note_2</span> Notas adicionales
+                    <span class="material-symbols-outlined text-sm">sticky_note_2</span> <span x-text="$store.i18n.t('form.additionalNotes') || 'Notas adicionales'">Notas adicionales</span>
                 </p>
                 <p class="text-sm text-amber-900 dark:text-amber-200 whitespace-pre-line">{{ $citaVer->notes }}</p>
             </div>
@@ -516,32 +512,35 @@
                 <div class="flex-1 flex gap-2">
                     <a href="{{ route('citas.pdf', $citaVer->id) }}" target="_blank" class="w-full sm:w-auto px-4 py-2 bg-zinc-600 hover:bg-zinc-700 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center gap-2 transition-all">
                         <span class="material-symbols-outlined icon-sm">picture_as_pdf</span>
-                        Descargar PDF
+                        <span x-text="$store.i18n.t('report.downloadPDF') || 'Descargar PDF'">Descargar PDF</span>
                     </a>
                 </div>
                 <div class="flex flex-col-reverse sm:flex-row gap-2">
                     @if($citaVer->status === 'PENDIENTE')
                         <button type="button" wire:click="cambiarEstado({{ $citaVer->id }}, 'CONFIRMADA')" class="w-full sm:w-auto px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center gap-2 transition-all">
                             <span class="material-symbols-outlined icon-sm">check_circle</span>
-                            Confirmar
+                            <span x-text="$store.i18n.t('btn.confirm') || 'Confirmar'">Confirmar</span>
                         </button>
                     @endif
 
                     @if($citaVer->historiaClinica)
                         <a href="{{ route('historias.ver', $citaVer->historiaClinica->id) }}" class="w-full sm:w-auto px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center gap-2 transition-all">
                             <span class="material-symbols-outlined icon-sm">description</span>
-                            Ver HC
+                            <span x-text="$store.i18n.t('btn.viewHC') || 'Ver HC'">Ver HC</span>
                         </a>
                     @elseif(in_array($citaVer->status, ['CONFIRMADA', 'EN_PROGRESO']) && $citaVer->fecha_hora?->isToday())
                         <button type="button" wire:click="iniciarAtencion({{ $citaVer->id }})" class="w-full sm:w-auto px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center gap-2 transition-all">
                             <span class="material-symbols-outlined icon-sm">clinical_notes</span>
-                            Iniciar Atención
+                            <span x-text="$store.i18n.t('btn.startAttention') || 'Iniciar Atención'">Iniciar Atención</span>
                         </button>
                     @endif
 
+                    <flux:modal.close>
+                        <flux:button variant="ghost"><span x-text="$store.i18n.t('btn.close') || 'Cerrar'">Cerrar</span></flux:button>
+                    </flux:modal.close>
                     <a href="{{ route('citas.editar', $citaVer->id) }}" class="w-full sm:w-auto px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center gap-2 transition-all">
                         <span class="material-symbols-outlined icon-sm">edit</span>
-                        Editar
+                        <span x-text="$store.i18n.t('btn.edit') || 'Editar'">Editar</span>
                     </a>
                     
                     <button type="button" @click="$wire.citaEliminarId = {{ $citaVer->id }}; Flux.modal('ver-cita').close(); Flux.modal('confirmar-eliminar').show()" class="btn-danger w-full sm:w-auto justify-center">
@@ -551,6 +550,30 @@
             </div>
         </div>
         @endif
+    </flux:modal>
+
+    {{-- Modal Eliminar --}}
+    <flux:modal :closable="false" name="confirmar-eliminar" class="min-w-[22rem]">
+        <div class="space-y-6">
+            <div class="flex flex-col items-center justify-center text-center space-y-5">
+                <div class="w-20 h-20 bg-red-100/50 dark:bg-red-500/20 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center border border-red-200 dark:border-red-500/30 shadow-sm shadow-red-500/10">
+                    <span class="material-symbols-outlined text-[48px]" style="font-variation-settings: 'FILL' 1, 'wght' 700;">delete</span>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-extrabold text-zinc-900 dark:text-white" x-text="$store.i18n.t('modal.deleteAppointment') || 'Eliminar Cita'">Eliminar Cita</h2>
+                    <p class="mt-3 text-sm text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto leading-relaxed" x-text="$store.i18n.t('modal.deleteAppointmentSub') || 'Esta acción no se puede deshacer. ¿Está seguro que desea eliminar esta cita del sistema?'">Esta acción no se puede deshacer. ¿Está seguro que desea eliminar esta cita del sistema?</p>
+                </div>
+            </div>
+            <div class="flex flex-col-reverse sm:flex-row gap-3 w-full mt-6">
+                <flux:spacer class="hidden sm:block" />
+                <flux:modal.close class="w-full sm:w-auto">
+                    <flux:button variant="ghost" class="w-full font-medium"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'">Cancelar</span></flux:button>
+                </flux:modal.close>
+                <button type="button" class="w-full sm:w-auto btn-danger font-medium justify-center" wire:click="eliminar" x-on:click="$dispatch('modal-close', { name: 'confirmar-eliminar' })">
+                    <span x-text="$store.i18n.t('btn.delete') || 'Eliminar'">Eliminar</span>
+                </button>
+            </div>
+        </div>
     </flux:modal>
 
 </div>
@@ -632,7 +655,7 @@
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: #a1a1aa; /* zinc-400 */
+    color: var(--vc-text-muted, #52525b);
 }
 .fc .fc-button-primary:focus, 
 .fc .fc-button-primary:not(:disabled).fc-button-active:focus {
@@ -642,7 +665,7 @@
 .fc-direction-ltr .fc-timegrid-slot-label-frame {
     text-align: right;
     font-size: 0.75rem;
-    color: #a1a1aa;
+    color: var(--vc-text-muted, #52525b);
     padding-right: 8px;
 }
 .fc .fc-list-empty {
@@ -653,7 +676,7 @@
 .fc .fc-list-empty-cushion {
     padding: 3rem;
     font-family: 'Inter', sans-serif;
-    color: #71717a; /* zinc-500 */
+    color: var(--vc-text-muted, #52525b);
     font-weight: 500;
 }
 .fc-timegrid-event, .fc-daygrid-event {
@@ -742,7 +765,7 @@ html.dark .fc .fc-list-day-cushion {
     padding: 0 !important;
 }
 .fc-theme-standard .fc-scrollgrid-section-header > th {
-    background-color: var(--fc-neutral-bg-color) !important;
+    background-color: #3f3f46 !important; /* Gris oscuro */
     padding: 0 !important;
 }
 .fc .fc-col-header-cell-cushion {
@@ -753,12 +776,18 @@ html.dark .fc .fc-list-day-cushion {
     font-weight: 700;
     font-size: 0.75rem;
     text-transform: uppercase;
-    color: #a1a1aa; 
+    color: #ffffff !important; /* White text for contrast on gris oscuro */
     transition: background-color 0.2s, color 0.2s;
 }
+html.dark .fc-theme-standard .fc-scrollgrid-section-header > th {
+    background-color: #27272a !important; /* Even darker for dark mode */
+}
+html.dark .fc .fc-col-header-cell-cushion {
+    color: #ffffff !important;
+}
 .fc .fc-col-header-cell-cushion:hover {
-    background-color: rgba(16, 185, 129, 0.1);
-    color: #10b981;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff !important;
 }
 
 /* Quitar rectangulo negro del scrollbar (gutter) */

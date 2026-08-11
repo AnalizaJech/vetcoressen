@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+@php
+    $clinic = \App\Models\Clinic::first();
+    $logoPath = $clinic && $clinic->logo ? public_path('storage/' . $clinic->logo) : public_path('favicon.svg');
+    $logoSrc = '';
+    if (file_exists($logoPath)) {
+        $logoData = base64_encode(file_get_contents($logoPath));
+        $logoMime = mime_content_type($logoPath);
+        $logoSrc = 'data:' . $logoMime . ';base64,' . $logoData;
+    }
+@endphp
+
     <meta charset="UTF-8">
     <title>Historial Clínico - {{ $mascota->name }}</title>
     <style>
@@ -49,7 +60,10 @@
     <div class="container">
         <div class="header">
             <div class="header-logo">
-                <h1>{{ config('app.name', 'VETCORESSEN') }}</h1>
+                @if($logoSrc)
+                    <img src="{{ $logoSrc }}" alt="Logo" style="max-height: 50px; margin-bottom: 5px;">
+                @endif
+                <h1 style="font-size: 20px;">{{ $clinic->name ?? config('app.name', 'VETCORESSEN') }}</h1>
                 <p>Historial Clínico Completo</p>
             </div>
             <div class="header-info">

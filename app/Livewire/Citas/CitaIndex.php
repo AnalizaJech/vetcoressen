@@ -265,7 +265,7 @@ class CitaIndex extends Component
                 });
             })
             ->orderBy('fecha_hora')
-            ->paginate(15);
+            ->paginate(12);
 
         return view('livewire.citas.cita-index', [
             'citas' => $citas,

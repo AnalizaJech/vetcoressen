@@ -107,15 +107,15 @@
 </div>
 
     {{-- Modal eliminar --}}
-    <flux:modal :closable="false" name="confirmar-eliminar" class="w-[90vw] md:w-full max-w-md">
+    <flux:modal :closable="false" name="confirmar-eliminar" class="min-w-88 overflow-y-auto max-h-[85vh]">
         <div class="space-y-6">
             <div class="flex flex-col items-center justify-center text-center space-y-5">
                 <div class="w-20 h-20 bg-red-100/50 dark:bg-red-500/20 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center border border-red-200 dark:border-red-500/30 shadow-sm shadow-red-500/10">
                     <span class="material-symbols-outlined text-[48px]" style="font-variation-settings: 'FILL' 1, 'wght' 700;">warning</span>
                 </div>
                 <div>
-                    <h2 class="text-2xl font-extrabold text-zinc-900 dark:text-white">Eliminar Mascota</h2>
-                    <p class="mt-3 text-sm text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto leading-relaxed">Esta acción no se puede revertir y perderás toda la información asociada a este registro.</p>
+                    <h2 class="text-2xl font-extrabold text-zinc-900 dark:text-white" x-text="$store.i18n.t('modal.deletePet') || 'Eliminar Mascota'">Eliminar Mascota</h2>
+                    <p class="mt-3 text-sm text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto leading-relaxed" x-text="$store.i18n.t('modal.deletePetMsg') || 'Esta acción no se puede revertir y perderás toda la información asociada a este registro.'">Esta acción no se puede revertir y perderás toda la información asociada a este registro.</p>
                 </div>
             </div>
             <div class="flex flex-col-reverse sm:flex-row gap-3 w-full mt-6">
@@ -131,7 +131,7 @@
     </flux:modal>
 
     {{-- Modal Ver Mascota --}}
-    <flux:modal :closable="false" name="ver-mascota" class="w-[90vw] md:w-full max-w-2xl">
+    <flux:modal :closable="false" name="ver-mascota" class="w-[90vw] md:w-full max-w-2xl overflow-y-auto max-h-[85vh]">
         @if($mascotaVer)
         <div class="space-y-6">
             <div class="flex items-center gap-4">
@@ -152,34 +152,34 @@
                     <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-800/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
                         <span class="material-symbols-outlined text-xl">person</span>
                     </div>
-                    <p class="text-lg font-bold text-zinc-900 dark:text-zinc-100">Información del Propietario</p>
+                    <p class="text-lg font-bold text-zinc-900 dark:text-zinc-100" x-text="$store.i18n.t('modal.ownerInfo') || 'Información del Propietario'">Información del Propietario</p>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 ml-13">
                     <div class="flex flex-col gap-1">
                         <div class="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
                             <span class="material-symbols-outlined text-[16px]">badge</span>
-                            <p class="text-xs uppercase tracking-wider font-semibold">Nombre</p>
+                            <p class="text-xs uppercase tracking-wider font-semibold" x-text="$store.i18n.t('form.name') || 'Nombre'">Nombre</p>
                         </div>
                         <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100">{{ $mascotaVer->cliente?->nombre_completo }}</p>
                     </div>
                     <div class="flex flex-col gap-1">
                         <div class="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
                             <span class="material-symbols-outlined text-[16px]">id_card</span>
-                            <p class="text-xs uppercase tracking-wider font-semibold">Identificación</p>
+                            <p class="text-xs uppercase tracking-wider font-semibold" x-text="$store.i18n.t('form.identification') || 'Identificación'">Identificación</p>
                         </div>
                         <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100">{{ $mascotaVer->cliente?->tipo_documento }}: {{ $mascotaVer->cliente?->numero_documento }}</p>
                     </div>
                     <div class="flex flex-col gap-1">
                         <div class="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
                             <span class="material-symbols-outlined text-[16px]">call</span>
-                            <p class="text-xs uppercase tracking-wider font-semibold">Contacto</p>
+                            <p class="text-xs uppercase tracking-wider font-semibold" x-text="$store.i18n.t('form.contact') || 'Contacto'">Contacto</p>
                         </div>
                         <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100">{{ $mascotaVer->cliente?->phone ?? '-' }}</p>
                     </div>
                     <div class="flex flex-col gap-1">
                         <div class="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
                             <span class="material-symbols-outlined text-[16px]">location_on</span>
-                            <p class="text-xs uppercase tracking-wider font-semibold">Ubicación</p>
+                            <p class="text-xs uppercase tracking-wider font-semibold" x-text="$store.i18n.t('form.location') || 'Ubicación'">Ubicación</p>
                         </div>
                         <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate" title="{{ $mascotaVer->cliente?->address }}">
                             {{ $mascotaVer->cliente?->address ? $mascotaVer->cliente?->address : ($mascotaVer->cliente?->distrito ?? '-') }}
@@ -190,7 +190,7 @@
                 <div class="mt-5 ml-13 pt-4 border-t border-emerald-100 dark:border-emerald-800/30">
                     <div class="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400 mb-2">
                         <span class="material-symbols-outlined text-[16px]">note</span>
-                        <p class="text-xs uppercase tracking-wider font-semibold">Notas del Propietario</p>
+                        <p class="text-xs uppercase tracking-wider font-semibold" x-text="$store.i18n.t('form.ownerNotes') || 'Notas del Propietario'">Notas del Propietario</p>
                     </div>
                     <p class="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">{{ $mascotaVer->cliente->notes }}</p>
                 </div>
@@ -201,35 +201,35 @@
                 <div>
                     <div class="flex items-center gap-2 text-zinc-500 mb-1">
                         <span class="material-symbols-outlined text-sm">transgender</span>
-                        <p class="text-xs uppercase tracking-wider font-semibold">Sexo</p>
+                        <p class="text-xs uppercase tracking-wider font-semibold" x-text="$store.i18n.t('table.sex') || 'Sexo'">Sexo</p>
                     </div>
                     <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100 pl-6">{{ $mascotaVer->gender === 'M' || $mascotaVer->gender === 'Macho' ? 'Macho' : 'Hembra' }}</p>
                 </div>
                 <div>
                     <div class="flex items-center gap-2 text-zinc-500 mb-1">
                         <span class="material-symbols-outlined text-sm">palette</span>
-                        <p class="text-xs uppercase tracking-wider font-semibold">Color</p>
+                        <p class="text-xs uppercase tracking-wider font-semibold" x-text="$store.i18n.t('table.color') || 'Color'">Color</p>
                     </div>
                     <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100 pl-6">{{ $mascotaVer->color ?? '-' }}</p>
                 </div>
                 <div>
                     <div class="flex items-center gap-2 text-zinc-500 mb-1">
                         <span class="material-symbols-outlined text-sm">cake</span>
-                        <p class="text-xs uppercase tracking-wider font-semibold">F. Nacimiento</p>
+                        <p class="text-xs uppercase tracking-wider font-semibold" x-text="$store.i18n.t('form.birthDate') || 'F. Nacimiento'">F. Nacimiento</p>
                     </div>
                     <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100 pl-6">{{ $mascotaVer->birth_date ? $mascotaVer->birth_date->format('d/m/Y') : '-' }}</p>
                 </div>
                 <div>
                     <div class="flex items-center gap-2 text-zinc-500 mb-1">
                         <span class="material-symbols-outlined text-sm">weight</span>
-                        <p class="text-xs uppercase tracking-wider font-semibold">Peso</p>
+                        <p class="text-xs uppercase tracking-wider font-semibold" x-text="$store.i18n.t('form.weight') || 'Peso'">Peso</p>
                     </div>
                     <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100 pl-6">{{ $mascotaVer->current_weight ? $mascotaVer->current_weight . ' kg' : '-' }}</p>
                 </div>
                 <div>
                     <div class="flex items-center gap-2 text-zinc-500 mb-1">
                         <span class="material-symbols-outlined text-sm">content_cut</span>
-                        <p class="text-xs uppercase tracking-wider font-semibold">Esterilizado</p>
+                        <p class="text-xs uppercase tracking-wider font-semibold" x-text="$store.i18n.t('form.sterilized') || 'Esterilizado'">Esterilizado</p>
                     </div>
                     <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100 pl-6">{{ $mascotaVer->esterilizado ? 'Sí' : 'No' }}</p>
                 </div>
@@ -239,7 +239,7 @@
             <div>
                 <div class="flex items-center gap-2 text-zinc-500 mb-2">
                     <span class="material-symbols-outlined text-sm">medical_information</span>
-                    <p class="text-xs uppercase tracking-wider font-semibold">Notas Médicas</p>
+                    <p class="text-xs uppercase tracking-wider font-semibold" x-text="$store.i18n.t('form.medicalNotes') || 'Notas Médicas'">Notas Médicas</p>
                 </div>
                 <div class="p-3 bg-zinc-50 dark:bg-vc-surface-alt/50 rounded-lg text-sm text-zinc-700 dark:text-zinc-300 ml-6">
                     {{ $mascotaVer->medical_notes }}
@@ -250,7 +250,7 @@
             <div class="flex justify-end mt-4 w-full">
                 <flux:modal.close class="w-full sm:w-auto">
                     <button type="button" class="bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300 border-none px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 w-full transition-colors">
-                        <span>Cerrar</span>
+                        <span x-text="$store.i18n.t('btn.close') || 'Cerrar'">Cerrar</span>
                     </button>
                 </flux:modal.close>
             </div>

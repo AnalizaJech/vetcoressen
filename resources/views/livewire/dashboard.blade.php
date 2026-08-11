@@ -37,8 +37,8 @@
                 <span class="material-symbols-outlined">dashboard</span>
             </div>
             <div>
-                <flux:heading size="xl"><span>Dashboard</span></flux:heading>
-                <flux:subheading><span>Resumen general de tu veterinaria</span></flux:subheading>
+                <flux:heading size="xl"><span x-text="$store.i18n.t('page.dashboard') || 'Dashboard'">Dashboard</span></flux:heading>
+                <flux:subheading><span x-text="$store.i18n.t('page.dashboardSub') || 'Resumen general de tu veterinaria'">Resumen general de tu veterinaria</span></flux:subheading>
             </div>
         </div>
 
@@ -46,15 +46,15 @@
         <div class="flex flex-wrap gap-2">
             <a href="{{ route('citas.crear') }}" class="btn-primary btn-primary--red justify-center text-xs px-3 py-1.5">
                 <span class="material-symbols-outlined icon-sm">event</span>
-                <span>Nueva Cita</span>
+                <span x-text="$store.i18n.t('btn.newAppointment') || 'Nueva Cita'">Nueva Cita</span>
             </a>
             <a href="{{ route('caja.venta') }}" class="btn-primary btn-primary--blue justify-center text-xs px-3 py-1.5">
                 <span class="material-symbols-outlined icon-sm">point_of_sale</span>
-                <span>Nueva Venta</span>
+                <span x-text="$store.i18n.t('btn.newSale') || 'Nueva Venta'">Nueva Venta</span>
             </a>
             <a href="{{ route('inventario.index') }}" class="btn-primary btn-primary--amber justify-center text-xs px-3 py-1.5">
                 <span class="material-symbols-outlined icon-sm">inventory_2</span>
-                <span>Inventario</span>
+                <span x-text="$store.i18n.t('menu.inventory') || 'Inventario'">Inventario</span>
             </a>
         </div>
     </div>
@@ -64,7 +64,7 @@
         {{-- Ingresos del día --}}
         <div class="kpi-card kpi-card--emerald animate-fade-in">
             <div class="flex items-center justify-between mb-3">
-                <span class="text-xs font-medium uppercase tracking-wide" style="color: var(--vc-text-muted);">
+                <span class="text-xs font-medium uppercase tracking-wide" style="color: var(--vc-text-muted);" x-text="$store.i18n.t('dashboard.income_{{ $filtroTiempo }}') || 'Ingresos'">
                     {{ match($filtroTiempo) { 'hoy' => 'Ingresos Hoy', 'semana' => 'Ingresos Última Semana', 'mes' => 'Ingresos Este Mes', 'anio' => 'Ingresos Este Año', default => 'Ingresos' } }}
                 </span>
                 <div class="kpi-icon kpi-icon--emerald">
@@ -82,13 +82,13 @@
         {{-- Citas pendientes --}}
         <div class="kpi-card kpi-card--blue animate-fade-in" style="animation-delay: 0.05s;">
             <div class="flex items-center justify-between mb-3">
-                <span class="text-xs font-medium uppercase tracking-wide" style="color: var(--vc-text-muted);">Citas Pendientes</span>
+                <span class="text-xs font-medium uppercase tracking-wide" style="color: var(--vc-text-muted);" x-text="$store.i18n.t('dashboard.pendingAppointments') || 'Citas Pendientes'">Citas Pendientes</span>
                 <div class="kpi-icon kpi-icon--blue">
                     <span class="material-symbols-outlined">calendar_month</span>
                 </div>
             </div>
             <p class="text-2xl md:text-3xl font-extrabold font-display" style="color: var(--vc-text);">{{ $citasPendientes }}</p>
-            <p class="text-xs mt-1.5" style="color: var(--vc-text-muted);">
+            <p class="text-xs mt-1.5" style="color: var(--vc-text-muted);" x-text="{{ $citasPendientes > 0 ? '$store.i18n.t(\'dashboard.forToday\') || \'Para hoy\'' : '$store.i18n.t(\'dashboard.noAppointmentsToday\') || \'Sin citas para hoy\'' }}">
                 {{ $citasPendientes > 0 ? 'Para hoy' : 'Sin citas para hoy' }}
             </p>
         </div>
@@ -96,13 +96,13 @@
         {{-- Alertas de inventario --}}
         <div class="kpi-card kpi-card--amber animate-fade-in" style="animation-delay: 0.1s; {{ $alertasInventario > 0 ? 'border-color: rgba(245, 158, 11, 0.4);' : '' }}">
             <div class="flex items-center justify-between mb-3">
-                <span class="text-xs font-medium uppercase tracking-wide" style="color: var(--vc-text-muted);">Alertas de Inventario</span>
+                <span class="text-xs font-medium uppercase tracking-wide" style="color: var(--vc-text-muted);" x-text="$store.i18n.t('dashboard.inventoryAlerts') || 'Alertas de Inventario'">Alertas de Inventario</span>
                 <div class="kpi-icon kpi-icon--amber">
                     <span class="material-symbols-outlined">category</span>
                 </div>
             </div>
             <p class="text-2xl md:text-3xl font-extrabold font-display" style="color: var(--vc-text);">{{ $alertasInventario }}</p>
-            <p class="text-xs mt-1.5" style="color: var(--vc-text-muted);">
+            <p class="text-xs mt-1.5" style="color: var(--vc-text-muted);" x-text="{{ $alertasInventario > 0 ? '$store.i18n.t(\'dashboard.criticalStock\') || \'Stock crítico\'' : '$store.i18n.t(\'dashboard.normalStock\') || \'Stock normal\'' }}">
                 {{ $alertasInventario > 0 ? 'Stock crítico' : 'Stock normal' }}
             </p>
         </div>
@@ -110,13 +110,13 @@
         {{-- En atención ahora (proxy: citas en progreso) --}}
         <div class="kpi-card kpi-card--red animate-fade-in" style="animation-delay: 0.15s; {{ $internados > 0 ? 'border-color: rgba(239, 68, 68, 0.4);' : '' }}">
             <div class="flex items-center justify-between mb-3">
-                <span class="text-xs font-medium uppercase tracking-wide" style="color: var(--vc-text-muted);">En atención ahora</span>
+                <span class="text-xs font-medium uppercase tracking-wide" style="color: var(--vc-text-muted);" x-text="$store.i18n.t('dashboard.inAttention') || 'En atención ahora'">En atención ahora</span>
                 <div class="kpi-icon kpi-icon--red">
                     <span class="material-symbols-outlined">local_hospital</span>
                 </div>
             </div>
             <p class="text-2xl md:text-3xl font-extrabold font-display" style="color: var(--vc-text);">{{ $internados }}</p>
-            <p class="text-xs mt-1.5" style="color: var(--vc-text-muted);">
+            <p class="text-xs mt-1.5" style="color: var(--vc-text-muted);" x-text="{{ $internados > 0 ? '$store.i18n.t(\'dashboard.petsInConsultation\') || \'Mascotas en consulta\'' : '$store.i18n.t(\'dashboard.noAttentionInProgress\') || \'Ninguna atención en progreso\'' }}">
                 {{ $internados > 0 ? 'Mascotas en consulta' : 'Ninguna atención en progreso' }}
             </p>
         </div>
@@ -132,14 +132,14 @@
 
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
                 <div>
-                    <h2 class="text-lg font-extrabold font-display text-zinc-900 dark:text-zinc-100">Ingresos</h2>
+                    <h2 class="text-lg font-extrabold font-display text-zinc-900 dark:text-zinc-100" x-text="$store.i18n.t('label.income') || 'Ingresos'">Ingresos</h2>
                     {{-- Mini KPI badge con total del periodo --}}
                     <div class="flex items-center gap-2 mt-1">
                         <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold" style="background: rgba(16, 185, 129, 0.1); color: var(--vc-emerald-light);">
                             <span class="material-symbols-outlined text-[14px]">trending_up</span>
                             S/ {{ number_format(collect($ingresosSemana)->sum('total'), 2) }}
                         </span>
-                        <span class="text-[10px]" style="color: var(--vc-text-muted);">
+                        <span class="text-[10px]" style="color: var(--vc-text-muted);" x-text="$store.i18n.t('dashboard.time_{{ $filtroTiempo }}') || '{{ match($filtroTiempo) { 'hoy' => 'acumulado hoy', 'semana' => 'esta semana', 'mes' => 'este mes', 'anio' => 'este año', default => 'total' } }}'">
                             {{ match($filtroTiempo) { 'hoy' => 'acumulado hoy', 'semana' => 'esta semana', 'mes' => 'este mes', 'anio' => 'este año', default => 'total' } }}
                         </span>
                     </div>
@@ -148,13 +148,13 @@
                     <x-vc-dropdown 
                         wire:model.live="filtroTiempo"
                         :options="[
-                            ['value' => 'hoy', 'label' => 'Hoy'],
-                            ['value' => 'semana', 'label' => 'Última Semana'],
-                            ['value' => 'mes', 'label' => 'Este Mes'],
-                            ['value' => 'anio', 'label' => 'Este Año']
+                            ['value' => 'hoy', 'label' => 'dashboard.today'],
+                            ['value' => 'semana', 'label' => 'dashboard.lastWeek'],
+                            ['value' => 'mes', 'label' => 'dashboard.thisMonth'],
+                            ['value' => 'anio', 'label' => 'dashboard.thisYear']
                         ]"
                         :selected="$filtroTiempo"
-                        placeholder="Filtrar"
+                        placeholder="dashboard.filter"
                     />
                 </div>
             </div>
@@ -196,11 +196,11 @@
 
             <div class="flex items-center justify-between mb-5">
                 <div>
-                    <h2 class="text-lg font-extrabold font-display text-zinc-900 dark:text-zinc-100">Últimas Ventas</h2>
-                    <span class="text-[10px]" style="color: var(--vc-text-muted);">{{ $ultimasVentas->count() }} transacciones recientes</span>
+                    <h2 class="text-lg font-extrabold font-display text-zinc-900 dark:text-zinc-100" x-text="$store.i18n.t('label.latestSales') || 'Últimas Ventas'">Últimas Ventas</h2>
+                    <span class="text-[10px]" style="color: var(--vc-text-muted);">{{ $ultimasVentas->count() }} <span x-text="$store.i18n.t('label.recentTransactions') || 'transacciones recientes'"></span></span>
                 </div>
                 <div class="flex gap-3">
-                    <a href="{{ route('caja.index') }}" class="text-xs font-medium flex items-center gap-1 transition-colors hover:text-emerald-600" style="color: var(--vc-emerald-light);"><span>Ver todas</span> <span class="material-symbols-outlined text-[14px]">arrow_forward</span></a>
+                    <a href="{{ route('caja.index') }}" class="text-xs font-medium flex items-center gap-1 transition-colors hover:text-emerald-600" style="color: var(--vc-emerald-light);"><span x-text="$store.i18n.t('btn.viewAll') || 'Ver todas'">Ver todas</span> <span class="material-symbols-outlined text-[14px]">arrow_forward</span></a>
                 </div>
             </div>
 
@@ -209,8 +209,8 @@
                     <div class="vc-empty-icon">
                         <span class="material-symbols-outlined">receipt_long</span>
                     </div>
-                    <p class="vc-empty-title">Sin ventas</p>
-                    <p class="vc-empty-text">No hay ventas registradas recientemente.</p>
+                    <p class="vc-empty-title" x-text="$store.i18n.t('label.noSales') || 'Sin ventas'">Sin ventas</p>
+                    <p class="vc-empty-text" x-text="$store.i18n.t('label.noRecentSales') || 'No hay ventas registradas recientemente.'">No hay ventas registradas recientemente.</p>
                 </div>
             @else
                 <div class="space-y-2 max-h-[300px] overflow-y-auto pr-2 scrollbar-thin">
@@ -236,7 +236,7 @@
                                         default => ['class' => 'badge-blue', 'icon' => 'info'],
                                     };
                                 @endphp
-                                <span class="badge {{ $estadoDetalles['class'] }} text-[10px] flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">{{ $estadoDetalles['icon'] }}</span>{{ $venta->status }}</span>
+                                <span class="badge {{ $estadoDetalles['class'] }} text-[10px] flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">{{ $estadoDetalles['icon'] }}</span><span x-text="$store.i18n.t('status.{{ strtolower($venta->status) }}') || '{{ $venta->status }}'">{{ $venta->status }}</span></span>
                             </div>
                         </div>
                     @endforeach
@@ -252,24 +252,24 @@
 
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
             <div>
-                <h2 class="text-lg font-extrabold font-display text-zinc-900 dark:text-zinc-100">Citas Programadas</h2>
-                <span class="text-[10px]" style="color: var(--vc-text-muted);">{{ $citasHoy->count() }} citas en el periodo</span>
+                <h2 class="text-lg font-extrabold font-display text-zinc-900 dark:text-zinc-100" x-text="$store.i18n.t('label.scheduledAppointments') || 'Citas Programadas'">Citas Programadas</h2>
+                <span class="text-[10px]" style="color: var(--vc-text-muted);">{{ $citasHoy->count() }} <span x-text="$store.i18n.t('label.appointmentsInPeriod') || 'citas en el periodo'"></span></span>
             </div>
             <div class="flex items-center gap-3">
                 <div class="w-32">
                     <x-vc-dropdown 
                         wire:model.live="filtroTiempoCitas"
                         :options="[
-                            ['value' => 'hoy', 'label' => 'Hoy'],
-                            ['value' => 'semana', 'label' => 'Esta Semana'],
-                            ['value' => 'mes', 'label' => 'Este Mes'],
-                            ['value' => 'anio', 'label' => 'Este Año']
+                            ['value' => 'hoy', 'label' => 'dashboard.today'],
+                            ['value' => 'semana', 'label' => 'dashboard.lastWeek'],
+                            ['value' => 'mes', 'label' => 'dashboard.thisMonth'],
+                            ['value' => 'anio', 'label' => 'dashboard.thisYear']
                         ]"
                         :selected="$filtroTiempoCitas"
-                        placeholder="Filtrar"
+                        placeholder="dashboard.filter"
                     />
                 </div>
-                <a href="{{ route('citas.index') }}" class="text-xs font-medium flex items-center gap-1 transition-colors hover:text-emerald-600" style="color: var(--vc-emerald-light);"><span>Ver todas</span> <span class="material-symbols-outlined text-[14px]">arrow_forward</span></a>
+                <a href="{{ route('citas.index') }}" class="text-xs font-medium flex items-center gap-1 transition-colors hover:text-emerald-600" style="color: var(--vc-emerald-light);"><span x-text="$store.i18n.t('btn.viewAll') || 'Ver todas'">Ver todas</span> <span class="material-symbols-outlined text-[14px]">arrow_forward</span></a>
             </div>
         </div>
 
@@ -278,8 +278,8 @@
                 <div class="vc-empty-icon">
                     <span class="material-symbols-outlined">event_available</span>
                 </div>
-                <p class="vc-empty-title">Sin citas</p>
-                <p class="vc-empty-text">No hay citas para el periodo seleccionado</p>
+                <p class="vc-empty-title" x-text="$store.i18n.t('label.noAppointments') || 'Sin citas'">Sin citas</p>
+                <p class="vc-empty-text" x-text="$store.i18n.t('label.noAppointmentsInPeriod') || 'No hay citas para el periodo seleccionado'">No hay citas para el periodo seleccionado</p>
             </div>
         @else
             <div class="space-y-2 max-h-72 overflow-y-auto custom-scrollbar pr-2">
@@ -302,7 +302,7 @@
                                 default => ['class' => 'badge-zinc', 'icon' => 'info'],
                             };
                         @endphp
-                        <span class="badge {{ $estadoDetallesCita['class'] }} shrink-0 flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">{{ $estadoDetallesCita['icon'] }}</span>{{ $citaHoy->status }}</span>
+                        <span class="badge {{ $estadoDetallesCita['class'] }} shrink-0 flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">{{ $estadoDetallesCita['icon'] }}</span><span x-text="$store.i18n.t('status.{{ strtolower($citaHoy->status) }}') || '{{ $citaHoy->status }}'">{{ $citaHoy->status }}</span></span>
                     </div>
                 @endforeach
             </div>
@@ -317,7 +317,7 @@
             </div>
             <div>
                 <p class="text-2xl font-extrabold font-display" style="color: var(--vc-text);">{{ $totalClientes }}</p>
-                <p class="text-xs" style="color: var(--vc-text-muted);">Clientes activos</p>
+                <p class="text-xs" style="color: var(--vc-text-muted);" x-text="$store.i18n.t('label.activeClients') || 'Clientes activos'">Clientes activos</p>
             </div>
         </div>
 
@@ -327,7 +327,7 @@
             </div>
             <div>
                 <p class="text-2xl font-extrabold font-display" style="color: var(--vc-text);">{{ $totalMascotas }}</p>
-                <p class="text-xs" style="color: var(--vc-text-muted);">Mascotas registradas</p>
+                <p class="text-xs" style="color: var(--vc-text-muted);" x-text="$store.i18n.t('label.registeredPets') || 'Mascotas registradas'">Mascotas registradas</p>
             </div>
         </div>
 
@@ -337,7 +337,7 @@
             </div>
             <div>
                 <p class="text-2xl font-extrabold font-display" style="color: var(--vc-text);">{{ $tipoCambio > 0 ? number_format($tipoCambio, 3) : '-' }}</p>
-                <p class="text-xs" style="color: var(--vc-text-muted);">Tipo de Cambio (USD/PEN)</p>
+                <p class="text-xs" style="color: var(--vc-text-muted);" x-text="$store.i18n.t('label.exchangeRate') || 'Tipo de Cambio (USD/PEN)'">Tipo de Cambio (USD/PEN)</p>
             </div>
         </div>
 
@@ -393,14 +393,14 @@
 
         <!-- Contenido del Modal -->
             <div class="p-6 text-center max-h-[70vh] overflow-y-auto">
-                <flux:heading size="xl" class="mb-2"><span>¡Atención de Inventario!</span></flux:heading>
+                <flux:heading size="xl" class="mb-2"><span x-text="$store.i18n.t(\'modal.inventoryAttention\') || \'¡Atención de Inventario!\'">¡Atención de Inventario!</span></flux:heading>
                 <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">
-                    <span>Se han detectado</span> <strong class="text-amber-600 dark:text-amber-500">{{ $alertasInventario }} productos</strong> <span>en stock crítico y</span> <strong class="text-amber-600 dark:text-amber-500">{{ $lotesProximosVencer->count() }} lotes</strong> <span>próximos a vencer.</span>
+                    <span x-text="$store.i18n.t(\'modal.inventoryDetected\') || \'Se han detectado\'">Se han detectado</span> <strong class="text-amber-600 dark:text-amber-500">{{ $alertasInventario }} productos</strong> <span x-text="$store.i18n.t(\'modal.productsCritical\') || \'productos en stock crítico y\'">productos en stock crítico y</span> <strong class="text-amber-600 dark:text-amber-500">{{ $lotesProximosVencer->count() }} lotes</strong> <span x-text="$store.i18n.t(\'modal.batchesExpiring\') || \'lotes próximos a vencer.\'">lotes próximos a vencer.</span>
                 </p>
 
                 @if($alertasInventario > 0)
                 <div class="bg-amber-50/50 dark:bg-amber-500/10 rounded-xl p-4 mb-4 border border-amber-100 dark:border-amber-500/20 text-left">
-                    <h4 class="text-xs font-bold uppercase text-amber-500 mb-3 tracking-wider">Productos Críticos</h4>
+                    <h4 class="text-xs font-bold uppercase text-amber-500 mb-3 tracking-wider"><span x-text="$store.i18n.t(\'modal.criticalProducts\') || \'Productos Críticos\'">Productos Críticos</span></h4>
                     <ul class="space-y-3">
                         @foreach($productosEnAlerta->take(3) as $productoAlerta)
                         <li class="flex items-center justify-between">
@@ -414,21 +414,21 @@
                                 </div>
                             </div>
                             <div class="text-right">
-                                <span class="badge badge-amber font-bold text-xs flex items-center gap-1 justify-end"><span class="material-symbols-outlined text-[14px]">warning</span> <span>Stock:</span> {{ round($productoAlerta->current_stock) }}</span>
-                                <p class="text-[10px] text-zinc-400 mt-1"><span>Min:</span> {{ round($productoAlerta->minimum_stock) }}</p>
+                                <span class="badge badge-amber font-bold text-xs flex items-center gap-1 justify-end"><span class="material-symbols-outlined text-[14px]">warning</span> <span x-text="$store.i18n.t(\'label.stock\') || \'Stock:\'">Stock:</span> {{ round($productoAlerta->current_stock) }}</span>
+                                <p class="text-[10px] text-zinc-400 mt-1"><span x-text="$store.i18n.t(\'label.min\') || \'Min:\'">Min:</span> {{ round($productoAlerta->minimum_stock) }}</p>
                             </div>
                         </li>
                         @endforeach
                     </ul>
                     @if($alertasInventario > 3)
-                        <p class="text-xs text-center text-red-500/70 mt-3 font-medium">Y {{ $alertasInventario - 3 }} productos más...</p>
+                        <p class="text-xs text-center text-red-500/70 mt-3 font-medium"><span x-text="($store.i18n.t(\'modal.moreProducts\') || \'Y {n} productos más...\').replace(\'{n}\', \'{{ $alertasInventario - 3 }}\')">Y {{ $alertasInventario - 3 }} productos más...</span></p>
                     @endif
                 </div>
                 @endif
 
                 @if($lotesProximosVencer->count() > 0)
                 <div class="bg-amber-50/50 dark:bg-amber-500/10 rounded-xl p-4 mb-6 border border-amber-100 dark:border-amber-500/20 text-left">
-                    <h4 class="text-xs font-bold uppercase text-amber-500 mb-3 tracking-wider">Lotes Próximos a Vencer</h4>
+                    <h4 class="text-xs font-bold uppercase text-amber-500 mb-3 tracking-wider"><span x-text="$store.i18n.t(\'modal.expiringBatches\') || \'Lotes Próximos a Vencer\'">Lotes Próximos a Vencer</span></h4>
                     <ul class="space-y-3">
                         @foreach($lotesProximosVencer->take(5) as $loteAlerta)
                         @php
@@ -456,18 +456,18 @@
                                 <span class="material-symbols-outlined {{ $textColor }} text-xl">{{ $vencimientoIcono }}</span>
                                 <div>
                                     <p class="text-sm font-semibold text-zinc-800 dark:text-zinc-200 line-clamp-1" title="{{ $loteAlerta->product?->name }}">{{ Str::limit($loteAlerta->product?->name ?? 'Producto', 30) }}</p>
-                                    <p class="text-xs text-zinc-500"><span>Lote:</span> {{ $loteAlerta->lote }}</p>
+                                    <p class="text-xs text-zinc-500"><span x-text="$store.i18n.t(\'label.batch\') || \'Lote:\'">Lote:</span> {{ $loteAlerta->lote }}</p>
                                 </div>
                             </div>
                             <div class="text-right">
                                 <span class="badge {{ $vencimientoClase }} font-bold text-xs flex items-center gap-1 justify-end"><span class="material-symbols-outlined text-[14px]">{{ $vencimientoIcono }}</span> {{ \Carbon\Carbon::parse($loteAlerta->fecha_vencimiento)->format('d/m/Y') }}</span>
-                                <p class="text-[10px] text-zinc-400 mt-1"><span>Stock:</span> {{ round($loteAlerta->stock_actual) }}</p>
+                                <p class="text-[10px] text-zinc-400 mt-1"><span x-text="$store.i18n.t(\'label.stock\') || \'Stock:\'">Stock:</span> {{ round($loteAlerta->stock_actual) }}</p>
                             </div>
                         </li>
                         @endforeach
                     </ul>
                     @if($lotesProximosVencer->count() > 5)
-                        <p class="text-xs text-center text-amber-500/70 mt-3 font-medium">Y {{ $lotesProximosVencer->count() - 5 }} lotes más...</p>
+                        <p class="text-xs text-center text-amber-500/70 mt-3 font-medium"><span x-text="($store.i18n.t(\'modal.moreBatches\') || \'Y {n} lotes más...\').replace(\'{n}\', \'{{ $lotesProximosVencer->count() - 5 }}\')">Y {{ $lotesProximosVencer->count() - 5 }} lotes más...</span></p>
                     @endif
                 </div>
                 @endif
@@ -475,14 +475,13 @@
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mt-4">
                     <flux:modal.close class="w-full sm:w-auto">
                         <flux:button variant="ghost" class="w-full sm:w-auto flex items-center gap-2 justify-center">
-                            <span class="material-symbols-outlined icon-sm">close</span>
-                            <span>Entendido</span>
+                            <span x-text="$store.i18n.t('btn.understood') || 'Entendido'">Entendido</span>
                         </flux:button>
                     </flux:modal.close>
                     <a href="{{ route('inventario.index') }}" class="w-full sm:w-auto">
                         <button type="button" class="btn-primary btn-primary--amber w-full sm:w-auto justify-center px-4 py-2 font-medium flex items-center gap-2">
-                            <span class="material-symbols-outlined icon-sm">archive</span>
-                            <span>Reponer Stock</span>
+                            <span class="material-symbols-outlined icon-sm">inventory_2</span>
+                            <span x-text="$store.i18n.t('btn.replenishStock') || 'Reponer Stock'">Reponer Stock</span>
                         </button>
                     </a>
                 </div>
@@ -498,11 +497,11 @@
             </div>
             
             <h2 class="text-xl font-extrabold font-display text-zinc-900 dark:text-zinc-100 mb-2">
-                Citas Próximas
+                <span x-text="$store.i18n.t(\'modal.upcomingAppointments\') || \'Citas Próximas\'">Citas Próximas</span>
             </h2>
             
             <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">
-                Tienes {{ $citasProximas->count() }} cita(s) programada(s) para las próximas 2 horas.
+                <span x-text="($store.i18n.t(\'modal.appointmentsScheduled\') || \'Tienes {n} cita(s) programada(s) para las próximas 2 horas.\').replace(\'{n}\', \'{{ $citasProximas->count() }}\')">Tienes {{ $citasProximas->count() }} cita(s) programada(s) para las próximas 2 horas.</span>
             </p>
 
             <div class="bg-blue-50/50 dark:bg-blue-500/10 rounded-xl p-4 mb-6 border border-blue-100 dark:border-blue-500/20 text-left">
@@ -527,14 +526,13 @@
             <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mt-4">
                 <flux:modal.close class="w-full sm:w-auto">
                     <button type="button" class="w-full sm:w-auto px-4 py-2 text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl font-medium transition-colors flex items-center justify-center gap-2">
-                        <span class="material-symbols-outlined icon-sm">close</span>
-                        <span>Cerrar</span>
+                        <span x-text="$store.i18n.t('btn.close') || 'Cerrar'">Cerrar</span>
                     </button>
                 </flux:modal.close>
                 <a href="{{ route('citas.index') }}" class="w-full sm:w-auto">
                     <button type="button" class="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white rounded-xl shadow-sm hover:shadow transition-all px-4 py-2 font-medium flex items-center justify-center gap-2">
                         <span class="material-symbols-outlined icon-sm">calendar_month</span>
-                        <span>Ir a Citas</span>
+                        <span x-text="$store.i18n.t('btn.goToAppointments') || 'Ir a Citas'">Ir a Citas</span>
                     </button>
                 </a>
             </div>

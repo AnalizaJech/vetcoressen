@@ -16,7 +16,7 @@
         <div class="w-full sm:w-auto mt-2 sm:mt-0 flex items-center gap-2">
             <a href="{{ route('inventario.entrada') }}" class="w-full sm:w-auto btn-secondary justify-center">
                 <span class="material-symbols-outlined icon-sm">add_box</span>
-                Recepcionar Pedido
+                <span x-text="$store.i18n.t('btn.receiveOrder') || 'Recepcionar Pedido'">Recepcionar Pedido</span>
             </a>
             <a href="{{ route('inventario.crear') }}" class="w-full sm:w-auto btn-primary justify-center">
                 <span class="material-symbols-outlined icon-sm">add</span>
@@ -28,23 +28,23 @@
     <x-vc-table-layout 
         :data="$productos"
         icon="inventory_2"
-        emptyTitle="Sin productos"
-        emptyText="No hay productos que coincidan con los filtros."
+        emptyTitle="table.empty"
+        emptyText="table.emptyText"
         searchModel="busqueda"
-        searchPlaceholder="Buscar producto, categoría..."
+        searchPlaceholder="table.searchProduct"
     >
         <x-slot:filters>
             <x-vc-dropdown
                 wire:model.live="filtroTipo"
                 :options="[
-                    ['value' => '', 'label' => 'Todos los Tipos'],
-                    ['value' => 'Medicamento', 'label' => 'Medicamento'],
-                    ['value' => 'Alimento', 'label' => 'Alimento'],
-                    ['value' => 'Accesorio', 'label' => 'Accesorio'],
-                    ['value' => 'Servicio', 'label' => 'Servicio'],
+                    ['value' => '', 'label' => 'filter.allTypes'],
+                    ['value' => 'Medicamento', 'label' => 'inventory.medication'],
+                    ['value' => 'Alimento', 'label' => 'inventory.food'],
+                    ['value' => 'Accesorio', 'label' => 'inventory.accessory'],
+                    ['value' => 'Servicio', 'label' => 'inventory.service'],
                 ]"
                 :selected="$filtroTipo"
-                placeholder="Todos los Tipos"
+                placeholder="filter.allTypes"
             />
             <div class="flex items-center gap-2 px-2 bg-white dark:bg-vc-surface-alt rounded-lg border border-zinc-200 dark:border-zinc-700 h-10">
                 <flux:checkbox wire:model.live="soloStockBajo" />
@@ -100,7 +100,7 @@
                             <div class="flex items-center mt-1">
                                 <span class="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium ring-1 ring-inset {{ $badgeClasses }}">
                                     <span class="material-symbols-outlined text-[12px]">{{ $iconName }}</span>
-                                    {{ $producto->type }}
+                                    <span x-text="$store.i18n.t('inventory.{{ strtolower($producto->type) }}') || '{{ $producto->type }}'"></span>
                                 </span>
                             </div>
                         </div>
@@ -141,7 +141,7 @@
                                         <span class="text-xs text-zinc-700 dark:text-zinc-300">{{ $loteProximo->lote }}</span>
                                         <span class="text-[10px] text-zinc-500 block">{{ $loteProximo->fecha_vencimiento->format('d/m/Y') }}</span>
                                     @else
-                                        <span class="text-xs text-zinc-500 dark:text-zinc-400 italic">S/L</span>
+                                        <span class="text-xs text-zinc-500 dark:text-zinc-400 italic" x-text="$store.i18n.t('misc.notAvailable') || 'S/L'">S/L</span>
                                     @endif
                                 </div>
                             </div>
@@ -176,31 +176,31 @@
 </div>
 
     {{-- Modal de confirmacion --}}
-    <flux:modal :closable="false" name="confirmar-eliminar" class="w-[90vw] md:w-full max-w-md">
+    <flux:modal :closable="false" name="confirmar-eliminar" class="min-w-88 overflow-y-auto max-h-[85vh]">
         <div class="space-y-6">
             <div class="flex flex-col items-center justify-center text-center space-y-5">
-                <div class="w-20 h-20 bg-amber-100/50 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 rounded-full flex items-center justify-center border border-amber-200 dark:border-amber-500/30 shadow-sm shadow-amber-500/10">
+                <div class="w-20 h-20 bg-red-100/50 dark:bg-red-500/20 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center border border-red-200 dark:border-red-500/30 shadow-sm shadow-red-500/10">
                     <span class="material-symbols-outlined text-[48px]" style="font-variation-settings: 'FILL' 1, 'wght' 700;">warning</span>
                 </div>
                 <div>
-                    <h2 class="text-2xl font-extrabold text-zinc-900 dark:text-white" x-text="$store.i18n.t('modal.deleteProduct') === 'modal.deleteProduct' ? 'Eliminar Producto' : $store.i18n.t('modal.deleteProduct')">Eliminar Producto</h2>
-                    <p class="mt-3 text-sm text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto leading-relaxed" x-text="$store.i18n.t('modal.deleteProductMsg') === 'modal.deleteProductMsg' ? 'Esta acción no se puede revertir y perderás toda la información asociada a este registro.' : $store.i18n.t('modal.deleteProductMsg')">Esta acción no se puede revertir y perderás toda la información asociada a este registro.</p>
+                    <h2 class="text-2xl font-extrabold text-zinc-900 dark:text-white" x-text="$store.i18n.t('modal_extra.deleteProduct') || 'Eliminar Producto'">Eliminar Producto</h2>
+                    <p class="mt-3 text-sm text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto leading-relaxed" x-text="$store.i18n.t('modal_extra.deleteProductMsg') || 'Esta acción no se puede revertir y perderás toda la información asociada a este registro.'">Esta acción no se puede revertir y perderás toda la información asociada a este registro.</p>
                 </div>
             </div>
             <div class="flex flex-col-reverse sm:flex-row gap-3 w-full mt-6">
                 <flux:spacer class="hidden sm:block" />
                 <flux:modal.close class="w-full sm:w-auto">
-                    <flux:button variant="ghost" class="w-full font-medium"><span x-text="$store.i18n.t('btn.cancel') === 'btn.cancel' ? 'Cancelar' : $store.i18n.t('btn.cancel')">Cancelar</span></flux:button>
+                    <flux:button variant="ghost" class="w-full font-medium"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'">Cancelar</span></flux:button>
                 </flux:modal.close>
-                <button type="button" class="w-full sm:w-auto bg-amber-600 hover:bg-amber-700 text-white rounded-xl shadow-sm hover:shadow transition-all px-4 py-2 font-medium flex items-center justify-center gap-2" wire:click="eliminar" x-on:click="Flux.modal('confirmar-eliminar').close()">
-                    <span x-text="$store.i18n.t('btn.delete') === 'btn.delete' ? 'Eliminar' : $store.i18n.t('btn.delete')">Eliminar</span>
-                </button>
+                <flux:button type="button" variant="danger" wire:click="eliminar" x-on:click="$dispatch('modal-close', { name: 'confirmar-eliminar' })" class="w-full sm:w-auto">
+                    <span x-text="$store.i18n.t('btn.delete') || 'Eliminar'">Eliminar</span>
+                </flux:button>
             </div>
         </div>
     </flux:modal>
 
     {{-- Modal Ver Producto --}}
-    <flux:modal name="ver-producto" class="w-[90vw] md:w-full max-w-2xl">
+    <flux:modal :closable="false" name="ver-producto" class="w-[90vw] md:w-full max-w-2xl overflow-y-auto max-h-[85vh]">
         @if($productoVer)
         <div class="space-y-4">
             <div class="flex justify-between items-start border-b border-zinc-100 dark:border-zinc-700/50 pb-4 pr-6">
@@ -211,13 +211,13 @@
                     </h2>
                     <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1 flex items-center gap-2">
                         <span class="material-symbols-outlined text-[16px]">category</span>
-                        {{ $productoVer->categoria ?? 'Sin categoría' }}
+                        {{ $productoVer->categoria ?? '' }} <span x-show="!('{{ $productoVer->categoria }}')" x-text="$store.i18n.t('form.noCategory') || 'Sin categoría'">Sin categoría</span>
                     </p>
                 </div>
                 <div class="flex gap-2">
                     <span class="badge {{ $productoVer->is_active ? 'badge-emerald' : 'badge-zinc' }}">
                         <span class="material-symbols-outlined text-xs mr-1">{{ $productoVer->is_active ? 'check_circle' : 'cancel' }}</span>
-                        {{ $productoVer->is_active ? 'Activo' : 'Inactivo' }}
+                        <span x-text="$store.i18n.t({{ $productoVer->is_active ? '\'status.activo\'' : '\'status.inactivo\'' }})"></span>
                     </span>
                     @php
                         $tipoColor = match(strtoupper($productoVer->type)) {
@@ -230,7 +230,7 @@
                         $iconName = strtoupper(trim($productoVer->type)) === 'SERVICIO' ? 'medical_services' : (strtoupper(trim($productoVer->type)) === 'MEDICAMENTO' ? 'medication' : (strtoupper(trim($productoVer->type)) === 'ALIMENTO' ? 'pets' : 'inventory_2'));
                     @endphp
                     <flux:badge size="sm" :color="$tipoColor">
-                        <span class="material-symbols-outlined text-[14px] mr-1">{{ $iconName }}</span> {{ $productoVer->type }}
+                        <span class="material-symbols-outlined text-[14px] mr-1">{{ $iconName }}</span> <span x-text="$store.i18n.t('inventory.{{ strtolower($productoVer->type) }}') || '{{ $productoVer->type }}'"></span>
                     </flux:badge>
                 </div>
             </div>
@@ -245,11 +245,11 @@
                     
                     @if($productoVer->type === 'Medicamento')
                         <div class="flex flex-col">
-                            <span class="text-xs text-zinc-500 dark:text-zinc-400 uppercase font-semibold tracking-wider">Principio Activo</span>
+                            <span class="text-xs text-zinc-500 dark:text-zinc-400 uppercase font-semibold tracking-wider" x-text="$store.i18n.t('form.activeIngredient') || 'Principio Activo'">Principio Activo</span>
                             <span class="text-sm font-medium text-zinc-900 dark:text-white">{{ $productoVer->principio_activo ?? '-' }}</span>
                         </div>
                         <div class="flex flex-col">
-                            <span class="text-xs text-zinc-500 dark:text-zinc-400 uppercase font-semibold tracking-wider">Presentación</span>
+                            <span class="text-xs text-zinc-500 dark:text-zinc-400 uppercase font-semibold tracking-wider" x-text="$store.i18n.t('form.presentation') || 'Presentación'">Presentación</span>
                             <span class="text-sm font-medium text-zinc-900 dark:text-white">{{ $productoVer->presentacion ?? '-' }}</span>
                         </div>
                         <div class="flex items-center gap-2 mt-2">
@@ -257,19 +257,19 @@
                                 {{ $productoVer->requiere_receta ? 'prescription' : 'check_circle' }}
                             </span>
                             <span class="text-sm font-medium {{ $productoVer->requiere_receta ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400' }}">
-                                {{ $productoVer->requiere_receta ? 'Requiere Receta' : 'Venta Libre' }}
+                                <span x-text="$store.i18n.t({{ $productoVer->requiere_receta ? '\'form.requiresPrescription\'' : '\'form.overTheCounter\'' }})"></span>
                             </span>
                         </div>
                     @elseif($productoVer->type === 'Alimento')
                         <div class="flex flex-col">
-                            <span class="text-xs text-zinc-500 dark:text-zinc-400 uppercase font-semibold tracking-wider">Peso / Presentación</span>
+                            <span class="text-xs text-zinc-500 dark:text-zinc-400 uppercase font-semibold tracking-wider" x-text="$store.i18n.t('form.weightPresentation') || 'Peso / Presentación'">Peso / Presentación</span>
                             <span class="text-sm font-medium text-zinc-900 dark:text-white">{{ $productoVer->weight ?? '-' }}</span>
                         </div>
                     @endif
                     
                     @if($productoVer->type !== 'Servicio')
                     <div class="flex flex-col">
-                        <span class="text-xs text-zinc-500 dark:text-zinc-400 uppercase font-semibold tracking-wider">Código de Barras</span>
+                        <span class="text-xs text-zinc-500 dark:text-zinc-400 uppercase font-semibold tracking-wider" x-text="$store.i18n.t('form.barcode') || 'Código de Barras'">Código de Barras</span>
                         <div class="flex items-center gap-2">
                             <span class="material-symbols-outlined text-sm text-zinc-400">barcode</span>
                             <span class="text-sm font-medium text-zinc-900 dark:text-white font-mono">{{ $productoVer->codigo_barras ?? '-' }}</span>
@@ -280,16 +280,15 @@
 
                 {{-- Columna 2: Stock y Precio --}}
                 <div class="space-y-4">
-                    <h3 class="text-sm font-semibold text-zinc-900 dark:text-white uppercase tracking-wider mb-2 flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">payments</span> Precios y Stock</h3>
+                    <h3 class="text-sm font-semibold text-zinc-900 dark:text-white uppercase tracking-wider mb-2 flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">payments</span> <span x-text="$store.i18n.t('form.pricesAndStock') || 'Precios y Stock'">Precios y Stock</span></h3>
                     
-                    <div>
                         <div class="flex justify-between items-center mb-2">
-                            <span class="text-sm text-zinc-500 dark:text-zinc-400">Precio de Venta</span>
+                            <span class="text-sm text-zinc-500 dark:text-zinc-400" x-text="$store.i18n.t('form.salePrice') || 'Precio de Venta'">Precio de Venta</span>
                             <span class="text-lg font-bold text-emerald-600 dark:text-emerald-400">S/ {{ number_format($productoVer->precio_final, 2) }}</span>
                         </div>
                         <div class="flex items-center gap-2 mt-1">
                             <span class="text-xs font-medium px-2 py-0.5 rounded-full {{ $productoVer->afecto_igv ? 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400' : 'bg-zinc-200 text-zinc-700 dark:bg-zinc-700 dark:text-zinc-300' }}">
-                                {{ $productoVer->afecto_igv ? '+ IGV (18%)' : 'Inafecto' }}
+                                <span x-text="$store.i18n.t({{ $productoVer->afecto_igv ? '\'form.withIGV\'' : '\'form.withoutIGV\'' }})"></span>
                             </span>
                         </div>
                     </div>
@@ -297,13 +296,13 @@
                     @if(trim(strtoupper($productoVer->type)) !== 'SERVICIO')
                     <div class="flex justify-between items-center pt-2">
                         <div class="flex flex-col">
-                            <span class="text-xs text-zinc-500 dark:text-zinc-400 uppercase font-semibold tracking-wider">Stock Actual</span>
+                            <span class="text-xs text-zinc-500 dark:text-zinc-400 uppercase font-semibold tracking-wider" x-text="$store.i18n.t('table.stock') || 'Stock Actual'">Stock Actual</span>
                             <span class="text-lg font-bold {{ $productoVer->current_stock <= $productoVer->minimum_stock ? 'text-red-600 dark:text-red-400' : 'text-zinc-900 dark:text-white' }}">
                                 {{ round($productoVer->current_stock) }}
                             </span>
                         </div>
                         <div class="flex flex-col items-end">
-                            <span class="text-xs text-zinc-500 dark:text-zinc-400 uppercase font-semibold tracking-wider">Stock Mínimo</span>
+                            <span class="text-xs text-zinc-500 dark:text-zinc-400 uppercase font-semibold tracking-wider" x-text="$store.i18n.t('form.minStock') || 'Stock Mínimo'">Stock Mínimo</span>
                             <span class="text-sm font-medium text-zinc-600 dark:text-zinc-300">{{ floatval($productoVer->minimum_stock) }}</span>
                         </div>
                     </div>
@@ -311,7 +310,7 @@
                     
                     @if(in_array(trim(strtoupper($productoVer->type)), ['MEDICAMENTO', 'ALIMENTO']))
                     <div class="pt-4 mt-2 border-t border-zinc-200 dark:border-zinc-700">
-                        <span class="text-xs text-zinc-500 dark:text-zinc-400 uppercase font-semibold tracking-wider mb-2 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">inventory</span> Lotes Activos</span>
+                        <span class="text-xs text-zinc-500 dark:text-zinc-400 uppercase font-semibold tracking-wider mb-2 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">inventory</span> <span x-text="$store.i18n.t('form.activeBatches') || 'Lotes Activos'">Lotes Activos</span></span>
                         <div class="space-y-2">
                             @php
                                 $lotes = $productoVer->productBatches->where('stock_actual', '>', 0)->sortBy('fecha_vencimiento');
@@ -319,15 +318,15 @@
                             @forelse($lotes as $lote)
                             <div class="flex justify-between items-center bg-zinc-50 dark:bg-vc-surface-alt/50 p-2 rounded-lg">
                                 <div class="flex flex-col">
-                                    <span class="text-sm font-medium text-zinc-900 dark:text-white">Lote: {{ $lote->lote }}</span>
-                                    <span class="text-xs text-zinc-500 dark:text-zinc-400">Vence: {{ $lote->fecha_vencimiento ? $lote->fecha_vencimiento->format('d/m/Y') : 'N/A' }}</span>
+                                    <span class="text-sm font-medium text-zinc-900 dark:text-white"><span x-text="$store.i18n.t('form.batch') || 'Lote'">Lote</span>: {{ $lote->lote }}</span>
+                                    <span class="text-xs text-zinc-500 dark:text-zinc-400"><span x-text="$store.i18n.t('form.expires') || 'Vence'">Vence</span>: {{ $lote->fecha_vencimiento ? $lote->fecha_vencimiento->format('d/m/Y') : 'N/A' }}</span>
                                 </div>
                                 <div class="flex flex-col items-end">
-                                    <span class="text-sm font-bold text-zinc-700 dark:text-zinc-300">Stock: {{ $lote->stock_actual }}</span>
+                                    <span class="text-sm font-bold text-zinc-700 dark:text-zinc-300"><span x-text="$store.i18n.t('table.stock') || 'Stock'">Stock</span>: {{ $lote->stock_actual }}</span>
                                 </div>
                             </div>
                             @empty
-                            <p class="text-sm text-zinc-500 dark:text-zinc-400 italic">No hay lotes activos</p>
+                            <p class="text-sm text-zinc-500 dark:text-zinc-400 italic" x-text="$store.i18n.t('form.noActiveBatches') || 'No hay lotes activos'">No hay lotes activos</p>
                             @endforelse
                         </div>
                     </div>
@@ -337,7 +336,7 @@
 
             @if($productoVer->notes)
             <div class="pt-4 border-t border-zinc-200 dark:border-zinc-700">
-                <span class="text-xs text-zinc-500 dark:text-zinc-400 uppercase font-semibold tracking-wider mb-1 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">notes</span> Notas / Observaciones</span>
+                <span class="text-xs text-zinc-500 dark:text-zinc-400 uppercase font-semibold tracking-wider mb-1 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">notes</span> <span x-text="$store.i18n.t('form.notes') || 'Notas / Observaciones'">Notas / Observaciones</span></span>
                 <p class="text-sm text-zinc-700 dark:text-zinc-300">
                     {{ $productoVer->notes }}
                 </p>
@@ -345,8 +344,9 @@
             @endif
 
             <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-zinc-200 dark:border-zinc-700">
-                <flux:modal.close>
+                <flux:modal.close class="overflow-y-auto max-h-[85vh]">
                     <flux:button variant="ghost">
+                        <span class="material-symbols-outlined text-sm mr-1">close</span>
                         <span x-text="$store.i18n.t('btn.close') === 'btn.close' ? 'Cerrar' : $store.i18n.t('btn.close')">Cerrar</span>
                     </flux:button>
                 </flux:modal.close>

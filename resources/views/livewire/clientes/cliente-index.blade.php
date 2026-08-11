@@ -102,15 +102,15 @@
 </div>
 
     {{-- Modal de confirmacion --}}
-    <flux:modal :closable="false" name="confirmar-eliminar" class="w-[90vw] md:w-full max-w-md">
+    <flux:modal :closable="false" name="confirmar-eliminar" class="min-w-88 overflow-y-auto max-h-[85vh]">
         <div class="space-y-6">
             <div class="flex flex-col items-center justify-center text-center space-y-5">
                 <div class="w-20 h-20 bg-red-100/50 dark:bg-red-500/20 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center border border-red-200 dark:border-red-500/30 shadow-sm shadow-red-500/10">
                     <span class="material-symbols-outlined text-[48px]" style="font-variation-settings: 'FILL' 1, 'wght' 700;">warning</span>
                 </div>
                 <div>
-                    <h2 class="text-2xl font-extrabold text-zinc-900 dark:text-white">Eliminar Cliente</h2>
-                    <p class="mt-3 text-sm text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto leading-relaxed">Esta acción no se puede revertir y perderás toda la información asociada a este registro.</p>
+                    <h2 class="text-2xl font-extrabold text-zinc-900 dark:text-white" x-text="$store.i18n.t('modal.deleteClient') || 'Eliminar Cliente'">Eliminar Cliente</h2>
+                    <p class="mt-3 text-sm text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto leading-relaxed" x-text="$store.i18n.t('modal.deleteClientMsg') || 'Esta acción no se puede revertir y perderás toda la información asociada a este registro.'">Esta acción no se puede revertir y perderás toda la información asociada a este registro.</p>
                 </div>
             </div>
             <div class="flex flex-col-reverse sm:flex-row gap-3 w-full mt-6">
@@ -126,7 +126,7 @@
     </flux:modal>
 
     {{-- Modal Ver Cliente --}}
-    <flux:modal :closable="false" name="ver-cliente" class="w-[90vw] md:w-full max-w-2xl">
+    <flux:modal :closable="false" name="ver-cliente" class="w-[90vw] md:w-full max-w-2xl overflow-y-auto max-h-[85vh]">
         @if($clienteVer)
         <div class="space-y-6">
             <div class="flex items-center gap-4">
@@ -146,21 +146,21 @@
                 <div>
                     <div class="flex items-center gap-2 text-zinc-500 mb-1">
                         <span class="material-symbols-outlined text-sm">mail</span>
-                        <p class="text-xs uppercase tracking-wider font-semibold">Email</p>
+                        <p class="text-xs uppercase tracking-wider font-semibold" x-text="$store.i18n.t('form.email') || 'Email'">Email</p>
                     </div>
                     <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100 pl-6">{{ $clienteVer->email ?? '-' }}</p>
                 </div>
                 <div>
                     <div class="flex items-center gap-2 text-zinc-500 mb-1">
                         <span class="material-symbols-outlined text-sm">phone</span>
-                        <p class="text-xs uppercase tracking-wider font-semibold">Teléfono</p>
+                        <p class="text-xs uppercase tracking-wider font-semibold" x-text="$store.i18n.t('form.phone') || 'Teléfono'">Teléfono</p>
                     </div>
                     <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100 pl-6">{{ $clienteVer->phone ?? '-' }}</p>
                 </div>
                 <div class="col-span-1 sm:col-span-2">
                     <div class="flex items-center gap-2 text-zinc-500 mb-1">
                         <span class="material-symbols-outlined text-sm">location_on</span>
-                        <p class="text-xs uppercase tracking-wider font-semibold">Dirección</p>
+                        <p class="text-xs uppercase tracking-wider font-semibold" x-text="$store.i18n.t('form.address') || 'Dirección'">Dirección</p>
                     </div>
                     <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100 pl-6">
                         {{ $clienteVer->address ? $clienteVer->address . ', ' : '' }}
@@ -175,7 +175,7 @@
                 <div>
                     <div class="flex items-center gap-2 text-zinc-500 mb-1">
                         <span class="material-symbols-outlined text-sm">pets</span>
-                        <p class="text-xs uppercase tracking-wider font-semibold">Mascotas Registradas</p>
+                        <p class="text-xs uppercase tracking-wider font-semibold" x-text="$store.i18n.t('page.pets') || 'Mascotas Registradas'">Mascotas Registradas</p>
                     </div>
                     <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100 pl-6">{{ $clienteVer->mascotas->count() }}</p>
                 </div>
@@ -185,7 +185,7 @@
             <div>
                 <div class="flex items-center gap-2 text-zinc-500 mb-2">
                     <span class="material-symbols-outlined text-sm">notes</span>
-                    <p class="text-xs uppercase tracking-wider font-semibold">Notas</p>
+                    <p class="text-xs uppercase tracking-wider font-semibold" x-text="$store.i18n.t('form.notes') || 'Notas'">Notas</p>
                 </div>
                 <div class="p-3 bg-zinc-50 dark:bg-vc-surface-alt/50 rounded-lg text-sm text-zinc-700 dark:text-zinc-300 ml-6">
                     {{ $clienteVer->notes }}
@@ -196,7 +196,7 @@
             <div class="flex justify-end mt-4 w-full">
                 <flux:modal.close class="w-full sm:w-auto">
                     <button type="button" class="bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300 border-none px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 w-full transition-colors">
-                        <span>Cerrar</span>
+                        <span x-text="$store.i18n.t('btn.close') || 'Cerrar'">Cerrar</span>
                     </button>
                 </flux:modal.close>
             </div>

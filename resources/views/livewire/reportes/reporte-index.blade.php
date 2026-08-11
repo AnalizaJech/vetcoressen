@@ -17,10 +17,10 @@
                     <x-vc-dropdown 
                         wire:model.live="periodo"
                         :options="[
-                            ['value' => 'hoy', 'label' => 'Hoy'],
-                            ['value' => 'semana_actual', 'label' => 'Esta Semana'],
-                            ['value' => 'mes_actual', 'label' => 'Este Mes'],
-                            ['value' => 'año_actual', 'label' => 'Este Año']
+                            ['value' => 'hoy', 'label' => 'report.today'],
+                            ['value' => 'semana_actual', 'label' => 'report.thisWeek'],
+                            ['value' => 'mes_actual', 'label' => 'report.thisMonth'],
+                            ['value' => 'año_actual', 'label' => 'report.thisYear']
                         ]"
                         :selected="$periodo"
                         placeholder="filter.period"
@@ -28,11 +28,11 @@
                 </div>
                 <button type="button" wire:click="exportarPdf" class="btn-primary bg-zinc-700 hover:bg-zinc-800 border-zinc-700 print:hidden flex items-center justify-center gap-2">
                     <span class="material-symbols-outlined icon-sm">picture_as_pdf</span>
-                    Descargar PDF
+                    <span x-text="$store.i18n.t('report.downloadPDF') || 'Descargar PDF'">Descargar PDF</span>
                 </button>
                 <button type="button" wire:click="exportarCsv" class="btn-primary bg-emerald-600 hover:bg-emerald-700 border-emerald-600 print:hidden flex items-center justify-center gap-2">
                     <span class="material-symbols-outlined icon-sm">table_view</span>
-                    Exportar Datos (CSV)
+                    <span x-text="$store.i18n.t('report.exportCSV') || 'Exportar Datos (CSV)'">Exportar Datos (CSV)</span>
                 </button>
             </div>
         </div>
@@ -86,7 +86,10 @@
                         <h3 class="text-3xl font-extrabold text-zinc-800 dark:text-zinc-100 tracking-tight font-display mb-1">
                             S/ {{ number_format($ventasPeriodo, 2) }}
                         </h3>
-                        <p class="text-sm font-semibold text-zinc-500 uppercase tracking-wider">Ingresos {{ $textoPeriodo }}</p>
+                        <p class="text-sm font-semibold text-zinc-500 uppercase tracking-wider">
+                            <span x-text="$store.i18n.t('report.income') || 'Ingresos'">Ingresos</span> 
+                            <span x-text="$store.i18n.t('report.period_{{ $periodo }}') || '{{ $textoPeriodo }}'">{{ $textoPeriodo }}</span>
+                        </p>
                     </div>
 
                     <div class="kpi-card kpi-card--blue">
@@ -104,7 +107,10 @@
                         <h3 class="text-3xl font-extrabold text-zinc-800 dark:text-zinc-100 tracking-tight font-display mb-1">
                             S/ {{ number_format($ticketPromedio, 2) }}
                         </h3>
-                        <p class="text-sm font-semibold text-zinc-500 uppercase tracking-wider">Ticket Promedio {{ $textoPeriodo }}</p>
+                        <p class="text-sm font-semibold text-zinc-500 uppercase tracking-wider">
+                            <span x-text="$store.i18n.t('report.averageTicket') || 'Ticket Promedio'">Ticket Promedio</span> 
+                            <span x-text="$store.i18n.t('report.period_{{ $periodo }}') || '{{ $textoPeriodo }}'">{{ $textoPeriodo }}</span>
+                        </p>
                     </div>
                 </div>
             </section>
@@ -131,7 +137,10 @@
                         <h3 class="text-3xl font-extrabold text-zinc-800 dark:text-zinc-100 tracking-tight font-display mb-1">
                             {{ $citasCompletadas }}
                         </h3>
-                        <p class="text-sm font-semibold text-zinc-500 uppercase tracking-wider">Citas Completadas {{ $textoPeriodo }}</p>
+                        <p class="text-sm font-semibold text-zinc-500 uppercase tracking-wider">
+                            <span x-text="$store.i18n.t('report.completedAppts') || 'Citas Completadas'">Citas Completadas</span> 
+                            <span x-text="$store.i18n.t('report.period_{{ $periodo }}') || '{{ $textoPeriodo }}'">{{ $textoPeriodo }}</span>
+                        </p>
                     </div>
 
                     <div class="kpi-card kpi-card--red">
@@ -143,7 +152,10 @@
                         <h3 class="text-3xl font-extrabold text-zinc-800 dark:text-zinc-100 tracking-tight font-display mb-1">
                             {{ $citasCanceladas }}
                         </h3>
-                        <p class="text-sm font-semibold text-zinc-500 uppercase tracking-wider">Citas Canceladas {{ $textoPeriodo }}</p>
+                        <p class="text-sm font-semibold text-zinc-500 uppercase tracking-wider">
+                            <span x-text="$store.i18n.t('report.cancelledAppts') || 'Citas Canceladas'">Citas Canceladas</span> 
+                            <span x-text="$store.i18n.t('report.period_{{ $periodo }}') || '{{ $textoPeriodo }}'">{{ $textoPeriodo }}</span>
+                        </p>
                     </div>
                     
                     <div class="kpi-card kpi-card--blue">
@@ -161,7 +173,10 @@
                         <h3 class="text-3xl font-extrabold text-zinc-800 dark:text-zinc-100 tracking-tight font-display mb-1">
                             {{ $citasNuevas }}
                         </h3>
-                        <p class="text-sm font-semibold text-zinc-500 uppercase tracking-wider">Nuevas Reservas {{ $textoPeriodo }}</p>
+                        <p class="text-sm font-semibold text-zinc-500 uppercase tracking-wider">
+                            <span x-text="$store.i18n.t('report.newReservations') || 'Nuevas Reservas'">Nuevas Reservas</span> 
+                            <span x-text="$store.i18n.t('report.period_{{ $periodo }}') || '{{ $textoPeriodo }}'">{{ $textoPeriodo }}</span>
+                        </p>
                     </div>
                 </div>
             </section>
@@ -195,7 +210,7 @@
                     citasLabels: @js($citasChartLabels),
                     citasData: @js($citasChartData)
                  })"
-                 @periodo-updated.window="updateCharts($event.detail)"
+                 @charts-updated.window="updateCharts($event.detail)"
                  wire:ignore
             >
                 <div class="vc-panel">
@@ -249,7 +264,7 @@
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Ventas (S/)',
+                        label: Alpine.store('i18n').t('report.salesEvol') || 'Ventas (S/)',
                         data: data,
                         borderColor: '#10b981', // emerald-500
                         backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -270,6 +285,12 @@
         },
         
         initCitasChart(labels, data) {
+            labels = labels.map(l => {
+                if(l === 'Completadas') return Alpine.store('i18n').t('report.completed') || l;
+                if(l === 'Canceladas') return Alpine.store('i18n').t('report.cancelled') || l;
+                if(l === 'Pendientes/Otras') return Alpine.store('i18n').t('report.pendingOther') || l;
+                return l;
+            });
             const ctx = document.getElementById('citasChart');
             if(!ctx) return;
 
@@ -307,6 +328,12 @@
         },
 
         updateCitasChart(labels, data) {
+            labels = labels.map(l => {
+                if(l === 'Completadas') return Alpine.store('i18n').t('report.completed') || l;
+                if(l === 'Canceladas') return Alpine.store('i18n').t('report.cancelled') || l;
+                if(l === 'Pendientes/Otras') return Alpine.store('i18n').t('report.pendingOther') || l;
+                return l;
+            });
             if(this.citasChart) {
                 this.citasChart.data.labels = labels;
                 this.citasChart.data.datasets[0].data = data;

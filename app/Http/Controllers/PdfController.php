@@ -19,7 +19,7 @@ class PdfController extends Controller
 
     public function historia($id)
     {
-        $historia = \App\Models\MedicalRecord::with(['pet.customer', 'veterinario', 'prescripciones.producto'])->findOrFail($id);
+        $historia = \App\Models\MedicalRecord::with(['pet.cliente', 'veterinario', 'prescripciones.producto'])->findOrFail($id);
 
         $pdf = Pdf::loadView('pdf.historia-clinica', compact('historia'));
 
@@ -28,7 +28,7 @@ class PdfController extends Controller
 
     public function historialMascota($id)
     {
-        $mascota = \App\Models\Pet::with(['customer', 'especie', 'raza', 'historiasClinicas' => function ($q) {
+        $mascota = \App\Models\Pet::with(['cliente', 'especie', 'raza', 'historiasClinicas' => function ($q) {
             $q->orderBy('date', 'desc')->with(['veterinario', 'prescripciones.producto']);
         }])->findOrFail($id);
 

@@ -21,47 +21,47 @@ class HistoriaClinicaForm extends Component
     public ?int $historiaId = null;
 
     // Relaciones
-    public string $customer_id = '';
-    public string $pet_id = '';
-    public string $veterinarian_id = '';
-    public string $appointment_id = '';
+    public ?string $customer_id = null;
+    public ?string $pet_id = null;
+    public ?string $veterinarian_id = null;
+    public ?string $appointment_id = null;
 
     // Datos principales
-    public string $fecha_consulta = '';
-    public string $reason = '';
+    public ?string $fecha_consulta = null;
+    public ?string $reason = null;
 
     // Triaje obligatorio
-    public string $weight = '';
-    public string $temperatura = '';
-    public string $frecuencia_cardiaca = '';
-    public string $frecuencia_respiratoria = '';
+    public ?string $weight = null;
+    public ?string $temperatura = null;
+    public ?string $frecuencia_cardiaca = null;
+    public ?string $frecuencia_respiratoria = null;
 
     // Diagnóstico y tratamiento
-    public string $anamnesis = '';
-    public string $diagnostico_presuntivo = '';
-    public string $tratamiento_indicaciones = '';
-    public string $proxima_cita_recomendada = '';
-    public string $notas_aclaratorias = '';
+    public ?string $anamnesis = null;
+    public ?string $diagnostico_presuntivo = null;
+    public ?string $tratamiento_indicaciones = null;
+    public ?string $proxima_cita_recomendada = null;
+    public ?string $notas_aclaratorias = null;
 
     // Examen físico general
-    public string $examen_mucosas = '';
-    public string $examen_linfonodos = '';
-    public string $condicion_corporal = '';
-    public string $nivel_dolor = '';
-    public string $nivel_hidratacion = '';
+    public ?string $examen_mucosas = null;
+    public ?string $examen_linfonodos = null;
+    public ?string $condicion_corporal = null;
+    public ?string $nivel_dolor = null;
+    public ?string $nivel_hidratacion = null;
 
     // Examen por sistemas
-    public string $examen_piel_pelaje = '';
-    public string $examen_ojos_oidos = '';
-    public string $examen_cardiovascular = '';
-    public string $examen_respiratorio = '';
-    public string $examen_digestivo = '';
-    public string $examen_musculoesqueletico = '';
-    public string $examen_neurologico = '';
-    public string $examen_urinario = '';
+    public ?string $examen_piel_pelaje = null;
+    public ?string $examen_ojos_oidos = null;
+    public ?string $examen_cardiovascular = null;
+    public ?string $examen_respiratorio = null;
+    public ?string $examen_digestivo = null;
+    public ?string $examen_musculoesqueletico = null;
+    public ?string $examen_neurologico = null;
+    public ?string $examen_urinario = null;
 
-    public string $alerta_peso = '';
-    public string $alerta_temp = '';
+    public ?string $alerta_peso = null;
+    public ?string $alerta_temp = null;
 
     // Prescripciones dinámicas (array de arrays)
     public array $prescripciones = [];
@@ -69,7 +69,7 @@ class HistoriaClinicaForm extends Component
     // Reglas de validación
     protected function rules(): array
     {
-        return [
+        $rules = [
             'pet_id'              => 'required|exists:pets,id',
             'veterinarian_id'          => 'required|exists:users,id',
             'appointment_id'                 => 'nullable|exists:appointments,id',
@@ -98,9 +98,10 @@ class HistoriaClinicaForm extends Component
             'examen_neurologico'      => 'nullable|string|max:1000',
             'examen_urinario'         => 'nullable|string|max:1000',
             // Validación de prescripciones
+            'prescripciones.*.product_id'    => 'nullable|integer',
             'prescripciones.*.medicamento'   => 'required|string|max:200',
-            'prescripciones.*.dosis'         => 'required|string|max:100',
-            'prescripciones.*.frecuencia'    => 'required|string|max:100',
+            'prescripciones.*.dosage'         => 'required|string|max:100',
+            'prescripciones.*.frequency'    => 'required|string|max:100',
             'prescripciones.*.duracion_dias' => 'required|integer|min:1|max:365',
             'prescripciones.*.via_administracion' => 'nullable|string|max:50',
             'prescripciones.*.indicaciones'  => 'nullable|string|max:500',
@@ -140,8 +141,8 @@ class HistoriaClinicaForm extends Component
             $this->frecuencia_cardiaca = (string) ($historia->heart_rate ?? '');
             $this->frecuencia_respiratoria = (string) ($historia->respiratory_rate ?? '');
             $this->anamnesis = $historia->anamnesis ?? '';
-            $this->diagnostico_presuntivo = $historia->diagnosis_presuntivo ?? '';
-            $this->tratamiento_indicaciones = $historia->treatment_indicaciones ?? '';
+            $this->diagnostico_presuntivo = $historia->diagnostico_presuntivo ?? '';
+            $this->tratamiento_indicaciones = $historia->tratamiento_indicaciones ?? '';
             $this->proxima_cita_recomendada = $historia->proxima_cita_recomendada
                 ? $historia->proxima_cita_recomendada->format('Y-m-d') : '';
             $this->notas_aclaratorias = $historia->notas_aclaratorias ?? '';
@@ -170,7 +171,7 @@ class HistoriaClinicaForm extends Component
                     'dosage'              => $rx->dosage,
                     'frequency'         => $rx->frequency,
                     'via_administracion' => $rx->via_administracion ?? '',
-                    'duracion_dias'      => $rx->duration_dias ?? 1,
+                    'duracion_dias'      => $rx->duracion_dias ?? 1,
                     'indicaciones'       => $rx->indicaciones ?? '',
                 ];
             }
@@ -198,16 +199,16 @@ class HistoriaClinicaForm extends Component
     }
 
     // Cascada: al cambiar cliente, resetear mascota y cita
-    public function updatedClienteId(): void
+    public function updatedCustomerId(): void
     {
-        $this->pet_id = '';
-        $this->appointment_id = '';
+        $this->pet_id = null;
+        $this->appointment_id = null;
     }
 
     // Cascada: al cambiar mascota, resetear cita
     public function updatedPetId(): void
     {
-        $this->appointment_id = '';
+        $this->appointment_id = null;
         $this->updatedWeight();
     }
 
@@ -316,8 +317,8 @@ class HistoriaClinicaForm extends Component
             'examen_urinario'            => $this->examen_urinario ?: null,
             // Diagnóstico
             'anamnesis'                 => $this->anamnesis ?: null,
-            'diagnosis_presuntivo'    => $this->diagnostico_presuntivo ?: null,
-            'treatment_indicaciones'  => $this->tratamiento_indicaciones ?: null,
+            'diagnostico_presuntivo'    => $this->diagnostico_presuntivo ?: null,
+            'tratamiento_indicaciones'  => $this->tratamiento_indicaciones ?: null,
             'proxima_cita_recomendada'  => $this->proxima_cita_recomendada ?: null,
             'notas_aclaratorias'        => $this->notas_aclaratorias ?: null,
         ];
@@ -406,9 +407,8 @@ class HistoriaClinicaForm extends Component
         // Veterinarios (usuarios con rol veterinario)
         $veterinarios = User::role('veterinario')->orderBy('name')->get();
 
-        // Productos tipo medicamento o producto para prescripciones
-        $productos = Product::whereIn('type', ['producto', 'Producto', 'Medicamento', 'medicamento'])
-            ->where('is_active', true)
+        // Productos para prescripciones (ahora permite todos los activos)
+        $productos = Product::where('is_active', true)
             ->orderBy('name')
             ->get();
 

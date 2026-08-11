@@ -1,5 +1,5 @@
 <div x-data>
-    <x-slot:title x-text="$store.i18n.t('page.suppliers') || 'Proveedores'">Proveedores</x-slot:title>
+    <x-slot:title x-text="$store.i18n.t('page.suppliers') || 'Proveedores'"></x-slot:title>
 
     <div class="animate-slide-up">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
@@ -8,13 +8,13 @@
                     <span class="material-symbols-outlined">local_shipping</span>
                 </div>
                 <div>
-                    <flux:heading size="xl">Proveedores</flux:heading>
-                    <flux:subheading>Gestión de proveedores e importadores.</flux:subheading>
+                    <flux:heading size="xl"><span x-text="$store.i18n.t('page.providers') || 'Proveedores'"></span></flux:heading>
+                    <flux:subheading><span x-text="$store.i18n.t('page.providersSub') || 'Gestión de proveedores e importadores.'"></span></flux:subheading>
                 </div>
             </div>
             <a href="{{ route('proveedores.crear') }}" class="w-full sm:w-auto btn-primary justify-center">
                 <span class="material-symbols-outlined icon-sm">add</span>
-                <span>Nuevo Proveedor</span>
+                <span><span x-text="$store.i18n.t('btn.newSupplier') || 'Nuevo Proveedor'">Nuevo Proveedor</span></span>
             </a>
         </div>
 
@@ -23,8 +23,11 @@
             icon="local_shipping"
             emptyTitle="Sin proveedores"
             emptyText="No hay proveedores que coincidan con la búsqueda."
+            emptyTitleKey="table.emptySuppliersTitle"
+            emptyTextKey="table.emptySuppliersText"
             searchModel="busqueda"
             searchPlaceholder="Buscar por empresa, RUC, contacto..."
+            searchPlaceholderKey="placeholder.searchSupplier"
         >
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
                 @foreach($proveedores as $proveedor)
@@ -40,9 +43,9 @@
                                         {{ $proveedor->name }}
                                     </h3>
                                     @if($proveedor->is_active)
-                                        <span class="badge badge-emerald flex-shrink-0 mt-0.5">Activo</span>
+                                        <span class="badge badge-emerald flex-shrink-0 mt-0.5" x-text="$store.i18n.t('status.ACTIVO') || 'Activo'">Activo</span>
                                     @else
-                                        <span class="badge badge-zinc flex-shrink-0 mt-0.5">Inactivo</span>
+                                        <span class="badge badge-zinc flex-shrink-0 mt-0.5" x-text="$store.i18n.t('status.INACTIVO') || 'Inactivo'">Inactivo</span>
                                     @endif
                                 </div>
                                 <p class="text-xs text-zinc-500 mt-1">RUC: {{ $proveedor->ruc ?? '-' }}</p>
@@ -99,23 +102,23 @@
     </div>
 
     {{-- Modal Eliminar --}}
-    <flux:modal :closable="false" name="confirmar-eliminacion" class="w-[90vw] md:w-full max-w-md">
+    <flux:modal :closable="false" name="confirmar-eliminacion" class="min-w-88 overflow-y-auto max-h-[85vh]">
         <div class="space-y-6">
             <div class="flex flex-col items-center justify-center text-center space-y-5">
                 <div class="w-20 h-20 bg-red-100/50 dark:bg-red-500/20 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center border border-red-200 dark:border-red-500/30 shadow-sm shadow-red-500/10">
-                    <span class="material-symbols-outlined text-[48px]" style="font-variation-settings: 'FILL' 1, 'wght' 700;">warning</span>
+                    <span class="material-symbols-outlined text-[48px]" style="font-variation-settings: 'FILL' 1, 'wght' 700;">delete</span>
                 </div>
                 <div>
-                    <h2 class="text-2xl font-extrabold text-zinc-900 dark:text-white" x-text="$store.i18n.t('modal.confirmDelete') || 'Eliminar Proveedor'">Eliminar Proveedor</h2>
-                    <p class="mt-3 text-sm text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto leading-relaxed" x-text="$store.i18n.t('modal.confirmDeleteMsg') || 'Esta acción no se puede deshacer.'">Esta acción no se puede deshacer.</p>
+                    <h2 class="text-2xl font-extrabold text-zinc-900 dark:text-white" x-text="$store.i18n.t('modal_extra.deleteSupplier') || 'Eliminar Proveedor'">Eliminar Proveedor</h2>
+                    <p class="mt-3 text-sm text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto leading-relaxed" x-text="$store.i18n.t('modal_extra.deleteSupplierMsg') || 'Esta acción no se puede deshacer.'">Esta acción no se puede deshacer.</p>
                 </div>
             </div>
             <div class="flex flex-col-reverse sm:flex-row gap-3 w-full mt-6">
                 <flux:spacer class="hidden sm:block" />
-                <flux:modal.close class="w-full sm:w-auto">
+                <flux:modal.close class="w-full sm:w-auto flex-1">
                     <flux:button variant="ghost" class="w-full font-medium"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'">Cancelar</span></flux:button>
                 </flux:modal.close>
-                <button type="button" class="w-full sm:w-auto btn-danger font-medium justify-center" wire:click="eliminar" x-on:click="Flux.modal('confirmar-eliminacion').close()">
+                <button type="button" class="w-full sm:w-auto flex-1 btn-danger font-medium justify-center" wire:click="eliminar" x-on:click="$dispatch('modal-close', { name: 'confirmar-eliminacion' })">
                     <span x-text="$store.i18n.t('btn.delete') || 'Eliminar'">Eliminar</span>
                 </button>
             </div>
@@ -123,7 +126,7 @@
     </flux:modal>
 
     {{-- Modal Ver Proveedor --}}
-    <flux:modal :closable="false" name="ver-proveedor" class="w-[90vw] md:w-full max-w-lg">
+    <flux:modal :closable="false" name="ver-proveedor" class="w-[90vw] md:w-full max-w-lg overflow-y-auto max-h-[85vh]">
         @if($proveedorVer)
         <div class="space-y-4">
             <div class="flex justify-between items-start border-b border-zinc-100 dark:border-zinc-700/50 pb-4 pr-6">
@@ -140,49 +143,49 @@
                 <div>
                     <span class="badge {{ $proveedorVer->is_active ? 'badge-emerald' : 'badge-zinc' }}">
                         <span class="material-symbols-outlined text-xs mr-1">{{ $proveedorVer->is_active ? 'check_circle' : 'cancel' }}</span>
-                        {{ $proveedorVer->is_active ? 'Activo' : 'Inactivo' }}
+                        <span x-text="$store.i18n.t('status.{{ $proveedorVer->is_active ? 'ACTIVO' : 'INACTIVO' }}') || '{{ $proveedorVer->is_active ? 'Activo' : 'Inactivo' }}'">{{ $proveedorVer->is_active ? 'Activo' : 'Inactivo' }}</span>
                     </span>
                 </div>
             </div>
 
             <div class="space-y-4">
                 <div class="flex flex-col">
-                    <span class="text-xs text-zinc-500 dark:text-zinc-400 uppercase font-semibold tracking-wider">Contacto</span>
+                    <span class="text-xs text-zinc-500 dark:text-zinc-400 uppercase font-semibold tracking-wider" x-text="$store.i18n.t('table.contact') || 'Contacto'">Contacto</span>
                     <span class="text-sm font-medium text-zinc-900 dark:text-white">{{ $proveedorVer->contact_name ?? '-' }}</span>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="flex flex-col">
-                        <span class="text-xs text-zinc-500 dark:text-zinc-400 uppercase font-semibold tracking-wider">Teléfono</span>
+                        <span class="text-xs text-zinc-500 dark:text-zinc-400 uppercase font-semibold tracking-wider" x-text="$store.i18n.t('table.phone') || 'Teléfono'">Teléfono</span>
                         <span class="text-sm font-medium text-zinc-900 dark:text-white">{{ $proveedorVer->phone ?? '-' }}</span>
                     </div>
                     <div class="flex flex-col">
-                        <span class="text-xs text-zinc-500 dark:text-zinc-400 uppercase font-semibold tracking-wider">Correo</span>
+                        <span class="text-xs text-zinc-500 dark:text-zinc-400 uppercase font-semibold tracking-wider" x-text="$store.i18n.t('table.email') || 'Correo'">Correo</span>
                         <span class="text-sm font-medium text-zinc-900 dark:text-white">{{ $proveedorVer->email ?? '-' }}</span>
                     </div>
                 </div>
                 <div class="flex flex-col">
-                    <span class="text-xs text-zinc-500 dark:text-zinc-400 uppercase font-semibold tracking-wider">Dirección</span>
+                    <span class="text-xs text-zinc-500 dark:text-zinc-400 uppercase font-semibold tracking-wider" x-text="$store.i18n.t('table.address') || 'Dirección'">Dirección</span>
                     <span class="text-sm font-medium text-zinc-900 dark:text-white">{{ $proveedorVer->address ?? '-' }}</span>
                 </div>
                 <div class="grid grid-cols-3 gap-2 mt-2">
                     <div class="flex flex-col">
-                        <span class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">País</span>
+                        <span class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold" x-text="$store.i18n.t('table.country') || 'País'">País</span>
                         <span class="text-xs font-medium text-zinc-900 dark:text-white truncate">{{ $proveedorVer->country ?? '-' }}</span>
                     </div>
                     <div class="flex flex-col">
-                        <span class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">Estado/Depto</span>
+                        <span class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold" x-text="$store.i18n.t('table.state') || 'Estado/Depto'">Estado/Depto</span>
                         <span class="text-xs font-medium text-zinc-900 dark:text-white truncate">{{ $proveedorVer->state ?? '-' }}</span>
                     </div>
                     <div class="flex flex-col">
-                        <span class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">Ciudad</span>
+                        <span class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold" x-text="$store.i18n.t('table.city') || 'Ciudad'">Ciudad</span>
                         <span class="text-xs font-medium text-zinc-900 dark:text-white truncate">{{ $proveedorVer->city ?? '-' }}</span>
                     </div>
                 </div>
             </div>
 
             <div class="pt-4 border-t border-zinc-100 dark:border-zinc-700/50 flex justify-end">
-                <flux:modal.close>
-                    <flux:button variant="ghost"><span>Cerrar</span></flux:button>
+                <flux:modal.close class="overflow-y-auto max-h-[85vh]">
+                    <flux:button variant="ghost"><span x-text="$store.i18n.t('btn.close') || 'Cerrar'">Cerrar</span></flux:button>
                 </flux:modal.close>
             </div>
         </div>

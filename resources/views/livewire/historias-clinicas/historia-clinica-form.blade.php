@@ -12,7 +12,7 @@
         </div>
     </div>
 
-    <form x-on:submit.prevent="{{ $historiaId ? 'Flux.modal(\'confirmar-actualizacion\').show()' : '$wire.guardar()' }}" class="space-y-8">
+    <form x-on:submit.prevent="{{ $historiaId ? '$dispatch(\'modal-show\', { name: \'confirmar-actualizacion\' })' : '$wire.guardar()' }}" class="space-y-8">
         
         {{-- Banner de Citas Pendientes --}}
         @if($citas && $citas->count() > 0 && !$historiaId)
@@ -126,7 +126,7 @@
                 <flux:field>
                     <flux:label class="mb-2 font-medium"><span x-text="$store.i18n.t('table.reason')"></span></flux:label>
                     <flux:textarea wire:model="reason" x-bind:placeholder="ph" class="resize-none" rows="2" />
-                    <flux:error name="motivo_consulta" />
+                    <flux:error name="reason" />
                 </flux:field>
             </div>
         </div>
@@ -198,26 +198,26 @@
                         <span class="material-symbols-outlined">stethoscope</span>
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold text-zinc-800 dark:text-zinc-200">Examen Físico</h3>
-                        <p class="text-xs text-zinc-500 dark:text-zinc-400">Evaluación por sistemas — todos los campos son opcionales</p>
+                        <h3 class="text-lg font-bold text-zinc-800 dark:text-zinc-200" x-text="$store.i18n.t('form.physicalExam') || 'Examen Físico'"></h3>
+                        <p class="text-xs text-zinc-500 dark:text-zinc-400" x-text="$store.i18n.t('form.physicalExamSub') || 'Evaluación por sistemas — todos los campos son opcionales'"></p>
                     </div>
                 </div>
-                <span class="badge badge-zinc text-xs">Opcional</span>
+                <span class="badge badge-zinc text-xs" x-text="$store.i18n.t('form.optional') || 'Opcional'"></span>
             </div>
 
             {{-- Fila 1: Selectores rápidos --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 mb-6">
                 {{-- Mucosas --}}
                 <flux:field>
-                    <flux:label class="mb-2 font-medium">Mucosas</flux:label>
+                    <flux:label class="mb-2 font-medium" x-text="$store.i18n.t('form.mucous') || 'Mucosas'"></flux:label>
                     <x-vc-dropdown
                         wire:model="examen_mucosas"
                         :options="[
-                            ['value' => 'Rosadas', 'label' => '🟢 Rosadas (Normal)'],
-                            ['value' => 'Pálidas', 'label' => '⚪ Pálidas'],
-                            ['value' => 'Ictéricas', 'label' => '🟡 Ictéricas'],
-                            ['value' => 'Cianóticas', 'label' => '🔵 Cianóticas'],
-                            ['value' => 'Congestivas', 'label' => '🔴 Congestivas'],
+                            ['value' => 'Rosadas', 'label' => 'form.mucousPink'],
+                            ['value' => 'Pálidas', 'label' => 'form.mucousPale'],
+                            ['value' => 'Ictéricas', 'label' => 'form.mucousIcteric'],
+                            ['value' => 'Cianóticas', 'label' => 'form.mucousCyanotic'],
+                            ['value' => 'Congestivas', 'label' => 'form.mucousCongested'],
                         ]"
                         :selected="$examen_mucosas"
                         placeholder="Seleccionar"
@@ -227,13 +227,13 @@
 
                 {{-- Linfonodos --}}
                 <flux:field>
-                    <flux:label class="mb-2 font-medium">Linfonodos</flux:label>
+                    <flux:label class="mb-2 font-medium" x-text="$store.i18n.t('form.lymphNodes') || 'Linfonodos'"></flux:label>
                     <x-vc-dropdown
                         wire:model="examen_linfonodos"
                         :options="[
-                            ['value' => 'Normal', 'label' => '🟢 Normal'],
-                            ['value' => 'Reactivos', 'label' => '🟡 Reactivos'],
-                            ['value' => 'Aumentados', 'label' => '🔴 Aumentados'],
+                            ['value' => 'Normal', 'label' => 'form.lymphNormal'],
+                            ['value' => 'Reactivos', 'label' => 'form.lymphReactive'],
+                            ['value' => 'Aumentados', 'label' => 'form.lymphEnlarged'],
                         ]"
                         :selected="$examen_linfonodos"
                         placeholder="Seleccionar"
@@ -243,14 +243,14 @@
 
                 {{-- Hidratación --}}
                 <flux:field>
-                    <flux:label class="mb-2 font-medium">Hidratación</flux:label>
+                    <flux:label class="mb-2 font-medium" x-text="$store.i18n.t('form.hydration') || 'Hidratación'"></flux:label>
                     <x-vc-dropdown
                         wire:model="nivel_hidratacion"
                         :options="[
-                            ['value' => 'Normal', 'label' => '🟢 Normal'],
-                            ['value' => 'Leve', 'label' => '🟡 Deshidratación Leve'],
-                            ['value' => 'Moderada', 'label' => '🟠 Deshidratación Moderada'],
-                            ['value' => 'Severa', 'label' => '🔴 Deshidratación Severa'],
+                            ['value' => 'Normal', 'label' => 'form.hydraNormal'],
+                            ['value' => 'Leve', 'label' => 'form.hydraMild'],
+                            ['value' => 'Moderada', 'label' => 'form.hydraMod'],
+                            ['value' => 'Severa', 'label' => 'form.hydraSevere'],
                         ]"
                         :selected="$nivel_hidratacion"
                         placeholder="Seleccionar"
@@ -260,19 +260,19 @@
 
                 {{-- Condición Corporal (BCS) --}}
                 <flux:field>
-                    <flux:label class="mb-2 font-medium">Condición Corporal</flux:label>
+                    <flux:label class="mb-2 font-medium" x-text="$store.i18n.t('form.bodyCondition') || 'Condición Corporal'"></flux:label>
                     <x-vc-dropdown
                         wire:model="condicion_corporal"
                         :options="[
-                            ['value' => '1', 'label' => '1 — Emaciado'],
-                            ['value' => '2', 'label' => '2 — Muy delgado'],
-                            ['value' => '3', 'label' => '3 — Delgado'],
-                            ['value' => '4', 'label' => '4 — Bajo peso'],
-                            ['value' => '5', 'label' => '5 — Ideal'],
-                            ['value' => '6', 'label' => '6 — Sobrepeso leve'],
-                            ['value' => '7', 'label' => '7 — Sobrepeso'],
-                            ['value' => '8', 'label' => '8 — Obeso'],
-                            ['value' => '9', 'label' => '9 — Obesidad mórbida'],
+                            ['value' => '1', 'label' => 'form.bcs1'],
+                            ['value' => '2', 'label' => 'form.bcs2'],
+                            ['value' => '3', 'label' => 'form.bcs3'],
+                            ['value' => '4', 'label' => 'form.bcs4'],
+                            ['value' => '5', 'label' => 'form.bcs5'],
+                            ['value' => '6', 'label' => 'form.bcs6'],
+                            ['value' => '7', 'label' => 'form.bcs7'],
+                            ['value' => '8', 'label' => 'form.bcs8'],
+                            ['value' => '9', 'label' => 'form.bcs9'],
                         ]"
                         :selected="$condicion_corporal"
                         placeholder="BCS (1-9)"
@@ -286,17 +286,17 @@
                     <x-vc-dropdown
                         wire:model="nivel_dolor"
                         :options="[
-                            ['value' => '0', 'label' => '0 — Sin dolor'],
-                            ['value' => '1', 'label' => '1 — Mínimo'],
-                            ['value' => '2', 'label' => '2 — Leve'],
-                            ['value' => '3', 'label' => '3 — Leve-Moderado'],
-                            ['value' => '4', 'label' => '4 — Moderado'],
-                            ['value' => '5', 'label' => '5 — Moderado'],
-                            ['value' => '6', 'label' => '6 — Moderado-Severo'],
-                            ['value' => '7', 'label' => '7 — Severo'],
-                            ['value' => '8', 'label' => '8 — Severo'],
-                            ['value' => '9', 'label' => '9 — Muy Severo'],
-                            ['value' => '10', 'label' => '10 — Insoportable'],
+                            ['value' => '0', 'label' => 'form.pain0'],
+                            ['value' => '1', 'label' => 'form.pain1'],
+                            ['value' => '2', 'label' => 'form.pain2'],
+                            ['value' => '3', 'label' => 'form.pain3'],
+                            ['value' => '4', 'label' => 'form.pain4'],
+                            ['value' => '5', 'label' => 'form.pain5'],
+                            ['value' => '6', 'label' => 'form.pain6'],
+                            ['value' => '7', 'label' => 'form.pain7'],
+                            ['value' => '8', 'label' => 'form.pain8'],
+                            ['value' => '9', 'label' => 'form.pain9'],
+                            ['value' => '10', 'label' => 'form.pain10'],
                         ]"
                         :selected="$nivel_dolor"
                         placeholder="Escala 0-10"
@@ -346,7 +346,7 @@
                              class="px-4 pb-4 pt-1">
                             <flux:textarea
                                 wire:model="{{ $sistema['model'] }}"
-                                placeholder="{{ $sistema['placeholder'] }}"
+                                x-bind:placeholder="$store.i18n.t(\'form.pe_\' + \'{{ $sistema[\'key\'] }}\') || \'{{ $sistema[\'placeholder\'] }}\'"
                                 rows="2"
                                 class="resize-none text-sm"
                             />
@@ -368,18 +368,18 @@
             <div class="space-y-5">
                 <flux:field>
                     <flux:label class="mb-2 font-medium"><span x-text="$store.i18n.t('form.anamnesis')"></span></flux:label>
-                    <flux:textarea wire:model="anamnesis" rows="3" placeholder="Background, symptoms..." class="resize-none" />
+                    <flux:textarea wire:model="anamnesis" rows="3" x-bind:placeholder="$store.i18n.t(\'form.anamnesisPlaceholder\') || \'Background, symptoms...\'" class="resize-none" />
                 </flux:field>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <flux:field>
                         <flux:label class="mb-2 font-medium"><span x-text="$store.i18n.t('form.presumptiveDiag')"></span></flux:label>
-                        <flux:textarea wire:model="diagnostico_presuntivo" rows="3" placeholder="Diagnosis based on clinical findings..." class="resize-none" />
+                        <flux:textarea wire:model="diagnostico_presuntivo" rows="3" x-bind:placeholder="$store.i18n.t(\'form.presumptiveDiagPlaceholder\') || \'Diagnosis based on clinical findings...\'" class="resize-none" />
                     </flux:field>
 
                     <flux:field>
                         <flux:label class="mb-2 font-medium"><span x-text="$store.i18n.t('form.treatment')"></span></flux:label>
-                        <flux:textarea wire:model="tratamiento_indicaciones" rows="3" placeholder="Treatment plan..." class="resize-none" />
+                        <flux:textarea wire:model="tratamiento_indicaciones" rows="3" x-bind:placeholder="$store.i18n.t(\'form.treatmentPlaceholder\') || \'Treatment plan...\'" class="resize-none" />
                     </flux:field>
                 </div>
 
@@ -391,7 +391,7 @@
 
                     <flux:field>
                         <flux:label class="mb-2 font-medium">Notas Aclaratorias Anexas (Posterior a 24h)</flux:label>
-                        <flux:textarea wire:model="notas_aclaratorias" rows="2" placeholder="Agregue notas o correcciones si la historia está bloqueada..." class="resize-none" />
+                        <flux:textarea wire:model="notas_aclaratorias" rows="2" x-bind:placeholder="$store.i18n.t('form.notasPlaceholder')" class="resize-none" />
                     </flux:field>
                 </div>
             </div>
@@ -447,13 +447,13 @@
                                         $productosOpts = [];
                                         foreach ($productos as $prod) {
                                             $label = $prod->name;
-                                            if ($prod->type === 'producto' && ($prod->presentacion || $prod->principio_activo)) {
+                                            if ($prod->presentacion || $prod->principio_activo) {
                                                 $label .= ' - ' . $prod->presentacion . ($prod->principio_activo ? ' ('.$prod->principio_activo.')' : '');
                                             }
                                             $productosOpts[] = ['value' => (string)$prod->id, 'label' => $label];
                                         }
                                     @endphp
-                                    <div x-data="{ prodPh: 'Buscar producto...' }">
+                                    <div x-data="{ prodPh: $store.i18n.t('form.searchProduct') }">
                                         {{-- Dropdown para seleccionar producto --}}
                                         <x-vc-dropdown
                                             wire:model.live="prescripciones.{{ $index }}.product_id"
@@ -468,7 +468,7 @@
                                     <div class="mt-2 flex gap-2 items-center">
                                          <flux:input size="sm"
                                             wire:model="prescripciones.{{ $index }}.medicamento"
-                                            placeholder="Nombre manual (si no está en lista)"
+                                            x-bind:placeholder="$store.i18n.t('form.manualNamePlaceholder')"
                                          />
                                     </div>
                                 </flux:field>
@@ -478,7 +478,7 @@
                                     <flux:label class="mb-2 font-medium"><span x-text="$store.i18n.t('form.dose')"></span></flux:label>
                                     <flux:input
                                         wire:model="prescripciones.{{ $index }}.dosage"
-                                        placeholder="Ej: 0.5 ml/kg"
+                                        x-bind:placeholder="$store.i18n.t('form.dosePlaceholder')"
                                         class="h-[42px]"
                                     >
                                         <x-slot:iconLeading>
@@ -493,7 +493,7 @@
                                     <flux:label class="mb-2 font-medium"><span x-text="$store.i18n.t('form.frequency')"></span></flux:label>
                                     <flux:input
                                         wire:model="prescripciones.{{ $index }}.frequency"
-                                        placeholder="Ej: Cada 8 horas"
+                                        x-bind:placeholder="$store.i18n.t('form.freqPlaceholder')"
                                         class="h-[42px]"
                                     >
                                         <x-slot:iconLeading>
@@ -506,19 +506,21 @@
                                 {{-- Via de administracion --}}
                                 <flux:field>
                                     <flux:label class="mb-2 font-medium"><span x-text="$store.i18n.t('form.route')"></span></flux:label>
-                                    <x-vc-dropdown
-                                        wire:model="prescripciones.{{ $index }}.via_administracion"
-                                        :options="[
-                                            ['value' => 'Oral', 'label' => 'Oral'],
-                                            ['value' => 'Intramuscular', 'label' => 'Intramuscular'],
-                                            ['value' => 'Intravenosa', 'label' => 'Intravenosa'],
-                                            ['value' => 'Subcutánea', 'label' => 'Subcutánea'],
-                                            ['value' => 'Tópica', 'label' => 'Tópica'],
-                                        ]"
-                                        :selected="$rx['via_administracion'] ?? 'Oral'"
-                                        placeholder="Seleccionar vía"
-                                        icon="science"
-                                    />
+                                    <div x-data="{ ph: $store.i18n.t('form.routePlaceholder') || 'Seleccionar vía' }">
+                                        <x-vc-dropdown
+                                            wire:model="prescripciones.{{ $index }}.via_administracion"
+                                            :options="[
+                                                ['value' => 'Oral', 'label' => 'Oral'],
+                                                ['value' => 'Intramuscular', 'label' => 'Intramuscular'],
+                                                ['value' => 'Intravenosa', 'label' => 'Intravenosa'],
+                                                ['value' => 'Subcutánea', 'label' => 'Subcutánea'],
+                                                ['value' => 'Tópica', 'label' => 'Tópica'],
+                                            ]"
+                                            :selected="$rx['via_administracion'] ?? 'Oral'"
+                                            x-bind:placeholder="ph"
+                                            icon="science"
+                                        />
+                                    </div>
                                 </flux:field>
                             </div>
                             
@@ -545,7 +547,7 @@
                                     <flux:label class="mb-2 font-medium"><span x-text="$store.i18n.t('form.instructions')"></span></flux:label>
                                     <flux:input
                                         wire:model="prescripciones.{{ $index }}.indicaciones"
-                                        placeholder="Con comida, en ayunas, etc."
+                                        x-bind:placeholder="$store.i18n.t('form.indicacionesPlaceholder')"
                                         class="h-[42px]"
                                     />
                                 </flux:field>
@@ -581,7 +583,7 @@
 
     {{-- Modal de confirmacion de actualizacion --}}
     @if($historiaId)
-    <flux:modal :closable="false" name="confirmar-actualizacion" class="w-[90vw] md:w-full max-w-md">
+    <flux:modal :closable="false" name="confirmar-actualizacion" class="min-w-88 overflow-y-auto max-h-[85vh]">
         <div class="space-y-6">
             <div class="flex flex-col items-center justify-center text-center space-y-5">
                 <div class="w-20 h-20 bg-violet-100/50 dark:bg-violet-500/20 text-violet-600 dark:text-violet-400 rounded-full flex items-center justify-center border border-violet-200 dark:border-violet-500/30 shadow-sm shadow-violet-500/10">
