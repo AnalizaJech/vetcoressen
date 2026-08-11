@@ -62,6 +62,11 @@ class Pet extends Model
         return $this->belongsTo(Species::class, 'species_id');
     }
 
+    public function species(): BelongsTo
+    {
+        return $this->especie();
+    }
+
     public function raza(): BelongsTo
     {
         return $this->belongsTo(Breed::class);

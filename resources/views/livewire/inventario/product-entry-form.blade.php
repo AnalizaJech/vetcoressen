@@ -38,7 +38,7 @@
                         wire:model.live="producto_id"
                         :options="$prodOptions"
                         :selected="$producto_id"
-                        x-bind:placeholder="$store.i18n.t('form.select_product', 'Selecciona un producto...')"
+                        placeholder="form.select_product"
                         icon="inventory_2"
                         searchable
                     />
@@ -56,7 +56,7 @@
                         wire:model="supplier_id"
                         :options="$provOptions"
                         :selected="$supplier_id"
-                        x-bind:placeholder="$store.i18n.t('form.select_supplier', 'Seleccione proveedor (opcional)')"
+                        placeholder="form.select_supplier"
                         icon="local_shipping"
                         searchable
                         :allow-custom="true"

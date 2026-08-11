@@ -1,4 +1,12 @@
-/**
+import re
+
+with open(r'c:\xampp\htdocs\vetcoressen\public\js\i18n.js', 'r', encoding='utf-8') as f:
+    content = f.read()
+
+# We need to replace the content inside Alpine.store('i18n', { ... }) to fetch from /locales
+# We can just replace the whole file since it's standard.
+
+new_content = """/**
  * VETCORESSEN - Sistema de internacionalización (i18n) con Alpine.js
  */
 
@@ -24,7 +32,6 @@ document.addEventListener("alpine:init", () => {
                 console.error("Failed to load translations", e);
             } finally {
                 this.loaded = true;
-                window.dispatchEvent(new CustomEvent('language-changed'));
             }
         },
 
@@ -60,3 +67,9 @@ window.addEventListener("storage", (e) => {
         Alpine.store("i18n").setLocale(e.newValue);
     }
 });
+"""
+
+with open(r'c:\xampp\htdocs\vetcoressen\public\js\i18n.js', 'w', encoding='utf-8') as f:
+    f.write(new_content)
+
+print("Updated i18n.js")

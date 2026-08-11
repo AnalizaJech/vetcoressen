@@ -30,7 +30,7 @@
         selectedLabel: '',
         get placeholderText() {
             let key = '{{ addslashes($placeholder) }}';
-            return window.Alpine.store('i18n')?.t(key) || key;
+            return this.$store.i18n?.t(key) || key;
         },
         get filteredOptions() {
             let opts = JSON.parse($el.dataset.options || '[]');
@@ -38,7 +38,7 @@
             
             const term = (this.search || '').toString().toLowerCase();
             let result = opts.filter(opt => {
-                let labelStr = String(window.Alpine.store('i18n')?.t(opt.label) || opt.label || '');
+                let labelStr = String(this.$store.i18n?.t(opt.label) || opt.label || '');
                 return labelStr.toLowerCase().includes(term);
             });
             return result.slice(0, 50);
@@ -52,24 +52,41 @@
                 this.selectedLabel = this.placeholderText;
                 this.search = '';
             } else {
-                this.selectedLabel = window.Alpine.store('i18n')?.t(initialRawLabel) || initialRawLabel;
+                this.selectedLabel = this.$store.i18n?.t(initialRawLabel) || initialRawLabel;
                 this.search = this.selectedLabel;
             }
             
             // Listen to language changes
             window.addEventListener('language-changed', () => {
-                if (this.search === this.selectedLabel) {
-                    let newOpts = JSON.parse($el.dataset.options || '[]');
-                    let selOpt = newOpts.find(o => o.value == '{{ $selected }}');
-                    if (selOpt) {
-                        this.selectedLabel = window.Alpine.store('i18n')?.t(selOpt.label) || selOpt.label;
+                this.updateTranslation();
+            });
+            
+            // Check again shortly in case i18n wasn't loaded yet
+            setTimeout(() => {
+                this.updateTranslation();
+            }, 50);
+            setTimeout(() => {
+                this.updateTranslation();
+            }, 500);
+        },
+        updateTranslation() {
+            if (this.search === this.selectedLabel || this.search === '') {
+                let newOpts = JSON.parse($el.dataset.options || '[]');
+                let selOpt = newOpts.find(o => o.value == $el.dataset.selected);
+                if (selOpt) {
+                    let translated = this.$store.i18n?.t(selOpt.label) || selOpt.label;
+                    if (this.selectedLabel !== translated && translated !== selOpt.label) {
+                        this.selectedLabel = translated;
                         this.search = this.selectedLabel;
-                    } else {
-                        this.selectedLabel = this.placeholderText;
-                        this.search = '';
+                    }
+                } else {
+                    let translatedPh = this.placeholderText;
+                    if (this.selectedLabel !== translatedPh) {
+                        this.selectedLabel = translatedPh;
+                        if (this.search !== '') this.search = '';
                     }
                 }
-            });
+            }
         }
     }"
     @click.outside="
@@ -165,19 +182,19 @@
                     $wire.set('{{ $attributes->wire('model')->value() }}', option.value);
                     $wire.$commit();
                     @endif
-                    let translated = window.Alpine.store('i18n')?.t(option.label) || option.label;
+                    let translated = $store.i18n?.t(option.label) || option.label;
                     selectedLabel = translated;
                     search = translated;
                     open = false;
                 "
-                x-text="window.Alpine.store('i18n')?.t(option.label) || option.label"
+                x-text="$store.i18n?.t(option.label) || option.label"
             ></button>
         </template>
 
         {{-- Sin resultados --}}
         <template x-if="filteredOptions.length === 0">
             <div class="px-3 py-2 text-center text-xs" style="color: var(--vc-text-muted);">
-                No results
+                <span x-text="$store.i18n?.t('form.noResults') || 'No results'"></span>
             </div>
         </template>
     </div>

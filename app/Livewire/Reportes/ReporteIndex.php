@@ -213,7 +213,7 @@ class ReporteIndex extends Component
         foreach($data['appointments'] as $appt) {
             $clienteNombre = $appt->cliente ? str_replace(',', ' ', $appt->cliente->nombre_completo) : '-';
             $mascotaNombre = $appt->mascota ? str_replace(',', ' ', $appt->mascota->name) : '-';
-            $especie = $appt->mascota ? $appt->mascota->species : '-';
+            $especie = $appt->mascota ? ($appt->mascota->especie->name ?? '-') : '-';
             $fecha = $appt->fecha_hora ? $appt->fecha_hora->format('Y-m-d H:i') : '-';
             $motivo = str_replace(',', ' ', $appt->reason ?? '-');
             $veterinario = $appt->veterinario ? str_replace(',', ' ', $appt->veterinario->name) : '-';

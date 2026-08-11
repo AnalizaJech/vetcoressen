@@ -11,7 +11,7 @@
     'searchPlaceholderKey' => null,
 ])
 
-<div class="vc-table-wrapper animate-slide-up relative">
+<div class="vc-table-wrapper animate-slide-up relative pb-20 md:pb-0">
     {{-- Topbar: Buscador, Filtros y Acciones --}}
     @if($searchable || isset($filters) || isset($actions))
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">

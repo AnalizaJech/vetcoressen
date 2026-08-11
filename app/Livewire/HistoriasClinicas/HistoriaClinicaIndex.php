@@ -22,6 +22,14 @@ class HistoriaClinicaIndex extends Component
     #[Url]
     public string $especie_id = '';
 
+    #[Url]
+    public string $filtroDocumento = '';
+
+    #[Url]
+    public string $filtroTelefono = '';
+
+    public ?int $clienteSeleccionadoId = null;
+
     // Resetear paginación al buscar o filtrar
     public function updatedBusqueda(): void
     {
@@ -31,6 +39,26 @@ class HistoriaClinicaIndex extends Component
     public function updatedEspecieId(): void
     {
         $this->resetPage();
+    }
+
+    public function updatedFiltroDocumento(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedFiltroTelefono(): void
+    {
+        $this->resetPage();
+    }
+
+    public function seleccionarCliente(int $id): void
+    {
+        $this->clienteSeleccionadoId = $id;
+    }
+
+    public function volver(): void
+    {
+        $this->clienteSeleccionadoId = null;
     }
 
     // Eliminar historia clínica (soft delete)
@@ -64,12 +92,15 @@ class HistoriaClinicaIndex extends Component
             })
             ->when($this->busqueda, function ($q) {
                 $q->where(function ($sub) {
-                    // Búsqueda por cliente
                     $sub->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$this->busqueda}%"])
-                        ->orWhere('numero_documento', 'like', "%{$this->busqueda}%")
-                        // O por nombre de mascota
                         ->orWhereHas('mascotas', fn ($m) => $m->where('name', 'like', "%{$this->busqueda}%"));
                 });
+            })
+            ->when($this->filtroDocumento, function ($q) {
+                $q->where('numero_documento', 'like', "%{$this->filtroDocumento}%");
+            })
+            ->when($this->filtroTelefono, function ($q) {
+                $q->where('phone', 'like', "%{$this->filtroTelefono}%");
             })
             // Ordenar por el que tenga historias clínicas más recientes
             ->orderByDesc(
@@ -81,11 +112,27 @@ class HistoriaClinicaIndex extends Component
             )
             ->paginate(12);
 
+        $clienteSeleccionado = null;
+        if ($this->clienteSeleccionadoId) {
+            $clienteSeleccionado = \App\Models\Customer::with([
+                'mascotas' => function ($q) {
+                    $q->with([
+                        'historiasClinicas' => function ($q2) {
+                            $q2->orderByDesc('date')->with('veterinario');
+                        },
+                        'especie',
+                        'raza'
+                    ]);
+                }
+            ])->find($this->clienteSeleccionadoId);
+        }
+
         $especies = \App\Models\Species::orderBy('name')->get();
 
         return view('livewire.historias-clinicas.historia-clinica-index', [
             'clientes' => $clientes,
             'especies' => $especies,
+            'clienteSeleccionado' => $clienteSeleccionado
         ]);
     }
 }

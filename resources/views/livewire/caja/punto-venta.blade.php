@@ -61,7 +61,7 @@
                     <flux:input
                         wire:model.live.debounce.300ms="buscarProducto"
                         class="w-full"
-                        x-bind:placeholder="$store.i18n.t('placeholder.searchPOS') || 'Buscar producto, código...'"
+                        placeholder="placeholder.searchPOS"
                     >
                         <x-slot:iconLeading>
                             <span class="material-symbols-outlined text-[18px]">search</span>

@@ -7,5 +7,60 @@
     "Next": "Siguiente",
     "Go to page :page": "Ir a la página :page",
     "Pagination Navigation": "Navegación de paginación",
-    "Search...": "Buscar..."
+    "Search...": "Buscar...",
+    "modal.deleteClient": "Eliminar Cliente",
+    "modal.deleteClientMsg": "Esta acción no se puede revertir y perderás toda la información asociada a este registro.",
+    "form": {
+        "select": "Seleccionar una opción",
+        "search": "Buscar...",
+        "noResults": "No se encontraron resultados",
+        "select_product": "Selecciona un producto...",
+        "select_supplier": "Seleccione proveedor (opcional)",
+        "batch": "Lote",
+        "expires": "Vence",
+        "salePrice": "Precio de Venta",
+        "withIGV": "Incluye IGV",
+        "withoutIGV": "No Incluye IGV",
+        "minStock": "Stock Mínimo",
+        "barcode": "Código de Barras",
+        "weightPresentation": "Peso / Presentación",
+        "activeIngredient": "Principio Activo",
+        "presentation": "Presentación",
+        "requiresPrescription": "Requiere Receta",
+        "overTheCounter": "Venta Libre",
+        "noActiveBatches": "No hay lotes activos",
+        "notes": "Notas / Observaciones",
+        "pricesAndStock": "Precios y Stock",
+        "basicInfo": "Información Básica",
+        "activeBatches": "Lotes Activos",
+        "noCategory": "Sin categoría"
+    },
+    "inventory": {
+        "medication": "Medicamento",
+        "food": "Alimento",
+        "accessory": "Accesorio",
+        "service": "Servicio",
+        "medicamento": "Medicamento",
+        "alimento": "Alimento",
+        "accesorio": "Accesorio",
+        "servicio": "Servicio"
+    },
+    "filter": {
+        "allTypes": "Todos los tipos"
+    },
+    "report": {
+        "downloadPDF": "Imprimir Comprobante",
+        "today": "Hoy",
+        "thisWeek": "Esta Semana",
+        "thisMonth": "Este Mes",
+        "thisYear": "Este Año",
+        "completed": "Completadas",
+        "cancelled": "Canceladas",
+        "salesEvol": "Evolución de Ventas",
+        "pendingOther": "Pendientes/Otras",
+        "salesRevenue": "Ingresos por Ventas"
+    },
+    "table": {
+        "stock": "Stock Actual"
+    }
 }

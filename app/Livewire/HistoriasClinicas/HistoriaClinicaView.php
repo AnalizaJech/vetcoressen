@@ -11,7 +11,7 @@ class HistoriaClinicaView extends Component
 
     public function mount($id)
     {
-        $this->historia = MedicalRecord::with(['pet.cliente', 'veterinario'])->findOrFail($id);
+        $this->historia = MedicalRecord::with(['pet.cliente', 'pet.especie', 'pet.raza', 'veterinario'])->findOrFail($id);
     }
 
     public function render()
