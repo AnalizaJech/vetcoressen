@@ -18,13 +18,21 @@ class MascotaIndex extends Component
     use WithPagination;
 
     #[Url]
-    public string $busqueda = '';
+    public string $filtroMascota = '';
+
+    #[Url]
+    public string $filtroCliente = '';
 
     // ID de la mascota pendiente de eliminar (modal de confirmación)
     public ?int $mascotaEliminarId = null;
     public ?Pet $mascotaVer = null;
 
-    public function updatedBusqueda(): void
+    public function updatedFiltroMascota(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedFiltroCliente(): void
     {
         $this->resetPage();
     }
@@ -49,26 +57,25 @@ class MascotaIndex extends Component
     public function render()
     {
         $mascotas = Pet::with(['cliente', 'clinica', 'especie', 'raza'])
-            ->when($this->busqueda, function ($q) {
-                $q->where(function ($sub) {
-                    $sub->where('name', 'like', "%{$this->busqueda}%")
-                        ->orWhereHas('especie', function ($e) {
-                            $e->where('name', 'like', "%{$this->busqueda}%");
-                        })
-                        ->orWhereHas('raza', function ($r) {
-                            $r->where('name', 'like', "%{$this->busqueda}%");
-                        })
-                        ->orWhereHas('cliente', function ($c) {
-                            $c->where('first_name', 'like', "%{$this->busqueda}%")
-                              ->orWhere('last_name', 'like', "%{$this->busqueda}%");
-                        });
-                });
+            ->when($this->filtroMascota, function ($q) {
+                $q->where('id', $this->filtroMascota);
+            })
+            ->when($this->filtroCliente, function ($q) {
+                $q->where('customer_id', $this->filtroCliente);
             })
             ->orderByDesc('created_at')
             ->paginate(15);
 
-        return view('livewire.mascotas.mascota-index', [
-            'mascotas' => $mascotas,
-        ]);
+        $mascotasOptions = [['value' => '', 'label' => 'Todas las mascotas']];
+        foreach (Pet::orderBy('name')->get() as $m) {
+            $mascotasOptions[] = ['value' => (string)$m->id, 'label' => $m->name];
+        }
+
+        $clientesOptions = [['value' => '', 'label' => 'Todos los clientes']];
+        foreach (Customer::orderBy('first_name')->get() as $c) {
+            $clientesOptions[] = ['value' => (string)$c->id, 'label' => $c->nombre_completo];
+        }
+
+        return view('livewire.mascotas.mascota-index', compact('mascotas', 'mascotasOptions', 'clientesOptions'));
     }
 }

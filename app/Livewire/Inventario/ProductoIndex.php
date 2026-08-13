@@ -17,7 +17,7 @@ class ProductoIndex extends Component
     use WithPagination;
 
     #[Url]
-    public string $busqueda = '';
+    public string $filtroProducto = '';
 
     #[Url]
     public $filtroStock = '';
@@ -28,7 +28,7 @@ class ProductoIndex extends Component
     public ?int $productoEliminarId = null;
     public ?Product $productoVer = null;
 
-    public function updatedBusqueda(): void { $this->resetPage(); }
+    public function updatedFiltroProducto(): void { $this->resetPage(); }
     public function updatedFiltroTipo(): void { $this->resetPage(); }
     public function updatedSoloStockBajo(): void { $this->resetPage(); }
 
@@ -60,9 +60,8 @@ class ProductoIndex extends Component
     public function render()
     {
         $productos = Product::with('productBatches')
-            ->when($this->busqueda, fn ($q, $busqueda) =>
-                $q->where('name', 'like', "%{$busqueda}%")
-                  ->orWhere('codigo_barras', 'like', "%{$busqueda}%")
+            ->when($this->filtroProducto, fn ($q) =>
+                $q->where('id', $this->filtroProducto)
             )
             ->when($this->filtroTipo, fn ($q, $filtro) => $q->where('type', $filtro))
             ->when($this->soloStockBajo, fn ($q) =>
@@ -71,8 +70,11 @@ class ProductoIndex extends Component
             ->orderBy('name')
             ->paginate(20);
 
-        return view('livewire.inventario.producto-index', [
-            'productos' => $productos,
-        ]);
+        $productosOptions = [['value' => '', 'label' => 'Todos los productos']];
+        foreach (Product::orderBy('name')->get() as $p) {
+            $productosOptions[] = ['value' => (string)$p->id, 'label' => $p->name];
+        }
+
+        return view('livewire.inventario.producto-index', compact('productos', 'productosOptions'));
     }
 }

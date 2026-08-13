@@ -18,14 +18,14 @@ class ClienteIndex extends Component
     use WithPagination;
 
     #[Url]
-    public string $busqueda = '';
+    public string $filtroCliente = '';
 
     // ID del cliente pendiente de eliminar (modal de confirmación)
     public ?int $clienteEliminarId = null;
     public ?Customer $clienteVer = null;
 
-    // Resetear paginación al buscar
-    public function updatedBusqueda(): void
+    // Resetear paginación al filtrar
+    public function updatedFiltroCliente(): void
     {
         $this->resetPage();
     }
@@ -50,20 +50,18 @@ class ClienteIndex extends Component
     public function render()
     {
         $clientes = Customer::query()
-            ->when($this->busqueda, function ($q) {
-                $q->where(function ($sub) {
-                    $sub->where('first_name', 'like', "%{$this->busqueda}%")
-                        ->orWhere('last_name', 'like', "%{$this->busqueda}%")
-                        ->orWhere('numero_documento', 'like', "%{$this->busqueda}%")
-                        ->orWhere('email', 'like', "%{$this->busqueda}%");
-                });
+            ->when($this->filtroCliente, function ($q) {
+                $q->where('id', $this->filtroCliente);
             })
             ->withCount('mascotas')
             ->orderByDesc('created_at')
             ->paginate(15);
 
-        return view('livewire.clientes.cliente-index', [
-            'clientes' => $clientes,
-        ]);
+        $clientesOptions = [['value' => '', 'label' => 'Todos los clientes']];
+        foreach (Customer::orderBy('first_name')->get() as $c) {
+            $clientesOptions[] = ['value' => (string)$c->id, 'label' => $c->nombre_completo . ' - ' . $c->numero_documento];
+        }
+
+        return view('livewire.clientes.cliente-index', compact('clientes', 'clientesOptions'));
     }
 }

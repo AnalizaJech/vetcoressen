@@ -450,6 +450,17 @@
                                             if ($prod->presentacion || $prod->principio_activo) {
                                                 $label .= ' - ' . $prod->presentacion . ($prod->principio_activo ? ' ('.$prod->principio_activo.')' : '');
                                             }
+                                            
+                                            // Agregar información de lotes y stock
+                                            if ($prod->productBatches && $prod->productBatches->count() > 0) {
+                                                $lotesInfo = $prod->productBatches->map(function($b) {
+                                                    return $b->lote . ' (' . round($b->stock_actual) . ')';
+                                                })->implode(', ');
+                                                $label .= ' | Lotes: ' . $lotesInfo;
+                                            } else {
+                                                $label .= ' | Stock: ' . round($prod->current_stock);
+                                            }
+                                            
                                             $productosOpts[] = ['value' => (string)$prod->id, 'label' => $label];
                                         }
                                     @endphp

@@ -47,16 +47,22 @@ class Dashboard extends Component
             ->count();
 
         // KPI: Alertas de inventario (stock actual <= stock mínimo)
-        $productosEnAlerta = Product::where('is_active', true)
+        // Productos en alerta de stock
+        $productosEnAlerta = Product::where('clinic_id', $this->clinicId)
+            ->where('is_active', true)
             ->where('type', '!=', 'Servicio')
             ->whereColumn('current_stock', '<=', 'minimum_stock')
             ->get();
         $alertasInventario = $productosEnAlerta->count();
 
         // KPI: Lotes próximos a vencer (90 días)
-        $lotesProximosVencer = \App\Models\ProductBatch::with('product')
+        $lotesProximosVencer = \App\Models\ProductBatch::with(['product' => function ($query) {
+                $query->withTrashed();
+            }])
             ->whereHas('product', function ($query) {
-                $query->where('is_active', true);
+                $query->withTrashed()
+                      ->where('clinic_id', $this->clinicId)
+                      ->where('is_active', true);
             })
             ->whereNotNull('fecha_vencimiento')
             ->where('fecha_vencimiento', '<=', now()->addDays(90))

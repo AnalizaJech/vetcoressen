@@ -40,14 +40,14 @@ document.addEventListener("alpine:init", () => {
         },
 
         t(key, fallback = null) {
-            if (!this.loaded || !this.dict) return fallback !== null ? fallback : key;
+            if (!this.loaded || !this.dict) return fallback !== null ? fallback : '';
             const keys = key.split(".");
             let result = this.dict;
             for (const k of keys) {
                 if (result && typeof result === "object" && k in result) {
                     result = result[k];
                 } else {
-                    return fallback !== null ? fallback : key;
+                    return fallback !== null ? fallback : '';
                 }
             }
             return result;

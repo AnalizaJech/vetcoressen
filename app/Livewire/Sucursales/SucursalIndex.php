@@ -17,11 +17,11 @@ class SucursalIndex extends Component
     use WithPagination;
 
     #[Url]
-    public string $busqueda = '';
+    public string $filtroSucursal = '';
 
     public ?int $sucursalEliminarId = null;
 
-    public function updatedBusqueda(): void
+    public function updatedFiltroSucursal(): void
     {
         $this->resetPage();
     }
@@ -54,17 +54,18 @@ class SucursalIndex extends Component
     public function render()
     {
         $sucursales = Branch::query()
-            ->when($this->busqueda, function ($query) {
-                $query->where('name', 'like', '%' . $this->busqueda . '%')
-                      ->orWhere('address', 'like', '%' . $this->busqueda . '%')
-                      ->orWhere('phone', 'like', '%' . $this->busqueda . '%');
+            ->when($this->filtroSucursal, function ($query) {
+                $query->where('id', $this->filtroSucursal);
             })
-            ->orderByDesc('principal')
+            ->orderBy('principal', 'desc')
             ->orderBy('name')
             ->paginate(10);
 
-        return view('livewire.sucursales.sucursal-index', [
-            'sucursales' => $sucursales
-        ]);
+        $sucursalesOptions = [['value' => '', 'label' => 'Todas las sucursales']];
+        foreach (Branch::orderBy('name')->get() as $s) {
+            $sucursalesOptions[] = ['value' => (string)$s->id, 'label' => $s->name];
+        }
+
+        return view('livewire.sucursales.sucursal-index', compact('sucursales', 'sucursalesOptions'));
     }
 }

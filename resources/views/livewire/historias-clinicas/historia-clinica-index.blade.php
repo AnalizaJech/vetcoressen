@@ -26,13 +26,22 @@
             <div class="vc-card p-4 mb-6">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div class="md:col-span-1">
-                        <flux:input wire:model.live.debounce.300ms="busqueda" icon="magnifying-glass" placeholder="form.searchClientPet" />
+                        <x-vc-dropdown
+                            wire:model.live="filtroCliente"
+                            :options="$clientesOptions"
+                            placeholder="Todos los clientes"
+                            searchable
+                            class="w-full"
+                        />
                     </div>
                     <div class="md:col-span-1">
-                        <flux:input wire:model.live.debounce.300ms="filtroDocumento" icon="identification" placeholder="form.dniRuc" />
-                    </div>
-                    <div class="md:col-span-1">
-                        <flux:input wire:model.live.debounce.300ms="filtroTelefono" icon="phone" placeholder="form.phone" />
+                        <x-vc-dropdown
+                            wire:model.live="filtroMascota"
+                            :options="$mascotasOptions"
+                            placeholder="Todas las mascotas"
+                            searchable
+                            class="w-full"
+                        />
                     </div>
                     <div class="md:col-span-1">
                         @php
