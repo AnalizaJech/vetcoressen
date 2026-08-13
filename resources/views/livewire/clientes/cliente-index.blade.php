@@ -26,9 +26,16 @@
         icon="group"
         emptyTitle="Sin clientes"
         emptyText="No hay clientes que coincidan con los filtros."
-        searchModel="busqueda"
-        searchPlaceholder="Buscar cliente, documento, email..."
     >
+        <x-slot:filters>
+            <x-vc-dropdown
+                wire:model.live="filtroCliente"
+                :options="$clientesOptions"
+                placeholder="Todos los clientes"
+                searchable
+                class="w-full sm:w-64"
+            />
+        </x-slot:filters>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
             @foreach($clientes as $cliente)
                 <div wire:key="cliente-{{ $cliente->id }}" class="vc-card flex flex-col justify-between p-5 rounded-2xl bg-white dark:bg-vc-surface border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-md transition-shadow relative">

@@ -424,11 +424,11 @@
         "lastWeek": "Last Week",
         "thisMonth": "This Month",
         "thisYear": "This Year",
-        "filter": "Filter by",
+        "filterBy": "Filter by",
         "time_hoy": "accumulated today",
         "time_semana": "this week",
         "time_mes": "this month",
-        "time_anio": "this year"
+        "time_año": "this year"
     },
     "kpi": {
         "cash": "Cash",
@@ -450,6 +450,8 @@
         }
     },
     "table": {
+        "empty": "No records found",
+        "emptyText": "No data found to display.",
         "dateTime": "Date & Time",
         "sale": "Sale",
         "client": "Client",

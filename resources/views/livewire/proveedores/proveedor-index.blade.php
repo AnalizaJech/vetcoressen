@@ -22,13 +22,20 @@
             :data="$proveedores"
             icon="local_shipping"
             emptyTitle="Sin proveedores"
-            emptyText="No hay proveedores que coincidan con la búsqueda."
+            emptyText="No hay proveedores que coincidan con los filtros."
             emptyTitleKey="table.emptySuppliersTitle"
             emptyTextKey="table.emptySuppliersText"
-            searchModel="busqueda"
-            searchPlaceholder="Buscar por empresa, RUC, contacto..."
-            searchPlaceholderKey="placeholder.searchSupplier"
         >
+            <x-slot:filters>
+                <x-vc-dropdown
+                    wire:model.live="filtroProveedor"
+                    :options="$proveedoresOptions"
+                    placeholder="Todos los proveedores"
+                    searchable
+                    class="w-full sm:w-64"
+                />
+            </x-slot:filters>
+
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
                 @foreach($proveedores as $proveedor)
                     <div class="vc-card flex flex-col justify-between p-5 rounded-2xl bg-white dark:bg-vc-surface border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-md transition-shadow relative">
@@ -115,10 +122,10 @@
             </div>
             <div class="flex flex-col-reverse sm:flex-row gap-3 w-full mt-6">
                 <flux:spacer class="hidden sm:block" />
-                <flux:modal.close class="w-full sm:w-auto flex-1">
+                <flux:modal.close class="w-full sm:w-auto">
                     <flux:button variant="ghost" class="w-full font-medium"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'">Cancelar</span></flux:button>
                 </flux:modal.close>
-                <button type="button" class="w-full sm:w-auto flex-1 btn-danger font-medium justify-center" wire:click="eliminar" x-on:click="$dispatch('modal-close', { name: 'confirmar-eliminacion' })">
+                <button type="button" class="w-full sm:w-auto btn-danger font-medium justify-center" wire:click="eliminar" x-on:click="$dispatch('modal-close', { name: 'confirmar-eliminacion' })">
                     <span x-text="$store.i18n.t('btn.delete') || 'Eliminar'">Eliminar</span>
                 </button>
             </div>

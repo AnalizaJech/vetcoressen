@@ -407,9 +407,13 @@ class HistoriaClinicaForm extends Component
         // Veterinarios (usuarios con rol veterinario)
         $veterinarios = User::role('veterinario')->orderBy('name')->get();
 
-        // Productos para prescripciones (solo medicamentos)
-        $productos = Product::where('is_active', true)
+        // Productos para prescripciones (solo medicamentos y con stock)
+        $productos = Product::with(['productBatches' => function ($query) {
+                $query->where('stock_actual', '>', 0)->orderBy('fecha_vencimiento', 'asc');
+            }])
+            ->where('is_active', true)
             ->where('categoria', 'Medicamentos')
+            ->where('current_stock', '>', 0)
             ->orderBy('name')
             ->get();
 

@@ -17,37 +17,20 @@ class HistoriaClinicaIndex extends Component
     use WithPagination;
 
     #[Url]
-    public string $busqueda = '';
+    public string $filtroCliente = '';
 
     #[Url]
-    public string $especie_id = '';
-
-    #[Url]
-    public string $filtroDocumento = '';
-
-    #[Url]
-    public string $filtroTelefono = '';
+    public string $filtroMascota = '';
 
     #[Url]
     public ?int $clienteSeleccionadoId = null;
 
-    // Resetear paginación al buscar o filtrar
-    public function updatedBusqueda(): void
+    public function updatedFiltroCliente(): void
     {
         $this->resetPage();
     }
 
-    public function updatedEspecieId(): void
-    {
-        $this->resetPage();
-    }
-
-    public function updatedFiltroDocumento(): void
-    {
-        $this->resetPage();
-    }
-
-    public function updatedFiltroTelefono(): void
+    public function updatedFiltroMascota(): void
     {
         $this->resetPage();
     }
@@ -86,22 +69,11 @@ class HistoriaClinicaIndex extends Component
                     ]);
                 }
             ])
-            ->whereHas('mascotas', function ($q) {
-                if ($this->especie_id) {
-                    $q->where('species_id', $this->especie_id);
-                }
+            ->when($this->filtroCliente, function ($q) {
+                $q->where('id', $this->filtroCliente);
             })
-            ->when($this->busqueda, function ($q) {
-                $q->where(function ($sub) {
-                    $sub->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$this->busqueda}%"])
-                        ->orWhereHas('mascotas', fn ($m) => $m->where('name', 'like', "%{$this->busqueda}%"));
-                });
-            })
-            ->when($this->filtroDocumento, function ($q) {
-                $q->where('numero_documento', 'like', "%{$this->filtroDocumento}%");
-            })
-            ->when($this->filtroTelefono, function ($q) {
-                $q->where('phone', 'like', "%{$this->filtroTelefono}%");
+            ->when($this->filtroMascota, function ($q) {
+                $q->whereHas('mascotas', fn ($m) => $m->where('id', $this->filtroMascota));
             })
             // Ordenar por el que tenga historias clínicas más recientes
             ->orderByDesc(
@@ -128,12 +100,16 @@ class HistoriaClinicaIndex extends Component
             ])->find($this->clienteSeleccionadoId);
         }
 
-        $especies = \App\Models\Species::orderBy('name')->get();
+        $clientesOptions = [['value' => '', 'label' => 'Todos los clientes']];
+        foreach (\App\Models\Customer::orderBy('first_name')->get() as $c) {
+            $clientesOptions[] = ['value' => (string)$c->id, 'label' => $c->nombre_completo];
+        }
 
-        return view('livewire.historias-clinicas.historia-clinica-index', [
-            'clientes' => $clientes,
-            'especies' => $especies,
-            'clienteSeleccionado' => $clienteSeleccionado
-        ]);
+        $mascotasOptions = [['value' => '', 'label' => 'Todas las mascotas']];
+        foreach (\App\Models\Pet::orderBy('name')->get() as $m) {
+            $mascotasOptions[] = ['value' => (string)$m->id, 'label' => $m->name];
+        }
+
+        return view('livewire.historias-clinicas.historia-clinica-index', compact('clientes', 'clienteSeleccionado', 'clientesOptions', 'mascotasOptions'));
     }
 }

@@ -5,93 +5,93 @@
   <img src="https://img.shields.io/badge/MySQL-00000F?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL" />
   <br>
   <h1>🐾 VetCoressen</h1>
-  <p><strong>Comprehensive Veterinary Clinic Management System</strong></p>
+  <p><strong>Sistema Integral de Gestión de Clínicas Veterinarias</strong></p>
 </div>
 
 <br>
 
-## 📖 About the Project
+## 📖 Sobre el Proyecto
 
-**VetCoressen** is a modern, scalable, and fully automated management system engineered specifically for veterinary clinics. Built on the robust **Laravel** framework and the reactive **Livewire** stack, it streamlines day-to-day clinical operations. 
+**VetCoressen** es un sistema de gestión moderno, escalable y completamente automatizado, diseñado específicamente para clínicas veterinarias. Construido sobre el robusto framework **Laravel** y la pila reactiva **Livewire**, el sistema optimiza y agiliza las operaciones clínicas diarias.
 
-From managing electronic clinical histories to automating client reminders and handling complex point-of-sale transactions with electronic invoicing (SUNAT-compliant), VetCoressen ensures that veterinary professionals can focus entirely on patient care rather than administrative overhead.
-
----
-
-## ✨ Key Features
-
-- 🏥 **Clinical Records (Historias Clínicas)**: Maintain highly detailed, electronic medical histories for each pet. Track diagnoses, long-term treatments, vaccines, and medical progress seamlessly.
-- 📅 **Smart Appointments (Citas)**: Schedule, reschedule, and manage veterinary appointments through an interactive calendar interface. Clients receive automated email reminders to reduce no-shows.
-- 🐶 **Patient & Customer Management (Mascotas & Clientes)**: Organize detailed profiles for pet owners and their companions. Cross-reference them instantly with medical records, appointments, and billing histories.
-- 📦 **Advanced Inventory (Inventario)**: Stay on top of your product stock, medications, and food supplies. The system automatically tracks **product batches (lotes)** and **expiry dates**, triggering alerts for critical stock to guarantee patient safety.
-- 💳 **Point of Sale & Billing (Caja)**: A fully featured POS system featuring a dynamic cart, real-time IGV (tax) calculation, cash register reconciliation (arqueo de caja), and detailed receipt generation.
-- 🧾 **Electronic Invoicing**: Built-in, direct integration with **Nubefact** for issuing legally compliant electronic invoices (*boletas* and *facturas*) directly to SUNAT (Peruvian Tax Authority).
-- 🏢 **Multi-Branch Support (Sucursales)**: Ready to scale. Manage operations, inventory, and staff across multiple physical clinic locations from a centralized dashboard.
-- 📊 **Settings & Analytics (Ajustes & Reportes)**: Configure clinic information, assign granular user roles, and monitor business health through dynamic analytics and reports.
+Desde la gestión de historias clínicas electrónicas hasta la automatización de recordatorios para clientes y el manejo integral de punto de venta con facturación electrónica (integrada con SUNAT), VetCoressen garantiza que los profesionales veterinarios puedan enfocarse enteramente en el cuidado de los pacientes en lugar de la carga administrativa.
 
 ---
 
-## 🛠️ Technology Stack
+## ✨ Características Principales
 
-**VetCoressen** leverages a cutting-edge, highly performant tech stack:
-
-- **Backend Architecture**: PHP 8.2+, Laravel 12.x, Livewire 4.x, Livewire Flux 2.x
-- **Frontend & UI**: Tailwind CSS 4.0, Vite 7.0, FullCalendar 6.1
-- **Third-Party Integrations**: 
-  - 📧 **Resend**: Transactional emails and appointment reminders.
-  - 📄 **Nubefact**: Seamless SUNAT electronic invoicing.
-  - 🆔 **PeruAPI**: Automated DNI and RUC verification.
-  - 💬 **Twilio**: SMS and WhatsApp messaging capabilities.
-- **Development Tooling**: Laravel Pail, Sail, Pint, and PestPHP.
+- 🏥 **Historias Clínicas Electrónicas**: Mantenga registros médicos electrónicos altamente detallados para cada mascota. Realice un seguimiento continuo de diagnósticos, tratamientos, vacunas y evolución médica sin complicaciones.
+- 📅 **Gestión Inteligente de Citas**: Programe, reprograme y administre citas veterinarias mediante una interfaz de calendario interactiva. Los clientes reciben recordatorios automáticos por correo electrónico para reducir el ausentismo.
+- 🐶 **Gestión de Clientes y Mascotas**: Organice perfiles detallados de propietarios y sus mascotas. Acceda al instante a sus historias clínicas, próximas citas y un historial completo de facturación.
+- 📦 **Inventario Avanzado**: Mantenga el control absoluto de su stock de productos, medicamentos y alimentos. El sistema rastrea automáticamente **lotes de productos** y **fechas de caducidad**, generando alertas críticas para garantizar la seguridad de los pacientes.
+- 💳 **Caja y Punto de Venta (POS)**: Un sistema de Punto de Venta completo con carrito dinámico, cálculo de IGV en tiempo real, arqueo de caja (aperturas y cierres) y generación detallada de recibos.
+- 🧾 **Facturación Electrónica**: Integración nativa y directa con **Nubefact** para emitir boletas y facturas electrónicas con total validez legal ante la SUNAT.
+- 🏢 **Soporte Multi-Sucursal**: Listo para escalar. Administre las operaciones, el inventario y el personal a través de múltiples sedes físicas desde un panel de control centralizado.
+- 📊 **Reportes y Analíticas**: Configure la información de la clínica, asigne roles y permisos granulares a los usuarios, y supervise la salud del negocio a través de reportes y métricas dinámicas.
 
 ---
 
-## ⚙️ Getting Started
+## 🛠️ Stack Tecnológico
 
-### Prerequisites
+**VetCoressen** está desarrollado utilizando un stack tecnológico moderno y de alto rendimiento:
 
-Ensure your local development environment meets the following requirements:
+- **Arquitectura Backend**: PHP 8.2+, Laravel 12.x, Livewire 4.x, Livewire Flux 2.x
+- **Frontend y UI**: Tailwind CSS 4.0, Vite 7.0, FullCalendar 6.1
+- **Integraciones de Terceros**: 
+  - 📧 **Resend**: Para correos transaccionales y recordatorios de citas.
+  - 📄 **Nubefact**: Para facturación electrónica transparente con SUNAT.
+  - 🆔 **PeruAPI**: Verificación automática de DNI y RUC en tiempo real.
+  - 💬 **Twilio**: Capacidades de mensajería SMS y WhatsApp.
+- **Herramientas de Desarrollo**: Laravel Pail, Sail, Pint y PestPHP.
+
+---
+
+## ⚙️ Guía de Instalación
+
+### Requisitos Previos
+
+Asegúrese de que su entorno de desarrollo local cumpla con los siguientes requisitos:
 - **PHP** >= 8.2
-- **Composer** (Dependency Manager)
-- **Node.js** & **npm**
-- **MySQL** or MariaDB
+- **Composer** (Gestor de dependencias)
+- **Node.js** y **npm**
+- **MySQL** o MariaDB
 
-### Installation
+### Instalación Rápida
 
-The project provides a fully automated setup script defined in `composer.json` for rapid deployment. Run a single command to get everything up and running:
+El proyecto proporciona un script de configuración totalmente automatizado definido en `composer.json` para un despliegue rápido. Ejecute un solo comando para preparar todo el entorno:
 
 ```bash
 composer run setup
 ```
 
-#### Manual Installation
+### Instalación Manual
 
-If you prefer to configure the environment step-by-step:
+Si prefiere configurar el entorno paso a paso:
 
-1. **Clone the repository:**
+1. **Clonar el repositorio:**
    ```bash
    git clone <repository-url>
    cd vetcoressen
    ```
 
-2. **Install PHP dependencies:**
+2. **Instalar dependencias de PHP:**
    ```bash
    composer install
    ```
 
-3. **Configure the Environment:**
+3. **Configurar el entorno:**
    ```bash
    cp .env.example .env
    php artisan key:generate
    ```
-   *Note: Open your `.env` file and configure your database connection (`DB_DATABASE`, etc.) along with any required API keys (`RESEND_API_KEY`, `NUBEFACT_TOKEN`, `PERUAPI_KEY`).*
+   *Nota: Abra el archivo `.env` y configure la conexión a su base de datos (`DB_DATABASE`, etc.), junto con las claves API requeridas (`RESEND_API_KEY`, `NUBEFACT_TOKEN`, `PERUAPI_KEY`).*
 
-4. **Run Database Migrations:**
+4. **Ejecutar Migraciones de Base de Datos:**
    ```bash
    php artisan migrate --force
    ```
 
-5. **Compile Frontend Assets:**
+5. **Compilar recursos del Frontend:**
    ```bash
    npm install
    npm run build
@@ -99,9 +99,9 @@ If you prefer to configure the environment step-by-step:
 
 ---
 
-## ▶️ Usage & Development
+## ▶️ Uso y Desarrollo
 
-To launch the local development environment—which concurrently starts the PHP server, the queue listener, the log viewer, and the Vite hot-module replacement server—run:
+Para iniciar el entorno de desarrollo local (que ejecuta simultáneamente el servidor PHP, el worker de colas, el visor de logs y el servidor Vite con Hot-Module Replacement), ejecute:
 
 ```bash
 composer run dev
@@ -109,42 +109,42 @@ composer run dev
 
 ---
 
-## 🗂️ Project Architecture
+## 🗂️ Arquitectura del Proyecto
 
-A quick overview of the core directories driving the application logic:
+Un resumen de los directorios principales que impulsan la lógica de la aplicación:
 
-- `app/Livewire/` — Contains all reactive, frontend interactive components (e.g., POS, Inventory, Appointments).
-- `app/Models/` — Eloquent ORM models representing the database schema.
-- `app/Services/` — Core business logic and third-party integration classes (e.g., `InventoryService`, `NubefactService`).
-- `app/Mail/` — Mailable classes responsible for dispatching beautiful email notifications and digital receipts.
-- `app/Jobs/` — Background, asynchronous queued jobs for heavy processing.
-
----
-
-## 🌐 Localization & Security
-
-- **Localization**: Native multi-language support. The platform is fully localized in both **English (`en`)** and **Spanish (`es`)**.
-- **Roles & Permissions**: Access control is strictly enforced using `spatie/laravel-permission`. 
-- **Audit Trails**: Critical system and user activities are meticulously logged via `spatie/laravel-activitylog`.
+- `app/Livewire/` — Contiene todos los componentes interactivos y reactivos del frontend (ej. POS, Inventario, Citas).
+- `app/Models/` — Modelos ORM de Eloquent que representan el esquema de la base de datos.
+- `app/Services/` — Clases base para la lógica de negocio y las integraciones de terceros (ej. `InventoryService`, `NubefactService`).
+- `app/Mail/` — Clases *Mailable* responsables de enviar notificaciones por correo y recibos digitales.
+- `app/Jobs/` — Trabajos en cola asíncronos para procesos pesados en segundo plano.
 
 ---
 
-## 👤 Development & Academic Context
+## 🌐 Localización y Seguridad
 
-**Author & Project Coordinator**:  
+- **Localización**: Soporte multi-idioma nativo. La plataforma está completamente traducida al **Inglés (`en`)** y **Español (`es`)**.
+- **Roles y Permisos**: El control de acceso se aplica estrictamente utilizando `spatie/laravel-permission`.
+- **Trazabilidad (Audit Trails)**: Las actividades críticas del sistema y de los usuarios se registran meticulosamente mediante `spatie/laravel-activitylog`.
+
+---
+
+## 👤 Contexto Académico y Desarrollo
+
+**Autor y Coordinador del Proyecto**:  
 **Jorge Enrique Caceres Hernandez**  
-*Systems Engineering Student, Universidad Nacional de Cañete*
+*Estudiante de Ingeniería de Sistemas, Universidad Nacional de Cañete*
 
-**Academic Advisor**:  
+**Asesor Académico**:  
 **Alex Abelardo Pacheco-Pumaleque**
 
-*This software was developed within the framework of the research project **"Innovation in Veterinary Management: Automated Reminder System to Optimize Clinical History Management in San Vicente de Cañete, 2025"**.*
+*Este software fue desarrollado en el marco del proyecto de investigación **"Innovación en Gestión Veterinaria: Sistema de Recordatorios Automatizados para Optimizar el Manejo de Historias Clínicas en San Vicente de Cañete, 2025"**.*
 
-### 💰 Grant Information
-This project was proudly funded by the **Vice Presidency for Research (Vicepresidencia de Investigación)** at UNDC, awarded during the *First Research Competition for the Development of Innovations and Intellectual Property*, under grant contract **N° 021-2024-UNDC/CO/P/DGA**.
+### 💰 Financiación
+Este proyecto fue orgullosamente financiado por la **Vicepresidencia de Investigación** de la UNDC, galardonado durante el *I Concurso de Investigación para el Desarrollo de Innovaciones y Propiedad Intelectual*, bajo el contrato de subvención **N° 021-2024-UNDC/CO/P/DGA**.
 
 ---
 
-## 📄 License
+## 📄 Licencia
 
-This project is open-source and distributed under the terms of the **[MIT License](LICENSE)**.
+Este proyecto es de código abierto y se distribuye bajo los términos de la **[Licencia MIT](LICENSE)**.

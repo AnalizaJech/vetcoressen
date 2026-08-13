@@ -28,12 +28,19 @@
     <x-vc-table-layout 
         :data="$productos"
         icon="inventory_2"
-        emptyTitle="table.empty"
-        emptyText="table.emptyText"
-        searchModel="busqueda"
-        searchPlaceholder="table.searchProduct"
+        emptyTitle="Sin productos"
+        emptyTitleKey="table.empty"
+        emptyText="No hay productos registrados."
+        emptyTextKey="table.emptyText"
     >
         <x-slot:filters>
+            <x-vc-dropdown
+                wire:model.live="filtroProducto"
+                :options="$productosOptions"
+                placeholder="Todos los productos"
+                searchable
+                class="w-full sm:w-64"
+            />
             <x-vc-dropdown
                 wire:model.live="filtroTipo"
                 :options="[
@@ -46,10 +53,10 @@
                 :selected="$filtroTipo"
                 placeholder="filter.allTypes"
             />
-            <div class="flex items-center gap-2 px-2 bg-white dark:bg-vc-surface-alt rounded-lg border border-zinc-200 dark:border-zinc-700 h-10">
-                <flux:checkbox wire:model.live="soloStockBajo" />
-                <span class="text-sm whitespace-nowrap" style="color: var(--vc-text-muted);" x-text="$store.i18n.t('misc.lowStockOnly')"></span>
-            </div>
+            <label for="stock-bajo-checkbox" class="flex items-center gap-2 px-3 bg-white dark:bg-vc-surface-alt rounded-lg border border-zinc-200 dark:border-zinc-700 h-10 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors" style="user-select: none;">
+                <flux:checkbox id="stock-bajo-checkbox" wire:model.live="soloStockBajo" />
+                <span class="text-sm whitespace-nowrap pointer-events-none" style="color: var(--vc-text-muted);" x-text="$store.i18n.t('misc.lowStockOnly') || 'Solo stock bajo'"></span>
+            </label>
         </x-slot:filters>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">

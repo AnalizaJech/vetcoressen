@@ -26,9 +26,23 @@
         icon="pets"
         emptyTitle="Sin mascotas"
         emptyText="No hay mascotas que coincidan con los filtros."
-        searchModel="busqueda"
-        searchPlaceholder="Buscar mascota, especie, raza..."
     >
+        <x-slot:filters>
+            <x-vc-dropdown
+                wire:model.live="filtroCliente"
+                :options="$clientesOptions"
+                placeholder="Todos los clientes"
+                searchable
+                class="w-full sm:w-64"
+            />
+            <x-vc-dropdown
+                wire:model.live="filtroMascota"
+                :options="$mascotasOptions"
+                placeholder="Todas las mascotas"
+                searchable
+                class="w-full sm:w-64"
+            />
+        </x-slot:filters>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
             @foreach($mascotas as $mascota)
                 <div wire:key="mascota-{{ $mascota->id }}" class="vc-card flex flex-col justify-between p-5 rounded-2xl bg-white dark:bg-vc-surface border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-md transition-shadow relative">

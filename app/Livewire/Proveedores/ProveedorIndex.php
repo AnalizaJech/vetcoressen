@@ -17,12 +17,12 @@ class ProveedorIndex extends Component
     use WithPagination;
 
     #[Url]
-    public string $busqueda = '';
+    public string $filtroProveedor = '';
 
     public ?int $proveedorEliminarId = null;
     public ?Supplier $proveedorVer = null;
 
-    public function updatedBusqueda(): void
+    public function updatedFiltroProveedor(): void
     {
         $this->resetPage();
     }
@@ -57,17 +57,17 @@ class ProveedorIndex extends Component
     public function render()
     {
         $proveedores = Supplier::query()
-            ->when($this->busqueda, function ($query) {
-                $query->where('name', 'like', '%' . $this->busqueda . '%')
-                      ->orWhere('ruc', 'like', '%' . $this->busqueda . '%')
-                      ->orWhere('phone', 'like', '%' . $this->busqueda . '%')
-                      ->orWhere('email', 'like', '%' . $this->busqueda . '%');
+            ->when($this->filtroProveedor, function ($query) {
+                $query->where('id', $this->filtroProveedor);
             })
-            ->orderBy('name')
-            ->paginate(10);
+            ->orderByDesc('created_at')
+            ->paginate(12);
 
-        return view('livewire.proveedores.proveedor-index', [
-            'proveedores' => $proveedores
-        ]);
+        $proveedoresOptions = [['value' => '', 'label' => 'Todos los proveedores']];
+        foreach (Supplier::orderBy('name')->get() as $p) {
+            $proveedoresOptions[] = ['value' => (string)$p->id, 'label' => $p->name];
+        }
+
+        return view('livewire.proveedores.proveedor-index', compact('proveedores', 'proveedoresOptions'));
     }
 }
