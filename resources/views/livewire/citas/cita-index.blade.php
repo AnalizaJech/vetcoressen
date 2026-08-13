@@ -172,7 +172,7 @@
             }
             
             /* Correcciones de color para modo claro/oscuro (Gris claro no se veía el texto) */
-            .fc-col-header-cell-cushion, .fc-daygrid-day-number { color: #374151; }
+            .fc-col-header-cell-cushion, .fc-daygrid-day-number { color: #18181b; font-weight: 600; }
             .dark .fc-col-header-cell-cushion, .dark .fc-daygrid-day-number { color: #f4f4f5; }
             .dark .fc-theme-standard th, .dark .fc-theme-standard td, .dark .fc-theme-standard .fc-scrollgrid { border-color: #3f3f46; }
             .dark .fc-day-today { background-color: #27272a !important; }
@@ -765,7 +765,7 @@ html.dark .fc .fc-list-day-cushion {
     padding: 0 !important;
 }
 .fc-theme-standard .fc-scrollgrid-section-header > th {
-    background-color: #3f3f46 !important; /* Gris oscuro */
+    background-color: var(--vc-emerald) !important; /* Tema claro: Emerald */
     padding: 0 !important;
 }
 .fc .fc-col-header-cell-cushion {
@@ -801,10 +801,6 @@ html.dark .fc .fc-col-header-cell-cushion {
     border: none !important;
     background-color: transparent !important;
     padding: 0 !important; /* Quitar padding interno para que cuadre exacto */
-}
-.fc-theme-standard .fc-scrollgrid-section-header > th {
-    background-color: var(--fc-neutral-bg-color) !important;
-    padding: 0 !important;
 }
 
 /* Estilo para la vista de Lista */

@@ -21,6 +21,10 @@
             h = h ? h : 12;
             return String(h).padStart(2, '0') + ':' + m + ' ' + ampm;
         },
+        get placeholderText() {
+            let key = '{{ addslashes($placeholder) }}';
+            return this.$store.i18n?.t(key) || key;
+        },
         select(time) {
             this.value = time;
             this.open = false;
@@ -47,9 +51,13 @@
             readonly
             :value="formattedValue"
             class="vc-dropdown-trigger w-full focus-visible:outline-none cursor-pointer"
-            placeholder="{{ $placeholder }}"
+            @if($attributes->has('x-bind:placeholder'))
+                x-bind:placeholder="{{ $attributes->get('x-bind:placeholder') }}"
+            @else
+                x-bind:placeholder="placeholderText"
+            @endif
             style="padding-right: 2.5rem; padding-left: {{ $icon ? '3rem' : '1rem' }};"
-            {{ $attributes->whereDoesntStartWith('wire:model') }}
+            {{ $attributes->whereDoesntStartWith('wire:model')->whereDoesntStartWith('x-bind:placeholder') }}
         />
 
         {{-- Botón limpiar --}}
@@ -77,7 +85,7 @@
     >
         {{-- Encabezado --}}
         <div class="px-4 py-2.5 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-vc-surface">
-            <span class="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Hora</span>
+            <span class="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" x-text="$store.i18n?.t('form.timeLabel') || 'Hora'"></span>
         </div>
 
         {{-- Lista de horas --}}

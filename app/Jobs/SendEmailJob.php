@@ -51,7 +51,7 @@ class SendEmailJob implements ShouldQueue
     {
         $emailLog = EmailLog::find($this->emailLogId);
 
-        if (!$emailLog || $emailLog->estado === 'Fallido') {
+        if (!$emailLog || $emailLog->status === 'Fallido') {
             return;
         }
 
@@ -60,7 +60,7 @@ class SendEmailJob implements ShouldQueue
 
             // Si el correo se envía correctamente, actualizamos el estado
             $emailLog->update([
-                'estado' => 'Enviado',
+                'status' => 'Enviado',
                 'fecha_envio' => now(),
             ]);
 
@@ -71,8 +71,7 @@ class SendEmailJob implements ShouldQueue
             ]);
 
             if (config('queue.default') === 'sync') {
-                // En modo sync, si lanzamos la excepción se crashea la petición web del usuario.
-                // Simulamos el fallo directamente.
+                // En modo sync, simplemente llamamos a failed para no crashear la petición
                 $this->failed($e);
                 return;
             }
@@ -90,13 +89,13 @@ class SendEmailJob implements ShouldQueue
 
         if ($emailLog) {
             $emailLog->update([
-                'estado' => 'Fallido',
+                'status' => 'Fallido',
                 'error_mensaje' => $exception->getMessage(),
             ]);
 
             // Inactivar el envío automático a este cliente
-            if ($emailLog->cliente_id) {
-                $cliente = Customer::find($emailLog->cliente_id);
+            if ($emailLog->customer_id) {
+                $cliente = Customer::find($emailLog->customer_id);
                 if ($cliente) {
                     $cliente->update(['email_valido' => false]);
                 }
@@ -106,7 +105,7 @@ class SendEmailJob implements ShouldQueue
             $superAdmins = User::role('super_admin')->get();
             
             if ($superAdmins->isNotEmpty()) {
-                Log::warning("Fallo en envío de correo a cliente_id: {$emailLog->cliente_id}, email: {$emailLog->correo_destino}. Favor de verificar.");
+                Log::warning("Fallo en envío de correo a cliente_id: {$emailLog->customer_id}, email: {$emailLog->correo_destino}. Favor de verificar.");
                 // Si usas Database Notifications de Laravel:
                 // $superAdmin->notify(new EmailFailedNotification($emailLog));
             }

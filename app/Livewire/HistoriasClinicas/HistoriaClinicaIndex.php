@@ -28,6 +28,7 @@ class HistoriaClinicaIndex extends Component
     #[Url]
     public string $filtroTelefono = '';
 
+    #[Url]
     public ?int $clienteSeleccionadoId = null;
 
     // Resetear paginación al buscar o filtrar

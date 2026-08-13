@@ -1,311 +1,202 @@
-REPORTES: LOS GRAFICOS NO CAMBIAN, ENCONTRADO EL BUG EXACTO
+CLIENTES: MODAL ACTUALIZAR SIN TRADUCIR
 
-app/Livewire/Reportes/ReporteIndex.php, metodo updatedPeriodo(), dispara
-$this->dispatch('charts-updated', [...]) con guion. Pero
-reporte-index.blade.php escucha @periodo-updated.window="updateCharts(...)"
-(nombre distinto). Como los nombres no coinciden, el evento nunca llega y
-los graficos se quedan con los datos del primer render. El calculo de
-datos por periodo SI funciona bien en el backend, es solo el nombre del
-evento. Fix: en el blade, cambiar
-@periodo-updated.window="updateCharts($event.detail)" por
-@charts-updated.window="updateCharts($event.detail)" para que coincida
-con lo que dispara el PHP.
+El modal de confirmar actualizacion en Cliente no cambia con el idioma
+seleccionado, traducirlo igual que el resto de modales de confirmacion.
 
-HISTORIAS CLINICAS: REESTRUCTURAR DE MODAL A CARDS DESPLEGABLES
+CONFIGURACION: AVISOS DEBEN SER MODAL, NO EL AVISO ACTUAL
 
-Confirmado en historia-clinica-index.blade.php: cada card de cliente
-tiene @click="Flux.modal('ver-mascotas-{id}').show()" en el div completo,
-por eso al tocar cualquier parte de la card se abre un modal en vez de
-navegar dentro. Cambiar esa estructura por acordeon en la misma pagina,
-sin modal:
-1. La card de Cliente al hacer clic se expande in-place (x-data con
-   abierto:false, toggle con @click, x-collapse), no abre flux:modal.
-2. Adentro, cada Mascota del cliente aparece como su propia card mas
-   chica, tambien desplegable de la misma forma (cliente > mascota).
-3. Al desplegar una mascota, ahi si se muestra el timeline de historias
-   clinicas que ya existe (el que tiene la linea vertical), sin tener que
-   pasar por ningun modal para llegar a el.
-Ademas, el espacio entre cards que se ve del tamaño de una card completa
-probablemente venga de ese "space-y-4 max-h-[60vh] overflow-y-auto" que
-hoy vive escondido dentro del modal: al pasar esto a un acordeon visible
-en la pagina, revisar que el gap-6 de la grid principal no se sume a un
-padding/margin grande heredado del contenido que antes estaba oculto en
-el modal.
-De paso, agregar mas iconos a las cards de esta seccion (documento,
-telefono, cantidad de mascotas, fecha de ultima visita), hoy se ven muy
-en blanco comparadas con el resto del sistema.
+Al tocar los botones correspondientes en Configuracion, hoy sale un aviso
+distinto al resto del sistema. Reemplazarlo por el mismo tipo de modal de
+confirmacion que ya se usa en el resto de los modulos, no un aviso aparte.
 
-Ademas, cada entrada del timeline hoy solo muestra 5 campos (date,
-diagnostico_presuntivo, id, reason, veterinario) de los 29 que realmente
-se guardan en la consulta. Faltan por completo: anamnesis, los 9 examenes
-por sistema (cardiovascular, digestivo, linfonodos, mucosas,
-musculoesqueletico, neurologico, ojos_oidos, piel_pelaje, respiratorio,
-urinario), peso, temperatura, frecuencia cardiaca, frecuencia
-respiratoria, condicion corporal, nivel de dolor, nivel de hidratacion,
-tratamiento_indicaciones, proxima_cita_recomendada y notas_aclaratorias.
-Al mostrar cada entrada del timeline (ya sea expandida o en un detalle),
-incluir estos campos organizados por secciones (Signos vitales, Examen
-fisico por sistema, Diagnostico y tratamiento), no solo el diagnostico y
-motivo.
+VOUCHER: SIGUE CORTANDOSE AL IMPRIMIR, Y FALTA EL ESTILO DEL ENCABEZADO
 
-MODAL DE ELIMINAR: IGUALARLO A LOS DEMAS
+Al imprimir, la hoja se sigue viendo cortada o empieza muy arriba, no se
+alcanza a leer bien el contenido: agregar margen (margin) a la hoja para
+que se vea completa. Ademas, el encabezado de la tabla de items debe
+tener fondo oscuro con texto blanco, igual que ya se ve en el bloque de
+"IMPORTE TOTAL" del mismo voucher (no solo "mas contraste", ese estilo
+exacto: relleno oscuro, texto blanco).
 
-Los modales de confirmacion en Punto de Venta usan
-<flux:modal class="min-w-88">. Revisar el modal de eliminar de cada
-listado (Clientes, Mascotas, Productos, etc) y que todos usen ese mismo
-ancho/clase base, en vez de que cada uno tenga su propio tamaño.
+DASHBOARD: CITAS PENDIENTES DEBEN ABRIR EL MODAL DE DETALLE
 
-INVENTARIO: BOTON CERRAR DEL MODAL VER SIN TEXTO
+Mejorar el hover de la lista de citas pendientes del dashboard, y que al
+hacer clic en una de esas citas se abra el mismo modal de detalle de cita
+que ya existe en el modulo de Citas (misma funcionalidad, no una nueva).
 
-El modal "ver-producto" en producto-index.blade.php no tiene boton de
-cerrar con texto visible (solo icono, si es que tiene alguno). Agregar un
-boton "Cerrar" con texto ademas del icono, igual que los otros modales
-de confirmacion que si dicen "Cancelar"/"Eliminar" en vez de solo un
-icono.
+MODAL DETALLE DE CITA: TRADUCCION Y CAMBIO DE "DESCARGAR PDF" A "VER"
 
-BOTONES DE CONFIRMAR ANULACION: MAS ENFASIS
+Todavia hay textos de ese modal sin traducir al idioma seleccionado.
+Ademas: cambiar el boton "Descargar PDF" por uno de "Ver". Quitar el
+texto de los botones de editar y ver, dejar solo icono. La funcion de
+"Ver" debe mostrar la hoja A4 en vertical dentro de la pantalla (no
+descargar un archivo), con un boton circular de imprimir flotante en la
+esquina inferior derecha, igual al que ya tiene el voucher.
 
-Los botones de confirmar anulacion/cancelacion (ej en Caja) deben usar
-btn-primary btn-primary--red (la clase ya definida en rondas anteriores)
-para que se vean con el peso visual que corresponde a una accion
-irreversible, en vez de un boton comun.
+VISTA DE CITA EN A4: ESTILIZACION Y DATOS DE LA MASCOTA
 
-VOUCHER: REDISEÑO SEGUN LAS IMAGENES DE REFERENCIA
+Esa hoja (la vista A4 de la cita) todavia necesita ajustes de estilo y
+tiene fallos con los datos de la mascota que hay que corregir; agregarle
+tambien algo de personalizacion visual, hoy se ve muy plana.
 
-Las imagenes que mandaste (formato boleta/factura peruana en A4)
-muestran un diseño compacto: logo y datos de la empresa a la izquierda,
-recuadro con RUC + tipo de documento + numero arriba a la derecha, datos
-del cliente en un recuadro chico, tabla de items ajustada (no estirada),
-bloque de totales alineado a la derecha, recuadro de "IMPORTE EN LETRAS",
-codigo QR, y nota de pie. El voucher actual usa max-w-4xl (896px), mucho
-mas ancho de lo que ocupa una hoja A4 con margenes reales, por eso se ve
-estirado y se pasa de una pagina. Cambios:
-1. Reducir el contenedor de max-w-4xl a max-w-2xl (o similar, ~670px),
-   que es proporcional a una A4 con margen de 15mm.
-2. Reducir paddings/gaps innecesarios en el header y la tabla para que no
-   sobre espacio en blanco.
-3. Reacomodar el layout como en la referencia: nombre/datos de la
-   clinica a la izquierda, recuadro de RUC/tipo de comprobante/numero a
-   la derecha (ya existe algo asi, ajustar proporciones), datos del
-   cliente en su propio recuadro con borde.
-4. Mantener el fix de impresion ya dado en la ronda anterior (resetear
-   tambien "main", no solo "body").
-5. Opcional pero recomendado: si mas adelante se quiere imprimir en
-   impresora termica ademas de A4, dejar la estructura de datos separada
-   del layout para poder armar una segunda vista angosta tipo ticket sin
-   duplicar la logica, tal como se ve en una de las imagenes de
-   referencia (formato A4 vs formato ticket, mismos datos, dos anchos).
+DASHBOARD: SIGUE SIN TRADUCIR (KPI, GRAFICAS, CARDS)
 
-CORREO: SIGUE SIN LLEGAR, VERIFICAR EL WORKER DIRECTAMENTE
+El primer KPI de la seccion de Citas del dashboard sigue sin traducirse
+al ingles. Las graficas de ingresos muestran texto raro (claves sin
+traducir). Las demas cards del dashboard tambien estan pendientes de
+traduccion.
 
-Las 3 notificaciones (cita, venta, historia clinica/receta) ya estan
-conectadas en el codigo, confirmado de nuevo esta ronda. Si sigue sin
-llegar nada, el problema no esta en el codigo de las 3, esta en que la
-cola no se procesa. Verificacion directa: revisar la tabla jobs en la
-base de datos despues de agendar una cita o hacer una venta, si quedan
-filas ahi acumulandose y nunca desaparecen, confirma que no hay ningun
-worker tomandolas. Correr
-php artisan queue:work --queue=emails,default
-en una terminal aparte y dejarlo corriendo mientras se usa el sistema, o
-cambiar QUEUE_CONNECTION=sync en el .env para que se envien al toque sin
-necesitar el worker (recomendado para pruebas locales). Si despues de
-verificar la tabla jobs y correr el worker el correo TODAVIA no llega,
-entonces si hay que revisar el codigo de EmailNotificationService a
-fondo, pero primero hay que descartar el worker con esa verificacion
-directa, es la causa mas probable con lo visto hasta ahora.
+NUEVO USUARIO Y NUEVA SUCURSAL: SIN TRADUCIR
 
-PDF: FALTA LA EXTENSION GD EN EL SERVIDOR (confirmado, rompe TODOS los PDF)
+Las pantallas de creacion de usuario y de sucursal no se adaptan al
+idioma seleccionado, traducirlas completas.
 
-Confirmado con capturas: /pets/1/history/pdf y /appointments/14/pdf
-tiran Internal Server Error, "The PHP GD extension is required, but is
-not installed" (vendor/dompdf/dompdf/lib/Cpdf.php). Esto no es un bug de
-codigo, es que al entorno de PHP le falta la extension GD, necesaria
-para que Dompdf procese imagenes (por eso tambien fallaba integrar el
-logo en el PDF pedido antes: sin GD, cualquier PDF con imagen truena).
-Instalar la extension GD en el servidor/entorno local (en Windows con
-XAMPP/Laragon se activa descomentando extension=gd en php.ini y
-reiniciando; en Linux es php-gd via el gestor de paquetes). De paso,
-agregar "ext-gd": "*" a composer.json en "require" para que quede
-declarado como dependencia real del proyecto.
+HISTORIA CLINICA: ERROR AL INICIAR CONSULTA / EDITAR
 
-IDIOMA: LAS CLAVES NO EXISTEN NI EN ESPAÑOL NI EN INGLES
+Sigue habiendo un error al iniciar una consulta y al editar una historia
+clinica ya creada. Revisar a fondo ese flujo completo (no solo el error
+de sintaxis ya reportado antes si sigue ahi, sino cualquier otro que
+impida guardar o editar correctamente).
 
-Confirmado con las capturas en modo EN: aparecen literal
-"label.scheduledAppointments", "modal.appointmentDetails",
-"form.searchClientPet", "form.dniRuc", "form.phone", "filter.allSpecies",
-"modal.updateHistory", "FORM.GENERALINFO", "FORM.CLINICALDETAILS",
-"TABLE.DATETIME", "btn.confirm", "btn.edit", "label.noAppointments",
-"label.activeClients", "label.registeredPets", "label.exchangeRate", y
-mas. Confirmado revisando public/js/i18n.js: NINGUNA de esas claves
-existe en el archivo, ni en _es ni en _en, no es que falte la traduccion
-al ingles nada mas, faltan del diccionario por completo. Se nota que se
-construyeron pantallas nuevas (modal de detalle de cita, dashboard,
-filtros de historias clinicas, modal de confirmar actualizacion) usando
-$store.i18n.t('clave') sin nunca agregar esas claves al diccionario en
-ninguno de los dos idiomas. Hay que agregar TODAS las claves usadas en
-el sistema a i18n.js, en _es y en _en, revisando pantalla por pantalla
-cuales estan citadas en los blade pero no existen en el diccionario (se
-puede armar una lista automatica comparando $store.i18n.t('X') en todos
-los blade contra las claves reales del archivo, igual a como se detecto
-este problema).
-Ademas hay texto hardcodeado en español que ni siquiera pasa por el
-sistema de traduccion (por eso tampoco cambia a ingles): el label "Notas
-Aclaratorias Anexas (Posterior a 24h)" y el placeholder "Buscar
-producto..." en el formulario de historia clinica, entre otros. Revisar
-por texto en español escrito directo en los blade, no solo por claves
-faltantes.
+HISTORIA CLINICA: LOS DATOS DE LA CONSULTA SIGUEN SIN REGISTRARSE BIEN
 
-HISTORIA CLINICA: REDIRECCION DESPUES DE GUARDAR VA AL LUGAR EQUIVOCADO
+Todavia falta que los campos que se llenan durante la consulta se
+guarden y se reflejen correctamente despues (en el timeline, en la vista
+de detalle y en el PDF). Esto sigue sin quedar resuelto de fondo.
 
-Confirmado en HistoriaClinicaForm.php: tanto al crear como al actualizar,
-el redirect va a route('historias.index') (el listado general), no a la
-mascota especifica que se acaba de documentar. Cambiar para que
-redirija directo a la vista/acordeon ya desplegado de esa mascota
-puntual (pasando el cliente_id y pet_id por query string o ruta, para
-que la pagina de historias abra con esa card ya expandida), en vez de
-mandar al listado completo para que el usuario tenga que buscarla nuevo.
+REPORTE MEDICO CLINICO: REDISEÑAR Y HACER DINAMICO
 
-BOTONES "HISTORIAS CLINICAS" EN CLIENTES Y MASCOTAS: MISMO PROBLEMA
+Cambiar el diseño del reporte medico/clinico (el documento que resume la
+atencion) y asegurarse de que sea dinamico, tomando los datos reales de
+cada consulta en vez de un diseño fijo.
 
-Confirmado en cliente-index.blade.php y mascota-index.blade.php: el
-boton de historias clinicas en ambos casos usa
-route('historias.index', ['busqueda' => ...]) (por documento o por
-nombre), es decir manda al listado general con un filtro de texto en
-vez de ir directo a esa mascota/cliente puntual. Mismo fix que el punto
-anterior: enlazar directo al cliente/mascota ya expandido en el
-acordeon, no a una busqueda por texto que el usuario tiene que
-interpretar.
 
-HISTORIA CLINICA: VERIFICAR (no confirmado del todo esta vez)
 
-El timeline principal (historia-clinica-index.blade.php) ya muestra
-bastantes campos, buen avance. Falta confirmar que las otras 3 vistas
-donde tambien se lee una historia clinica (historia-clinica-view.blade.php,
-pdf/historia-clinica.blade.php, pdf/historial-mascota.blade.php)
-muestren exactamente los mismos 29 campos y no una version recortada;
-no tuve evidencia suficiente esta vez para asegurar cual de las 4 esta
-completa y cual no.
 
-RESPONSIVE MOBILE: MODALES QUE NO SE PUEDEN SCROLLEAR
+ROLE: Update the documentation for VetCoressen, a Laravel veterinary-clinic
+management system. You have full read/write access to this repo in the
+current workspace — explore it yourself (file tree + terminal). Don't ask
+me to paste or attach anything.
 
-El modal ver-venta-modal (caja-index.blade.php) tiene la clase
-overflow-hidden puesta directo en el flux:modal, por eso en pantallas
-chicas el contenido se corta y no se puede llegar al boton cerrar.
-Cambiar overflow-hidden por overflow-y-auto y agregar un max-h-[85vh] (o
-similar) ahi. El mismo problema de fondo (falta overflow-y-auto/max-h en
-el flux:modal) se repite en estos 15 archivos, revisar cada uno:
-sucursal-index.blade.php, caja-index.blade.php, caja-arqueo.blade.php,
-historia-clinica-form.blade.php, roles-index.blade.php,
-usuarios-index.blade.php, cita-index.blade.php (incluye el modal de
-detalle de cita, al que ademas le falta el boton de cerrar por completo),
-cita-form.blade.php, cliente-form.blade.php, cliente-index.blade.php,
-producto-form.blade.php, producto-index.blade.php (el modal ver-producto,
-y el modal de alerta de stock minimo si tambien vive ahi), proveedor-index.blade.php,
-mascota-index.blade.php, mascota-form.blade.php.
+Deliverables, overwrite what exists at the project root:
+1. LICENSE (MIT)
+2. README.md (English)
 
-RESPONSIVE MOBILE: OTROS AJUSTES
 
-- Agregar un padding/margin inferior a cada modulo (algo como pb-20 en el
-  contenedor principal de cada pagina) para que las ultimas cards no
-  queden tapadas por la barra de navegacion inferior en movil.
-- En botones de accion tipo "Editar"/"Quitar" que hoy muestran icono +
-  texto, dejar solo el icono con tooltip (igual al patron
-  data-vc-tooltip ya usado en otros lados) para que quepan sin obligar a
-  hacer scroll horizontal en pantallas chicas.
-- El voucher (visto en el navegador, no solo al imprimir) tambien
-  necesita su propio ajuste responsive para verse bien en movil, aparte
-  del rediseño de impresion ya pedido arriba.
+=====================================================
+STEP 1 — LICENSE
+=====================================================
+Standard MIT License text. Copyright line:
+  Copyright (c) <year> Jorge Enrique Caceres Hernandez
+For <year>: run `git log --reverse --format=%ad --date=format:%Y | head -1`
+to get the first-commit year, and use "<first-year>-2026" (e.g. 2025-2026).
+If you can't determine it, just use 2026.
 
-MODO CLARO: CONTRASTE EN EL CALENDARIO
+=====================================================
+STEP 2 — README.md
+=====================================================
+Write 100% in English. Model the structure/tone on the pattern below
+(adapted from another UNDC-funded student project's README), but verify
+every technical claim by actually reading the code: composer.json,
+package.json, app/Livewire/**, app/Models/**, app/Services/**,
+routes/web.php, database/migrations/**, .env.example (after Step 0), and
+config/*.php. Don't invent features that aren't in the code; don't miss
+real ones either.
 
-En modo claro hay textos/contenedores en tonos de gris muy claro sobre
-gris claro en el calendario de Citas, que casi no se distinguen. Revisar
-los colores de texto usados ahi en modo claro (probablemente
---color-vc-text-muted o similar aplicado donde no corresponde) y subir el
-contraste para que se lean bien sobre fondo claro.
+Facts below come from the signed grant contract, not from guessing —
+use them as-is, you can't get them from the code:
+- Academic project title: "Innovation in Veterinary Management: Automated
+  Reminder System to Optimize Clinical History Management in San Vicente
+  de Cañete, 2025"
+- Institution: Universidad Nacional de Cañete (UNDC), Peru
+- Funding program: First Research Competition for the Development of
+  Innovations and Intellectual Property, UNDC, 2024
+- Overseeing body: Vice Presidency for Research (Vicepresidencia de
+  Investigación), UNDC
+- Grant contract number: N° 021-2024-UNDC/CO/P/DGA
+- Author / project coordinator: Jorge Enrique Caceres Hernandez —
+  Systems Engineering student, Universidad Nacional de Cañete
+- Academic advisor: Alex Abelardo Pacheco-Pumaleque 
 
-IDIOMA: ESTOS MODULOS SIGUEN SIN ADAPTARSE
+Template (adapt freely, keep it grounded in the real code):
 
-Dashboard, Reportes, Citas, Sucursales y Proveedores siguen mostrando
-texto que no cambia con el idioma seleccionado. Mismo origen que ya se
-diagnostico antes (t() de i18n.js y claves faltantes): revisar
-puntualmente estos 5 modulos por textos hardcodeados o claves sin
-definir en el diccionario.
+# VetCoressen — <one-line tagline based on what the app actually does>
 
-PDF: LOGO DE LA CLINICA
+## 🐾 Project Description
+What the system is, who it's for (veterinary clinics), 2-3 sentences.
 
-En la impresion de PDF (historia clinica, voucher, etc) falta integrar
-bien el logo del sistema en el encabezado, revisar que se use la imagen
-real del logo y no solo texto o un placeholder.
+## 🚀 Main Features
+One bullet per real module under app/Livewire — describe what it does,
+not just the folder name. Expect things like appointment scheduling with
+a calendar, clinical records, pet/customer management, inventory with
+batches and expiry dates, point of sale with cash reconciliation and
+electronic invoicing, multi-branch support, roles & permissions,
+automated email notifications — confirm each against the code, drop
+anything not actually implemented.
 
-RAIZ DEL PROYECTO: 13 SCRIPTS SUELTOS ESTA VEZ, LIMPIAR DE UNA VEZ
+## 🛠️ Tech Stack
+Pull exact package names + version constraints from composer.json and
+package.json. Group as Backend / Frontend / Integrations / Dev tooling.
 
-fix_dash.py, update_pdf_logos.py, recover.py, fix_searchable2.py,
-update_json_keys.py, fix_searchable.py, update_i18n_templates.py,
-fix_tables.py, revert_modals.py, revert_modals2.py, update_reporte.py,
-update_i18n_js.py, extract_i18n.cjs. Esto se repite cada ronda y cada vez
-son mas. Borrar todos (ya cumplieron su funcion) y de ahora en adelante,
-cualquier script de una sola vez que se necesite crear, ponerlo dentro de
-una carpeta /scripts y agregar esa carpeta a .gitignore, para no seguir
-acumulando esto en la raiz cada ronda.
+## 📋 Requirements
+PHP version, Composer, Node/npm version, database engine, required PHP
+extensions if evident from composer.json.
 
-MAS CLAVES DE IDIOMA FALTANTES (visto en Caja/POS y Citas)
+## ⚙️ Installation
+Check composer.json's "scripts" block first — there's a "setup" script
+that automates most of this (composer install, .env copy, key:generate,
+migrate, npm install, npm run build). Document the one-command path via
+that script AND the manual step-by-step, referencing env vars by name
+only, never by value.
 
-Sumar a la lista de claves por agregar a i18n.js (ninguna existe hoy):
-KPI.CASH, KPI.CARD, KPI.DIGITAL, status.PAGADO, status.all,
-btn.cancelSale, table.allVets, modal.deleteAppointment,
-modal.deleteAppointmentSub. Ademas hay un bug de texto en la tarjeta
-"Total del Mes" de Caja: aparece literal "5 [object Object]" en pantalla,
-eso es un objeto de JS concatenado directo a un texto en vez de leer su
-propiedad especifica (revisar el x-text o interpolacion de esa tarjeta en
-caja-index.blade.php). Los modales de Reasignacion Masiva y Cita de
-Emergencia tambien tienen texto sin traducir, mismo origen: revisarlos
-con el mismo criterio.
+## ▶️ Usage
+Check composer.json's "dev" script — it runs the server, queue listener,
+log viewer (pail) and vite concurrently. Give the real command.
 
-CITAS: BOTON ELIMINAR MUESTRA DOS MODALES
+## 🗂️ Project Structure
+Short tree of the top-level app/ subfolders (Livewire, Models, Services,
+Jobs, Mail, Console) with one line each on what lives there.
 
-Revisado modal.deleteAppointment: esta declarado una sola vez fuera del
-@foreach de citas (no es un modal duplicado por tarjeta), y no hay
-wire:confirm ni confirm() nativo de por medio. No pude confirmar la
-causa exacta con eso. Revisar si hay dos botones de eliminar distintos en
-la misma tarjeta (uno viejo sin quitar y uno nuevo) cada uno abriendo su
-propio modal, o si el modal de detalle de la cita tambien tiene su propio
-boton eliminar que se superpone con el de la tarjeta.
+## 🌐 Localization
+Only include if confirmed in lang/ and public/locales — mention
+Spanish/English support.
 
-VOUCHER: BOTON DE IMPRIMIR COMO CIRCULO FLOTANTE
+## 🔐 Roles & Permissions
+One line noting role/permission management (spatie/laravel-permission)
+and activity logging (spatie/laravel-activitylog) if present in
+composer.json.
 
-El boton de imprimir ya no aparece en pantalla. Reemplazarlo por un boton
-flotante circular (FAB) fijo en la esquina inferior derecha, icono de
-impresora, position: fixed; bottom: 1.5rem; right: 1.5rem; para que
-siempre este visible sin importar el scroll.
+## 🔮 Future Improvements
+Optional — only include if you find real evidence (TODO comments, open
+issues, roadmap notes). Don't invent a roadmap just to fill the section.
 
-VOUCHER: ENCABEZADO DE TABLA ILEGIBLE EN MODO CLARO
+## 👤 Development Team
+Name + role from the facts above. One line: "Developed within the
+framework of the research project [title], funded by [program] at
+[institution], under contract N° 021-2024-UNDC/CO/P/DGA."
 
-Confirmado con captura: el encabezado de la tabla de items (Cantidad,
-Unidad, Descripcion, V. Unitario, Total) sale en gris muy claro y no se
-lee, mismo problema ya reportado del calendario en modo claro. Subir el
-contraste de ese encabezado especificamente, idealmente a un color oscuro
-solido ya que el voucher siempre tiene fondo blanco.
+## 📄 License
+"This project is distributed under the MIT License. See the LICENSE file
+for details." Nothing more — don't restate the grant contract's IP
+clauses here, that's a separate legal question for the author.
 
-INVENTARIO: ICONO X DE MAS EN EL BOTON CERRAR
+## 💰 Grant Information
+One paragraph: funded by the Vice Presidency for Research at UNDC, within
+the First Research Competition for the Development of Innovations and
+Intellectual Property, under contract N° 021-2024-UNDC/CO/P/DGA.
 
-En el modal de Inventario, el boton cerrar tiene un icono "x" que sobra
-junto al texto "Cerrar" ya agregado antes. Quitar el icono, dejar solo
-uno de los dos.
+---
+Closing tagline line, same spirit as:
+"**VetCoressen** – Veterinary Clinic Management System · *UNDC 2025*"
 
-CITAS: BOTONES DE VISTA COMO TOGGLE COMPACTO
+Skip anything ML/diagnostic-specific (model performance, model training,
+clinical disclaimers) — this is practice-management software, not a
+diagnostic tool.
 
-Cambiar "Vista Calendario" / "Vista Lista" (hoy dos botones anchos con
-texto completo) por un toggle tipo segmented control, angosto, solo con
-iconos sin texto.
-
-LICENCIA Y README
-
-Agregar LICENSE en la raiz: software comercial para un cliente real, no
-open source, usar licencia propietaria tipo "All Rights Reserved" a
-nombre de JECH COMPANY o el titular que corresponda. Agregar README.md
-con nombre del proyecto, descripcion breve, stack usado (Laravel 12,
-Livewire 4, Alpine, FullCalendar, Tailwind v4), requisitos para correrlo
-en local (PHP con extension GD, worker de colas para correos) y pasos de
-instalacion (composer install, npm install, migraciones, seeders),
-redactado con la informacion real y actual del proyecto.
+=====================================================
+CONSTRAINTS
+=====================================================
+- README.md must be 100% in English.
+- Never write a real secret value anywhere in README.md — env vars by
+  name only.
+- Overwrite the existing LICENSE and README.md at the project root.

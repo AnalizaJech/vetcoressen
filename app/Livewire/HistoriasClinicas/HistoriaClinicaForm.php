@@ -383,7 +383,7 @@ class HistoriaClinicaForm extends Component
         }
 
         session()->flash('mensaje', "Historia clínica {$accion} correctamente.");
-        $this->redirect(route('historias.index'), navigate: true);
+        $this->redirect(route('historias.index', ['clienteSeleccionadoId' => $this->customer_id]), navigate: true);
     }
 
     public function render()
@@ -407,8 +407,9 @@ class HistoriaClinicaForm extends Component
         // Veterinarios (usuarios con rol veterinario)
         $veterinarios = User::role('veterinario')->orderBy('name')->get();
 
-        // Productos para prescripciones (ahora permite todos los activos)
+        // Productos para prescripciones (solo medicamentos)
         $productos = Product::where('is_active', true)
+            ->where('categoria', 'Medicamentos')
             ->orderBy('name')
             ->get();
 

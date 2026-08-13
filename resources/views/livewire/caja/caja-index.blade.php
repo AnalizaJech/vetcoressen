@@ -165,7 +165,7 @@
     </div>
 
     {{-- Modal para anular venta --}}
-    <flux:modal :closable="false" name="anular-venta-modal" class="w-[90vw] md:w-full max-w-md overflow-y-auto max-h-[85vh]">
+    <flux:modal name="anular-venta-modal" class="min-w-88">
         <div class="space-y-6">
             <div class="flex flex-col items-center justify-center text-center space-y-5">
                 <div class="w-20 h-20 bg-red-100/50 dark:bg-red-500/20 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center border border-red-200 dark:border-red-500/30 shadow-sm shadow-red-500/10">
@@ -180,9 +180,10 @@
                 <flux:modal.close class="w-full sm:w-auto flex-1">
                     <flux:button variant="ghost" class="w-full font-medium"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'">Cancelar</span></flux:button>
                 </flux:modal.close>
-                <flux:button type="button" variant="danger" wire:click="anularVentaConfirmada" class="w-full sm:w-auto flex-1" x-on:click="$dispatch('modal-close', { name: 'anular-venta-modal' })">
+                <button type="button" wire:click="anularVentaConfirmada" class="btn-primary btn-primary--red w-full sm:w-auto flex-1 flex justify-center items-center gap-2" x-on:click="$dispatch('modal-close', { name: 'anular-venta-modal' })">
+                    <span class="material-symbols-outlined icon-sm">delete</span>
                     <span x-text="$store.i18n.t('btn.cancelSale') || 'Anular Venta'">Anular Venta</span>
-                </flux:button>
+                </button>
             </div>
         </div>
     </flux:modal>
@@ -263,7 +264,7 @@
                 </h3>
                 <div class="border border-zinc-200 dark:border-zinc-700 rounded-xl overflow-hidden">
                     <table class="w-full text-left text-sm">
-                        <thead class="bg-zinc-50 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400">
+                        <thead class="bg-zinc-50 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300">
                             <tr>
                                 <th class="py-2 px-3 font-medium" x-text="$store.i18n.t('table.productService') || 'Producto/Servicio'">Producto/Servicio</th>
                                 <th class="py-2 px-3 font-medium text-center" x-text="$store.i18n.t('table.qty') || 'Cant'">Cant</th>

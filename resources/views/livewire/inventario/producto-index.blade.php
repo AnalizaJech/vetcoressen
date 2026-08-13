@@ -59,7 +59,7 @@
                     <div class="absolute top-4 right-4">
                         <span class="badge {{ $producto->is_active ? 'badge-emerald' : 'badge-zinc' }}">
                             <span class="material-symbols-outlined text-xs mr-1">{{ $producto->is_active ? 'check_circle' : 'cancel' }}</span>
-                            <span x-text="$store.i18n.t({{ $producto->is_active ? '\'status.activo\'' : '\'status.inactivo\'' }})"></span>
+                            <span x-text="$store.i18n.t('{{ $producto->is_active ? 'status.activo' : 'status.inactivo' }}')"></span>
                         </span>
                     </div>
 
@@ -192,9 +192,9 @@
                 <flux:modal.close class="w-full sm:w-auto">
                     <flux:button variant="ghost" class="w-full font-medium"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'">Cancelar</span></flux:button>
                 </flux:modal.close>
-                <flux:button type="button" variant="danger" wire:click="eliminar" x-on:click="$dispatch('modal-close', { name: 'confirmar-eliminar' })" class="w-full sm:w-auto">
-                    <span x-text="$store.i18n.t('btn.delete') || 'Eliminar'">Eliminar</span>
-                </flux:button>
+                <button type="button" class="w-full sm:w-auto btn-danger font-medium justify-center" wire:click="eliminar" x-on:click="$dispatch('modal-close', { name: 'confirmar-eliminar' })">
+                    <span x-text="$store.i18n.t('btn.delete') === 'btn.delete' ? 'Eliminar' : $store.i18n.t('btn.delete')">Eliminar</span>
+                </button>
             </div>
         </div>
     </flux:modal>
@@ -217,7 +217,7 @@
                 <div class="flex gap-2">
                     <span class="badge {{ $productoVer->is_active ? 'badge-emerald' : 'badge-zinc' }}">
                         <span class="material-symbols-outlined text-xs mr-1">{{ $productoVer->is_active ? 'check_circle' : 'cancel' }}</span>
-                        <span x-text="$store.i18n.t({{ $productoVer->is_active ? '\'status.activo\'' : '\'status.inactivo\'' }})"></span>
+                        <span x-text="$store.i18n.t('{{ $productoVer->is_active ? 'status.activo' : 'status.inactivo' }}')"></span>
                     </span>
                     @php
                         $tipoColor = match(strtoupper($productoVer->type)) {
@@ -257,7 +257,7 @@
                                 {{ $productoVer->requiere_receta ? 'prescription' : 'check_circle' }}
                             </span>
                             <span class="text-sm font-medium {{ $productoVer->requiere_receta ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400' }}">
-                                <span x-text="$store.i18n.t({{ $productoVer->requiere_receta ? '\'form.requiresPrescription\'' : '\'form.overTheCounter\'' }})"></span>
+                                <span x-text="$store.i18n.t('{{ $productoVer->requiere_receta ? 'form.requiresPrescription' : 'form.overTheCounter' }}')"></span>
                             </span>
                         </div>
                     @elseif($productoVer->type === 'Alimento')
@@ -288,7 +288,7 @@
                         </div>
                         <div class="flex items-center gap-2 mt-1">
                             <span class="text-xs font-medium px-2 py-0.5 rounded-full {{ $productoVer->afecto_igv ? 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400' : 'bg-zinc-200 text-zinc-700 dark:bg-zinc-700 dark:text-zinc-300' }}">
-                                <span x-text="$store.i18n.t({{ $productoVer->afecto_igv ? '\'form.withIGV\'' : '\'form.withoutIGV\'' }})"></span>
+                                <span x-text="$store.i18n.t('{{ $productoVer->afecto_igv ? 'form.withIGV' : 'form.withoutIGV' }}')"></span>
                             </span>
                         </div>
                     </div>
@@ -346,7 +346,6 @@
             <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-zinc-200 dark:border-zinc-700">
                 <flux:modal.close class="overflow-y-auto max-h-[85vh]">
                     <flux:button variant="ghost">
-                        <span class="material-symbols-outlined text-sm mr-1">close</span>
                         <span x-text="$store.i18n.t('btn.close') === 'btn.close' ? 'Cerrar' : $store.i18n.t('btn.close')">Cerrar</span>
                     </flux:button>
                 </flux:modal.close>

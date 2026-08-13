@@ -8,10 +8,10 @@
             <div>
                 <flux:heading size="xl" class="flex items-center gap-2">
                     <span class="material-symbols-outlined text-emerald-500">person_add</span>
-                    <span x-text="$store.i18n.t({{ $clienteId ? '\'page.editClient\'' : '\'page.newClient\'' }})"></span>
+                    <span x-text="$store.i18n.t('{{ $clienteId ? 'page.editClient' : 'page.newClient' }}')"></span>
                 </flux:heading>
                 <flux:subheading>
-                    <span x-text="$store.i18n.t({{ $clienteId ? '\'page.clientEditSub\'' : '\'page.clientFormSub\'' }})"></span>
+                    <span x-text="$store.i18n.t('{{ $clienteId ? 'page.clientEditSub' : 'page.clientFormSub' }}')"></span>
                 </flux:subheading>
             </div>
         </div>
@@ -55,6 +55,7 @@
                             wire:model="numero_documento"
                             x-bind:placeholder="'{{ $tipo_documento }}' === 'DNI' ? $store.i18n.t('placeholder.dni', 'Ingrese DNI (8 dígitos)') : ('{{ $tipo_documento }}' === 'RUC' ? $store.i18n.t('placeholder.ruc', 'Ingrese RUC (11 dígitos)') : $store.i18n.t('placeholder.document', 'Ingrese documento'))"
                             :maxlength="$tipo_documento === 'RUC' ? 11 : 8"
+                            icon="identification"
                             class="flex-1"
                         />
                         @if(in_array($tipo_documento, ['DNI', 'RUC']))
@@ -96,9 +97,9 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <flux:field>
                     <flux:label>
-                        <span x-text="$store.i18n.t({{ $tipo_documento === 'RUC' ? '\'form.businessName\'' : '\'form.names\'' }})"></span>
+                        <span x-text="$store.i18n.t('{{ $tipo_documento === 'RUC' ? 'form.businessName' : 'form.names' }}')"></span>
                     </flux:label>
-                    <flux:input wire:model="first_name" x-bind:placeholder="$store.i18n.t({{ $tipo_documento === 'RUC' ? '\'placeholder.businessName\', \'Ej. VetCorp SAC\'' : '\'placeholder.names\', \'Ej. Juan Pérez\'' }})">
+                    <flux:input wire:model="first_name" x-bind:placeholder="$store.i18n.t('{{ $tipo_documento === 'RUC' ? 'placeholder.businessName' : 'placeholder.names' }}', '{{ $tipo_documento === 'RUC' ? 'Ej. VetCorp SAC' : 'Ej. Juan Pérez' }}')">
                         <x-slot:iconLeading>
                             <span class="material-symbols-outlined text-[18px]">person</span>
                         </x-slot:iconLeading>
@@ -243,8 +244,8 @@
                     @if($clienteId) x-on:click.prevent="$dispatch('modal-show', { name: 'confirmar-actualizacion' })" @endif
                     wire:loading.attr="disabled">
                 <span wire:loading.remove class="flex items-center gap-2">
-                    <span class="material-symbols-outlined icon-sm" x-text="{{ $clienteId ? '\'edit\'' : '\'save\'' }}"></span>
-                    <span x-text="$store.i18n.t({{ $clienteId ? '\'btn.update\'' : '\'btn.register\'' }})"></span>
+                    <span class="material-symbols-outlined icon-sm" x-text="'{{ $clienteId ? 'edit' : 'save' }}'"></span>
+                    <span x-text="$store.i18n.t('{{ $clienteId ? 'btn.update' : 'btn.register' }}')"></span>
                 </span>
                 <span wire:loading class="flex items-center gap-2">
                     <span class="material-symbols-outlined icon-sm vc-spinner">progress_activity</span>

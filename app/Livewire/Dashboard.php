@@ -55,6 +55,10 @@ class Dashboard extends Component
 
         // KPI: Lotes próximos a vencer (90 días)
         $lotesProximosVencer = \App\Models\ProductBatch::with('product')
+            ->whereHas('product', function ($query) {
+                $query->where('is_active', true);
+            })
+            ->whereNotNull('fecha_vencimiento')
             ->where('fecha_vencimiento', '<=', now()->addDays(90))
             ->where('stock_actual', '>', 0)
             ->orderBy('fecha_vencimiento', 'asc')

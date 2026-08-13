@@ -7,7 +7,7 @@
         <div>
             <flux:heading size="xl" class="flex items-center gap-2">
                 <span class="material-symbols-outlined text-emerald-500">inventory_2</span>
-                <span x-text="$store.i18n.t({{ $productoId ? '\'page.editProduct\'' : '\'page.newProduct\'' }})"></span>
+                <span x-text="$store.i18n.t('{{ $productoId ? 'page.editProduct' : 'page.newProduct' }}')"></span>
             </flux:heading>
         </div>
     </div>
@@ -75,7 +75,7 @@
                 </flux:field>
 
                 <flux:field x-show="$wire.tipo !== 'Servicio'" x-transition x-cloak>
-                    <flux:label>Familia / Subcategoría</flux:label>
+                    <flux:label><span x-text="$store.i18n.t('form.category', 'Familia / Subcategoría')"></span></flux:label>
                     @php
                         $catOptions = $categorias->map(fn($c) => ['value' => $c, 'label' => $c])->toArray();
                     @endphp
@@ -115,8 +115,8 @@
                 <!-- Medicamento: Principio Activo y Presentación -->
                 <div class="col-span-1" x-show="$wire.tipo === 'Medicamento'" x-transition x-cloak>
                     <flux:field>
-                        <flux:label>Principio Activo</flux:label>
-                        <flux:input wire:model="principio_activo" placeholder="Ej. Amoxicilina">
+                        <flux:label><span x-text="$store.i18n.t('form.activeIngredient', 'Principio Activo')"></span></flux:label>
+                        <flux:input wire:model="principio_activo" x-bind:placeholder="$store.i18n.t('placeholder.activeIngredient', 'Ej. Fluralaner, Meloxicam')">
                             <x-slot:iconLeading>
                                 <span class="material-symbols-outlined text-[18px]">science</span>
                             </x-slot:iconLeading>
@@ -142,7 +142,7 @@
                 <!-- Alimento: Peso -->
                 <div class="col-span-full md:col-span-1" x-show="$wire.tipo === 'Alimento'" x-transition x-cloak>
                     <flux:field>
-                        <flux:label>Peso (kg/gr)</flux:label>
+                        <flux:label><span x-text="$store.i18n.t('form.weight', 'Peso (kg/gr)')"></span></flux:label>
                         <flux:input wire:model="peso" placeholder="Ej. 15 kg">
                             <x-slot:iconLeading>
                                 <span class="material-symbols-outlined text-[18px]">scale</span>
@@ -166,7 +166,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <flux:field>
-                    <flux:label>Precio de Venta Final</flux:label>
+                    <flux:label><span x-text="$store.i18n.t('form.salePrice', 'Precio de Venta Final')"></span></flux:label>
                     <flux:input wire:model="precio_final" type="number" step="0.01" placeholder="0.00">
                         <x-slot:iconLeading>
                             <span class="material-symbols-outlined text-[18px]">sell</span>
@@ -187,7 +187,7 @@
                     
                     <div x-show="openAvanzado" x-collapse class="mt-4 p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-200 dark:border-zinc-700">
                         <flux:field>
-                            <flux:label>Afectación IGV</flux:label>
+                            <flux:label><span x-text="$store.i18n.t('form.taxType', 'Afectación IGV')"></span></flux:label>
                             @php
                                 $igvOptions = [
                                     ['value' => 'Gravado', 'label' => 'Gravado (18%)'],
@@ -204,6 +204,13 @@
                             <p class="text-xs text-zinc-500 mt-1">Por defecto es Gravado. Solo cámbialo si el producto no paga IGV.</p>
                             <flux:error name="tipo_afectacion_igv" />
                         </flux:field>
+                        <flux:field class="mt-4">
+                            <flux:label class="flex justify-between w-full">
+                                <span x-text="$store.i18n.t('form.brand', 'Marca')"></span>
+                                <span class="text-xs text-zinc-500" x-text="$store.i18n.t('form.optional', '(Opcional)')"></span>
+                            </flux:label>
+                            <flux:input wire:model="brand" x-bind:placeholder="$store.i18n.t('placeholder.brand', 'Ej. Bravecto, Royal Canin')" />
+                        </flux:field>
                     </div>
                 </div>
             </div>
@@ -219,8 +226,8 @@
                     @if($productoId) x-on:click.prevent="$dispatch('modal-show', { name: 'confirmar-actualizacion' })" @endif
                     wire:loading.attr="disabled">
                 <span wire:loading.remove class="flex items-center gap-2">
-                    <span class="material-symbols-outlined icon-sm" x-text="{{ $productoId ? '\'edit\'' : '\'save\'' }}"></span>
-                    <span x-text="$store.i18n.t({{ $productoId ? '\'btn.update\'' : '\'btn.register\'' }})"></span>
+                    <span class="material-symbols-outlined icon-sm" x-text="'{{ $productoId ? 'edit' : 'save' }}'"></span>
+                    <span x-text="$store.i18n.t('{{ $productoId ? 'btn.update' : 'btn.register' }}')"></span>
                 </span>
                 <span wire:loading class="flex items-center gap-2">
                     <span class="material-symbols-outlined icon-sm vc-spinner">progress_activity</span>

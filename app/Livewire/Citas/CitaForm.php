@@ -102,27 +102,27 @@ class CitaForm extends Component
         } else {
             $cita = Appointment::create($datos);
             session()->flash('mensaje', 'Cita agendada correctamente.');
+        }
 
-            // Enviar notificación por correo al cliente
-            $cliente = \App\Models\Customer::find($this->cliente_id);
-            if ($cliente && $cliente->email) {
+        // Enviar notificación por correo al cliente
+        $cliente = \App\Models\Customer::find($this->cliente_id);
+        if ($cliente && $cliente->email) {
+            app(\App\Services\EmailNotificationService::class)->sendCitaNotification(
+                $cliente->id,
+                $cliente->email,
+                new \App\Mail\CitaMail($cita)
+            );
+        }
+
+        // Enviar notificación por correo al veterinario
+        if ($this->veterinario_id) {
+            $veterinario = \App\Models\User::find($this->veterinario_id);
+            if ($veterinario && $veterinario->email) {
                 app(\App\Services\EmailNotificationService::class)->sendCitaNotification(
-                    $cliente->id,
-                    $cliente->email,
+                    null,
+                    $veterinario->email,
                     new \App\Mail\CitaMail($cita)
                 );
-            }
-
-            // Enviar notificación por correo al veterinario
-            if ($this->veterinario_id) {
-                $veterinario = \App\Models\User::find($this->veterinario_id);
-                if ($veterinario && $veterinario->email) {
-                    app(\App\Services\EmailNotificationService::class)->sendCitaNotification(
-                        null,
-                        $veterinario->email,
-                        new \App\Mail\CitaMail($cita)
-                    );
-                }
             }
         }
 

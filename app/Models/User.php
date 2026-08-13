@@ -33,6 +33,7 @@ class User extends Authenticatable
         'notes',
         'avatar',
         'is_active',
+        'cmvp',
     ];
 
     protected $hidden = [
