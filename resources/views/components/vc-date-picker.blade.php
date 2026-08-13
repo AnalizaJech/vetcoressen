@@ -51,16 +51,16 @@
         {{-- Quick Actions --}}
         <div class="flex items-center gap-2 p-3 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-vc-surface">
             <button type="button" @click="selectToday()" class="flex-1 px-3 py-1.5 text-xs font-medium rounded-lg text-emerald-700 bg-emerald-50 hover:bg-emerald-100 dark:text-emerald-400 dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 transition-colors">
-                <span x-text="window.Alpine.store('i18n')?.t('form.today') || 'Hoy'"></span>
+                <span x-text="$store.i18n?.t('form.today') || 'Hoy'"></span>
             </button>
             <button type="button" @click="selectTomorrow()" class="flex-1 px-3 py-1.5 text-xs font-medium rounded-lg text-emerald-700 bg-emerald-50 hover:bg-emerald-100 dark:text-emerald-400 dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 transition-colors">
-                <span x-text="window.Alpine.store('i18n')?.t('form.tomorrow') || 'Mañana'"></span>
+                <span x-text="$store.i18n?.t('form.tomorrow') || 'Mañana'"></span>
             </button>
         </div>
 
         {{-- Calendar Header --}}
         <div class="flex items-center justify-between px-4 pt-3 pb-2">
-            <button type="button" @click="prevMonth()" class="p-1 rounded-full hover:bg-zinc-100 dark:hover:bg-vc-surface-alt text-zinc-500 dark:text-zinc-400 transition-colors" :disabled="isPrevMonthDisabled()" :class="{'opacity-30 cursor-not-allowed': isPrevMonthDisabled()}">
+            <button type="button" @click="prevMonth()" class="p-1 rounded-full hover:bg-zinc-100 dark:hover:bg-vc-surface-alt text-zinc-600 dark:text-zinc-400 transition-colors" :disabled="isPrevMonthDisabled()" :class="{'opacity-40 cursor-not-allowed': isPrevMonthDisabled()}">
                 <span class="material-symbols-outlined text-[20px]">chevron_left</span>
             </button>
             <div class="flex items-center gap-1">
@@ -102,7 +102,7 @@
                     </div>
                 </div>
             </div>
-            <button type="button" @click="nextMonth()" class="p-1 rounded-full hover:bg-zinc-100 dark:hover:bg-vc-surface-alt text-zinc-500 dark:text-zinc-400 transition-colors">
+            <button type="button" @click="nextMonth()" class="p-1 rounded-full hover:bg-zinc-100 dark:hover:bg-vc-surface-alt text-zinc-600 dark:text-zinc-400 transition-colors">
                 <span class="material-symbols-outlined text-[20px]">chevron_right</span>
             </button>
         </div>
@@ -111,7 +111,7 @@
         <div class="px-4 pb-4">
             <div class="grid grid-cols-7 gap-1 mb-2">
                 <template x-for="day in daysOfWeek" :key="day">
-                    <div class="text-center text-[10px] font-semibold text-zinc-500 uppercase tracking-wider" x-text="day"></div>
+                    <div class="text-center text-[10px] font-bold text-zinc-700 dark:text-zinc-400 uppercase tracking-wider" x-text="day"></div>
                 </template>
             </div>
             <div class="grid grid-cols-7 gap-1">
@@ -126,9 +126,9 @@
                         class="w-8 h-8 flex items-center justify-center rounded-full text-sm transition-colors"
                         :class="{
                             'bg-emerald-500 text-white font-medium shadow-sm': isSelected(date),
-                            'text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-vc-surface-alt': !isSelected(date) && !isDisabled(date),
-                            'text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-900/20': isToday(date) && !isSelected(date),
-                            'opacity-25 cursor-not-allowed': isDisabled(date)
+                            'text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-vc-surface-alt font-medium': !isSelected(date) && !isDisabled(date),
+                            'text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-900/20': isToday(date) && !isSelected(date),
+                            'text-zinc-400 dark:text-zinc-600 cursor-not-allowed': isDisabled(date)
                         }"
                         x-text="date"
                     ></button>
@@ -154,7 +154,7 @@
             
             get placeholderText() {
                 let key = '{{ addslashes($placeholder) }}';
-                return window.Alpine.store('i18n')?.t(key) || key;
+                return this.$store.i18n?.t(key) || key;
             },
 
             get formattedValue() {
@@ -163,7 +163,7 @@
             },
 
             getMonths() {
-                const locale = window.Alpine.store('i18n')?.locale === 'en' ? 'en-US' : 'es-ES';
+                const locale = this.$store.i18n?.locale === 'en' ? 'en-US' : 'es-ES';
                 return Array.from({length: 12}, (_, i) => {
                     const d = new Date(this.year, i, 1);
                     return d.toLocaleString(locale, { month: 'long' }).replace(/^\w/, c => c.toUpperCase());
@@ -206,7 +206,7 @@
             },
 
             updateDaysOfWeek() {
-                const locale = window.Alpine.store('i18n')?.locale === 'en' ? 'en-US' : 'es-ES';
+                const locale = this.$store.i18n?.locale === 'en' ? 'en-US' : 'es-ES';
                 if (locale === 'en-US') {
                     this.daysOfWeek = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
                 } else {

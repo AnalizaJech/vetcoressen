@@ -56,7 +56,7 @@
                                 @if($sucursal->ruc)
                                     <p class="text-xs text-zinc-500 uppercase tracking-wider font-semibold">RUC: {{ $sucursal->ruc }}</p>
                                 @endif
-                                <p class="text-xs text-zinc-500 uppercase tracking-wider" x-text="{{ $sucursal->email ? '`'.$sucursal->email.'`' : '$store.i18n.t(\'misc.noEmail\') || \'Sin correo\'' }}">{{ $sucursal->email ?? 'Sin correo' }}</p>
+                                <p class="text-xs text-zinc-500 uppercase tracking-wider" x-text="{!! $sucursal->email ? '`'.$sucursal->email.'`' : '$store.i18n.t(\'misc.noEmail\') || \'Sin correo\'' !!}">{{ $sucursal->email ?? 'Sin correo' }}</p>
                             </div>
                         </div>
 

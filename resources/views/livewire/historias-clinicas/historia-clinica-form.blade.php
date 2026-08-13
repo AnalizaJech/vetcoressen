@@ -7,12 +7,12 @@
         <div>
             <flux:heading size="xl" class="flex items-center gap-2">
                 <span class="material-symbols-outlined text-emerald-500 text-3xl">medical_information</span>
-                <span class="font-bold" x-text="$store.i18n.t({{ $historiaId ? '\'page.editRecord\'' : '\'page.newRecord\'' }})"></span>
+                <span class="font-bold" x-text="$store.i18n.t('{{ $historiaId ? 'page.editRecord' : 'page.newRecord' }}')"></span>
             </flux:heading>
         </div>
     </div>
 
-    <form x-on:submit.prevent="{{ $historiaId ? '$dispatch(\'modal-show\', { name: \'confirmar-actualizacion\' })' : '$wire.guardar()' }}" class="space-y-8">
+    <form x-on:submit.prevent="{{ $historiaId ? '$dispatch('modal-show', { name: 'confirmar-actualizacion' })' : '$wire.guardar()' }}" class="space-y-8">
         
         {{-- Banner de Citas Pendientes --}}
         @if($citas && $citas->count() > 0 && !$historiaId)
@@ -346,7 +346,7 @@
                              class="px-4 pb-4 pt-1">
                             <flux:textarea
                                 wire:model="{{ $sistema['model'] }}"
-                                x-bind:placeholder="$store.i18n.t(\'form.pe_\' + \'{{ $sistema[\'key\'] }}\') || \'{{ $sistema[\'placeholder\'] }}\'"
+                                x-bind:placeholder="$store.i18n.t('form.pe_' + '{{ $sistema['key'] }}') || '{{ $sistema['placeholder'] }}'"
                                 rows="2"
                                 class="resize-none text-sm"
                             />
@@ -368,18 +368,18 @@
             <div class="space-y-5">
                 <flux:field>
                     <flux:label class="mb-2 font-medium"><span x-text="$store.i18n.t('form.anamnesis')"></span></flux:label>
-                    <flux:textarea wire:model="anamnesis" rows="3" x-bind:placeholder="$store.i18n.t(\'form.anamnesisPlaceholder\') || \'Background, symptoms...\'" class="resize-none" />
+                    <flux:textarea wire:model="anamnesis" rows="3" x-bind:placeholder="$store.i18n.t('form.anamnesisPlaceholder') || 'Background, symptoms...'" class="resize-none" />
                 </flux:field>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <flux:field>
                         <flux:label class="mb-2 font-medium"><span x-text="$store.i18n.t('form.presumptiveDiag')"></span></flux:label>
-                        <flux:textarea wire:model="diagnostico_presuntivo" rows="3" x-bind:placeholder="$store.i18n.t(\'form.presumptiveDiagPlaceholder\') || \'Diagnosis based on clinical findings...\'" class="resize-none" />
+                        <flux:textarea wire:model="diagnostico_presuntivo" rows="3" x-bind:placeholder="$store.i18n.t('form.presumptiveDiagPlaceholder') || 'Diagnosis based on clinical findings...'" class="resize-none" />
                     </flux:field>
 
                     <flux:field>
                         <flux:label class="mb-2 font-medium"><span x-text="$store.i18n.t('form.treatment')"></span></flux:label>
-                        <flux:textarea wire:model="tratamiento_indicaciones" rows="3" x-bind:placeholder="$store.i18n.t(\'form.treatmentPlaceholder\') || \'Treatment plan...\'" class="resize-none" />
+                        <flux:textarea wire:model="tratamiento_indicaciones" rows="3" x-bind:placeholder="$store.i18n.t('form.treatmentPlaceholder') || 'Treatment plan...'" class="resize-none" />
                     </flux:field>
                 </div>
 
@@ -570,8 +570,8 @@
                 wire:loading.attr="disabled"
             >
                 <span wire:loading.remove class="flex items-center gap-2">
-                    <span class="material-symbols-outlined icon-sm" x-text="{{ $historiaId ? '\'edit\'' : '\'save\'' }}"></span>
-                    <span x-text="$store.i18n.t({{ $historiaId ? '\'btn.update\'' : '\'btn.register\'' }})"></span>
+                    <span class="material-symbols-outlined icon-sm" x-text="{{ $historiaId ? ''edit'' : ''save'' }}"></span>
+                    <span x-text="$store.i18n.t({{ $historiaId ? ''btn.update'' : ''btn.register'' }})"></span>
                 </span>
                 <span wire:loading class="flex items-center gap-2">
                     <span class="material-symbols-outlined icon-sm animate-spin">progress_activity</span>

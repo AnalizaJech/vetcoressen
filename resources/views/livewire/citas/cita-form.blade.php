@@ -7,7 +7,7 @@
         <div>
             <flux:heading size="xl" class="flex items-center gap-2">
                 <span class="material-symbols-outlined text-emerald-500">calendar_month</span>
-                <span x-text="$store.i18n.t({{ $citaId ? '\'page.editAppointment\'' : '\'page.newAppointment\'' }})"></span>
+                <span x-text="$store.i18n.t('{{ $citaId ? 'page.editAppointment' : 'page.newAppointment' }}')"></span>
             </flux:heading>
         </div>
     </div>
@@ -103,7 +103,7 @@
                     <flux:label><span x-text="$store.i18n.t('form.timeLabel') || 'Hora'"></span></flux:label>
                     <x-vc-time-picker 
                         wire:model="hora" 
-                        placeholder="00:00"
+                        x-bind:placeholder="$store.i18n.t('form.timePlaceholder') || '00:00'"
                     />
                     <flux:error name="hora" />
                 </flux:field>
@@ -153,11 +153,11 @@
                         wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="guardarEmergencia" class="flex items-center gap-2">
                         <span class="material-symbols-outlined icon-sm">emergency</span>
-                        <span x-text="$store.i18n.t('btn.emergency', 'Emergencia Rápida')"></span>
+                        <span x-text="$store.i18n.t('btn.emergency') || 'Emergencia Rápida'"></span>
                     </span>
                     <span wire:loading wire:target="guardarEmergencia" class="flex items-center gap-2">
                         <span class="material-symbols-outlined icon-sm vc-spinner">progress_activity</span>
-                        <span x-text="$store.i18n.t('btn.registering', 'Registrando...')"></span>
+                        <span x-text="$store.i18n.t('btn.registering') || 'Registrando...'"></span>
                     </span>
                 </button>
             @endif
@@ -167,8 +167,8 @@
                     @if($citaId) x-on:click.prevent="$dispatch('modal-show', { name: 'confirmar-actualizacion' })" @endif
                     wire:loading.attr="disabled">
                 <span wire:loading.remove class="flex items-center gap-2">
-                    <span class="material-symbols-outlined icon-sm" x-text="{{ $citaId ? '\'edit\'' : '\'save\'' }}"></span>
-                    <span x-text="$store.i18n.t({{ $citaId ? '\'btn.update\'' : '\'btn.register\'' }})"></span>
+                    <span class="material-symbols-outlined icon-sm" x-text="'{{ $citaId ? 'edit' : 'save' }}'"></span>
+                    <span x-text="$store.i18n.t('{{ $citaId ? 'btn.update' : 'btn.register' }}')"></span>
                 </span>
                 <span wire:loading wire:target="guardar" class="flex items-center gap-2">
                     <span class="material-symbols-outlined icon-sm vc-spinner">progress_activity</span>

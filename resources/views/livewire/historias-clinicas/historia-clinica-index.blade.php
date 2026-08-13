@@ -251,6 +251,27 @@
                                                             @endif
                                                         </div>
                                                         @endif
+                                                        
+                                                        @if($historia->prescripciones->isNotEmpty())
+                                                        <div>
+                                                            <h4 class="font-bold text-zinc-700 dark:text-zinc-300 border-b border-zinc-200 dark:border-zinc-700 pb-1 mb-2">
+                                                                <span class="material-symbols-outlined text-[16px] inline-block align-text-bottom mr-1">medication</span>
+                                                                <span x-text="$store.i18n.t('form.prescriptions') || 'Prescripciones'"></span>
+                                                            </h4>
+                                                            <div class="space-y-2">
+                                                                @foreach($historia->prescripciones as $presc)
+                                                                    <div class="bg-white dark:bg-zinc-800 p-2 rounded-lg border border-zinc-200 dark:border-zinc-700 text-xs">
+                                                                        <div class="font-bold text-zinc-800 dark:text-zinc-200">{{ $presc->producto->name ?? $presc->medicamento ?? 'Producto no encontrado' }}</div>
+                                                                        <div class="grid grid-cols-2 gap-2 mt-1 text-zinc-600 dark:text-zinc-400">
+                                                                            <div><span class="font-semibold"><span x-text="$store.i18n.t('form.dose') || 'Dosis:'"></span></span> {{ $presc->dosage ?? '-' }}</div>
+                                                                            <div><span class="font-semibold"><span x-text="$store.i18n.t('form.frequency') || 'Frecuencia:'"></span></span> {{ $presc->frequency ?? '-' }}</div>
+                                                                            <div class="col-span-2"><span class="font-semibold"><span x-text="$store.i18n.t('form.duration') || 'Duración:'"></span></span> {{ $presc->duration ?? ($presc->duracion_dias ? $presc->duracion_dias . ' días' : '-') }}</div>
+                                                                        </div>
+                                                                    </div>
+                                                                @endforeach
+                                                            </div>
+                                                        </div>
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </div>

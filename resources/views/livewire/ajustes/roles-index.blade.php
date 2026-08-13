@@ -100,11 +100,11 @@
             <div class="flex flex-col-reverse sm:flex-row gap-3 w-full mt-6">
                 <flux:modal.close class="w-full sm:w-auto flex-1">
                     <flux:button variant="ghost" class="w-full text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white bg-zinc-100 hover:bg-zinc-200 dark:bg-vc-surface-alt dark:hover:bg-zinc-700 font-medium">
-                        Cancelar
+                        <span x-text="$store.i18n.t('btn.cancel', 'Cancelar')"></span>
                     </flux:button>
                 </flux:modal.close>
                 <flux:button variant="danger" class="w-full sm:w-auto flex-1 shadow-sm font-medium" wire:click="eliminar" x-on:click="$dispatch('modal-close', { name: 'confirmar-eliminar-rol' })">
-                    Sí, eliminar rol
+                    <span x-text="$store.i18n.t('btn.deleteRole', 'Sí, eliminar rol')"></span>
                 </flux:button>
             </div>
         </div>

@@ -27,6 +27,7 @@ class UsuarioForm extends Component
     public string $state = '';
     public string $city = '';
     public string $notes = '';
+    public string $cmvp = '';
 
     public bool $consultando = false;
     public string $peruApiError = '';
@@ -47,6 +48,7 @@ class UsuarioForm extends Component
             $this->state = $user->state ?? '';
             $this->city = $user->city ?? '';
             $this->notes = $user->notes ?? '';
+            $this->cmvp = $user->cmvp ?? '';
             // If user has roles, pick the first one
             if ($user->roles->count() > 0) {
                 $this->rol = $user->roles->first()->name;
@@ -140,7 +142,7 @@ class UsuarioForm extends Component
 
     public function guardar()
     {
-        $this->validate([
+            $this->validate([
             'tipo_documento' => 'required|in:DNI,RUC,CE,PASAPORTE',
             'numero_documento' => 'nullable|string|max:20',
             'name' => 'required|string|max:255',
@@ -154,6 +156,7 @@ class UsuarioForm extends Component
             'state' => 'nullable|string|max:255',
             'city' => 'nullable|string|max:255',
             'notes' => 'nullable|string|max:500',
+            'cmvp' => 'nullable|string|max:20',
         ]);
 
         $datos = [
@@ -168,6 +171,7 @@ class UsuarioForm extends Component
             'state' => $this->state,
             'city' => $this->city,
             'notes' => $this->notes,
+            'cmvp' => $this->rol === 'veterinario' ? $this->cmvp : null,
             'dni' => $this->tipo_documento === 'DNI' ? $this->numero_documento : null, // Retrocompatibilidad
         ];
 

@@ -45,7 +45,7 @@ class ReporteIndex extends Component
             $startDate->startOfWeek();
             $prevStartDate->subWeek()->startOfWeek();
             $prevEndDate->subWeek()->endOfWeek();
-        } elseif ($this->periodo === 'año_actual') {
+        } elseif ($this->periodo === 'anio_actual') {
             $startDate->startOfYear();
             $prevStartDate->subYear()->startOfYear();
             $prevEndDate->subYear()->endOfYear();
@@ -87,7 +87,7 @@ class ReporteIndex extends Component
                 $ventasChartData[$time] += $s->total;
             }
             $ventasChartData = array_values($ventasChartData);
-        } elseif ($this->periodo === 'año_actual') {
+        } elseif ($this->periodo === 'anio_actual') {
             // Jan to Dec
             for ($i = 1; $i <= 12; $i++) {
                 $month = str_pad($i, 2, '0', STR_PAD_LEFT);

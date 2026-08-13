@@ -11,7 +11,7 @@
         </div>
     </div>
 
-    <form wire:submit.prevent="guardar" class="space-y-6">
+    <form x-on:submit.prevent="{{ $usuarioId ? '$dispatch(\'modal-show\', { name: \'confirmar-actualizacion\' })' : '$wire.guardar()' }}" class="space-y-6">
         {{-- ═══ Sección: Documento e identificación ═══ --}}
         <div class="vc-panel">
             <div class="vc-section-header">
@@ -35,7 +35,7 @@
                             ]"
                             :selected="$tipo_documento"
                             placeholder="Seleccione"
-                            icon="badge"
+                            icon="identification"
                         />
                     </div>
                 </div>
@@ -154,6 +154,14 @@
                     </div>
                     <flux:error name="rol" />
                 </flux:field>
+
+                @if($rol === 'veterinario')
+                <flux:field>
+                    <flux:label>Colegiatura (CMVP)</flux:label>
+                    <flux:input wire:model="cmvp" placeholder="Ej: 12345" icon="identification" />
+                    <flux:error name="cmvp" />
+                </flux:field>
+                @endif
             </div>
         </div>
 
@@ -273,4 +281,28 @@
             </button>
         </div>
     </form>
+
+    {{-- Modal de Confirmación de Actualización --}}
+    @if($usuarioId)
+    <flux:modal name="confirmar-actualizacion" class="min-w-[22rem]">
+        <div class="flex flex-col items-center justify-center text-center space-y-5">
+            <div class="w-16 h-16 bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center border border-blue-200 dark:border-blue-500/30">
+                <span class="material-symbols-outlined text-[32px]">info</span>
+            </div>
+            <div>
+                <h2 class="text-xl font-bold text-zinc-900 dark:text-white" x-text="$store.i18n.t('modal.updateHistory') || 'Confirmar Actualización'">Confirmar Actualización</h2>
+                <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto" x-text="$store.i18n.t('modal.updateHistoryMsg') || '¿Está seguro de que desea guardar los cambios realizados?'">¿Está seguro de que desea guardar los cambios realizados?</p>
+            </div>
+        </div>
+        <div class="flex gap-3 w-full mt-6">
+            <flux:modal.close class="flex-1">
+                <flux:button variant="ghost" class="w-full"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'">Cancelar</span></flux:button>
+            </flux:modal.close>
+            <button type="button" wire:click="guardar" class="btn-primary flex-1 flex justify-center items-center gap-2" x-on:click="$dispatch('modal-close', { name: 'confirmar-actualizacion' })">
+                <span class="material-symbols-outlined icon-sm">save</span>
+                <span x-text="$store.i18n.t('btn.update') || 'Actualizar'">Actualizar</span>
+            </button>
+        </div>
+    </flux:modal>
+    @endif
 </div>

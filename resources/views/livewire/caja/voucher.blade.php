@@ -74,6 +74,7 @@
     $tipoDoc = $isFactura ? 'FACTURA ELECTRÓNICA' : 'BOLETA DE VENTA ELECTRÓNICA';
     $serie = $isFactura ? 'F001' : 'B001';
     $numero = str_pad($venta->numero_comprobante ?? $venta->id, 8, '0', STR_PAD_LEFT);
+    $clinica = $venta->clinica ?? \App\Models\Clinic::first();
 @endphp
 
 <div class="w-full max-w-[800px] mx-auto flex flex-col gap-6 mt-8">
@@ -84,23 +85,26 @@
         <div class="flex justify-between items-start mb-8">
             <div class="w-2/3 pr-6">
                 <div class="flex items-center gap-4 mb-4">
-                    <img src="{{ asset('img/logo.png') }}" onerror="this.style.display='none'" class="h-16 w-auto object-contain">
+                    @php
+                        $logo = $clinica?->logo ? asset('storage/' . $clinica->logo) : asset('img/logo.png');
+                    @endphp
+                    <img src="{{ $logo }}" onerror="this.style.display='none'" class="h-16 w-auto object-contain">
                     <div>
-                        <h1 class="font-extrabold text-3xl tracking-tight text-zinc-900 leading-none">{{ mb_strtoupper($venta->clinica->razon_social ?? config('app.name', 'VetCoressen') . ' S.A.C.') }}</h1>
-                        <p class="font-bold text-sm uppercase text-zinc-600 mt-1.5">{{ $venta->clinica->name ?? 'Veterinaria y Pet Shop' }}</p>
+                        <h1 class="font-extrabold text-3xl tracking-tight text-zinc-900 leading-none">{{ mb_strtoupper($clinica?->razon_social ?? config('app.name', 'VetCoressen') . ' S.A.C.') }}</h1>
+                        <p class="font-bold text-sm uppercase text-zinc-600 mt-1.5">{{ $clinica?->name ?? 'Veterinaria y Pet Shop' }}</p>
                     </div>
                 </div>
                 <div class="text-[13px] text-zinc-700 space-y-1.5 pl-1">
-                    <p class="uppercase"><span class="font-bold text-zinc-900 mr-1">Dirección:</span> {{ $venta->clinica->address ?? 'AV. PRINCIPAL 123, LIMA, PERÚ' }}</p>
-                    <p class="uppercase"><span class="font-bold text-zinc-900 mr-1">Teléfono:</span> {{ $venta->clinica->phone ?? '01-1234567' }}</p>
-                    <p class="uppercase"><span class="font-bold text-zinc-900 mr-1">Correo:</span> {{ $venta->clinica->email ?? 'contacto@vetcoressen.com' }}</p>
+                    <p class="uppercase"><span class="font-bold text-zinc-900 mr-1">Dirección:</span> {{ $clinica?->address ?: '-' }}</p>
+                    <p class="uppercase"><span class="font-bold text-zinc-900 mr-1">Teléfono:</span> {{ $clinica?->phone ?: '-' }}</p>
+                    <p class="uppercase"><span class="font-bold text-zinc-900 mr-1">Correo:</span> {{ $clinica?->email ?: '-' }}</p>
                 </div>
             </div>
             
             <div class="w-1/3">
                 <div class="border border-zinc-300 rounded-xl text-center overflow-hidden">
                     <div class="py-3 px-2 bg-zinc-50 border-b border-zinc-300">
-                        <p class="font-bold text-lg text-zinc-900">RUC: {{ $venta->clinica->ruc ?? '20123456789' }}</p>
+                        <p class="font-bold text-lg text-zinc-900">RUC: {{ $clinica?->ruc ?: '20123456789' }}</p>
                     </div>
                     <div class="bg-zinc-800 text-white py-2" style="-webkit-print-color-adjust: exact; background-color: #27272a !important;">
                         <p class="font-bold text-sm uppercase tracking-wider">{{ $tipoDoc }}</p>
@@ -123,7 +127,7 @@
                     <div class="col-span-7 uppercase text-zinc-900 font-semibold">{{ $venta->cliente->nombre_completo ?? 'CLIENTE GENERAL / PUBLICO EN GENERAL' }}</div>
                     
                     <div class="col-span-5 font-bold text-zinc-700">Dirección:</div>
-                    <div class="col-span-7 uppercase text-zinc-900 font-semibold">{{ $venta->cliente->direccion ?? '-' }}</div>
+                    <div class="col-span-7 uppercase text-zinc-900 font-semibold">{{ $venta->cliente->address ?: '-' }}</div>
                 </div>
                 
                 <div class="col-span-12 sm:col-span-6 grid grid-cols-12 gap-3">
@@ -147,20 +151,20 @@
         {{-- Items Table --}}
         <div class="mb-8 rounded-xl overflow-hidden border border-zinc-300">
             <table class="w-full text-[13px] text-left">
-                <thead class="uppercase text-white font-extrabold bg-zinc-800" style="-webkit-print-color-adjust: exact; background-color: #27272a !important; color: white !important;">
+                <thead class="text-white font-bold bg-zinc-800 dark:bg-zinc-900" style="-webkit-print-color-adjust: exact; background-color: #27272a !important; color: white !important;">
                     <tr>
-                        <th class="py-4 px-5 text-center w-24 border-r border-zinc-600 text-white" style="border-color: #3f3f46 !important; color: white !important;">CANTIDAD</th>
-                        <th class="py-4 px-5 text-center w-28 border-r border-zinc-600 text-white" style="border-color: #3f3f46 !important; color: white !important;">UNIDAD</th>
-                        <th class="py-4 px-5 border-r border-zinc-600 text-white" style="border-color: #3f3f46 !important; color: white !important;">DESCRIPCIÓN</th>
-                        <th class="py-4 px-5 text-right w-32 border-r border-zinc-600 text-white" style="border-color: #3f3f46 !important; color: white !important;">V. UNITARIO</th>
-                        <th class="py-4 px-5 text-right w-32 text-white" style="color: white !important;">TOTAL</th>
+                        <th class="py-4 px-5 text-center w-24 border-r border-zinc-700" style="border-color: #3f3f46 !important;">CANT.</th>
+                        <th class="py-4 px-5 text-center w-28 border-r border-zinc-700" style="border-color: #3f3f46 !important;">U. MEDIDA</th>
+                        <th class="py-4 px-5 border-r border-zinc-700" style="border-color: #3f3f46 !important;">DESCRIPCIÓN</th>
+                        <th class="py-4 px-5 text-right w-32 border-r border-zinc-700" style="border-color: #3f3f46 !important;">V. UNIT.</th>
+                        <th class="py-4 px-5 text-right w-32">IMPORTE</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-zinc-200">
                     @foreach($venta->detalles as $detalle)
                     <tr class="bg-white">
-                        <td class="py-4 px-5 text-center font-bold text-zinc-800">{{ number_format($detalle->quantity, 2) }}</td>
-                        <td class="py-4 px-5 text-center text-zinc-600 font-medium">NIU</td>
+                        <td class="py-4 px-5 text-center font-bold text-zinc-800">{{ number_format($detalle->quantity, 0) }}</td>
+                        <td class="py-4 px-5 text-center text-zinc-600 font-medium">NIU/UNIDAD</td>
                         <td class="py-4 px-5 uppercase text-zinc-900 font-bold">{{ $detalle->producto?->name ?? ($detalle->description ?? 'SERVICIO VETERINARIO') }}</td>
                         <td class="py-4 px-5 text-right text-zinc-700 font-medium">{{ number_format($detalle->precio_final_unitario, 2) }}</td>
                         <td class="py-4 px-5 text-right font-extrabold text-zinc-900">{{ number_format($detalle->subtotal, 2) }}</td>

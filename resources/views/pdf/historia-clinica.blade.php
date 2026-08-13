@@ -239,7 +239,9 @@
                 <div class="signature-line"></div>
                 <strong>{{ $historia->veterinario->name ?? 'N/A' }} {{ $historia->veterinario->last_name ?? '' }}</strong>
                 <span>Médico Veterinario</span>
-                <br><span>CMVP: ____________</span>
+                @if(isset($historia->veterinario->cmvp) && $historia->veterinario->cmvp)
+                <br><span>CMVP: {{ $historia->veterinario->cmvp }}</span>
+                @endif
             </div>
             
             <div class="footer-text">

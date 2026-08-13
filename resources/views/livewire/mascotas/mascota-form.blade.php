@@ -8,7 +8,7 @@
             <div>
                 <flux:heading size="xl" class="flex items-center gap-2">
                     <span class="material-symbols-outlined text-emerald-500">pets</span>
-                    <span x-text="$store.i18n.t({{ $mascotaId ? '\'page.editPet\'' : '\'page.newPet\'' }})"></span>
+                    <span x-text="$store.i18n.t('{{ $mascotaId ? 'page.editPet' : 'page.newPet' }}')"></span>
                 </flux:heading>
             </div>
         </div>
@@ -170,8 +170,8 @@
                     @if($mascotaId) x-on:click.prevent="$dispatch('modal-show', { name: 'confirmar-actualizacion' })" @endif
                     wire:loading.attr="disabled">
                 <span wire:loading.remove class="flex items-center gap-2">
-                    <span class="material-symbols-outlined icon-sm" x-text="{{ $mascotaId ? '\'edit\'' : '\'save\'' }}"></span>
-                    <span x-text="$store.i18n.t({{ $mascotaId ? '\'btn.update\'' : '\'btn.register\'' }})"></span>
+                    <span class="material-symbols-outlined icon-sm" x-text="'{{ $mascotaId ? 'edit' : 'save' }}'"></span>
+                    <span x-text="$store.i18n.t('{{ $mascotaId ? 'btn.update' : 'btn.register' }}')"></span>
                 </span>
                 <span wire:loading class="flex items-center gap-2">
                     <span class="material-symbols-outlined icon-sm vc-spinner">progress_activity</span>

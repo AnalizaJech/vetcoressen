@@ -109,6 +109,9 @@
                                 </td>
                                 <td style="width: 50%; text-align: right; color: #4b5563; font-weight: normal; font-size: 12px;">
                                     Atendido por: {{ $historia->veterinario->name ?? 'N/A' }} {{ $historia->veterinario->last_name ?? '' }}
+                                    @if(isset($historia->veterinario->cmvp) && $historia->veterinario->cmvp)
+                                        <br><span style="font-size: 10px;">CMVP: {{ $historia->veterinario->cmvp }}</span>
+                                    @endif
                                 </td>
                             </tr>
                         </table>
@@ -119,16 +122,48 @@
                             <td class="label" style="width: 15%;">Motivo:</td>
                             <td class="value" style="width: 85%;">{{ $historia->reason ?? 'No especificado' }}</td>
                         </tr>
-                        @if($historia->weight || $historia->temperature)
+                        @if($historia->weight || $historia->temperature || $historia->heart_rate || $historia->respiratory_rate)
                         <tr>
-                            <td class="label" style="width: 15%;">Triage:</td>
+                            <td class="label" style="width: 15%;">Signos Vitales:</td>
                             <td class="value" style="width: 85%;">
                                 {{ $historia->weight ? 'Peso: '.$historia->weight.' kg' : '' }}
                                 {{ $historia->temperature ? ' | Temp: '.$historia->temperature.' °C' : '' }}
                                 {{ $historia->heart_rate ? ' | FC: '.$historia->heart_rate.' lpm' : '' }}
+                                {{ $historia->respiratory_rate ? ' | FR: '.$historia->respiratory_rate.' rpm' : '' }}
+                                {{ $historia->condicion_corporal ? ' | Cond. Corp: '.$historia->condicion_corporal : '' }}
+                                {{ $historia->nivel_hidratacion ? ' | Hidratación: '.$historia->nivel_hidratacion : '' }}
+                                {{ $historia->nivel_dolor ? ' | Dolor: '.$historia->nivel_dolor : '' }}
                             </td>
                         </tr>
                         @endif
+                        
+                        <tr>
+                            <td class="label" style="width: 15%;">Examen Físico:</td>
+                            <td class="value" style="width: 85%;">
+                                <table style="width: 100%; font-size: 10px; margin-top: 2px;">
+                                    <tr>
+                                        <td style="width: 50%"><strong>Cardiovascular:</strong> {{ $historia->examen_cardiovascular ?? '-' }}</td>
+                                        <td style="width: 50%"><strong>Digestivo:</strong> {{ $historia->examen_digestivo ?? '-' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Linfonodos:</strong> {{ $historia->examen_linfonodos ?? '-' }}</td>
+                                        <td><strong>Mucosas:</strong> {{ $historia->examen_mucosas ?? '-' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Músculoesquelético:</strong> {{ $historia->examen_musculoesqueletico ?? '-' }}</td>
+                                        <td><strong>Neurológico:</strong> {{ $historia->examen_neurologico ?? '-' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Ojos/Oídos:</strong> {{ $historia->examen_ojos_oidos ?? '-' }}</td>
+                                        <td><strong>Piel/Pelaje:</strong> {{ $historia->examen_piel_pelaje ?? '-' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Respiratorio:</strong> {{ $historia->examen_respiratorio ?? '-' }}</td>
+                                        <td><strong>Urinario:</strong> {{ $historia->examen_urinario ?? '-' }}</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
                     </table>
 
                     <div class="content-box">
@@ -146,6 +181,18 @@
                         <p>{{ $historia->tratamiento_indicaciones ?? 'No especificado' }}</p>
                     </div>
 
+                    @if($historia->notas_aclaratorias || $historia->proxima_cita_recomendada)
+                    <div class="content-box" style="background-color: #fffbeb; border-color: #fde68a;">
+                        <h4 style="color: #b45309;">Notas Adicionales</h4>
+                        @if($historia->notas_aclaratorias)
+                            <p style="margin-bottom: 5px;">{{ $historia->notas_aclaratorias }}</p>
+                        @endif
+                        @if($historia->proxima_cita_recomendada)
+                            <p><strong>Próxima Cita Recomendada:</strong> {{ $historia->proxima_cita_recomendada->format('d/m/Y') }}</p>
+                        @endif
+                    </div>
+                    @endif
+
                     @if($historia->prescripciones && count($historia->prescripciones) > 0)
                     <table class="prescriptions">
                         <thead>
@@ -160,11 +207,11 @@
                             @foreach($historia->prescripciones as $rx)
                             <tr>
                                 <td>
-                                    <strong>{{ $rx->producto->name ?? 'Medicamento eliminado' }}</strong>
+                                    <strong>{{ $rx->producto->name ?? $rx->medicamento ?? 'Medicamento eliminado' }}</strong>
                                 </td>
-                                <td>{{ $rx->dose ?? '-' }}</td>
+                                <td>{{ $rx->dosage ?? '-' }}</td>
                                 <td>{{ $rx->frequency ?? '-' }}</td>
-                                <td>{{ $rx->route ?? '-' }} ({{ $rx->duration_days ?? '-' }} días)</td>
+                                <td>{{ $rx->duration ?? ($rx->duracion_dias ? $rx->duracion_dias . ' días' : '-') }}</td>
                             </tr>
                             @endforeach
                         </tbody>

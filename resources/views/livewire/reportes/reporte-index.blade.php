@@ -20,7 +20,7 @@
                             ['value' => 'hoy', 'label' => 'report.today'],
                             ['value' => 'semana_actual', 'label' => 'report.thisWeek'],
                             ['value' => 'mes_actual', 'label' => 'report.thisMonth'],
-                            ['value' => 'año_actual', 'label' => 'report.thisYear']
+                            ['value' => 'anio_actual', 'label' => 'report.thisYear']
                         ]"
                         :selected="$periodo"
                         placeholder="filter.period"
@@ -60,7 +60,7 @@
                     'hoy' => 'de Hoy',
                     'semana_actual' => 'de la Semana',
                     'mes_actual' => 'del Mes',
-                    'año_actual' => 'del Año',
+                    'anio_actual' => 'del Año',
                     default => 'del Periodo',
                 };
             @endphp
