@@ -510,7 +510,7 @@
             
             <div class="flex flex-col sm:flex-row flex-wrap justify-end gap-3 pt-6 border-t border-zinc-200 dark:border-zinc-700">
                 <div class="flex-1 flex gap-2">
-                    <a href="{{ route('citas.pdf', $citaVer->id) }}" target="_blank" class="w-full sm:w-auto px-4 py-2 bg-zinc-600 hover:bg-zinc-700 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center gap-2 transition-all">
+                    <a href="{{ route('citas.pdf', $citaVer->id) }}" download class="w-full sm:w-auto px-4 py-2 bg-zinc-600 hover:bg-zinc-700 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center gap-2 transition-all">
                         <span class="material-symbols-outlined icon-sm">picture_as_pdf</span>
                         <span x-text="$store.i18n.t('report.downloadPDF') || 'Descargar PDF'">Descargar PDF</span>
                     </a>
@@ -610,18 +610,30 @@
 <style>
 /* FullCalendar Custom Premium Styling */
 :root {
-    --fc-border-color: #3f3f46; /* zinc-700 */
-    --fc-button-bg-color: #27272a; /* zinc-800 */
-    --fc-button-border-color: #3f3f46;
-    --fc-button-hover-bg-color: #3f3f46;
-    --fc-button-hover-border-color: #52525b;
+    --fc-border-color: #d4d4d8;
+    --fc-button-bg-color: #ffffff;
+    --fc-button-text-color: #18181b;
+    --fc-button-border-color: #a1a1aa;
+    --fc-button-hover-bg-color: #f4f4f5;
+    --fc-button-hover-border-color: #71717a;
     --fc-button-active-bg-color: #10b981; /* emerald-500 */
     --fc-button-active-border-color: #059669; /* emerald-600 */
     --fc-event-border-color: transparent;
-    --fc-page-bg-color: transparent;
-    --fc-neutral-bg-color: rgba(255, 255, 255, 0.05);
+    --fc-page-bg-color: #ffffff;
+    --fc-neutral-bg-color: #f4f4f5;
     --fc-list-event-hover-bg-color: rgba(16, 185, 129, 0.1);
     --fc-today-bg-color: rgba(16, 185, 129, 0.05);
+}
+
+html.dark {
+    --fc-border-color: #3f3f46;
+    --fc-button-bg-color: #27272a;
+    --fc-button-text-color: #f4f4f5;
+    --fc-button-border-color: #52525b;
+    --fc-button-hover-bg-color: #3f3f46;
+    --fc-button-hover-border-color: #71717a;
+    --fc-page-bg-color: transparent;
+    --fc-neutral-bg-color: rgba(255, 255, 255, 0.05);
 }
 
 .fc-theme-standard td, .fc-theme-standard th {
@@ -631,8 +643,9 @@
     font-family: 'Outfit', 'Inter', sans-serif;
     font-weight: 700;
     font-size: 1.5rem;
-    color: #f4f4f5; /* zinc-100 */
+    color: #18181b;
 }
+html.dark .fc .fc-toolbar-title { color: #f4f4f5; }
 .fc .fc-button {
     font-family: 'Inter', sans-serif;
     font-size: 0.85rem;
@@ -641,6 +654,7 @@
     border-radius: 0.5rem;
     padding: 0.4rem 0.8rem;
     transition: all 0.2s ease;
+    color: var(--fc-button-text-color) !important;
 }
 .fc .fc-button-primary:not(:disabled).fc-button-active, 
 .fc .fc-button-primary:not(:disabled):active {
@@ -669,7 +683,7 @@
     padding-right: 8px;
 }
 .fc .fc-list-empty {
-    background-color: rgba(39, 39, 42, 0.5) !important;
+    background-color: var(--fc-neutral-bg-color) !important;
     border-radius: 0.75rem;
     margin: 2rem;
 }
@@ -857,7 +871,7 @@ html.dark .fc .fc-col-header-cell-cushion {
 .fc-list-day-text, .fc-list-day-side-text {
     font-size: 14px !important;
     font-weight: 700 !important;
-    color: #3f3f46 !important; /* zinc-700 */
+    color: #18181b !important;
     text-transform: capitalize;
     text-decoration: none !important; /* Asegurar que no parezca link */
 }

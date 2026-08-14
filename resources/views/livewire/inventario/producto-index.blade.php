@@ -143,10 +143,17 @@
                                 <div class="mt-0.5">
                                     @php
                                         $loteProximo = $producto->productBatches->where('stock_actual', '>', 0)->sortBy('fecha_vencimiento')->first();
+                                        $diasParaVencer = $loteProximo?->fecha_vencimiento
+                                            ? now()->startOfDay()->diffInDays($loteProximo->fecha_vencimiento->copy()->startOfDay(), false)
+                                            : null;
+                                        $loteEnAlerta = $diasParaVencer !== null && $diasParaVencer <= 90;
                                     @endphp
                                     @if($loteProximo && $loteProximo->fecha_vencimiento)
-                                        <span class="text-xs text-zinc-700 dark:text-zinc-300">{{ $loteProximo->lote }}</span>
-                                        <span class="text-[10px] text-zinc-500 block">{{ $loteProximo->fecha_vencimiento->format('d/m/Y') }}</span>
+                                        <span class="inline-flex items-center gap-1 text-xs font-semibold {{ $loteEnAlerta ? ($diasParaVencer < 0 ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400') : 'text-zinc-700 dark:text-zinc-300' }}">
+                                            <span class="material-symbols-outlined text-[13px]">{{ $loteEnAlerta ? ($diasParaVencer < 0 ? 'event_busy' : 'event_upcoming') : 'inventory_2' }}</span>
+                                            {{ $loteProximo->lote }}
+                                        </span>
+                                        <span class="text-[10px] {{ $loteEnAlerta ? ($diasParaVencer < 0 ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-amber-600 dark:text-amber-400 font-semibold') : 'text-zinc-500' }} block">{{ $loteProximo->fecha_vencimiento->format('d/m/Y') }}</span>
                                     @else
                                         <span class="text-xs text-zinc-500 dark:text-zinc-400 italic" x-text="$store.i18n.t('misc.notAvailable') || 'S/L'">S/L</span>
                                     @endif

@@ -82,7 +82,7 @@ class HistoriaClinicaForm extends Component
             'anamnesis'               => 'nullable|string|max:2000',
             'diagnostico_presuntivo'  => 'nullable|string|max:1000',
             'tratamiento_indicaciones' => 'nullable|string|max:2000',
-            'proxima_cita_recomendada' => 'nullable|date|after:today',
+            'proxima_cita_recomendada' => 'nullable|date',
             // Examen físico
             'examen_mucosas'          => 'nullable|string|max:50',
             'examen_linfonodos'       => 'nullable|string|max:50',
@@ -290,6 +290,14 @@ class HistoriaClinicaForm extends Component
     // Guardar historia clínica + prescripciones
     public function guardar(): void
     {
+        $this->prescripciones = array_values(array_filter($this->prescripciones, function (array $rx): bool {
+            return filled($rx['product_id'] ?? null)
+                || filled($rx['medicamento'] ?? null)
+                || filled($rx['dosage'] ?? null)
+                || filled($rx['frequency'] ?? null)
+                || filled($rx['indicaciones'] ?? null);
+        }));
+
         $this->validate();
 
         $datos = [
@@ -328,17 +336,6 @@ class HistoriaClinicaForm extends Component
         if ($this->historiaId) {
             $historia = MedicalRecord::findOrFail($this->historiaId);
             
-            // Inmutabilidad a las 24h + Notas Aclaratorias Anexas
-            $paso24h = clone $historia->created_at;
-            $paso24h = $paso24h->diffInHours(now()) >= 24;
-            
-            if ($paso24h && !auth()->user()->hasRole('super_admin')) {
-                $historia->update(['notas_aclaratorias' => $this->notas_aclaratorias]);
-                session()->flash('mensaje', 'Historia clínica bloqueada (24h). Solo se guardaron las Notas Aclaratorias Anexas.');
-                $this->redirect(route('historias.index'), navigate: true);
-                return;
-            }
-
             $datos['notas_aclaratorias'] = $this->notas_aclaratorias;
             $historia->update($datos);
             // Eliminar prescripciones anteriores y recrear
@@ -401,7 +398,7 @@ class HistoriaClinicaForm extends Component
         // Citas pendientes de la mascota seleccionada
         $citas = $this->pet_id
             ? Appointment::where('pet_id', $this->pet_id)
-                ->whereIn('status', ['programada', 'confirmada'])
+                ->whereIn('status', ['PENDIENTE', 'CONFIRMADA'])
                 ->orderByDesc('fecha_hora')
                 ->get()
             : collect();
@@ -414,7 +411,7 @@ class HistoriaClinicaForm extends Component
                 $query->where('stock_actual', '>', 0)->orderBy('fecha_vencimiento', 'asc');
             }])
             ->where('is_active', true)
-            ->where('type', 'MEDICAMENTO')
+            ->whereRaw('UPPER(type) = ?', ['MEDICAMENTO'])
             ->where('current_stock', '>', 0)
             ->orderBy('name')
             ->get();

@@ -50,7 +50,7 @@
                             <span class="material-symbols-outlined text-lg">
                                 {{ $typeIcon }}
                             </span>
-                            {{ $t }}
+                            <span x-text="$store.i18n.t('inventory.{{ strtolower($t) }}') || '{{ $t }}'"></span>
                         </button>
                         @endforeach
                     </div>

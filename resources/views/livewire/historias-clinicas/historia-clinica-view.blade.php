@@ -1,70 +1,70 @@
-<div x-data class="max-w-4xl mx-auto py-8">
+<div x-data class="max-w-5xl mx-auto px-4 sm:px-6 py-8">
     <x-slot:title>Historia Clínica - {{ $historia->pet?->name ?? 'Sin mascota' }}</x-slot:title>
 
-    <div class="mb-6 flex items-center justify-between">
+    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <a href="{{ route('historias.index') }}" class="btn-secondary text-sm flex items-center gap-2">
             <span class="material-symbols-outlined icon-sm">arrow_back</span>
-            Volver a Historias
+            <span x-text="$store.i18n.t('btn.back')"></span>
         </a>
         <div class="flex gap-2">
             <a href="{{ route('historias.editar', $historia->id) }}" class="btn-secondary text-sm flex items-center gap-2">
                 <span class="material-symbols-outlined icon-sm">edit</span>
-                Editar
+                <span x-text="$store.i18n.t('btn.edit')"></span>
             </a>
             <a href="{{ route('historias.pdf', $historia->id) }}" target="_blank" class="btn-primary text-sm flex items-center gap-2">
                 <span class="material-symbols-outlined icon-sm">picture_as_pdf</span>
-                Descargar PDF
+                <span x-text="$store.i18n.t('report.downloadPDF')"></span>
             </a>
             <button onclick="window.print()" class="btn-secondary text-sm flex items-center gap-2">
                 <span class="material-symbols-outlined icon-sm">print</span>
-                Imprimir
+                <span x-text="$store.i18n.t('report.print')"></span>
             </button>
         </div>
     </div>
 
     {{-- Vista para imprimir y ver --}}
-    <div id="historia-print-area" class="bg-white text-zinc-900 rounded-lg shadow-sm border border-zinc-200 overflow-hidden">
+    <div id="historia-print-area" class="bg-white text-zinc-900 rounded-2xl shadow-xl shadow-zinc-950/10 border border-zinc-200 overflow-hidden">
         {{-- Cabecera --}}
-        <div class="bg-zinc-50 border-b border-zinc-200 p-6">
+        <div class="bg-zinc-950 border-b-4 border-emerald-500 p-6 sm:p-8">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                 <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-400/15 border border-emerald-400/30 flex items-center justify-center text-emerald-300">
                         <span class="material-symbols-outlined text-2xl">pets</span>
                     </div>
                     <div>
-                        <h1 class="text-2xl font-bold text-zinc-900">{{ config('app.name', 'VetCore') }}</h1>
-                        <p class="text-sm text-zinc-500">Reporte Médico Clínico</p>
+                        <h1 class="text-2xl font-bold tracking-tight text-white">{{ config('app.name', 'VetCore') }}</h1>
+                        <p class="text-sm text-emerald-200" x-text="$store.i18n.t('report.medicalReport')"></p>
                     </div>
                 </div>
-                <div class="text-right">
-                    <p class="text-sm text-zinc-500">Nº de Registro: <span class="font-mono font-medium text-zinc-900">{{ str_pad($historia->id, 6, '0', STR_PAD_LEFT) }}</span></p>
-                    <p class="text-sm text-zinc-500">Fecha: <span class="font-medium text-zinc-900">{{ $historia->created_at->format('d/m/Y H:i') }}</span></p>
+                <div class="text-left sm:text-right">
+                    <p class="text-sm text-zinc-300"><span x-text="$store.i18n.t('report.recordNo')"></span> <span class="font-mono font-semibold text-white">{{ str_pad($historia->id, 6, '0', STR_PAD_LEFT) }}</span></p>
+                    <p class="text-sm text-zinc-300"><span x-text="$store.i18n.t('report.date')"></span> <span class="font-medium text-white">{{ $historia->created_at->format('d/m/Y H:i') }}</span></p>
                 </div>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 bg-white p-4 rounded border border-zinc-200 text-sm">
-                <div>
-                    <h3 class="font-semibold text-zinc-900 mb-2 border-b pb-1">Datos del Paciente</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-7 text-sm">
+                <div class="rounded-xl bg-white p-5 border border-zinc-200 shadow-sm">
+                    <h3 class="font-semibold text-zinc-900 mb-3 border-b border-zinc-200 pb-2" x-text="$store.i18n.t('report.patientData')"></h3>
                     <div class="grid grid-cols-[100px_1fr] gap-y-1">
-                        <span class="text-zinc-500">Nombre:</span> <span class="font-medium">{{ $historia->pet?->name ?? 'N/A' }}</span>
+                        <span class="text-zinc-500" x-text="$store.i18n.t('form.nameLabel')"></span> <span class="font-medium">{{ $historia->pet?->name ?? 'N/A' }}</span>
                         <span class="text-zinc-500" x-text="$store.i18n.t('table.species') || 'Especie:'">Especie:</span> <span>{{ $historia->pet?->especie?->name ?? 'N/A' }}</span>
                         <span class="text-zinc-500" x-text="$store.i18n.t('table.breed') || 'Raza:'">Raza:</span> <span>{{ $historia->pet?->raza?->name ?? 'N/A' }}</span>
-                        <span class="text-zinc-500">Sexo:</span> <span>{{ $historia->pet?->gender === 'M' ? 'Macho' : 'Hembra' }}</span>
-                        <span class="text-zinc-500">Edad:</span> <span>{{ $historia->pet?->birth_date ? \Carbon\Carbon::parse($historia->pet->birth_date)->age . ' años' : 'Desconocida' }}</span>
-                        <span class="text-zinc-500">Peso (Ref):</span> <span>{{ $historia->weight ?? 'No registrado' }} kg</span>
+                        <span class="text-zinc-500" x-text="$store.i18n.t('report.sex')"></span> <span x-text="$store.i18n.t('report.{{ $historia->pet?->gender === 'M' ? 'male' : 'female' }}')"></span>
+                        <span class="text-zinc-500" x-text="$store.i18n.t('report.age')"></span> <span>@if($historia->pet?->birth_date){{ \Carbon\Carbon::parse($historia->pet->birth_date)->age }} <span x-text="$store.i18n.t('report.years')"></span>@else<span x-text="$store.i18n.t('report.unknown')"></span>@endif</span>
+                        <span class="text-zinc-500" x-text="$store.i18n.t('report.weightRef')"></span> <span>@if($historia->weight){{ $historia->weight }} kg @else<span x-text="$store.i18n.t('report.notRegistered')"></span>@endif</span>
                     </div>
                 </div>
-                <div>
-                    <h3 class="font-semibold text-zinc-900 mb-2 border-b pb-1">Datos del Propietario</h3>
+                <div class="rounded-xl bg-white p-5 border border-zinc-200 shadow-sm">
+                    <h3 class="font-semibold text-zinc-900 mb-3 border-b border-zinc-200 pb-2" x-text="$store.i18n.t('report.ownerData')"></h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="flex flex-col gap-1 text-sm">
-                            <span class="text-zinc-500">Nombre:</span> <span class="font-medium">{{ $historia->pet?->cliente?->nombre_completo ?? 'N/A' }}</span>
+                            <span class="text-zinc-500" x-text="$store.i18n.t('form.nameLabel')"></span> <span class="font-medium">{{ $historia->pet?->cliente?->nombre_completo ?? 'N/A' }}</span>
                             <span class="text-zinc-500">DNI/RUC:</span> <span>{{ $historia->pet?->cliente?->numero_documento ?? 'N/A' }}</span>
                         </div>
                         <div class="flex flex-col gap-1 text-sm">
-                            <span class="text-zinc-500">Teléfono:</span> <span>{{ $historia->pet?->cliente?->phone ?? 'N/A' }}</span>
-                            <span class="text-zinc-500">Email:</span> <span>{{ $historia->pet?->cliente?->email ?? 'N/A' }}</span>
-                            <span class="text-zinc-500">Dirección:</span> <span>{{ $historia->pet?->cliente?->address ?? 'N/A' }}</span>
+                            <span class="text-zinc-500" x-text="$store.i18n.t('report.phone')"></span> <span>{{ $historia->pet?->cliente?->phone ?? 'N/A' }}</span>
+                            <span class="text-zinc-500" x-text="$store.i18n.t('report.email')"></span> <span>{{ $historia->pet?->cliente?->email ?? 'N/A' }}</span>
+                            <span class="text-zinc-500" x-text="$store.i18n.t('report.address')"></span> <span>{{ $historia->pet?->cliente?->address ?? 'N/A' }}</span>
                         </div>
                     </div>
                 </div>
@@ -72,7 +72,7 @@
         </div>
 
         {{-- Contenido Médico --}}
-        <div class="p-6 space-y-6">
+        <div class="medical-record-content p-6 sm:p-8 space-y-7 bg-zinc-50/60">
             
             {{-- Motivo y Signos --}}
             <div>
@@ -249,7 +249,20 @@
 
     {{-- CSS especial para impresion --}}
     <style>
+        .medical-record-content > div {
+            background: #ffffff;
+            border: 1px solid #e4e4e7;
+            border-left: 4px solid #10b981;
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            box-shadow: 0 1px 2px rgba(24, 24, 27, 0.04);
+        }
+        .medical-record-content > div > h3 {
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #e4e4e7;
+        }
         @media print {
+            @page { size: A4 portrait; margin: 10mm; }
             body * {
                 visibility: hidden;
             }
@@ -258,9 +271,7 @@
                 color: black !important;
             }
             #historia-print-area {
-                position: absolute;
-                left: 0;
-                top: 0;
+                position: static;
                 width: 100%;
                 max-width: 100%;
                 box-shadow: none;
@@ -268,7 +279,33 @@
                 margin: 0;
                 padding: 0;
             }
-            .bg-emerald-50\/50, .bg-blue-50\/50, .bg-zinc-50 {
+            #historia-print-area .bg-zinc-950 {
+                background: #ffffff !important;
+                border-bottom: 2px solid #059669 !important;
+            }
+            #historia-print-area .bg-zinc-950 *, #historia-print-area .text-white, #historia-print-area .text-zinc-300, #historia-print-area .text-emerald-200 {
+                color: #18181b !important;
+            }
+            #historia-print-area .medical-record-content {
+                padding: 12px !important;
+                gap: 10px !important;
+                background: #ffffff !important;
+            }
+            #historia-print-area .medical-record-content > div {
+                padding: 10px !important;
+                margin: 0 !important;
+                border-left-width: 2px !important;
+                box-shadow: none !important;
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+            #historia-print-area .p-6, #historia-print-area .sm\:p-8 {
+                padding: 12px !important;
+            }
+            #historia-print-area .space-y-7 > :not([hidden]) ~ :not([hidden]) {
+                margin-top: 10px !important;
+            }
+            .bg-emerald-50\/50, .bg-blue-50\/50, .bg-zinc-50, .bg-teal-50\/30, .bg-violet-50\/30 {
                 background-color: transparent !important;
             }
         }

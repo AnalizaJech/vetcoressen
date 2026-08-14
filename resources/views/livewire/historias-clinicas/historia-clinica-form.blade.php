@@ -12,7 +12,14 @@
         </div>
     </div>
 
-    <form x-on:submit.prevent="{{ $historiaId ? '$dispatch('modal-show', { name: 'confirmar-actualizacion' })' : '$wire.guardar()' }}" class="space-y-8">
+    <form
+        @if($historiaId)
+            x-on:submit.prevent="$dispatch('modal-show', { name: 'confirmar-actualizacion' })"
+        @else
+            wire:submit.prevent="guardar"
+        @endif
+        class="space-y-8"
+    >
         
         {{-- Banner de Citas Pendientes --}}
         @if($citas && $citas->count() > 0 && !$historiaId)
@@ -581,8 +588,8 @@
                 wire:loading.attr="disabled"
             >
                 <span wire:loading.remove class="flex items-center gap-2">
-                    <span class="material-symbols-outlined icon-sm" x-text="{{ $historiaId ? ''edit'' : ''save'' }}"></span>
-                    <span x-text="$store.i18n.t({{ $historiaId ? ''btn.update'' : ''btn.register'' }})"></span>
+                    <span class="material-symbols-outlined icon-sm">{{ $historiaId ? 'edit' : 'save' }}</span>
+                    <span x-text="$store.i18n.t('{{ $historiaId ? 'btn.update' : 'btn.register' }}')"></span>
                 </span>
                 <span wire:loading class="flex items-center gap-2">
                     <span class="material-symbols-outlined icon-sm animate-spin">progress_activity</span>

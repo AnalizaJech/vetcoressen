@@ -110,9 +110,11 @@ class SucursalForm extends Component
         }
     }
 
-    public function mount(?Branch $sucursal = null)
+    public function mount(?int $id = null): void
     {
-        if ($sucursal && $sucursal->exists) {
+        $sucursal = $id ? Branch::findOrFail($id) : null;
+
+        if ($sucursal) {
             $this->sucursal = $sucursal;
             $this->isEdit = true;
             $this->name = $sucursal->name;
@@ -133,12 +135,12 @@ class SucursalForm extends Component
         $validated = $this->validate([
             'name' => 'required|string|max:255',
             'ruc' => 'nullable|string|max:20',
-            'address' => 'nullable|string|max:255',
-            'phone' => 'nullable|string|max:20',
-            'email' => 'nullable|email|max:255',
-            'country' => 'nullable|string|max:255',
-            'state' => 'nullable|string|max:255',
-            'city' => 'nullable|string|max:255',
+            'address' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+            'email' => 'required|email|max:255',
+            'country' => 'required|string|max:255',
+            'state' => 'required|string|max:255',
+            'city' => 'required|string|max:255',
         ]);
         
         // Si se marca como principal, desactivar las demás

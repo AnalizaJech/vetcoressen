@@ -160,7 +160,7 @@
                                 </div>
                             </div>
                             <div class="flex items-center gap-4">
-                                <a href="{{ route('mascotas.historial.pdf', $mascota->id) }}" target="_blank" class="btn-primary py-2 px-4 flex gap-2 items-center text-sm rounded-xl transition-all shadow-sm" @click.stop>
+                                <a href="{{ route('mascotas.historial.pdf', $mascota->id) }}" download class="btn-primary py-2 px-4 flex gap-2 items-center text-sm rounded-xl transition-all shadow-sm" @click.stop>
                                     <span class="material-symbols-outlined text-[18px]">print</span>
                                     <span x-text="$store.i18n.t('action.print', 'Imprimir')"></span>
                                 </a>

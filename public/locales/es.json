@@ -36,6 +36,8 @@
         "newPassword": "Nueva Contraseña",
         "confirmPassword": "Confirmar Contraseña",
         "select": "Seleccionar...",
+        "selectCurrency": "Seleccionar moneda",
+        "selectRole": "Seleccionar rol",
         "selectClient": "Buscar y seleccionar cliente...",
         "reasonPlaceholder": "Describa el motivo de la consulta...",
         "diagnosisPlaceholder": "Ingrese un diagnóstico detallado...",
@@ -102,6 +104,10 @@
         "tomorrow": "Mañana",
         "customDate": "Fecha Personalizada",
         "basicInfo": "Información básica",
+        "companyName": "Nombre de la empresa / razón social",
+        "branchName": "Nombre de la sucursal",
+        "taxId": "RUC o identificación tributaria",
+        "contactInfo": "Información de contacto",
         "typeLabel": "Tipo",
         "category": "Categoría",
         "barcode": "Código de barras",
@@ -140,6 +146,15 @@
         "activeIngredient": "Principio Activo",
         "batch": "Lote",
         "client": "Cliente",
+        "entryTitle": "Recepcionar Pedido (Entrada de Lote)",
+        "entryDetails": "Detalles del Ingreso",
+        "product": "Producto",
+        "supplier": "Proveedor",
+        "receivedQuantity": "Cantidad Ingresada",
+        "generalSalePrice": "Precio de Venta General",
+        "batchTraceability": "Datos de Trazabilidad (Lote)",
+        "batchRequiredNotice": "Si el producto es un Medicamento o Alimento, el número de lote y fecha de vencimiento son obligatorios.",
+        "batchNumber": "Número de Lote",
         "clinicalDetails": "Detalles Clínicos",
         "date": "Fecha",
         "dniRuc": "DNI \/ RUC...",
@@ -380,6 +395,8 @@
         "deleteAppointmentSub": "Esta acción no se puede deshacer. ¿Está seguro que desea eliminar esta cita del sistema?",
         "deleteRecord": "Eliminar Historia Clínica",
         "deleteRecordMsg": "Esta acción eliminará el registro clínico y no se puede revertir.",
+        "deleteUser": "Eliminar Usuario",
+        "deleteUserMsg": "Esta acción no se puede revertir y perderás toda la información de este usuario.",
         "confirmUpdate": "Confirmar Actualización",
         "confirmUpdateMsg": "¿Estás seguro de que deseas guardar los cambios realizados en este producto?",
         "confirmDelete": "¿Eliminar Proveedor?",
@@ -632,6 +649,10 @@
         "{{ strtolower($venta->status) }}": "{{ strtolower($venta->status) }}",
         "{{ strtolower($citaHoy->status) }}": "{{ strtolower($citaHoy->status) }}"
     },
+    "currency": {
+        "pen": "PEN — Sol peruano",
+        "usd": "USD — Dólar estadounidense"
+    },
     "filter": {
         "today": "Hoy",
         "thisWeek": "Esta Semana",
@@ -643,7 +664,8 @@
         "allPets": "Todas las mascotas",
         "allProducts": "Todos los productos",
         "allSuppliers": "Todos los proveedores",
-        "allBranches": "Todas las sucursales"
+        "allBranches": "Todas las sucursales",
+        "filter": "Filtrar"
     },
     "report": {
         "sales": "Ventas y Finanzas",
@@ -863,6 +885,7 @@
     "inventory": {
         "medication": "Medicamento",
         "medicamento": "Medicamento",
+        "product": "Producto",
         "food": "Alimento",
         "alimento": "Alimento",
         "accessory": "Accesorio",

@@ -32,12 +32,12 @@
                     <div class="vc-section-icon">
                         <span class="material-symbols-outlined">store</span>
                     </div>
-                    <span class="vc-section-title">Información Principal</span>
+                    <span class="vc-section-title" x-text="$store.i18n.t('form.basicInfo')"></span>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <flux:field>
-                        <flux:label>Nombre de la Sucursal <span class="text-red-500">*</span></flux:label>
+                        <flux:label><span x-text="$store.i18n.t('form.branchName')"></span> <span class="text-red-500">*</span></flux:label>
                         <div class="mt-1">
                             <flux:input wire:model="name" placeholder="Ej: Sede Miraflores">
                                 <x-slot:iconLeading>
@@ -49,7 +49,7 @@
                     </flux:field>
 
                     <flux:field>
-                        <flux:label>RUC o Identificación Tributaria (Opcional)</flux:label>
+                        <flux:label><span x-text="$store.i18n.t('form.taxId')"></span> <span x-text="$store.i18n.t('form.optional')"></span></flux:label>
                         <div class="flex gap-2 mt-1">
                             <flux:input wire:model="ruc" placeholder="Ej: 20123456789" class="flex-1">
                                 <x-slot:iconLeading>
@@ -65,11 +65,11 @@
                             >
                                 <span wire:loading.remove wire:target="consultarRuc" class="flex items-center gap-2">
                                     <span class="material-symbols-outlined icon-sm">search</span>
-                                    <span>Buscar</span>
+                                    <span x-text="$store.i18n.t('btn.search')"></span>
                                 </span>
                                 <span wire:loading wire:target="consultarRuc" class="flex items-center gap-2">
                                     <span class="material-symbols-outlined icon-sm vc-spinner">progress_activity</span>
-                                    <span>Buscando...</span>
+                                    <span x-text="$store.i18n.t('btn.searching')"></span>
                                 </span>
                             </button>
                         </div>
@@ -81,8 +81,8 @@
 
                     <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <flux:field>
-                            <flux:label>País</flux:label>
-                            <div class="mt-1" x-data="{ ph: 'Seleccionar...' }">
+                            <flux:label x-text="$store.i18n.t('form.country')"></flux:label>
+                            <div class="mt-1" x-data="{ ph: $store.i18n.t('form.select') }">
                                 @php
                                     $locationService = app(\App\Services\LocationService::class);
                                     $countries = $locationService->getCountries();
@@ -104,8 +104,8 @@
                         </flux:field>
 
                         <flux:field>
-                            <flux:label>Estado / Región</flux:label>
-                            <div class="mt-1" x-data="{ ph: 'Seleccionar...' }">
+                            <flux:label x-text="$store.i18n.t('form.stateLabel')"></flux:label>
+                            <div class="mt-1" x-data="{ ph: $store.i18n.t('form.select') }">
                                 @php
                                     $stateOptions = [];
                                     if ($country) {
@@ -129,8 +129,8 @@
                         </flux:field>
 
                         <flux:field>
-                            <flux:label>Ciudad</flux:label>
-                            <div class="mt-1" x-data="{ ph: 'Seleccionar...' }">
+                            <flux:label x-text="$store.i18n.t('form.city')"></flux:label>
+                            <div class="mt-1" x-data="{ ph: $store.i18n.t('form.select') }">
                                 @php
                                     $cityOptions = [];
                                     if ($country && $state) {
@@ -155,7 +155,7 @@
                     </div>
 
                     <flux:field class="mt-4">
-                        <flux:label>Dirección</flux:label>
+                        <flux:label x-text="$store.i18n.t('form.addressLabel')"></flux:label>
                         <div class="mt-1">
                             <flux:input wire:model="address" placeholder="Ej: Av. Larco 1234">
                                 <x-slot:iconLeading>
@@ -169,7 +169,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                     <flux:field>
-                        <flux:label>Teléfono</flux:label>
+                        <flux:label x-text="$store.i18n.t('form.phoneLabel')"></flux:label>
                         <div class="mt-1">
                             <flux:input wire:model="phone" placeholder="Ej: +51 987 654 321">
                                 <x-slot:iconLeading>
@@ -181,7 +181,7 @@
                     </flux:field>
 
                     <flux:field>
-                        <flux:label>Correo Electrónico</flux:label>
+                        <flux:label x-text="$store.i18n.t('form.emailLabel')"></flux:label>
                         <div class="mt-1">
                             <flux:input wire:model="email" type="email" placeholder="Ej: miraflores@veterinaria.com">
                                 <x-slot:iconLeading>
@@ -222,7 +222,7 @@
                 <flux:button href="{{ route('sucursales.index') }}" wire:navigate variant="ghost">Cancelar</flux:button>
                 <button type="submit" class="btn-primary">
                     <span class="material-symbols-outlined icon-sm">save</span>
-                    <span>{{ $isEdit ? 'Actualizar' : 'Guardar' }} Sucursal</span>
+                    <span x-text="$store.i18n.t('{{ $isEdit ? 'btn.update' : 'btn.register' }}')"></span>
                 </button>
             </div>
         </form>

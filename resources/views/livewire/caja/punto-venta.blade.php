@@ -36,12 +36,12 @@
                 <div class="mb-4 flex flex-wrap gap-2">
                     @php
                         $categorias = [
-                            '' => ['icon' => 'grid_view', 'label' => 'Todos'],
-                            'PRODUCTO' => ['icon' => 'inventory_2', 'label' => 'Productos'],
-                            'SERVICIO' => ['icon' => 'medical_services', 'label' => 'Servicios'],
-                            'MEDICAMENTO' => ['icon' => 'vaccines', 'label' => 'Medicinas'],
-                            'ALIMENTO' => ['icon' => 'pets', 'label' => 'Alimentos'],
-                            'ACCESORIO' => ['icon' => 'shopping_bag', 'label' => 'Accesorios'],
+                            '' => ['icon' => 'grid_view', 'label' => 'filter.allProducts'],
+                            'PRODUCTO' => ['icon' => 'inventory_2', 'label' => 'inventory.product'],
+                            'SERVICIO' => ['icon' => 'medical_services', 'label' => 'inventory.servicio'],
+                            'MEDICAMENTO' => ['icon' => 'vaccines', 'label' => 'inventory.medicamento'],
+                            'ALIMENTO' => ['icon' => 'pets', 'label' => 'inventory.alimento'],
+                            'ACCESORIO' => ['icon' => 'shopping_bag', 'label' => 'inventory.accesorio'],
                         ];
                     @endphp
                     @foreach($categorias as $valor => $cat)
@@ -51,7 +51,7 @@
                             class="px-4 py-2 rounded-xl flex items-center gap-2 text-sm font-medium transition-all {{ $filtroTipo === $valor ? 'bg-emerald-500 text-white shadow-md' : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700' }}"
                         >
                             <span class="material-symbols-outlined text-[18px]">{{ $cat['icon'] }}</span>
-                            {{ $cat['label'] }}
+                            <span x-text="$store.i18n.t('{{ $cat['label'] }}') || '{{ $cat['label'] }}'"></span>
                         </button>
                     @endforeach
                 </div>

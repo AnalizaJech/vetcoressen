@@ -67,14 +67,14 @@
                         <div>
                             <p class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold" x-text="$store.i18n.t('form.emailLabel') || 'Email'"></p>
                             <div class="flex items-center gap-2 mt-0.5">
-                                <span class="material-symbols-outlined text-zinc-400 icon-sm">mail</span>
+                                <span class="material-symbols-outlined text-amber-500 icon-sm">mail</span>
                                 <p class="text-sm font-medium text-zinc-800 dark:text-zinc-300 truncate">{{ $user->email }}</p>
                             </div>
                         </div>
                         <div>
                             <p class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold" x-text="$store.i18n.t('form.phoneLabel') || 'Teléfono'"></p>
                             <div class="flex items-center gap-2 mt-0.5">
-                                <span class="material-symbols-outlined text-zinc-400 icon-sm">call</span>
+                                <span class="material-symbols-outlined text-blue-500 icon-sm">call</span>
                                 <p class="text-sm font-medium text-zinc-800 dark:text-zinc-300 truncate">{{ $user->phone ?? '-' }}</p>
                             </div>
                         </div>
@@ -224,8 +224,8 @@
                     <span class="material-symbols-outlined text-[48px]" style="font-variation-settings: 'FILL' 1, 'wght' 700;">warning</span>
                 </div>
                 <div>
-                    <h2 class="text-2xl font-extrabold text-zinc-900 dark:text-white">Eliminar Usuario</h2>
-                    <p class="mt-3 text-sm text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto leading-relaxed">Esta acción no se puede revertir y perderás toda la información de este usuario.</p>
+                    <h2 class="text-2xl font-extrabold text-zinc-900 dark:text-white" x-text="$store.i18n.t('modal.deleteUser')"></h2>
+                    <p class="mt-3 text-sm text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto leading-relaxed" x-text="$store.i18n.t('modal.deleteUserMsg')"></p>
                 </div>
             </div>
             <div class="flex flex-col-reverse sm:flex-row gap-3 w-full mt-6">

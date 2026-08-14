@@ -102,7 +102,7 @@
             </tr>
             <tr>
                 <td class="label">Mascota (Paciente):</td>
-                <td class="value"><strong>{{ $cita->mascota->name ?? 'N/A' }}</strong> (Especie: {{ $cita->mascota->species ?? 'N/A' }}, Raza: {{ $cita->mascota->breed ?? 'N/A' }})</td>
+                <td class="value"><strong>{{ $cita->mascota?->name ?? 'N/A' }}</strong> (Especie: {{ $cita->mascota?->especie?->name ?? 'N/A' }}, Raza: {{ $cita->mascota?->raza?->name ?? 'N/A' }})</td>
             </tr>
         </table>
 

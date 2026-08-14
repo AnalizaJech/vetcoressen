@@ -78,19 +78,19 @@
                 <td class="label">Paciente:</td>
                 <td class="value"><strong>{{ $mascota->name ?? 'N/A' }}</strong></td>
                 <td class="label">Propietario:</td>
-                <td class="value">{{ $mascota->customer->nombre_completo ?? 'N/A' }}</td>
+                <td class="value">{{ $mascota->cliente?->nombre_completo ?? 'N/A' }}</td>
             </tr>
             <tr>
                 <td class="label">Especie / Raza:</td>
                 <td class="value">{{ $mascota->especie->name ?? 'N/A' }} / {{ $mascota->raza->name ?? 'N/A' }}</td>
                 <td class="label">DNI / RUC:</td>
-                <td class="value">{{ $mascota->customer->numero_documento ?? 'N/A' }}</td>
+                <td class="value">{{ $mascota->cliente?->numero_documento ?? 'N/A' }}</td>
             </tr>
             <tr>
                 <td class="label">Sexo / Peso (último):</td>
                 <td class="value">{{ isset($mascota->gender) ? ($mascota->gender === 'M' ? 'Macho' : 'Hembra') : 'N/A' }} / {{ $mascota->historiasClinicas->first()?->weight ? $mascota->historiasClinicas->first()->weight . ' kg' : 'N/A' }}</td>
                 <td class="label">Teléfono:</td>
-                <td class="value">{{ $mascota->customer->phone ?? 'N/A' }}</td>
+                <td class="value">{{ $mascota->cliente?->phone ?? 'N/A' }}</td>
             </tr>
         </table>
 

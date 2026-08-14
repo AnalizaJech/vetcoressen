@@ -71,14 +71,14 @@
                         {{-- Info --}}
                         <div class="space-y-3 mb-6 flex-1">
                             <div class="flex items-start gap-2">
-                                <span class="material-symbols-outlined text-[16px] text-zinc-400 mt-0.5">location_on</span>
+                                <span class="material-symbols-outlined text-[16px] text-rose-500 mt-0.5">location_on</span>
                                 <div class="flex-1 overflow-hidden">
                                     <p class="text-xs text-zinc-500 uppercase tracking-wider font-semibold" x-text="$store.i18n.t('table.address') || 'Dirección'">Dirección</p>
                                     <p class="text-sm font-medium text-zinc-700 dark:text-zinc-300 line-clamp-2" title="{{ $sucursal->address }}">{{ $sucursal->address ?? '-' }}</p>
                                 </div>
                             </div>
                             <div class="flex items-start gap-2">
-                                <span class="material-symbols-outlined text-[16px] text-zinc-400 mt-0.5">call</span>
+                                <span class="material-symbols-outlined text-[16px] text-blue-500 mt-0.5">call</span>
                                 <div class="flex-1 overflow-hidden">
                                     <p class="text-xs text-zinc-500 uppercase tracking-wider font-semibold" x-text="$store.i18n.t('table.phone') || 'Teléfono'">Teléfono</p>
                                     <p class="text-sm font-medium text-zinc-700 dark:text-zinc-300 truncate">{{ $sucursal->phone ?? '-' }}</p>
