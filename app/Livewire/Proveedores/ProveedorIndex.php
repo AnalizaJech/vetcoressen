@@ -63,7 +63,7 @@ class ProveedorIndex extends Component
             ->orderByDesc('created_at')
             ->paginate(12);
 
-        $proveedoresOptions = [['value' => '', 'label' => 'Todos los proveedores']];
+        $proveedoresOptions = [['value' => '', 'label' => 'filter.allSuppliers']];
         foreach (Supplier::orderBy('name')->get() as $p) {
             $proveedoresOptions[] = ['value' => (string)$p->id, 'label' => $p->name];
         }

@@ -13,12 +13,20 @@ document.addEventListener("alpine:init", () => {
         },
 
         async loadTranslations(lang) {
+            // Never retain the previous language if the requested dictionary is
+            // missing or malformed; that made a broken Spanish file look English.
+            this.dict = {};
+            this.loaded = false;
             try {
                 const response = await fetch(`/locales/${lang}.json`);
                 if (response.ok) {
-                    this.dict = await response.json();
+                    const dictionary = await response.json();
+                    if (!dictionary || typeof dictionary !== 'object' || Array.isArray(dictionary)) {
+                        throw new Error('Translation dictionary must be an object');
+                    }
+                    this.dict = dictionary;
                 } else {
-                    console.error("Error loading translations");
+                    throw new Error(`Unable to load translations (${response.status})`);
                 }
             } catch (e) {
                 console.error("Failed to load translations", e);
@@ -40,7 +48,10 @@ document.addEventListener("alpine:init", () => {
         },
 
         t(key, fallback = null) {
+            this.locale; // Ensure Alpine tracks this dependency for reactivity
             if (!this.loaded || !this.dict) return fallback !== null ? fallback : '';
+            if (!key) return fallback !== null ? fallback : '';
+            
             const keys = key.split(".");
             let result = this.dict;
             for (const k of keys) {

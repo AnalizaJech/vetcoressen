@@ -1,5 +1,5 @@
 <div>
-    <x-slot:title x-text="$store.i18n.t('page.clients')">Clients</x-slot:title>
+    <x-slot:title>Clients</x-slot:title>
 
 <div class="animate-slide-up">
     {{-- Cabecera con icono --}}
@@ -28,10 +28,11 @@
         emptyText="No hay clientes que coincidan con los filtros."
     >
         <x-slot:filters>
-            <x-vc-dropdown
+            <x-vc-dropdown 
                 wire:model.live="filtroCliente"
                 :options="$clientesOptions"
-                placeholder="Todos los clientes"
+                :selected="$filtroCliente"
+                placeholder="filter.allClients"
                 searchable
                 class="w-full sm:w-64"
             />
@@ -123,10 +124,10 @@
             <div class="flex flex-col-reverse sm:flex-row gap-3 w-full mt-6">
                 <flux:spacer class="hidden sm:block" />
                 <flux:modal.close class="w-full sm:w-auto">
-                    <flux:button variant="ghost" class="w-full font-medium"><span x-text="$store.i18n.t('btn.cancel') === 'btn.cancel' ? 'Cancelar' : $store.i18n.t('btn.cancel')">Cancelar</span></flux:button>
+                    <flux:button variant="ghost" class="w-full font-medium px-4 py-2 md:px-5 md:py-2.5 lg:px-6 lg:py-3"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'">Cancelar</span></flux:button>
                 </flux:modal.close>
-                <button type="button" class="w-full sm:w-auto btn-danger font-medium justify-center" wire:click="eliminar" x-on:click="$dispatch('modal-close', { name: 'confirmar-eliminar' })">
-                    <span x-text="$store.i18n.t('btn.delete') === 'btn.delete' ? 'Eliminar' : $store.i18n.t('btn.delete')">Eliminar</span>
+                <button type="button" class="w-full sm:w-auto btn-danger font-medium justify-center px-4 py-2 md:px-5 md:py-2.5 lg:px-6 lg:py-3" wire:click="eliminar" x-on:click="$dispatch('modal-close', { name: 'confirmar-eliminar' })">
+                    <span x-text="$store.i18n.t('btn.delete') || 'Eliminar'">Eliminar</span>
                 </button>
             </div>
         </div>
@@ -202,7 +203,7 @@
 
             <div class="flex justify-end mt-4 w-full">
                 <flux:modal.close class="w-full sm:w-auto">
-                    <button type="button" class="bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300 border-none px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 w-full transition-colors">
+                    <button type="button" class="bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300 border-none px-4 py-2 md:px-5 md:py-2.5 lg:px-6 lg:py-3 rounded-lg font-medium flex items-center justify-center gap-2 w-full transition-colors">
                         <span x-text="$store.i18n.t('btn.close') || 'Cerrar'">Cerrar</span>
                     </button>
                 </flux:modal.close>

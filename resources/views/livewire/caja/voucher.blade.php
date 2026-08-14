@@ -1,4 +1,4 @@
-<div class="voucher-wrapper bg-zinc-100 dark:bg-zinc-900 min-h-screen w-full py-12 px-4 relative overflow-y-auto">
+<div class="voucher-wrapper bg-zinc-100 dark:bg-zinc-900 min-h-screen w-full pt-24 pb-12 px-4 relative overflow-y-auto">
 <style>
     @media print {
         @page { size: A4 portrait; margin: 15mm 20mm; }

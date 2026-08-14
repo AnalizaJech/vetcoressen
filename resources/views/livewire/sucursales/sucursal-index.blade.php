@@ -1,5 +1,5 @@
 <div x-data>
-    <x-slot:title x-text="$store.i18n.t('page.branches') || 'Sucursales'"></x-slot:title>
+    <x-slot:title>Sucursales</x-slot:title>
 
     <div class="animate-slide-up">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
@@ -30,7 +30,8 @@
                 <x-vc-dropdown
                     wire:model.live="filtroSucursal"
                     :options="$sucursalesOptions"
-                    placeholder="Todas las sucursales"
+                    placeholder="filter.allBranches"
+                    :selected="$filtroSucursal"
                     searchable
                     class="w-full sm:w-64"
                 />
@@ -122,9 +123,9 @@
             <div class="flex flex-col-reverse sm:flex-row gap-3 w-full mt-6">
                 <flux:spacer class="hidden sm:block" />
                 <flux:modal.close class="w-full sm:w-auto">
-                    <flux:button variant="ghost" class="w-full font-medium"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'">Cancelar</span></flux:button>
+                    <flux:button variant="ghost" class="w-full font-medium px-4 py-2 md:px-5 md:py-2.5 lg:px-6 lg:py-3"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'">Cancelar</span></flux:button>
                 </flux:modal.close>
-                <button type="button" class="w-full sm:w-auto btn-danger font-medium justify-center" wire:click="eliminar" x-on:click="$dispatch('modal-close', { name: 'confirmar-eliminacion' })">
+                <button type="button" class="w-full sm:w-auto btn-danger font-medium justify-center px-4 py-2 md:px-5 md:py-2.5 lg:px-6 lg:py-3" wire:click="eliminar" x-on:click="$dispatch('modal-close', { name: 'confirmar-eliminacion' })">
                     <span x-text="$store.i18n.t('btn.delete') || 'Eliminar'">Eliminar</span>
                 </button>
             </div>

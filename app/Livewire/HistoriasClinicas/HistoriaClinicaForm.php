@@ -124,12 +124,14 @@ class HistoriaClinicaForm extends Component
         $this->fecha_consulta = now()->format('Y-m-d');
 
         // Pre-seleccionar veterinario actual si es veterinario
-        if (auth()->user()->hasRole('veterinario')) {
-            $this->veterinarian_id = (string) auth()->id();
+        /** @var \App\Models\User|null $user */
+        $user = auth()->user();
+        if ($user && $user->hasRole('veterinario')) {
+            $this->veterinarian_id = (string) $user->id;
         }
 
         if ($id) {
-            $historia = MedicalRecord::with('prescripciones')->findOrFail($id);
+            $historia = MedicalRecord::with('prescripciones')->where('id', $id)->firstOrFail();
             $this->historiaId = $historia->id;
             $this->pet_id = (string) $historia->pet_id;
             $this->veterinarian_id = (string) $historia->veterinarian_id;
@@ -177,7 +179,7 @@ class HistoriaClinicaForm extends Component
             }
 
             // Cargar cliente a partir de mascota para cascada
-            $mascota = Pet::find($this->pet_id);
+            $mascota = Pet::where('id', $this->pet_id)->first();
             if ($mascota) {
                 $this->customer_id = (string) $mascota->customer_id;
             }
@@ -186,7 +188,7 @@ class HistoriaClinicaForm extends Component
         // Precargar datos desde cita de origen (flujo "Iniciar Atención")
         $citaId = request()->query('cita');
         if ($citaId && !$id) {
-            $cita = Appointment::with(['cliente', 'mascota'])->find($citaId);
+            $cita = Appointment::with(['cliente', 'mascota'])->where('id', $citaId)->first();
             if ($cita) {
                 $this->appointment_id = (string) $cita->id;
                 $this->customer_id = (string) $cita->customer_id;
@@ -214,7 +216,7 @@ class HistoriaClinicaForm extends Component
 
     public function seleccionarCita(int $citaId): void
     {
-        $cita = Appointment::find($citaId);
+        $cita = Appointment::where('id', $citaId)->first();
         if ($cita) {
             $this->appointment_id = (string) $cita->id;
             $this->veterinarian_id = (string) ($cita->veterinarian_id ?? auth()->id());
@@ -412,7 +414,7 @@ class HistoriaClinicaForm extends Component
                 $query->where('stock_actual', '>', 0)->orderBy('fecha_vencimiento', 'asc');
             }])
             ->where('is_active', true)
-            ->where('categoria', 'Medicamentos')
+            ->where('type', 'MEDICAMENTO')
             ->where('current_stock', '>', 0)
             ->orderBy('name')
             ->get();

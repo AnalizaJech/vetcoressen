@@ -70,7 +70,7 @@ class ProductoIndex extends Component
             ->orderBy('name')
             ->paginate(20);
 
-        $productosOptions = [['value' => '', 'label' => 'Todos los productos']];
+        $productosOptions = [['value' => '', 'label' => 'filter.allProducts']];
         foreach (Product::orderBy('name')->get() as $p) {
             $productosOptions[] = ['value' => (string)$p->id, 'label' => $p->name];
         }

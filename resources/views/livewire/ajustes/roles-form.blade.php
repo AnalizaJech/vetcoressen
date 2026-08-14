@@ -5,8 +5,12 @@
         <flux:button href="{{ route('roles.index') }}" variant="ghost" size="sm" icon="arrow-left" />
         <div>
             <flux:heading size="xl" class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-emerald-500">shield_person</span>
-                <span>{{ $roleId ? 'Editar Rol' : 'Nuevo Rol' }}</span>
+                <span class="material-symbols-outlined text-emerald-500">security</span>
+                @if($roleId)
+                    <span x-text="$store.i18n.t('title.editar_rol') || 'Editar Rol'"></span>
+                @else
+                    <span x-text="$store.i18n.t('title.nuevo_rol') || 'Nuevo Rol'"></span>
+                @endif
             </flux:heading>
         </div>
     </div>

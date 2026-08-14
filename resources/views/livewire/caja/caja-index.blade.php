@@ -1,5 +1,5 @@
 <div x-data>
-    <x-slot:title x-text="$store.i18n.t('page.cashier')">Cashier</x-slot:title>
+    <x-slot:title>Cashier</x-slot:title>
 
     {{-- Cabecera con icono --}}
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
@@ -23,7 +23,7 @@
                         ['value' => 'anio', 'label' => 'filter.thisYear']
                     ]"
                     :selected="$filtroTiempo"
-                    placeholder="Filtrar"
+                    placeholder="filter.filter"
                 />
             </div>
             <a href="{{ route('caja.venta') }}" class="w-full sm:w-auto btn-primary justify-center">

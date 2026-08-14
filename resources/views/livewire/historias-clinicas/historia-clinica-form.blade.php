@@ -220,7 +220,7 @@
                             ['value' => 'Congestivas', 'label' => 'form.mucousCongested'],
                         ]"
                         :selected="$examen_mucosas"
-                        placeholder="Seleccionar"
+                        placeholder="form.select"
                         icon="visibility"
                     />
                 </flux:field>
@@ -236,7 +236,7 @@
                             ['value' => 'Aumentados', 'label' => 'form.lymphEnlarged'],
                         ]"
                         :selected="$examen_linfonodos"
-                        placeholder="Seleccionar"
+                        placeholder="form.select"
                         icon="adjust"
                     />
                 </flux:field>
@@ -253,7 +253,7 @@
                             ['value' => 'Severa', 'label' => 'form.hydraSevere'],
                         ]"
                         :selected="$nivel_hidratacion"
-                        placeholder="Seleccionar"
+                        placeholder="form.select"
                         icon="water_drop"
                     />
                 </flux:field>
@@ -275,7 +275,7 @@
                             ['value' => '9', 'label' => 'form.bcs9'],
                         ]"
                         :selected="$condicion_corporal"
-                        placeholder="BCS (1-9)"
+                        placeholder="form.bcsPlaceholder"
                         icon="fitness_center"
                     />
                 </flux:field>
@@ -299,7 +299,7 @@
                             ['value' => '10', 'label' => 'form.pain10'],
                         ]"
                         :selected="$nivel_dolor"
-                        placeholder="Escala 0-10"
+                        placeholder="form.painPlaceholder"
                         icon="sentiment_stressed"
                     />
                 </flux:field>
@@ -454,7 +454,7 @@
                                             // Agregar información de lotes y stock
                                             if ($prod->productBatches && $prod->productBatches->count() > 0) {
                                                 $lotesInfo = $prod->productBatches->map(function($b) {
-                                                    return $b->lote . ' (' . round($b->stock_actual) . ')';
+                                                    return ($b->lote ? $b->lote : 'S/L ' . $b->id) . ' (' . round($b->stock_actual) . ')';
                                                 })->implode(', ');
                                                 $label .= ' | Lotes: ' . $lotesInfo;
                                             } else {

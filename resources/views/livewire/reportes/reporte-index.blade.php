@@ -1,5 +1,5 @@
 <div x-data>
-    <x-slot:title x-text="$store.i18n.t('page.reports') || 'Reportes'">Reportes</x-slot:title>
+    <x-slot:title>Reportes</x-slot:title>
 
     <div class="animate-slide-up">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">

@@ -1,5 +1,5 @@
 <div x-data>
-    <x-slot:title x-text="$store.i18n.t('nav.settings') || 'ConfiguraciÃ³n'"></x-slot:title>
+    <x-slot:title>Configuración</x-slot:title>
 
     {{-- Cabecera con icono --}}
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">

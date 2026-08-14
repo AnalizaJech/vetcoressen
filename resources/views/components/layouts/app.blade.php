@@ -4,7 +4,26 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? 'Dashboard' }} - {{ config('app.name') }}</title>
+    @php
+        $cleanTitle = str_replace(' - VETCORESSEN', '', $title ?? 'Vetcoressen');
+        $titleAliases = [
+            'pets' => 'pets',
+            'clients' => 'clients',
+            'appointments' => 'appointments',
+            'inventory' => 'inventory',
+            'cashier' => 'cashier',
+            'point of sale' => 'point_of_sale',
+            'proveedores' => 'suppliers',
+            'sucursales' => 'branches',
+            'roles y permisos' => 'roles_and_permissions',
+            'usuarios' => 'users',
+            'ajustes' => 'settings',
+        ];
+        $titleKey = $titleAliases[mb_strtolower($cleanTitle)]
+            ?? str_replace(' ', '_', mb_strtolower($cleanTitle));
+    @endphp
+    <meta name="current-title-key" content="{{ $titleKey }}">
+    <title>{{ $cleanTitle }}</title>
     <meta name="description" content="{{ config('app.name') }} - Sistema de Gestión Veterinaria">
 
     <!-- Configuración de Favicon para Laravel -->
@@ -328,5 +347,27 @@
 
     @fluxScripts
     @livewireScripts
+    <script>
+        const updateDocumentTitle = () => {
+            const meta = document.querySelector('meta[name="current-title-key"]');
+            if (meta && window.Alpine && Alpine.store('i18n')) {
+                const key = 'title.' + meta.content;
+                const translated = Alpine.store('i18n').t(key);
+                if (translated && translated !== key) {
+                    document.title = translated + ' - VETCORESSEN';
+                }
+            }
+        };
+
+        document.addEventListener('livewire:navigated', updateDocumentTitle);
+        window.addEventListener('language-changed', updateDocumentTitle);
+        document.addEventListener('alpine:init', () => {
+            // i18n may finish before this bottom-of-page script is evaluated.
+            // Retry briefly so the first page load is translated too.
+            setTimeout(updateDocumentTitle, 0);
+            setTimeout(updateDocumentTitle, 300);
+        });
+        setTimeout(updateDocumentTitle, 300);
+    </script>
 </body>
 </html>

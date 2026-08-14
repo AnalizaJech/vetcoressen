@@ -3,6 +3,8 @@
 namespace App\Livewire\HistoriasClinicas;
 
 use App\Models\MedicalRecord;
+use App\Models\Species;
+use Flux\Flux;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
@@ -23,7 +25,11 @@ class HistoriaClinicaIndex extends Component
     public string $filtroMascota = '';
 
     #[Url]
+    public string $especie_id = '';
+
+    #[Url]
     public ?int $clienteSeleccionadoId = null;
+    public ?int $historiaEliminarId = null;
 
     public function updatedFiltroCliente(): void
     {
@@ -31,6 +37,11 @@ class HistoriaClinicaIndex extends Component
     }
 
     public function updatedFiltroMascota(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedEspecieId(): void
     {
         $this->resetPage();
     }
@@ -54,6 +65,16 @@ class HistoriaClinicaIndex extends Component
         session()->flash('mensaje', 'Historia clínica eliminada correctamente.');
     }
 
+    public function confirmarEliminar(): void
+    {
+        if (!$this->historiaEliminarId) {
+            return;
+        }
+
+        $this->eliminar($this->historiaEliminarId);
+        Flux::modal('confirmar-eliminar')->close();
+    }
+
     public function render()
     {
         // Traemos a los clientes paginados, solo si tienen mascotas, y cargamos sus mascotas con sus historias clínicas ordenadas
@@ -74,6 +95,9 @@ class HistoriaClinicaIndex extends Component
             })
             ->when($this->filtroMascota, function ($q) {
                 $q->whereHas('mascotas', fn ($m) => $m->where('id', $this->filtroMascota));
+            })
+            ->when($this->especie_id, function ($q) {
+                $q->whereHas('mascotas', fn ($m) => $m->where('species_id', $this->especie_id));
             })
             // Ordenar por el que tenga historias clínicas más recientes
             ->orderByDesc(
@@ -100,16 +124,18 @@ class HistoriaClinicaIndex extends Component
             ])->find($this->clienteSeleccionadoId);
         }
 
-        $clientesOptions = [['value' => '', 'label' => 'Todos los clientes']];
+        $clientesOptions = [['value' => '', 'label' => 'filter.allClients']];
         foreach (\App\Models\Customer::orderBy('first_name')->get() as $c) {
             $clientesOptions[] = ['value' => (string)$c->id, 'label' => $c->nombre_completo];
         }
 
-        $mascotasOptions = [['value' => '', 'label' => 'Todas las mascotas']];
+        $mascotasOptions = [['value' => '', 'label' => 'filter.allPets']];
         foreach (\App\Models\Pet::orderBy('name')->get() as $m) {
             $mascotasOptions[] = ['value' => (string)$m->id, 'label' => $m->name];
         }
 
-        return view('livewire.historias-clinicas.historia-clinica-index', compact('clientes', 'clienteSeleccionado', 'clientesOptions', 'mascotasOptions'));
+        $especies = Species::orderBy('name')->get();
+
+        return view('livewire.historias-clinicas.historia-clinica-index', compact('clientes', 'clienteSeleccionado', 'clientesOptions', 'mascotasOptions', 'especies'));
     }
 }

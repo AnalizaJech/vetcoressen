@@ -8,8 +8,20 @@
                     <span class="material-symbols-outlined">arrow_back</span>
                 </a>
                 <div>
-                    <flux:heading size="xl">{{ $isEdit ? 'Editar Sucursal' : 'Nueva Sucursal' }}</flux:heading>
-                    <flux:subheading>{{ $isEdit ? 'Modifica los datos de la sede.' : 'Registra un nuevo local o sede de la clínica.' }}</flux:subheading>
+                    <flux:heading size="xl">
+                        @if($isEdit)
+                            <span x-text="$store.i18n.t('title.editar_sucursal') || 'Editar Sucursal'"></span>
+                        @else
+                            <span x-text="$store.i18n.t('title.nueva_sucursal') || 'Nueva Sucursal'"></span>
+                        @endif
+                    </flux:heading>
+                    <flux:subheading>
+                        @if($isEdit)
+                            <span x-text="$store.i18n.t('title.editar_sucursal_sub') || 'Modifica los datos de la sede.'"></span>
+                        @else
+                            <span x-text="$store.i18n.t('title.nueva_sucursal_sub') || 'Registra un nuevo local o sede de la clínica.'"></span>
+                        @endif
+                    </flux:subheading>
                 </div>
             </div>
         </div>
