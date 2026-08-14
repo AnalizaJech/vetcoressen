@@ -9,8 +9,20 @@
                     <span class="material-symbols-outlined">arrow_back</span>
                 </a>
                 <div>
-                    <flux:heading size="xl">{{ $isEdit ? 'Editar Proveedor' : 'Nuevo Proveedor' }}</flux:heading>
-                    <flux:subheading>{{ $isEdit ? 'Modifica los datos del proveedor.' : 'Registra un nuevo proveedor o importador en el sistema.' }}</flux:subheading>
+                    <flux:heading size="xl">
+                        @if($isEdit)
+                            <span x-text="$store.i18n.t('title.editar_proveedor') || 'Editar Proveedor'"></span>
+                        @else
+                            <span x-text="$store.i18n.t('title.nuevo_proveedor') || 'Nuevo Proveedor'"></span>
+                        @endif
+                    </flux:heading>
+                    <flux:subheading>
+                        @if($isEdit)
+                            <span x-text="$store.i18n.t('title.editar_proveedor_sub') || 'Modifica los datos del proveedor.'"></span>
+                        @else
+                            <span x-text="$store.i18n.t('title.nuevo_proveedor_sub') || 'Registra un nuevo proveedor o importador en el sistema.'"></span>
+                        @endif
+                    </flux:subheading>
                 </div>
             </div>
         </div>

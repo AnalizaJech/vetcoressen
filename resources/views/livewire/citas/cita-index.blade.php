@@ -1,5 +1,5 @@
 <div x-data="{}">
-    <x-slot:title x-text="$store.i18n.t('page.appointments')">Appointments</x-slot:title>
+    <x-slot:title>Appointments</x-slot:title>
 
 <div class="animate-slide-up">
     {{-- Cabecera con icono --}}

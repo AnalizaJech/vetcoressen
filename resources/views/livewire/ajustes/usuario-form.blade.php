@@ -6,7 +6,11 @@
         <div>
             <flux:heading size="xl" class="flex items-center gap-2">
                 <span class="material-symbols-outlined text-emerald-500">person</span>
-                <span>{{ $usuarioId ? 'Editar Usuario' : 'Nuevo Usuario' }}</span>
+                @if($usuarioId)
+                    <span x-text="$store.i18n.t('title.editar_usuario') || 'Editar Usuario'"></span>
+                @else
+                    <span x-text="$store.i18n.t('title.nuevo_usuario') || 'Nuevo Usuario'"></span>
+                @endif
             </flux:heading>
         </div>
     </div>
@@ -30,11 +34,11 @@
                             :options="[
                                 ['value' => 'DNI', 'label' => 'DNI'],
                                 ['value' => 'RUC', 'label' => 'RUC'],
-                                ['value' => 'CE', 'label' => 'Carnet Extranjería'],
-                                ['value' => 'PASAPORTE', 'label' => 'Pasaporte'],
+                                ['value' => 'CE', 'label' => 'document.foreignId'],
+                                ['value' => 'PASAPORTE', 'label' => 'document.passport'],
                             ]"
                             :selected="$tipo_documento"
-                            placeholder="Seleccione"
+                            placeholder="form.select"
                             icon="identification"
                         />
                     </div>
@@ -148,7 +152,7 @@
                             wire:model="rol"
                             :options="$roleOptions"
                             :selected="$rol"
-                            placeholder="Seleccionar rol"
+                            placeholder="form.selectRole"
                             icon="shield"
                         />
                     </div>
@@ -192,7 +196,7 @@
                             wire:model.live="country"
                             :options="$countryOptions"
                             :selected="$country"
-                            placeholder="Seleccione"
+                            placeholder="form.select"
                             icon="public"
                         />
                     </div>
@@ -216,7 +220,7 @@
                             wire:model.live="state"
                             :options="$stateOptions"
                             :selected="$state"
-                            placeholder="Seleccione"
+                            placeholder="form.select"
                             :disabled="!$country"
                             icon="map"
                         />
@@ -241,7 +245,7 @@
                             wire:model="city"
                             :options="$cityOptions"
                             :selected="$city"
-                            placeholder="Seleccione"
+                            placeholder="form.select"
                             :disabled="!$state"
                             icon="location_city"
                         />

@@ -22,6 +22,10 @@ class Dashboard extends Component
 
     public function render()
     {
+        // El proyecto actualmente opera con la clínica principal. Evitamos
+        // referenciar una propiedad Livewire que no existe hasta implementar
+        // la selección multi-clínica.
+        $clinicId = 1;
         $hoy = Carbon::today();
         $ahora = Carbon::now();
         $enDosHoras = Carbon::now()->addHours(2);
@@ -36,8 +40,8 @@ class Dashboard extends Component
         };
 
         // KPI: Ingresos (según filtro)
-        $ingresosDia = Sale::whereDate('created_at', '>=', $fechaInicio)
-            ->whereDate('created_at', '<=', $hoy)
+        $ingresosDia = Sale::where('created_at', '>=', $fechaInicio)
+            ->where('created_at', '<=', $hoy->copy()->endOfDay())
             ->where('status', 'PAGADO')
             ->sum('total');
 
@@ -48,7 +52,7 @@ class Dashboard extends Component
 
         // KPI: Alertas de inventario (stock actual <= stock mínimo)
         // Productos en alerta de stock
-        $productosEnAlerta = Product::where('clinic_id', $this->clinicId)
+        $productosEnAlerta = Product::where('clinic_id', $clinicId)
             ->where('is_active', true)
             ->where('type', '!=', 'Servicio')
             ->whereColumn('current_stock', '<=', 'minimum_stock')
@@ -59,9 +63,9 @@ class Dashboard extends Component
         $lotesProximosVencer = \App\Models\ProductBatch::with(['product' => function ($query) {
                 $query->withTrashed();
             }])
-            ->whereHas('product', function ($query) {
+            ->whereHas('product', function ($query) use ($clinicId) {
                 $query->withTrashed()
-                      ->where('clinic_id', $this->clinicId)
+                      ->where('clinic_id', $clinicId)
                       ->where('is_active', true);
             })
             ->whereNotNull('fecha_vencimiento')
@@ -77,8 +81,8 @@ class Dashboard extends Component
 
         // Últimas 5 ventas (podrían filtrarse también, pero usualmente son solo las 'últimas')
         $ultimasVentas = Sale::with(['cliente', 'cajero'])
-            ->whereDate('created_at', '>=', $fechaInicio)
-            ->whereDate('created_at', '<=', $hoy)
+            ->where('created_at', '>=', $fechaInicio)
+            ->where('created_at', '<=', $hoy->copy()->endOfDay())
             ->orderByDesc('created_at')
             ->limit(5)
             ->get();
@@ -104,7 +108,7 @@ class Dashboard extends Component
         } elseif ($this->filtroTiempo === 'anio') {
             $diasAtras = Carbon::today()->startOfYear();
             $ventasAgrupadas = Sale::where('status', 'PAGADO')
-                ->whereDate('created_at', '>=', $diasAtras)
+                ->where('created_at', '>=', $diasAtras)
                 ->selectRaw('DATE_FORMAT(created_at, "%Y-%m") as fecha, SUM(total) as suma')
                 ->groupBy('fecha')
                 ->pluck('suma', 'fecha');
@@ -125,8 +129,8 @@ class Dashboard extends Component
             $diasIterar = Carbon::today()->daysInMonth;
             
             $ventasAgrupadas = Sale::where('status', 'PAGADO')
-                ->whereDate('created_at', '>=', $diasAtras)
-                ->whereDate('created_at', '<=', Carbon::today()->endOfMonth())
+                ->where('created_at', '>=', $diasAtras)
+                ->where('created_at', '<=', Carbon::today()->endOfMonth()->endOfDay())
                 ->selectRaw('DATE(created_at) as fecha, SUM(total) as suma')
                 ->groupBy('fecha')
                 ->pluck('suma', 'fecha');
@@ -146,7 +150,7 @@ class Dashboard extends Component
             // Semana (por defecto últimos 7 días)
             $diasAtras = Carbon::today()->subDays(6);
             $ventasAgrupadas = Sale::where('status', 'PAGADO')
-                ->whereDate('created_at', '>=', $diasAtras)
+                ->where('created_at', '>=', $diasAtras)
                 ->selectRaw('DATE(created_at) as fecha, SUM(total) as suma')
                 ->groupBy('fecha')
                 ->pluck('suma', 'fecha');
@@ -198,8 +202,9 @@ class Dashboard extends Component
             ->get(); // Fetch all based on filter
 
         // Alerta de Citas Próximas (dentro de las próximas 2 horas)
-        $citasProximas = Appointment::with(['mascota', 'veterinario'])
-            ->whereBetween('fecha_hora', [$ahora, $enDosHoras])
+        $citasProximas = Appointment::with(['mascota', 'cliente'])
+            ->where('fecha_hora', '>=', clone $ahora)
+            ->where('fecha_hora', '<=', clone $enDosHoras)
             ->whereIn('status', ['PENDIENTE', 'CONFIRMADA'])
             ->orderBy('fecha_hora')
             ->get();

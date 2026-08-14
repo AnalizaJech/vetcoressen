@@ -66,12 +66,12 @@ class MascotaIndex extends Component
             ->orderByDesc('created_at')
             ->paginate(15);
 
-        $mascotasOptions = [['value' => '', 'label' => 'Todas las mascotas']];
+        $mascotasOptions = [['value' => '', 'label' => 'filter.allPets']];
         foreach (Pet::orderBy('name')->get() as $m) {
             $mascotasOptions[] = ['value' => (string)$m->id, 'label' => $m->name];
         }
 
-        $clientesOptions = [['value' => '', 'label' => 'Todos los clientes']];
+        $clientesOptions = [['value' => '', 'label' => 'filter.allClients']];
         foreach (Customer::orderBy('first_name')->get() as $c) {
             $clientesOptions[] = ['value' => (string)$c->id, 'label' => $c->nombre_completo];
         }

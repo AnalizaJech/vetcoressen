@@ -213,7 +213,28 @@
         "addPrescription": "Agregar Prescripción",
         "dosage": "Dosis",
         "selectProduct": "Producto",
-        "selectProductPlaceholder": "Buscar producto..."
+        "selectProductPlaceholder": "Buscar producto...",
+        "noPastDates": "Cannot select past dates",
+        "deleteRole": "Delete Role",
+        "deleteRoleMsg": "This action cannot be reversed. Users with this role might lose important access.",
+        "timePlaceholder": "TimePlaceholder",
+        "email": "Email",
+        "anamnesisPlaceholder": "AnamnesisPlaceholder",
+        "presumptiveDiagPlaceholder": "PresumptiveDiagPlaceholder",
+        "treatmentPlaceholder": "TreatmentPlaceholder",
+        "name": "Name",
+        "contact": "Contact",
+        "ownerNotes": "OwnerNotes",
+        "brand": "Marca",
+        "taxType": "Tipo de impuesto",
+        "pe_piel": "Lesiones, prurito, alopecia, descamación...",
+        "pe_ojos": "Secreciones, enrojecimiento, opacidad, dolor...",
+        "pe_cardio": "Auscultación, soplos, pulso, arritmias...",
+        "pe_respiratorio": "Auscultación pulmonar, tos, disnea...",
+        "pe_digestivo": "Palpación abdominal, dolor, distensión, diarrea...",
+        "pe_musculo": "Claudicación, dolor articular, rango de movimiento...",
+        "pe_neuro": "Nivel de conciencia, reflejos, propiocepción, convulsiones...",
+        "pe_urinario": "Palpación renal y vesical, secreciones, poliuria..."
     },
     "profile": {
         "contact": "Contacto",
@@ -338,7 +359,10 @@
         "verifying": "Verificando...",
         "viewHC": "Ver Historia Clínica",
         "emergency": "Emergencia Rápida",
-        "registering": "Registrando..."
+        "registering": "Registrando...",
+        "accept": "Aceptar",
+        "deleteRole": "Eliminar rol",
+        "deleteUser": "Eliminar usuario"
     },
     "login": {
         "title": "VETCORESSEN",
@@ -399,7 +423,8 @@
         "expiringBatches": "Lotes Próximos a Vencer",
         "moreBatches": "Y {n} lotes más...",
         "upcomingAppointments": "Citas Próximas",
-        "appointmentsScheduled": "Tienes {n} cita(s) programada(s) para las próximas 2 horas."
+        "appointmentsScheduled": "Tienes {n} cita(s) programada(s) para las próximas 2 horas.",
+        "ownerInfo": "OwnerInfo"
     },
     "dashboard": {
         "income_hoy": "Ingresos Hoy",
@@ -425,7 +450,10 @@
         "time_hoy": "acumulado hoy",
         "time_semana": "esta semana",
         "time_mes": "este mes",
-        "time_anio": "este año"
+        "time_anio": "este año",
+        "time_año": "this year",
+        "income_{{ $filtroTiempo }}": "Income {{ $filtroTiempo }}",
+        "time_{{ $filtroTiempo }}": "Time {{ $filtroTiempo }}"
     },
     "kpi": {
         "cash": "Efectivo",
@@ -487,7 +515,12 @@
         "roleName": "Nombre del Rol",
         "state": "Estado",
         "status": "Status",
-        "stock": "Stock"
+        "stock": "Stock",
+        "empty": "No records found",
+        "emptyText": "No data found to display.",
+        "time": "Time",
+        "species": "Species",
+        "color": "Color"
     },
     "empty": {
         "noClients": "No hay clientes registrados",
@@ -564,7 +597,10 @@
         "weight": "Ej. 15.5",
         "period": "Seleccione periodo",
         "search": "Buscar...",
-        "searchPOS": "Buscar en POS..."
+        "searchPOS": "Buscar en POS...",
+        "activeIngredient": "Ej. fluralaner, meloxicam",
+        "brand": "Ej. Bravecto, Royal Canin",
+        "lastName": "Apellidos"
     },
     "status": {
         "PAGADO": "Pagado",
@@ -590,7 +626,11 @@
         "anulada": "Anulada",
         "reprogramada": "Reprogramada",
         "no_asistio": "No Asistió",
-        "emergencia": "Emergencia"
+        "emergencia": "Emergencia",
+        "{{ $venta->status }}": "{{ $venta->status }}",
+        "{{ strtolower($ventaVer->status) }}": "{{ strtolower($ventaVer->status) }}",
+        "{{ strtolower($venta->status) }}": "{{ strtolower($venta->status) }}",
+        "{{ strtolower($citaHoy->status) }}": "{{ strtolower($citaHoy->status) }}"
     },
     "filter": {
         "today": "Hoy",
@@ -598,7 +638,12 @@
         "thisMonth": "Este Mes",
         "thisYear": "Este Año",
         "allSpecies": "Todas las Especies",
-        "allTypes": "Todos los Tipos"
+        "allTypes": "Todos los Tipos",
+        "allClients": "Todos los clientes",
+        "allPets": "Todas las mascotas",
+        "allProducts": "Todos los productos",
+        "allSuppliers": "Todos los proveedores",
+        "allBranches": "Todas las sucursales"
     },
     "report": {
         "sales": "Ventas y Finanzas",
@@ -696,7 +741,10 @@
         "newReservationsThisMonth": "NUEVAS RESERVAS ESTE MES",
         "salesDistribution": "Distribución de Ventas",
         "topProducts": "Top Productos",
-        "topServices": "Top Servicios"
+        "topServices": "Top Servicios",
+        "vitalSigns": "VitalSigns",
+        "nextAppt": "NextAppt",
+        "period_{{ $periodo }}": "Period {{ $periodo }}"
     },
     "permissions": {
         "cancel_appointments": "Cancelar citas",
@@ -752,7 +800,8 @@
         "view_reports": "Ver reportes",
         "view_sales": "Ver ventas",
         "view_settings": "Ver configuración",
-        "view_users": "Ver usuarios"
+        "view_users": "Ver usuarios",
+        "{{ $permission->name }}": "{{ $permission->name }}"
     },
     "calendar": {
         "view": "Vista Calendario"
@@ -819,6 +868,45 @@
         "accessory": "Accesorio",
         "accesorio": "Accesorio",
         "service": "Servicio",
-        "servicio": "Servicio"
+        "servicio": "Servicio",
+        "{{ strtolower($producto->type) }}": "{{ strtolower($producto->type) }}",
+        "{{ strtolower($productoVer->type) }}": "{{ strtolower($productoVer->type) }}"
+    },
+    "title": {
+        "editar_rol": "Editar rol",
+        "nuevo_rol": "Nuevo rol",
+        "editar_usuario": "Editar usuario",
+        "nuevo_usuario": "Nuevo usuario",
+        "editar_proveedor": "Editar proveedor",
+        "nuevo_proveedor": "Nuevo proveedor",
+        "editar_proveedor_sub": "Editar proveedor sub",
+        "nuevo_proveedor_sub": "Nuevo proveedor sub",
+        "editar_sucursal": "Editar sucursal",
+        "nueva_sucursal": "Nueva sucursal",
+        "editar_sucursal_sub": "Editar sucursal sub",
+        "nueva_sucursal_sub": "Nueva sucursal sub",
+        "dashboard": "Panel",
+        "pets": "Mascotas",
+        "clients": "Clientes",
+        "appointments": "Citas",
+        "inventory": "Inventario",
+        "cashier": "Caja",
+        "point_of_sale": "Punto de venta",
+        "records": "Historias clínicas",
+        "suppliers": "Proveedores",
+        "branches": "Sucursales",
+        "users": "Usuarios",
+        "roles_and_permissions": "Roles y permisos",
+        "settings": "Configuración"
+    },
+    "receipt": {
+        "{{ strtolower($ventaVer->tipo_comprobante) }}": "{{ strtolower($ventaVer->tipo comprobante) }}"
+    },
+    "citas": {
+        "vistaCalendario": "VistaCalendario",
+        "vistaLista": "VistaLista"
+    },
+    "action": {
+        "print": "Imprimir"
     }
 }

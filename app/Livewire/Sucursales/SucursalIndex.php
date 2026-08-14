@@ -61,7 +61,7 @@ class SucursalIndex extends Component
             ->orderBy('name')
             ->paginate(10);
 
-        $sucursalesOptions = [['value' => '', 'label' => 'Todas las sucursales']];
+        $sucursalesOptions = [['value' => '', 'label' => 'filter.allBranches']];
         foreach (Branch::orderBy('name')->get() as $s) {
             $sucursalesOptions[] = ['value' => (string)$s->id, 'label' => $s->name];
         }

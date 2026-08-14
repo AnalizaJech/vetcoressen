@@ -10,7 +10,7 @@
 
 <br>
 
-## 📖 Sobre el Proyecto
+## 📌 Sobre el Proyecto
 
 **VetCoressen** es un sistema de gestión moderno, escalable y completamente automatizado, diseñado específicamente para clínicas veterinarias. Construido sobre el robusto framework **Laravel** y la pila reactiva **Livewire**, el sistema optimiza y agiliza las operaciones clínicas diarias.
 
@@ -18,7 +18,7 @@ Desde la gestión de historias clínicas electrónicas hasta la automatización 
 
 ---
 
-## ✨ Características Principales
+## 🚀 Características Principales
 
 - 🏥 **Historias Clínicas Electrónicas**: Mantenga registros médicos electrónicos altamente detallados para cada mascota. Realice un seguimiento continuo de diagnósticos, tratamientos, vacunas y evolución médica sin complicaciones.
 - 📅 **Gestión Inteligente de Citas**: Programe, reprograme y administre citas veterinarias mediante una interfaz de calendario interactiva. Los clientes reciben recordatorios automáticos por correo electrónico para reducir el ausentismo.
@@ -31,22 +31,22 @@ Desde la gestión de historias clínicas electrónicas hasta la automatización 
 
 ---
 
-## 🛠️ Stack Tecnológico
+## 💻 Stack Tecnológico
 
 **VetCoressen** está desarrollado utilizando un stack tecnológico moderno y de alto rendimiento:
 
 - **Arquitectura Backend**: PHP 8.2+, Laravel 12.x, Livewire 4.x, Livewire Flux 2.x
-- **Frontend y UI**: Tailwind CSS 4.0, Vite 7.0, FullCalendar 6.1
+- **Frontend y UI**: Tailwind CSS 4.0, Vite 7.0, AlpineJS, FullCalendar 6.1
 - **Integraciones de Terceros**: 
   - 📧 **Resend**: Para correos transaccionales y recordatorios de citas.
-  - 📄 **Nubefact**: Para facturación electrónica transparente con SUNAT.
-  - 🆔 **PeruAPI**: Verificación automática de DNI y RUC en tiempo real.
-  - 💬 **Twilio**: Capacidades de mensajería SMS y WhatsApp.
+  - 🧾 **Nubefact**: Para facturación electrónica transparente con SUNAT.
+  - 🔎 **PeruAPI**: Verificación automática de DNI y RUC en tiempo real.
+  - 📱 **Twilio**: Capacidades de mensajería SMS y WhatsApp.
 - **Herramientas de Desarrollo**: Laravel Pail, Sail, Pint y PestPHP.
 
 ---
 
-## ⚙️ Guía de Instalación
+## 🛠️ Guía de Instalación
 
 ### Requisitos Previos
 
@@ -74,9 +74,10 @@ Si prefiere configurar el entorno paso a paso:
    cd vetcoressen
    ```
 
-2. **Instalar dependencias de PHP:**
+2. **Instalar dependencias de PHP y Frontend:**
    ```bash
    composer install
+   npm install
    ```
 
 3. **Configurar el entorno:**
@@ -86,20 +87,19 @@ Si prefiere configurar el entorno paso a paso:
    ```
    *Nota: Abra el archivo `.env` y configure la conexión a su base de datos (`DB_DATABASE`, etc.), junto con las claves API requeridas (`RESEND_API_KEY`, `NUBEFACT_TOKEN`, `PERUAPI_KEY`).*
 
-4. **Ejecutar Migraciones de Base de Datos:**
+4. **Ejecutar Migraciones de Base de Datos y Seeders:**
    ```bash
-   php artisan migrate --force
+   php artisan migrate --seed
    ```
 
 5. **Compilar recursos del Frontend:**
    ```bash
-   npm install
    npm run build
    ```
 
 ---
 
-## ▶️ Uso y Desarrollo
+## 👨‍💻 Uso y Desarrollo
 
 Para iniciar el entorno de desarrollo local (que ejecuta simultáneamente el servidor PHP, el worker de colas, el visor de logs y el servidor Vite con Hot-Module Replacement), ejecute:
 
@@ -109,27 +109,28 @@ composer run dev
 
 ---
 
-## 🗂️ Arquitectura del Proyecto
+## 📁 Arquitectura del Proyecto
 
 Un resumen de los directorios principales que impulsan la lógica de la aplicación:
 
-- `app/Livewire/` — Contiene todos los componentes interactivos y reactivos del frontend (ej. POS, Inventario, Citas).
-- `app/Models/` — Modelos ORM de Eloquent que representan el esquema de la base de datos.
-- `app/Services/` — Clases base para la lógica de negocio y las integraciones de terceros (ej. `InventoryService`, `NubefactService`).
-- `app/Mail/` — Clases *Mailable* responsables de enviar notificaciones por correo y recibos digitales.
-- `app/Jobs/` — Trabajos en cola asíncronos para procesos pesados en segundo plano.
+- `app/Livewire/` – Contiene todos los componentes interactivos y reactivos del frontend (ej. POS, Inventario, Citas).
+- `app/Models/` – Modelos ORM de Eloquent que representan el esquema de la base de datos.
+- `app/Services/` – Clases base para la lógica de negocio y las integraciones de terceros (ej. `InventoryService`, `NubefactService`).
+- `app/Mail/` – Clases *Mailable* responsables de enviar notificaciones por correo y recibos digitales.
+- `app/Jobs/` – Trabajos en cola asíncronos para procesos pesados en segundo plano.
+- `resources/views/` – Vistas de Blade y componentes UI (con integración de i18n para internacionalización).
 
 ---
 
-## 🌐 Localización y Seguridad
+## 🔐 Localización y Seguridad
 
-- **Localización**: Soporte multi-idioma nativo. La plataforma está completamente traducida al **Inglés (`en`)** y **Español (`es`)**.
+- **Localización**: Soporte multi-idioma nativo mediante AlpineJS y Blade. La plataforma está completamente traducida al **Inglés (`en`)** y **Español (`es`)**.
 - **Roles y Permisos**: El control de acceso se aplica estrictamente utilizando `spatie/laravel-permission`.
 - **Trazabilidad (Audit Trails)**: Las actividades críticas del sistema y de los usuarios se registran meticulosamente mediante `spatie/laravel-activitylog`.
 
 ---
 
-## 👤 Contexto Académico y Desarrollo
+## 🎓 Contexto Académico y Desarrollo
 
 **Autor y Coordinador del Proyecto**:  
 **Jorge Enrique Caceres Hernandez**  
@@ -140,7 +141,7 @@ Un resumen de los directorios principales que impulsan la lógica de la aplicaci
 
 *Este software fue desarrollado en el marco del proyecto de investigación **"Innovación en Gestión Veterinaria: Sistema de Recordatorios Automatizados para Optimizar el Manejo de Historias Clínicas en San Vicente de Cañete, 2025"**.*
 
-### 💰 Financiación
+### 🏛️ Financiación
 Este proyecto fue orgullosamente financiado por la **Vicepresidencia de Investigación** de la UNDC, galardonado durante el *I Concurso de Investigación para el Desarrollo de Innovaciones y Propiedad Intelectual*, bajo el contrato de subvención **N° 021-2024-UNDC/CO/P/DGA**.
 
 ---

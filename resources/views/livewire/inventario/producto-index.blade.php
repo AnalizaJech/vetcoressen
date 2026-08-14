@@ -1,5 +1,5 @@
 <div x-data>
-    <x-slot:title x-text="$store.i18n.t('page.inventory')">Inventory</x-slot:title>
+    <x-slot:title>Inventory</x-slot:title>
 
 <div class="animate-slide-up">
     {{-- Cabecera con icono --}}
@@ -37,7 +37,7 @@
             <x-vc-dropdown
                 wire:model.live="filtroProducto"
                 :options="$productosOptions"
-                placeholder="Todos los productos"
+                placeholder="filter.allProducts"
                 searchable
                 class="w-full sm:w-64"
             />
@@ -53,8 +53,8 @@
                 :selected="$filtroTipo"
                 placeholder="filter.allTypes"
             />
-            <label for="stock-bajo-checkbox" class="flex items-center gap-2 px-3 bg-white dark:bg-vc-surface-alt rounded-lg border border-zinc-200 dark:border-zinc-700 h-10 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors" style="user-select: none;">
-                <flux:checkbox id="stock-bajo-checkbox" wire:model.live="soloStockBajo" />
+            <label class="flex items-center gap-2 px-3 bg-white dark:bg-vc-surface-alt rounded-lg border border-zinc-200 dark:border-zinc-700 h-10 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors" style="user-select: none;">
+                <input type="checkbox" wire:model.live="soloStockBajo" class="rounded border-zinc-300 text-violet-600 focus:ring-violet-600 cursor-pointer" />
                 <span class="text-sm whitespace-nowrap pointer-events-none" style="color: var(--vc-text-muted);" x-text="$store.i18n.t('misc.lowStockOnly') || 'Solo stock bajo'"></span>
             </label>
         </x-slot:filters>
@@ -190,17 +190,17 @@
                     <span class="material-symbols-outlined text-[48px]" style="font-variation-settings: 'FILL' 1, 'wght' 700;">warning</span>
                 </div>
                 <div>
-                    <h2 class="text-2xl font-extrabold text-zinc-900 dark:text-white" x-text="$store.i18n.t('modal_extra.deleteProduct') || 'Eliminar Producto'">Eliminar Producto</h2>
-                    <p class="mt-3 text-sm text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto leading-relaxed" x-text="$store.i18n.t('modal_extra.deleteProductMsg') || 'Esta acción no se puede revertir y perderás toda la información asociada a este registro.'">Esta acción no se puede revertir y perderás toda la información asociada a este registro.</p>
+                    <h2 class="text-2xl font-extrabold text-zinc-900 dark:text-white" x-text="$store.i18n.t('modal.deleteProduct') || 'Eliminar Producto'">Eliminar Producto</h2>
+                    <p class="mt-3 text-sm text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto leading-relaxed" x-text="$store.i18n.t('modal.deleteProductMsg') || 'Esta acción no se puede revertir y perderás toda la información asociada a este registro.'">Esta acción no se puede revertir y perderás toda la información asociada a este registro.</p>
                 </div>
             </div>
             <div class="flex flex-col-reverse sm:flex-row gap-3 w-full mt-6">
                 <flux:spacer class="hidden sm:block" />
                 <flux:modal.close class="w-full sm:w-auto">
-                    <flux:button variant="ghost" class="w-full font-medium"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'">Cancelar</span></flux:button>
+                    <flux:button variant="ghost" class="w-full font-medium px-4 py-2 md:px-5 md:py-2.5 lg:px-6 lg:py-3"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'">Cancelar</span></flux:button>
                 </flux:modal.close>
-                <button type="button" class="w-full sm:w-auto btn-danger font-medium justify-center" wire:click="eliminar" x-on:click="$dispatch('modal-close', { name: 'confirmar-eliminar' })">
-                    <span x-text="$store.i18n.t('btn.delete') === 'btn.delete' ? 'Eliminar' : $store.i18n.t('btn.delete')">Eliminar</span>
+                <button type="button" class="w-full sm:w-auto btn-danger font-medium justify-center px-4 py-2 md:px-5 md:py-2.5 lg:px-6 lg:py-3" wire:click="eliminar" x-on:click="$dispatch('modal-close', { name: 'confirmar-eliminar' })">
+                    <span x-text="$store.i18n.t('btn.delete') || 'Eliminar'">Eliminar</span>
                 </button>
             </div>
         </div>

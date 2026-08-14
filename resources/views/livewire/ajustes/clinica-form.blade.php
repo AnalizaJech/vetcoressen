@@ -62,11 +62,11 @@
                     <x-vc-dropdown
                         wire:model="moneda_principal"
                         :options="[
-                            ['value' => 'PEN', 'label' => 'PEN - Sol Peruano'],
-                            ['value' => 'USD', 'label' => 'USD - Dólar Estadounidense']
+                            ['value' => 'PEN', 'label' => 'currency.pen'],
+                            ['value' => 'USD', 'label' => 'currency.usd']
                         ]"
                         :selected="$moneda_principal"
-                        placeholder="Seleccionar moneda"
+                        placeholder="form.selectCurrency"
                     />
                     <flux:error name="moneda_principal" />
                 </flux:field>

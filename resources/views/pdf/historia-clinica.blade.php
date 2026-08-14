@@ -83,19 +83,19 @@
                 <td class="label">Paciente:</td>
                 <td class="value"><strong>{{ $historia->pet->name ?? 'N/A' }}</strong></td>
                 <td class="label">Propietario:</td>
-                <td class="value">{{ $historia->pet->customer->nombre_completo ?? 'N/A' }}</td>
+                <td class="value">{{ $historia->pet->cliente->nombre_completo ?? 'N/A' }}</td>
             </tr>
             <tr>
                 <td class="label">Especie/Raza:</td>
-                <td class="value">{{ $historia->pet->species ?? 'N/A' }} / {{ $historia->pet->breed ?? 'N/A' }}</td>
+                <td class="value">{{ $historia->pet->especie->name ?? 'N/A' }} / {{ $historia->pet->raza->name ?? 'N/A' }}</td>
                 <td class="label">DNI/RUC:</td>
-                <td class="value">{{ $historia->pet->customer->document_number ?? 'N/A' }}</td>
+                <td class="value">{{ $historia->pet->cliente->numero_documento ?? 'N/A' }}</td>
             </tr>
             <tr>
                 <td class="label">Sexo/Peso:</td>
                 <td class="value">{{ isset($historia->pet->gender) ? ($historia->pet->gender === 'M' ? 'Macho' : 'Hembra') : 'N/A' }} / {{ $historia->weight ? $historia->weight . ' kg' : 'N/A' }}</td>
                 <td class="label">Teléfono:</td>
-                <td class="value">{{ $historia->pet->customer->phone ?? 'N/A' }}</td>
+                <td class="value">{{ $historia->pet->cliente->phone ?? 'N/A' }}</td>
             </tr>
         </table>
 

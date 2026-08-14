@@ -1,5 +1,5 @@
 <div x-data>
-    <x-slot:title x-text="$store.i18n.t('page.pos')">Point of Sale</x-slot:title>
+    <x-slot:title>Point of Sale</x-slot:title>
 
     <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
         @if(!$this->activeRegister)

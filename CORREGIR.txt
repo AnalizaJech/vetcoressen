@@ -1,202 +1,82 @@
-CLIENTES: MODAL ACTUALIZAR SIN TRADUCIR
+CRITICO: CODIGO CORRUPTO EN CLIENTEINDEX.PHP (confirmado con php -l real)
 
-El modal de confirmar actualizacion en Cliente no cambia con el idioma
-seleccionado, traducirlo igual que el resto de modales de confirmacion.
+app/Livewire/Clientes/ClienteIndex.php linea 74 esta corrupta, con
+backslash suelto donde debia ir una variable, seguramente por un corte a
+medio guardar:
+return view('livewire.clientes.cliente-index', ['clientes' => \->clientes(), 'clientesOptions' => \]);
+Ademas al foreach de arriba le falta su llave de cierre "}". El metodo
+clientes() si existe en la linea 57 de este mismo archivo, asi que la
+reconstruccion correcta es:
+        foreach (Customer::orderBy('first_name')->get() as $c) {
+            $clientesOptions[] = ['value' => (string)$c->id, 'label' => $c->nombre_completo . ' - ' . $c->numero_documento];
+        }
+        return view('livewire.clientes.cliente-index', ['clientes' => $this->clientes(), 'clientesOptions' => $clientesOptions]);
+Esto rompe con error de sintaxis TODO lo que dependa de este archivo, es
+el error "syntax error, unexpected token" que se ve en el sistema.
+Verifique con php -l archivo por archivo en todo app/, database/,
+routes/ y config/, y este fue el UNICO .php con este problema.
 
-CONFIGURACION: AVISOS DEBEN SER MODAL, NO EL AVISO ACTUAL
+MASCOTAS: PLACEHOLDERS CON LA CLAVE CRUDA EN VEZ DEL TEXTO
 
-Al tocar los botones correspondientes en Configuracion, hoy sale un aviso
-distinto al resto del sistema. Reemplazarlo por el mismo tipo de modal de
-confirmacion que ya se usa en el resto de los modulos, no un aviso aparte.
+Confirmado en mascota-form.blade.php: los campos de cliente, nombre,
+peso y las 4 apariciones de "form.select" tienen la clave de traduccion
+puesta directo como placeholder="..." (texto plano), no envuelta en
+$store.i18n.t(), por eso se ve literal "placeholder.petName",
+"placeholder.weight", "form.selectClient", "form.select" en pantalla.
+El campo de fecha de nacimiento en el mismo archivo SI esta bien hecho
+(x-bind:placeholder="$store.i18n.t('form.birthDate')"), usar ese mismo
+patron para corregir los demas.
 
-VOUCHER: SIGUE CORTANDOSE AL IMPRIMIR, Y FALTA EL ESTILO DEL ENCABEZADO
+TITULO DE PESTAÑA: PROVEEDORES, ROLES Y SUCURSALES
 
-Al imprimir, la hoja se sigue viendo cortada o empieza muy arriba, no se
-alcanza a leer bien el contenido: agregar margen (margin) a la hoja para
-que se vea completa. Ademas, el encabezado de la tabla de items debe
-tener fondo oscuro con texto blanco, igual que ya se ve en el bloque de
-"IMPORTE TOTAL" del mismo voucher (no solo "mas contraste", ese estilo
-exacto: relleno oscuro, texto blanco).
+El atributo #[Title(...)] SI esta puesto correctamente en el codigo PHP
+de ProveedorIndex, RolesIndex y SucursalIndex, asi que el problema no es
+que falte ahi. Revisar el layout (probablemente un <title> fijo en
+app.blade.php que no esta leyendo el titulo que Livewire intenta poner),
+ya que el atributo existe pero no llega a la pestaña del navegador.
+Una vez arreglado eso, hacer que el titulo tambien cambie con el idioma
+si es posible.
 
-DASHBOARD: CITAS PENDIENTES DEBEN ABRIR EL MODAL DE DETALLE
+VOUCHER: SOLO FALTA MARGEN EN LA VISTA DE PANTALLA (imprimir ya funciona bien)
 
-Mejorar el hover de la lista de citas pendientes del dashboard, y que al
-hacer clic en una de esas citas se abra el mismo modal de detalle de cita
-que ya existe en el modulo de Citas (misma funcionalidad, no una nueva).
+Confirmado: al imprimir sale bien. El problema es solo visual en
+pantalla, el contenido arranca pegado arriba del todo y se ve cortado.
+Agregar padding/margin superior al contenedor en la vista de pantalla
+(no en el @media print, ese ya esta bien).
 
-MODAL DETALLE DE CITA: TRADUCCION Y CAMBIO DE "DESCARGAR PDF" A "VER"
+IDIOMA: LISTA COMPLETA DE LO QUE JORGE REPORTO PENDIENTE ESTA RONDA
 
-Todavia hay textos de ese modal sin traducir al idioma seleccionado.
-Ademas: cambiar el boton "Descargar PDF" por uno de "Ver". Quitar el
-texto de los botones de editar y ver, dejar solo icono. La funcion de
-"Ver" debe mostrar la hoja A4 en vertical dentro de la pantalla (no
-descargar un archivo), con un boton circular de imprimir flotante en la
-esquina inferior derecha, igual al que ya tiene el voucher.
+Confirmado el patron de fondo (claves sin envolver en $store.i18n.t(), o
+sin existir en el diccionario) en: placeholders de hora y fecha en la
+vista de lista de Citas; inputs select agregados recientemente; textos al
+crear nueva venta, nueva sucursal, nuevo usuario, nuevo rol; botones
+principales de cada modulo; cards de Sucursales y Proveedores. Mismo
+metodo recomendado antes: barrido completo comparando cada
+$store.i18n.t('clave') usado en los blade contra las claves reales de
+public/js/i18n.js (_es y _en), agregando TODAS las que falten de una
+vez, y por separado buscando placeholder="..." con texto plano de clave
+(como el bug de Mascotas de arriba) en el resto de formularios.
 
-VISTA DE CITA EN A4: ESTILIZACION Y DATOS DE LA MASCOTA
+MODALES: BOTON CERRAR DEBE MEDIR IGUAL QUE EL BOTON CON ENFASIS
 
-Esa hoja (la vista A4 de la cita) todavia necesita ajustes de estilo y
-tiene fallos con los datos de la mascota que hay que corregir; agregarle
-tambien algo de personalizacion visual, hoy se ve muy plana.
+En los modales de confirmacion, el boton de cerrar/cancelar debe tener el
+mismo tamaño (alto y ancho minimo) que el boton de accion principal al
+lado, hoy se ven de tamaños distintos.
 
-DASHBOARD: SIGUE SIN TRADUCIR (KPI, GRAFICAS, CARDS)
+CONFIGURACION: REVISAR QUE SE VE RARO AL ENTRAR A LOS SUB-MODULOS
 
-El primer KPI de la seccion de Citas del dashboard sigue sin traducirse
-al ingles. Las graficas de ingresos muestran texto raro (claves sin
-traducir). Las demas cards del dashboard tambien estan pendientes de
-traduccion.
+Al entrar a las secciones dentro de Configuracion aparece contenido de
+mas o repetido (reportado como "aparece mucho"), revisar cada pestaña de
+Configuracion por contenido duplicado o de sobra.
 
-NUEVO USUARIO Y NUEVA SUCURSAL: SIN TRADUCIR
+HISTORIA CLINICA: SIGUE PERDIENDO DATOS EN EL REPORTE CLINICO
 
-Las pantallas de creacion de usuario y de sucursal no se adaptan al
-idioma seleccionado, traducirlas completas.
+Reparar todo el modulo de Historia Clinica de punta a punta para que los
+datos que se registran en la consulta no se pierdan y aparezcan
+completos en el reporte/vista clinica final.
 
-HISTORIA CLINICA: ERROR AL INICIAR CONSULTA / EDITAR
+DETALLE DE CITA: MODO DE IMPRESION PROFESIONAL
 
-Sigue habiendo un error al iniciar una consulta y al editar una historia
-clinica ya creada. Revisar a fondo ese flujo completo (no solo el error
-de sintaxis ya reportado antes si sigue ahi, sino cualquier otro que
-impida guardar o editar correctamente).
-
-HISTORIA CLINICA: LOS DATOS DE LA CONSULTA SIGUEN SIN REGISTRARSE BIEN
-
-Todavia falta que los campos que se llenan durante la consulta se
-guarden y se reflejen correctamente despues (en el timeline, en la vista
-de detalle y en el PDF). Esto sigue sin quedar resuelto de fondo.
-
-REPORTE MEDICO CLINICO: REDISEÑAR Y HACER DINAMICO
-
-Cambiar el diseño del reporte medico/clinico (el documento que resume la
-atencion) y asegurarse de que sea dinamico, tomando los datos reales de
-cada consulta en vez de un diseño fijo.
-
-
-
-
-ROLE: Update the documentation for VetCoressen, a Laravel veterinary-clinic
-management system. You have full read/write access to this repo in the
-current workspace — explore it yourself (file tree + terminal). Don't ask
-me to paste or attach anything.
-
-Deliverables, overwrite what exists at the project root:
-1. LICENSE (MIT)
-2. README.md (English)
-
-
-=====================================================
-STEP 1 — LICENSE
-=====================================================
-Standard MIT License text. Copyright line:
-  Copyright (c) <year> Jorge Enrique Caceres Hernandez
-For <year>: run `git log --reverse --format=%ad --date=format:%Y | head -1`
-to get the first-commit year, and use "<first-year>-2026" (e.g. 2025-2026).
-If you can't determine it, just use 2026.
-
-=====================================================
-STEP 2 — README.md
-=====================================================
-Write 100% in English. Model the structure/tone on the pattern below
-(adapted from another UNDC-funded student project's README), but verify
-every technical claim by actually reading the code: composer.json,
-package.json, app/Livewire/**, app/Models/**, app/Services/**,
-routes/web.php, database/migrations/**, .env.example (after Step 0), and
-config/*.php. Don't invent features that aren't in the code; don't miss
-real ones either.
-
-Facts below come from the signed grant contract, not from guessing —
-use them as-is, you can't get them from the code:
-- Academic project title: "Innovation in Veterinary Management: Automated
-  Reminder System to Optimize Clinical History Management in San Vicente
-  de Cañete, 2025"
-- Institution: Universidad Nacional de Cañete (UNDC), Peru
-- Funding program: First Research Competition for the Development of
-  Innovations and Intellectual Property, UNDC, 2024
-- Overseeing body: Vice Presidency for Research (Vicepresidencia de
-  Investigación), UNDC
-- Grant contract number: N° 021-2024-UNDC/CO/P/DGA
-- Author / project coordinator: Jorge Enrique Caceres Hernandez —
-  Systems Engineering student, Universidad Nacional de Cañete
-- Academic advisor: Alex Abelardo Pacheco-Pumaleque 
-
-Template (adapt freely, keep it grounded in the real code):
-
-# VetCoressen — <one-line tagline based on what the app actually does>
-
-## 🐾 Project Description
-What the system is, who it's for (veterinary clinics), 2-3 sentences.
-
-## 🚀 Main Features
-One bullet per real module under app/Livewire — describe what it does,
-not just the folder name. Expect things like appointment scheduling with
-a calendar, clinical records, pet/customer management, inventory with
-batches and expiry dates, point of sale with cash reconciliation and
-electronic invoicing, multi-branch support, roles & permissions,
-automated email notifications — confirm each against the code, drop
-anything not actually implemented.
-
-## 🛠️ Tech Stack
-Pull exact package names + version constraints from composer.json and
-package.json. Group as Backend / Frontend / Integrations / Dev tooling.
-
-## 📋 Requirements
-PHP version, Composer, Node/npm version, database engine, required PHP
-extensions if evident from composer.json.
-
-## ⚙️ Installation
-Check composer.json's "scripts" block first — there's a "setup" script
-that automates most of this (composer install, .env copy, key:generate,
-migrate, npm install, npm run build). Document the one-command path via
-that script AND the manual step-by-step, referencing env vars by name
-only, never by value.
-
-## ▶️ Usage
-Check composer.json's "dev" script — it runs the server, queue listener,
-log viewer (pail) and vite concurrently. Give the real command.
-
-## 🗂️ Project Structure
-Short tree of the top-level app/ subfolders (Livewire, Models, Services,
-Jobs, Mail, Console) with one line each on what lives there.
-
-## 🌐 Localization
-Only include if confirmed in lang/ and public/locales — mention
-Spanish/English support.
-
-## 🔐 Roles & Permissions
-One line noting role/permission management (spatie/laravel-permission)
-and activity logging (spatie/laravel-activitylog) if present in
-composer.json.
-
-## 🔮 Future Improvements
-Optional — only include if you find real evidence (TODO comments, open
-issues, roadmap notes). Don't invent a roadmap just to fill the section.
-
-## 👤 Development Team
-Name + role from the facts above. One line: "Developed within the
-framework of the research project [title], funded by [program] at
-[institution], under contract N° 021-2024-UNDC/CO/P/DGA."
-
-## 📄 License
-"This project is distributed under the MIT License. See the LICENSE file
-for details." Nothing more — don't restate the grant contract's IP
-clauses here, that's a separate legal question for the author.
-
-## 💰 Grant Information
-One paragraph: funded by the Vice Presidency for Research at UNDC, within
-the First Research Competition for the Development of Innovations and
-Intellectual Property, under contract N° 021-2024-UNDC/CO/P/DGA.
-
----
-Closing tagline line, same spirit as:
-"**VetCoressen** – Veterinary Clinic Management System · *UNDC 2025*"
-
-Skip anything ML/diagnostic-specific (model performance, model training,
-clinical disclaimers) — this is practice-management software, not a
-diagnostic tool.
-
-=====================================================
-CONSTRAINTS
-=====================================================
-- README.md must be 100% in English.
-- Never write a real secret value anywhere in README.md — env vars by
-  name only.
-- Overwrite the existing LICENSE and README.md at the project root.
+La vista de impresion del detalle de cita debe verse profesional (layout
+cuidado, no solo los datos en crudo), mismo criterio que ya se aplico al
+voucher.

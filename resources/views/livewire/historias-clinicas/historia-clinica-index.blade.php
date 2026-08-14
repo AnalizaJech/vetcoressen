@@ -1,5 +1,5 @@
 <div x-data>
-    <x-slot:title x-text="$store.i18n.t('page.records') || 'Historias Clínicas'">Historias Clínicas</x-slot:title>
+    <x-slot:title>Historias Clínicas</x-slot:title>
 
     <div class="animate-slide-up">
         {{-- Cabecera con icono --}}
@@ -29,7 +29,7 @@
                         <x-vc-dropdown
                             wire:model.live="filtroCliente"
                             :options="$clientesOptions"
-                            placeholder="Todos los clientes"
+                            placeholder="filter.allClients"
                             searchable
                             class="w-full"
                         />
@@ -38,7 +38,7 @@
                         <x-vc-dropdown
                             wire:model.live="filtroMascota"
                             :options="$mascotasOptions"
-                            placeholder="Todas las mascotas"
+                            placeholder="filter.allPets"
                             searchable
                             class="w-full"
                         />
