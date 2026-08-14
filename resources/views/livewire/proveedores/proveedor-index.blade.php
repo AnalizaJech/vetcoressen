@@ -42,7 +42,7 @@
                     <div class="vc-card flex flex-col justify-between p-5 rounded-2xl bg-white dark:bg-vc-surface border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-md transition-shadow relative">
                         {{-- Cabecera Card: Avatar, Nombre y Badge --}}
                         <div class="flex items-start gap-3 mb-5">
-                            <div class="w-10 h-10 rounded-full bg-zinc-100 dark:bg-vc-surface-alt flex flex-shrink-0 items-center justify-center font-bold text-vc-primary">
+                            <div class="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex flex-shrink-0 items-center justify-center font-bold text-emerald-600 dark:text-emerald-400">
                                 {{ substr($proveedor->name, 0, 1) }}
                             </div>
                             <div class="flex-1 min-w-0">
@@ -63,24 +63,24 @@
                         {{-- Contacto Info --}}
                         <div class="space-y-3 mb-6 flex-1">
                             <div class="flex items-start gap-2">
-                                <span class="material-symbols-outlined text-[16px] text-zinc-400 mt-0.5">person</span>
+                                <span class="material-symbols-outlined text-[16px] text-violet-500 mt-0.5">person</span>
                                 <div class="flex-1 overflow-hidden">
                                     <p class="text-xs text-zinc-500 uppercase tracking-wider font-semibold" x-text="$store.i18n.t('table.contact') || 'Contacto'">Contacto</p>
-                                    <p class="text-sm font-medium text-zinc-700 dark:text-zinc-300 truncate">{{ $proveedor->contact_name ?: 'No registrado' }}</p>
+                                    <p class="text-sm font-medium text-zinc-700 dark:text-zinc-300 truncate" x-text="@js($proveedor->contact_name) || $store.i18n.t('report.notRegistered')">{{ $proveedor->contact_name ?: 'No registrado' }}</p>
                                 </div>
                             </div>
                             <div class="flex items-start gap-2">
-                                <span class="material-symbols-outlined text-[16px] text-zinc-400 mt-0.5">call</span>
+                                <span class="material-symbols-outlined text-[16px] text-blue-500 mt-0.5">call</span>
                                 <div class="flex-1 overflow-hidden">
                                     <p class="text-xs text-zinc-500 uppercase tracking-wider font-semibold" x-text="$store.i18n.t('table.phone') || 'Teléfono'">Teléfono</p>
-                                    <p class="text-sm font-medium text-zinc-700 dark:text-zinc-300 truncate">{{ $proveedor->phone ?: 'No registrado' }}</p>
+                                    <p class="text-sm font-medium text-zinc-700 dark:text-zinc-300 truncate" x-text="@js($proveedor->phone) || $store.i18n.t('report.notRegistered')">{{ $proveedor->phone ?: 'No registrado' }}</p>
                                 </div>
                             </div>
                             <div class="flex items-start gap-2">
-                                <span class="material-symbols-outlined text-[16px] text-zinc-400 mt-0.5">mail</span>
+                                <span class="material-symbols-outlined text-[16px] text-amber-500 mt-0.5">mail</span>
                                 <div class="flex-1 overflow-hidden">
                                     <p class="text-xs text-zinc-500 uppercase tracking-wider font-semibold" x-text="$store.i18n.t('table.email') || 'Correo'">Correo</p>
-                                    <p class="text-sm font-medium text-zinc-700 dark:text-zinc-300 truncate">{{ $proveedor->email ?: 'No registrado' }}</p>
+                                    <p class="text-sm font-medium text-zinc-700 dark:text-zinc-300 truncate" x-text="@js($proveedor->email) || $store.i18n.t('report.notRegistered')">{{ $proveedor->email ?: 'No registrado' }}</p>
                                 </div>
                             </div>
                         </div>

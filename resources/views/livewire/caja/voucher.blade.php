@@ -1,4 +1,4 @@
-<div class="voucher-wrapper bg-zinc-100 dark:bg-zinc-900 min-h-screen w-full pt-24 pb-12 px-4 relative overflow-y-auto">
+<div class="voucher-wrapper bg-zinc-100 dark:bg-zinc-900 min-h-screen w-full pt-36 sm:pt-40 pb-12 px-4 relative overflow-y-auto">
 <style>
     @media print {
         @page { size: A4 portrait; margin: 15mm 20mm; }
@@ -77,7 +77,7 @@
     $clinica = $venta->clinica ?? \App\Models\Clinic::first();
 @endphp
 
-<div class="w-full max-w-[800px] mx-auto flex flex-col gap-6 mt-8">
+<div class="w-full max-w-[800px] mx-auto flex flex-col gap-6 mt-10">
 
     <div id="voucher-imprimible" class="w-full bg-white text-zinc-800 p-12 font-sans text-sm rounded-[2rem] shadow-2xl shadow-zinc-200/50 border border-zinc-200/80 print:shadow-none print:border-none print:rounded-none mx-auto relative overflow-hidden">
         
@@ -153,11 +153,11 @@
             <table class="w-full text-[13px] text-left">
                 <thead class="text-white font-bold bg-zinc-800 dark:bg-zinc-900" style="-webkit-print-color-adjust: exact; background-color: #27272a !important; color: white !important;">
                     <tr>
-                        <th class="py-4 px-5 text-center w-24 border-r border-zinc-700" style="border-color: #3f3f46 !important;">CANT.</th>
-                        <th class="py-4 px-5 text-center w-28 border-r border-zinc-700" style="border-color: #3f3f46 !important;">U. MEDIDA</th>
-                        <th class="py-4 px-5 border-r border-zinc-700" style="border-color: #3f3f46 !important;">DESCRIPCIÓN</th>
-                        <th class="py-4 px-5 text-right w-32 border-r border-zinc-700" style="border-color: #3f3f46 !important;">V. UNIT.</th>
-                        <th class="py-4 px-5 text-right w-32">IMPORTE</th>
+                        <th class="py-4 px-5 text-center w-24 border-r border-zinc-700" style="background-color: #27272a !important; border-color: #3f3f46 !important; color: #ffffff !important;">CANT.</th>
+                        <th class="py-4 px-5 text-center w-28 border-r border-zinc-700" style="background-color: #27272a !important; border-color: #3f3f46 !important; color: #ffffff !important;">U. MEDIDA</th>
+                        <th class="py-4 px-5 border-r border-zinc-700" style="background-color: #27272a !important; border-color: #3f3f46 !important; color: #ffffff !important;">DESCRIPCIÓN</th>
+                        <th class="py-4 px-5 text-right w-32 border-r border-zinc-700" style="background-color: #27272a !important; border-color: #3f3f46 !important; color: #ffffff !important;">V. UNIT.</th>
+                        <th class="py-4 px-5 text-right w-32" style="background-color: #27272a !important; color: #ffffff !important;">IMPORTE</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-zinc-200">

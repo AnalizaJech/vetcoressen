@@ -10,9 +10,15 @@ class PdfController extends Controller
 {
     public function cita($id)
     {
-        $cita = Appointment::with(['cliente', 'mascota', 'veterinario'])->findOrFail($id);
+        $cita = Appointment::with([
+            'cliente',
+            'mascota.especie',
+            'mascota.raza',
+            'veterinario',
+        ])->findOrFail($id);
 
-        $pdf = Pdf::loadView('pdf.cita', compact('cita'));
+        $pdf = Pdf::loadView('pdf.cita', compact('cita'))
+            ->setPaper('a4', 'portrait');
 
         return $pdf->download('cita-' . $cita->id . '.pdf');
     }
@@ -21,7 +27,8 @@ class PdfController extends Controller
     {
         $historia = \App\Models\MedicalRecord::with(['pet.cliente', 'veterinario', 'prescripciones.producto'])->findOrFail($id);
 
-        $pdf = Pdf::loadView('pdf.historia-clinica', compact('historia'));
+        $pdf = Pdf::loadView('pdf.historia-clinica', compact('historia'))
+            ->setPaper('a4', 'portrait');
 
         return $pdf->download('historia-clinica-' . str_pad($historia->id, 6, '0', STR_PAD_LEFT) . '.pdf');
     }
@@ -32,7 +39,8 @@ class PdfController extends Controller
             $q->orderBy('date', 'desc')->with(['veterinario', 'prescripciones.producto']);
         }])->findOrFail($id);
 
-        $pdf = Pdf::loadView('pdf.historial-mascota', compact('mascota'));
+        $pdf = Pdf::loadView('pdf.historial-mascota', compact('mascota'))
+            ->setPaper('a4', 'portrait');
 
         return $pdf->download('historial-mascota-' . str_pad($mascota->id, 6, '0', STR_PAD_LEFT) . '.pdf');
     }

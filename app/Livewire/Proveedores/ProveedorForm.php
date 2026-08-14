@@ -127,9 +127,11 @@ class ProveedorForm extends Component
     {
         $this->city = '';
     }
-    public function mount(?Supplier $proveedor = null)
+    public function mount(?int $id = null): void
     {
-        if ($proveedor && $proveedor->exists) {
+        $proveedor = $id ? Supplier::findOrFail($id) : null;
+
+        if ($proveedor) {
             $this->proveedor = $proveedor;
             $this->isEdit = true;
             $this->name = $proveedor->name;
@@ -150,13 +152,13 @@ class ProveedorForm extends Component
         $validated = $this->validate([
             'name' => 'required|string|max:255',
             'ruc' => 'nullable|string|max:20',
-            'contact_name' => 'nullable|string|max:255',
-            'email' => 'nullable|email|max:255',
-            'phone' => 'nullable|string|max:20',
-            'address' => 'nullable|string|max:255',
-            'country' => 'nullable|string|max:255',
-            'state' => 'nullable|string|max:255',
-            'city' => 'nullable|string|max:255',
+            'contact_name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone' => 'required|string|max:20',
+            'address' => 'required|string|max:255',
+            'country' => 'required|string|max:255',
+            'state' => 'required|string|max:255',
+            'city' => 'required|string|max:255',
         ]);
         
         $validated['is_active'] = $this->is_active;

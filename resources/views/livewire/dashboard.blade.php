@@ -404,7 +404,7 @@
             <div class="p-6 text-center max-h-[70vh] overflow-y-auto">
                 <flux:heading size="xl" class="mb-2"><span x-text="$store.i18n.t('modal.inventoryAttention') || '¡Atención de Inventario!'">¡Atención de Inventario!</span></flux:heading>
                 <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">
-                    <span x-text="$store.i18n.t('modal.inventoryDetected') || 'Se han detectado'">Se han detectado</span> <strong class="text-amber-600 dark:text-amber-500">{{ $alertasInventario }} productos</strong> <span x-text="$store.i18n.t('modal.productsCritical') || 'productos en stock crítico y'">productos en stock crítico y</span> <strong class="text-amber-600 dark:text-amber-500">{{ $lotesProximosVencer->count() }} lotes</strong> <span x-text="$store.i18n.t('modal.batchesExpiring') || 'lotes próximos a vencer.'">lotes próximos a vencer.</span>
+                    <span x-text="$store.i18n.t('modal.inventoryDetected') || 'Se han detectado'">Se han detectado</span> <strong class="text-amber-600 dark:text-amber-500">{{ $alertasInventario }}</strong> <span x-text="$store.i18n.t('modal.productsCritical') || 'productos en stock crítico y'">productos en stock crítico y</span> <strong class="text-amber-600 dark:text-amber-500">{{ $lotesProximosVencer->count() }}</strong> <span x-text="$store.i18n.t('modal.batchesExpiring') || 'lotes próximos a vencer.'">lotes próximos a vencer.</span>
                 </p>
 
                 @if($alertasInventario > 0)
@@ -442,6 +442,7 @@
                         @foreach($lotesProximosVencer->take(5) as $loteAlerta)
                         @php
                             $diasParaVencer = \Carbon\Carbon::now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($loteAlerta->fecha_vencimiento)->startOfDay(), false);
+                            $tipoProducto = $loteAlerta->product?->type ?? null;
                             if ($diasParaVencer < 0) {
                                 $vencimientoClase = 'badge-red';
                                 $vencimientoIcono = 'error';
@@ -462,10 +463,10 @@
                         @endphp
                         <li class="flex items-center justify-between">
                             <div class="flex items-center gap-3">
-                                <span class="material-symbols-outlined {{ $textColor }} text-xl">{{ $vencimientoIcono }}</span>
+                                <span class="material-symbols-outlined {{ $textColor }} text-xl">{{ $tipoProducto === 'Medicamento' ? 'vaccines' : ($tipoProducto === 'Alimento' ? 'pets' : $vencimientoIcono) }}</span>
                                 <div>
                                     <p class="text-sm font-semibold text-zinc-800 dark:text-zinc-200 line-clamp-1" title="{{ $loteAlerta->product?->name }}">{{ Str::limit($loteAlerta->product?->name ?? 'Producto no encontrado', 30) }}</p>
-                                    <p class="text-xs text-zinc-500"><span x-text="$store.i18n.t('label.batch') || 'Lote:'">Lote:</span> {{ $loteAlerta->lote ?? 'N/A' }}</p>
+                                    <p class="text-xs text-zinc-500"><span class="font-medium">{{ $tipoProducto ?? 'Producto' }}</span> · <span x-text="$store.i18n.t('label.batch') || 'Lote:'">Lote:</span> {{ $loteAlerta->lote ?? 'N/A' }}</p>
                                 </div>
                             </div>
                             <div class="text-right">

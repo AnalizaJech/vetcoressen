@@ -60,12 +60,9 @@ class Dashboard extends Component
         $alertasInventario = $productosEnAlerta->count();
 
         // KPI: Lotes próximos a vencer (90 días)
-        $lotesProximosVencer = \App\Models\ProductBatch::with(['product' => function ($query) {
-                $query->withTrashed();
-            }])
+        $lotesProximosVencer = \App\Models\ProductBatch::with('product')
             ->whereHas('product', function ($query) use ($clinicId) {
-                $query->withTrashed()
-                      ->where('clinic_id', $clinicId)
+                $query->where('clinic_id', $clinicId)
                       ->where('is_active', true);
             })
             ->whereNotNull('fecha_vencimiento')
