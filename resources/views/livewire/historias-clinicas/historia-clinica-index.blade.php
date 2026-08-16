@@ -161,8 +161,8 @@
                             </div>
                             <div class="flex items-center gap-4">
                                 <a href="{{ route('mascotas.historial.pdf', $mascota->id) }}" download class="btn-primary py-2 px-4 flex gap-2 items-center text-sm rounded-xl transition-all shadow-sm" @click.stop>
-                                    <span class="material-symbols-outlined text-[18px]">print</span>
-                                    <span x-text="$store.i18n.t('action.print', 'Imprimir')"></span>
+                                    <span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+                                    <span x-text="$store.i18n.t('report.downloadPDF', 'Descargar PDF')"></span>
                                 </a>
                                 <span class="material-symbols-outlined text-zinc-400 transition-transform duration-300" :class="mascotaActiva ? 'rotate-180' : ''">expand_more</span>
                             </div>

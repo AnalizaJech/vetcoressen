@@ -452,6 +452,17 @@
                                     <flux:label class="mb-2 font-medium"><span x-text="$store.i18n.t('form.medication')"></span></flux:label>
                                     @php
                                         $productosOpts = [];
+                                        
+                                        // Recomendaciones comunes (mismas de Inventario)
+                                        $recomendaciones = [
+                                            'Amoxicilina', 'Bravecto', 'NexGard', 'Simparica', 'Paracetamol', 
+                                            'Meloxicam', 'Tramadol', 'Doxiciclina', 'Cefalexina', 'Ivermectina', 
+                                            'Prednisona', 'Clindamicina'
+                                        ];
+                                        foreach ($recomendaciones as $rec) {
+                                            $productosOpts[] = ['value' => $rec, 'label' => $rec];
+                                        }
+
                                         foreach ($productos as $prod) {
                                             $label = $prod->name;
                                             if ($prod->presentacion || $prod->principio_activo) {
@@ -471,7 +482,7 @@
                                             $productosOpts[] = ['value' => (string)$prod->id, 'label' => $label];
                                         }
                                     @endphp
-                                    <div x-data="{ prodPh: $store.i18n.t('form.searchProduct') }">
+                                    <div x-data="{ prodPh: $store.i18n.t('form.searchProduct', 'Buscar producto o medicina manual...') }">
                                         {{-- Dropdown para seleccionar producto --}}
                                         <x-vc-dropdown
                                             wire:model.live="prescripciones.{{ $index }}.product_id"
@@ -479,16 +490,11 @@
                                             :selected="$rx['product_id'] ?? ''"
                                             x-bind:placeholder="prodPh"
                                             searchable="true"
+                                            allowCustom="true"
                                             icon="vaccines"
                                         />
                                     </div>
                                     <flux:error name="prescripciones.{{ $index }}.product_id" />
-                                    <div class="mt-2 flex gap-2 items-center">
-                                         <flux:input size="sm"
-                                            wire:model="prescripciones.{{ $index }}.medicamento"
-                                            x-bind:placeholder="$store.i18n.t('form.manualNamePlaceholder')"
-                                         />
-                                    </div>
                                 </flux:field>
 
                                 {{-- Dosis --}}
