@@ -211,40 +211,40 @@
                                                 <div x-show="detallesAbiertos" x-collapse class="border-t border-zinc-100 dark:border-zinc-800 p-4 bg-zinc-50/30 dark:bg-zinc-900/30 text-sm">
                                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                         @if($historia->reason || $historia->anamnesis)
-                                                        <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                            <div class="bg-white dark:bg-zinc-800 p-4 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700">
-                                                                <h4 class="font-bold text-zinc-800 dark:text-zinc-200 border-b border-zinc-200 dark:border-zinc-700 pb-2 mb-3 text-sm uppercase tracking-wide flex items-center gap-2">
-                                                                    <span class="material-symbols-outlined text-[18px]">help_center</span>
+                                                        <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6 pb-4 border-b border-zinc-200/50 dark:border-zinc-800/50">
+                                                            <div>
+                                                                <h4 class="font-bold text-zinc-800 dark:text-zinc-200 mb-2 text-xs uppercase tracking-wide flex items-center gap-1">
+                                                                    <span class="material-symbols-outlined text-[16px] text-zinc-400">help_center</span>
                                                                     <span x-text="$store.i18n.t('report.reasonForVisit') || 'Motivo de Consulta'"></span>
                                                                 </h4>
-                                                                <p class="text-zinc-600 dark:text-zinc-400">{{ $historia->reason ?? '-' }}</p>
+                                                                <p class="text-zinc-600 dark:text-zinc-400 text-sm whitespace-pre-wrap">{{ $historia->reason ?? '-' }}</p>
                                                             </div>
-                                                            <div class="bg-white dark:bg-zinc-800 p-4 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700">
-                                                                <h4 class="font-bold text-zinc-800 dark:text-zinc-200 border-b border-zinc-200 dark:border-zinc-700 pb-2 mb-3 text-sm uppercase tracking-wide flex items-center gap-2">
-                                                                    <span class="material-symbols-outlined text-[18px]">history_edu</span>
+                                                            <div>
+                                                                <h4 class="font-bold text-zinc-800 dark:text-zinc-200 mb-2 text-xs uppercase tracking-wide flex items-center gap-1">
+                                                                    <span class="material-symbols-outlined text-[16px] text-zinc-400">history_edu</span>
                                                                     <span x-text="$store.i18n.t('report.anamnesisSigns') || 'Anamnesis y Signos Clínicos'"></span>
                                                                 </h4>
-                                                                <p class="text-zinc-600 dark:text-zinc-400">{{ $historia->anamnesis ?? '-' }}</p>
+                                                                <p class="text-zinc-600 dark:text-zinc-400 text-sm whitespace-pre-wrap">{{ $historia->anamnesis ?? '-' }}</p>
                                                             </div>
                                                         </div>
                                                         @endif
                                                         
-                                                        <div class="md:col-span-2 bg-white dark:bg-zinc-800 p-4 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700">
-                                                            <h4 class="font-bold text-zinc-800 dark:text-zinc-200 border-b border-zinc-200 dark:border-zinc-700 pb-2 mb-3 text-sm uppercase tracking-wide flex items-center gap-2">
-                                                                <span class="material-symbols-outlined text-[18px]">vital_signs</span>
+                                                        <div class="md:col-span-2 pb-4 border-b border-zinc-200/50 dark:border-zinc-800/50">
+                                                            <h4 class="font-bold text-zinc-800 dark:text-zinc-200 mb-3 text-xs uppercase tracking-wide flex items-center gap-1">
+                                                                <span class="material-symbols-outlined text-[16px] text-zinc-400">vital_signs</span>
                                                                 <span x-text="$store.i18n.t('report.vitalSigns') || 'Signos Vitales'"></span>
                                                             </h4>
                                                             <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
-                                                                <div class="flex flex-col"><span class="text-xs text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('form.weight') || 'Peso'"></span> <span class="font-medium text-zinc-800 dark:text-zinc-200">{{ $historia->weight ?? '-' }} kg</span></div>
-                                                                <div class="flex flex-col"><span class="text-xs text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('form.temperature') || 'Temp.'"></span> <span class="font-medium text-zinc-800 dark:text-zinc-200">{{ $historia->temperature ?? '-' }} °C</span></div>
-                                                                <div class="flex flex-col"><span class="text-xs text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('form.heartRate') || 'Frec. Card.'"></span> <span class="font-medium text-zinc-800 dark:text-zinc-200">{{ $historia->heart_rate ?? '-' }} bpm</span></div>
-                                                                <div class="flex flex-col"><span class="text-xs text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('form.respRate') || 'Frec. Resp.'"></span> <span class="font-medium text-zinc-800 dark:text-zinc-200">{{ $historia->respiratory_rate ?? '-' }} rpm</span></div>
+                                                                <div class="flex flex-col"><span class="text-[10px] text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('form.weight') || 'Peso'"></span> <span class="font-medium text-zinc-800 dark:text-zinc-200">{{ $historia->weight ?? '-' }} kg</span></div>
+                                                                <div class="flex flex-col"><span class="text-[10px] text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('form.temperature') || 'Temp.'"></span> <span class="font-medium text-zinc-800 dark:text-zinc-200">{{ $historia->temperature ?? '-' }} °C</span></div>
+                                                                <div class="flex flex-col"><span class="text-[10px] text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('form.heartRate') || 'Frec. Card.'"></span> <span class="font-medium text-zinc-800 dark:text-zinc-200">{{ $historia->heart_rate ?? '-' }} bpm</span></div>
+                                                                <div class="flex flex-col"><span class="text-[10px] text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('form.respRate') || 'Frec. Resp.'"></span> <span class="font-medium text-zinc-800 dark:text-zinc-200">{{ $historia->respiratory_rate ?? '-' }} rpm</span></div>
                                                             </div>
                                                         </div>
 
-                                                        <div class="md:col-span-2 bg-white dark:bg-zinc-800 p-4 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700">
-                                                            <h4 class="font-bold text-zinc-800 dark:text-zinc-200 border-b border-zinc-200 dark:border-zinc-700 pb-2 mb-3 text-sm uppercase tracking-wide flex items-center gap-2">
-                                                                <span class="material-symbols-outlined text-[18px]">accessibility_new</span>
+                                                        <div class="md:col-span-2 pb-4 border-b border-zinc-200/50 dark:border-zinc-800/50">
+                                                            <h4 class="font-bold text-zinc-800 dark:text-zinc-200 mb-3 text-xs uppercase tracking-wide flex items-center gap-1">
+                                                                <span class="material-symbols-outlined text-[16px] text-zinc-400">accessibility_new</span>
                                                                 <span x-text="$store.i18n.t('form.physicalExam') || 'Examen Físico'"></span>
                                                             </h4>
                                                             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-xs">
@@ -264,37 +264,35 @@
                                                             </div>
                                                         </div>
 
-                                                        <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                            <div class="bg-emerald-50 dark:bg-emerald-900/10 p-4 rounded-xl shadow-sm border border-emerald-100 dark:border-emerald-800/30">
-                                                                <h4 class="font-bold text-emerald-800 dark:text-emerald-400 border-b border-emerald-200 dark:border-emerald-800/50 pb-2 mb-3 text-sm uppercase tracking-wide flex items-center gap-2">
-                                                                    <span class="material-symbols-outlined text-[18px]">diagnosis</span>
+                                                        <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6 pb-4 border-b border-zinc-200/50 dark:border-zinc-800/50">
+                                                            <div>
+                                                                <h4 class="font-bold text-zinc-800 dark:text-zinc-200 mb-2 text-xs uppercase tracking-wide flex items-center gap-1">
+                                                                    <span class="material-symbols-outlined text-[16px] text-zinc-400">diagnosis</span>
                                                                     <span x-text="$store.i18n.t('report.diagnosis') || 'Diagnóstico Presuntivo'"></span>
                                                                 </h4>
-                                                                <p class="text-emerald-700 dark:text-emerald-300">{{ $historia->diagnostico_presuntivo ?? '-' }}</p>
+                                                                <p class="text-zinc-600 dark:text-zinc-400 text-sm whitespace-pre-wrap">{{ $historia->diagnostico_presuntivo ?? '-' }}</p>
                                                             </div>
-                                                            <div class="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-xl shadow-sm border border-blue-100 dark:border-blue-800/30">
-                                                                <h4 class="font-bold text-blue-800 dark:text-blue-400 border-b border-blue-200 dark:border-blue-800/50 pb-2 mb-3 text-sm uppercase tracking-wide flex items-center gap-2">
-                                                                    <span class="material-symbols-outlined text-[18px]">prescriptions</span>
+                                                            <div>
+                                                                <h4 class="font-bold text-zinc-800 dark:text-zinc-200 mb-2 text-xs uppercase tracking-wide flex items-center gap-1">
+                                                                    <span class="material-symbols-outlined text-[16px] text-zinc-400">medical_services</span>
                                                                     <span x-text="$store.i18n.t('report.treatmentIndications') || 'Tratamiento e Indicaciones'"></span>
                                                                 </h4>
-                                                                <p class="text-blue-700 dark:text-blue-300">{{ $historia->tratamiento_indicaciones ?? '-' }}</p>
+                                                                <p class="text-zinc-600 dark:text-zinc-400 text-sm whitespace-pre-wrap">{{ $historia->tratamiento_indicaciones ?? '-' }}</p>
                                                             </div>
                                                         </div>
 
                                                         @if($historia->notas_aclaratorias || $historia->proxima_cita_recomendada)
-                                                        <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                            <div class="bg-amber-50 dark:bg-amber-900/10 p-4 rounded-xl shadow-sm border border-amber-100 dark:border-amber-800/30">
-                                                                <h4 class="font-bold text-amber-800 dark:text-amber-400 border-b border-amber-200 dark:border-amber-800/50 pb-2 mb-3 text-sm uppercase tracking-wide flex items-center gap-2">
-                                                                    <span class="material-symbols-outlined text-[18px]">note_alt</span>
+                                                        <div class="md:col-span-2 pb-4">
+                                                                <h4 class="font-bold text-zinc-800 dark:text-zinc-200 mb-2 text-xs uppercase tracking-wide flex items-center gap-1">
+                                                                    <span class="material-symbols-outlined text-[16px] text-zinc-400">note_alt</span>
                                                                     <span x-text="$store.i18n.t('report.additionalNotes') || 'Notas Adicionales'"></span>
                                                                 </h4>
                                                                 @if($historia->notas_aclaratorias)
-                                                                    <p class="text-amber-700 dark:text-amber-300 mb-2">{{ $historia->notas_aclaratorias }}</p>
+                                                                    <p class="text-zinc-600 dark:text-zinc-400 text-sm whitespace-pre-wrap mb-2">{{ $historia->notas_aclaratorias }}</p>
                                                                 @endif
                                                                 @if($historia->proxima_cita_recomendada)
-                                                                    <p class="text-amber-700 dark:text-amber-300"><span class="font-bold tracking-wide" x-text="$store.i18n.t('form.recommendedNextAppt') || 'Próxima Cita Recomendada'"></span>: <span class="font-medium">{{ \Carbon\Carbon::parse($historia->proxima_cita_recomendada)->format('d/m/Y') }}</span></p>
+                                                                    <p class="text-zinc-600 dark:text-zinc-400 text-sm"><span class="font-bold tracking-wide" x-text="$store.i18n.t('form.recommendedNextAppt') || 'Próxima Cita Recomendada'"></span>: <span class="font-medium">{{ \Carbon\Carbon::parse($historia->proxima_cita_recomendada)->format('d/m/Y') }}</span></p>
                                                                 @endif
-                                                            </div>
                                                         </div>
                                                         @endif
                                                         
@@ -352,10 +350,10 @@
             <div class="flex flex-col-reverse sm:flex-row gap-3 w-full mt-6">
                 <flux:spacer class="hidden sm:block" />
                 <flux:modal.close class="w-full sm:w-auto">
-                    <flux:button variant="ghost" class="w-full font-medium"><span x-text="$store.i18n.t('btn.cancel') === 'btn.cancel' ? 'Cancelar' : $store.i18n.t('btn.cancel')">Cancelar</span></flux:button>
+                    <flux:button variant="ghost" class="w-full font-medium"><span x-text="$store.i18n.t('btn.cancel') === 'btn.cancel' ? 'Cancelar' : $store.i18n.t('btn.cancel')"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'"></span></span></flux:button>
                 </flux:modal.close>
                 <button type="button" wire:click="confirmarEliminar" x-on:click="$dispatch('modal-close', { name: 'confirmar-eliminar' })" class="w-full sm:w-auto btn-danger font-medium justify-center">
-                    <span x-text="$store.i18n.t('btn.delete') === 'btn.delete' ? 'Eliminar' : $store.i18n.t('btn.delete')">Eliminar</span>
+                    <span x-text="$store.i18n.t('btn.delete') === 'btn.delete' ? 'Eliminar' : $store.i18n.t('btn.delete')"><span x-text="$store.i18n.t('btn.delete') || 'Eliminar'"></span></span>
                 </button>
             </div>
         </div>

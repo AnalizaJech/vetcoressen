@@ -300,7 +300,7 @@
         </div>
         <div class="flex gap-3 w-full mt-6">
             <flux:modal.close class="flex-1">
-                <flux:button variant="ghost" class="w-full"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'">Cancelar</span></flux:button>
+                <flux:button variant="ghost" class="w-full"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'"></span></span></flux:button>
             </flux:modal.close>
             <button type="button" wire:click="guardar" class="btn-primary flex-1 flex justify-center items-center gap-2" x-on:click="$dispatch('modal-close', { name: 'confirmar-actualizacion' })">
                 <span class="material-symbols-outlined icon-sm">save</span>

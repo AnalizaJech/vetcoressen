@@ -36,12 +36,12 @@
                 <div class="mb-4 flex flex-wrap gap-2">
                     @php
                         $categorias = [
-                            '' => ['icon' => 'grid_view', 'label' => 'filter.allProducts'],
-                            'PRODUCTO' => ['icon' => 'inventory_2', 'label' => 'inventory.product'],
-                            'SERVICIO' => ['icon' => 'medical_services', 'label' => 'inventory.servicio'],
-                            'MEDICAMENTO' => ['icon' => 'vaccines', 'label' => 'inventory.medicamento'],
-                            'ALIMENTO' => ['icon' => 'pets', 'label' => 'inventory.alimento'],
-                            'ACCESORIO' => ['icon' => 'shopping_bag', 'label' => 'inventory.accesorio'],
+                            '' => ['icon' => 'grid_view', 'key' => 'filter.allProducts', 'fallback' => 'Todos'],
+                            'PRODUCTO' => ['icon' => 'inventory_2', 'key' => 'misc.product', 'fallback' => 'Producto'],
+                            'SERVICIO' => ['icon' => 'medical_services', 'key' => 'misc.service', 'fallback' => 'Servicio'],
+                            'MEDICAMENTO' => ['icon' => 'vaccines', 'key' => 'misc.medication', 'fallback' => 'Medicamento'],
+                            'ALIMENTO' => ['icon' => 'pets', 'key' => 'misc.food', 'fallback' => 'Alimento'],
+                            'ACCESORIO' => ['icon' => 'shopping_bag', 'key' => 'misc.accessory', 'fallback' => 'Accesorio'],
                         ];
                     @endphp
                     @foreach($categorias as $valor => $cat)
@@ -51,7 +51,7 @@
                             class="px-4 py-2 rounded-xl flex items-center gap-2 text-sm font-medium transition-all {{ $filtroTipo === $valor ? 'bg-emerald-500 text-white shadow-md' : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700' }}"
                         >
                             <span class="material-symbols-outlined text-[18px]">{{ $cat['icon'] }}</span>
-                            <span x-text="$store.i18n.t('{{ $cat['label'] }}') || '{{ $cat['label'] }}'"></span>
+                            <span x-text="$store.i18n.t('{{ $cat['key'] }}') || '{{ $cat['fallback'] }}'"></span>
                         </button>
                     @endforeach
                 </div>
@@ -61,7 +61,7 @@
                     <flux:input
                         wire:model.live.debounce.300ms="buscarProducto"
                         class="w-full"
-                        placeholder="placeholder.searchPOS"
+                        x-bind:placeholder="$store.i18n.t('placeholder.searchPOS')"
                     >
                         <x-slot:iconLeading>
                             <span class="material-symbols-outlined text-[18px]">search</span>

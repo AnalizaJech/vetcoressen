@@ -567,10 +567,10 @@
             <div class="flex flex-col-reverse sm:flex-row gap-3 w-full mt-6">
                 <flux:spacer class="hidden sm:block" />
                 <flux:modal.close class="w-full sm:w-auto">
-                    <flux:button variant="ghost" class="w-full font-medium"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'">Cancelar</span></flux:button>
+                    <flux:button variant="ghost" class="w-full font-medium"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'"></span></span></flux:button>
                 </flux:modal.close>
                 <button type="button" class="w-full sm:w-auto btn-danger font-medium justify-center" wire:click="eliminar" x-on:click="$dispatch('modal-close', { name: 'confirmar-eliminar' })">
-                    <span x-text="$store.i18n.t('btn.delete') || 'Eliminar'">Eliminar</span>
+                    <span x-text="$store.i18n.t('btn.delete') || 'Eliminar'"><span x-text="$store.i18n.t('btn.delete') || 'Eliminar'"></span></span>
                 </button>
             </div>
         </div>

@@ -178,7 +178,7 @@
             </div>
             <div class="flex flex-col-reverse sm:flex-row gap-3 w-full mt-6">
                 <flux:modal.close class="w-full sm:w-auto flex-1">
-                    <flux:button variant="ghost" class="w-full font-medium"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'">Cancelar</span></flux:button>
+                    <flux:button variant="ghost" class="w-full font-medium"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'"></span></span></flux:button>
                 </flux:modal.close>
                 <button type="button" wire:click="anularVentaConfirmada" class="btn-primary btn-primary--red w-full sm:w-auto flex-1 flex justify-center items-center gap-2" x-on:click="$dispatch('modal-close', { name: 'anular-venta-modal' })">
                     <span class="material-symbols-outlined icon-sm">delete</span>

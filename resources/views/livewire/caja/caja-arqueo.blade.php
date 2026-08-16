@@ -89,7 +89,7 @@
 
                                 <div class="flex flex-col sm:flex-row gap-3 mt-6">
                                     <flux:modal.close class="w-full">
-                                        <button type="button" class="w-full py-2.5 rounded-xl font-semibold border transition-all" style="border-color: var(--vc-border); color: var(--vc-text);">Cancelar</button>
+                                        <button type="button" class="w-full py-2.5 rounded-xl font-semibold border transition-all" style="border-color: var(--vc-border); color: var(--vc-text);"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'"></span></button>
                                     </flux:modal.close>
                                     <button type="submit" class="w-full btn-primary btn-primary--red justify-center py-2.5">Cerrar Definitivamente</button>
                                 </div>
@@ -140,7 +140,7 @@
 
                                 <div class="flex flex-col sm:flex-row gap-3 mt-6">
                                     <flux:modal.close class="w-full">
-                                        <button type="button" class="w-full py-2.5 rounded-xl font-semibold border transition-all" style="border-color: var(--vc-border); color: var(--vc-text);">Cancelar</button>
+                                        <button type="button" class="w-full py-2.5 rounded-xl font-semibold border transition-all" style="border-color: var(--vc-border); color: var(--vc-text);"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'"></span></button>
                                     </flux:modal.close>
                                     <button type="submit" class="w-full btn-primary btn-primary--emerald justify-center py-2.5">Confirmar Apertura</button>
                                 </div>
