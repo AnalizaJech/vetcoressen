@@ -66,11 +66,11 @@
                     </div>
 
                     <div class="pt-4 border-t border-zinc-100 dark:border-zinc-800 flex justify-end gap-1.5 items-center">
-                        <a href="{{ route('roles.editar', $role->id) }}" class="vc-btn-action vc-btn-edit" x-bind:data-vc-tooltip="$store.i18n.t('btn.edit') || 'Editar'">
+                        <a href="{{ route('roles.editar', $role->id) }}" class="vc-btn-action vc-btn-edit" x-bind:>
                             <span class="material-symbols-outlined icon-sm">edit</span>
                         </a>
                         @if($role->name !== 'super_admin')
-                            <button type="button" class="vc-btn-action vc-btn-delete" x-bind:data-vc-tooltip="$store.i18n.t('btn.delete') || 'Eliminar'"
+                            <button type="button" class="vc-btn-action vc-btn-delete" x-bind:
                                 @click="$wire.set('roleEliminarId', {{ $role->id }}); $dispatch('modal-show', { name: 'confirmar-eliminar-rol' })">
                                 <span class="material-symbols-outlined icon-sm">delete</span>
                             </button>

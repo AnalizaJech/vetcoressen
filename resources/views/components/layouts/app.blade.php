@@ -23,7 +23,7 @@
             ?? str_replace(' ', '_', mb_strtolower($cleanTitle));
     @endphp
     <meta name="current-title-key" content="{{ $titleKey }}">
-    <title>{{ $cleanTitle }}</title>
+    <title x-text="($store.i18n.t('nav.' + '{{ $titleKey }}') || '{{ $cleanTitle }}') + ' - {{ config('app.name', 'VETCORESSEN') }}'">{{ $cleanTitle }} - {{ config('app.name', 'VETCORESSEN') }}</title>
     <meta name="description" content="{{ config('app.name') }} - Sistema de Gestión Veterinaria">
 
     <!-- Configuración de Favicon para Laravel -->

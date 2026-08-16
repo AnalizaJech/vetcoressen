@@ -219,7 +219,7 @@
             </div>
 
             <div class="flex justify-end gap-3 pt-4">
-                <flux:button href="{{ route('sucursales.index') }}" wire:navigate variant="ghost">Cancelar</flux:button>
+                <flux:button href="{{ route('sucursales.index') }}" wire:navigate variant="ghost"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'"></span></flux:button>
                 <button type="submit" class="btn-primary">
                     <span class="material-symbols-outlined icon-sm">save</span>
                     <span x-text="$store.i18n.t('{{ $isEdit ? 'btn.update' : 'btn.register' }}')"></span>

@@ -28,29 +28,29 @@
         .header-info strong { color: #ffffff; }
 
         /* Titles */
-        .section-title { font-size: 13px; font-weight: bold; color: #ffffff; background-color: #059669; padding: 4px 8px; margin-bottom: 8px; margin-top: 15px; text-transform: uppercase; border-radius: 3px; }
+        .section-title { font-size: 11px; font-weight: bold; color: #065f46; border-bottom: 2px solid #34d399; padding-bottom: 3px; margin-bottom: 8px; margin-top: 18px; text-transform: uppercase; letter-spacing: 0.5px; }
         
         /* Grid Tables */
-        table.grid { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
-        table.grid td { padding: 4px 6px; vertical-align: top; border: 1px solid #e5e7eb; }
-        table.grid td.label { width: 15%; background-color: #f9fafb; color: #4b5563; font-weight: bold; font-size: 10px; text-transform: uppercase; }
+        table.grid { width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 10px; }
+        table.grid td { padding: 4px 6px; vertical-align: middle; border-bottom: 1px solid #f3f4f6; }
+        table.grid td.label { width: 15%; color: #6b7280; font-weight: bold; text-transform: uppercase; font-size: 9px; }
         table.grid td.value { width: 35%; color: #111827; }
         
         /* Layout Tables */
-        table.layout { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+        table.layout { width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 10px; }
         table.layout > tbody > tr > td { padding: 0; vertical-align: top; }
         table.layout > tbody > tr > td:first-child { padding-right: 5px; }
         table.layout > tbody > tr > td:last-child { padding-left: 5px; }
 
         /* Content boxes */
-        .content-box { border: 1px solid #d1d5db; border-radius: 4px; padding: 6px 8px; margin-bottom: 8px; background-color: #f9fafb; }
-        .content-box h4 { margin: 0 0 4px 0; color: #374151; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #e5e7eb; padding-bottom: 2px; }
+        .content-box { border-left: 3px solid #34d399; border-radius: 0px; padding: 6px 8px; margin-bottom: 8px; background-color: #f9fafb; }
+        .content-box h4 { margin: 0 0 4px 0; color: #374151; font-size: 10px; text-transform: uppercase; border-bottom: 1px solid #e5e7eb; padding-bottom: 2px; }
         .content-box p { margin: 0; white-space: pre-wrap; color: #1f2937; }
 
         /* Compact Table */
-        table.compact { width: 100%; border-collapse: collapse; }
-        table.compact th, table.compact td { border: 1px solid #d1d5db; padding: 4px 6px; text-align: left; }
-        table.compact th { background-color: #374151; color: #ffffff; font-weight: bold; font-size: 10px; text-transform: uppercase; }
+        table.compact { width: 100%; border-collapse: collapse; font-size: 10px; }
+        table.compact th, table.compact td { border-bottom: 1px solid #e5e7eb; padding: 6px 4px; text-align: left; }
+        table.compact th { color: #4b5563; font-weight: bold; font-size: 9px; text-transform: uppercase; border-bottom: 2px solid #e5e7eb; }
         
         /* Footer */
         .footer { margin-top: 30px; padding-top: 10px; position: relative; page-break-inside: avoid; }
@@ -107,18 +107,18 @@
 
         <div class="section-title">{{ $t('report.anamnesisAndVitals', 'Anamnesis y Signos Vitales') }}</div>
         
-        <table class="layout">
+        <table class="layout" style="width: 100%; border-spacing: 0; border-collapse: separate;">
             <tr>
-                <td style="width: 50%;">
-                    <div class="content-box">
-                        <h4>{{ $t('report.reasonForVisit', 'Motivo de Consulta') }}</h4>
-                        <p>{{ $historia->reason ?? $t('misc.notSpecified', 'No especificado') }}</p>
+                <td style="width: 50%; padding-right: 8px;">
+                    <div style="border-left: 3px solid #34d399; border: 1px solid #e5e7eb; border-left-width: 4px; border-left-color: #34d399; background-color: #f9fafb; padding: 10px; border-radius: 6px;">
+                        <h4 style="color: #374151; border-bottom: 1px solid #e5e7eb; padding-bottom: 4px; margin: 0 0 5px 0; font-size: 10px; text-transform: uppercase;">📋 {{ $t('report.reasonForVisit', 'Motivo de Consulta') }}</h4>
+                        <p style="margin: 0; white-space: pre-wrap; color: #1f2937; font-size: 11px;">{{ $historia->reason ?? $t('misc.notSpecified', 'No especificado') }}</p>
                     </div>
                 </td>
-                <td style="width: 50%;">
-                    <div class="content-box">
-                        <h4>{{ $t('report.anamnesisSigns', 'Anamnesis y Signos Clínicos') }}</h4>
-                        <p>{{ $historia->anamnesis ?? $t('misc.notSpecified', 'No especificados') }}</p>
+                <td style="width: 50%; padding-left: 8px;">
+                    <div style="border-left: 3px solid #34d399; border: 1px solid #e5e7eb; border-left-width: 4px; border-left-color: #34d399; background-color: #f9fafb; padding: 10px; border-radius: 6px;">
+                        <h4 style="color: #374151; border-bottom: 1px solid #e5e7eb; padding-bottom: 4px; margin: 0 0 5px 0; font-size: 10px; text-transform: uppercase;">📝 {{ $t('report.anamnesisSigns', 'Anamnesis y Signos Clínicos') }}</h4>
+                        <p style="margin: 0; white-space: pre-wrap; color: #1f2937; font-size: 11px;">{{ $historia->anamnesis ?? $t('misc.notSpecified', 'No especificados') }}</p>
                     </div>
                 </td>
             </tr>
@@ -181,18 +181,18 @@
 
         <div class="section-title">{{ $t('report.diagnosisAndPlan', 'Diagnóstico y Plan') }}</div>
 
-        <table class="layout">
+        <table class="layout" style="width: 100%; border-spacing: 0; border-collapse: separate;">
             <tr>
-                <td style="width: 50%;">
-                    <div class="content-box" style="background-color: #f0fdf4; border-color: #86efac;">
-                        <h4 style="color: #065f46; border-bottom-color: #bbf7d0;">{{ $t('report.diagnosis', 'Diagnóstico Presuntivo / Definitivo') }}</h4>
-                        <p>{{ $historia->diagnostico_presuntivo ?? $t('misc.notSpecified', 'No especificado') }}</p>
+                <td style="width: 50%; padding-right: 8px;">
+                    <div style="border-left: 3px solid #10b981; border: 1px solid #bbf7d0; border-left-width: 4px; border-left-color: #10b981; background-color: #f0fdf4; padding: 10px; border-radius: 6px;">
+                        <h4 style="color: #065f46; border-bottom: 1px solid #bbf7d0; padding-bottom: 4px; margin: 0 0 5px 0; font-size: 10px; text-transform: uppercase;">🩺 {{ $t('report.diagnosis', 'Diagnóstico Presuntivo / Definitivo') }}</h4>
+                        <p style="margin: 0; white-space: pre-wrap; color: #1f2937; font-size: 11px;">{{ $historia->diagnostico_presuntivo ?? $t('misc.notSpecified', 'No especificado') }}</p>
                     </div>
                 </td>
-                <td style="width: 50%;">
-                    <div class="content-box" style="background-color: #eff6ff; border-color: #93c5fd;">
-                        <h4 style="color: #1e40af; border-bottom-color: #bfdbfe;">{{ $t('report.treatmentIndications', 'Tratamiento e Indicaciones Médicas') }}</h4>
-                        <p>{{ $historia->tratamiento_indicaciones ?? $t('misc.notSpecified', 'No especificado') }}</p>
+                <td style="width: 50%; padding-left: 8px;">
+                    <div style="border-left: 3px solid #3b82f6; border: 1px solid #bfdbfe; border-left-width: 4px; border-left-color: #3b82f6; background-color: #eff6ff; padding: 10px; border-radius: 6px;">
+                        <h4 style="color: #1e40af; border-bottom: 1px solid #bfdbfe; padding-bottom: 4px; margin: 0 0 5px 0; font-size: 10px; text-transform: uppercase;">💊 {{ $t('report.treatmentIndications', 'Tratamiento e Indicaciones Médicas') }}</h4>
+                        <p style="margin: 0; white-space: pre-wrap; color: #1f2937; font-size: 11px;">{{ $historia->tratamiento_indicaciones ?? $t('misc.notSpecified', 'No especificado') }}</p>
                     </div>
                 </td>
             </tr>
@@ -231,17 +231,17 @@
         </table>
         @endif
 
-        <table class="layout" style="margin-top: 8px;">
+        <table class="layout" style="width: 100%; border-spacing: 5px; border-collapse: separate; margin-top: 8px;">
             <tr>
-                <td style="width: 50%;">
+                <td style="width: 50%; vertical-align: top;">
                     @if($historia->notas_aclaratorias || $historia->proxima_cita_recomendada)
-                    <div class="content-box" style="background-color: #fffbeb; border-color: #fde68a;">
-                        <h4 style="color: #b45309;">{{ $t('report.additionalNotes', 'Notas Adicionales') }}</h4>
+                    <div style="background-color: #fffbeb; border: 1px solid #fde68a; border-radius: 4px; padding: 10px;">
+                        <h4 style="color: #b45309; border-bottom: 1px solid #fcd34d; padding-bottom: 4px; margin: 0 0 5px 0; font-size: 11px; text-transform: uppercase;">{{ $t('report.additionalNotes', 'Notas Adicionales') }}</h4>
                         @if($historia->notas_aclaratorias)
-                            <p style="margin-bottom: 5px;">{{ $historia->notas_aclaratorias }}</p>
+                            <p style="margin: 0 0 5px 0; white-space: pre-wrap; color: #1f2937;">{{ $historia->notas_aclaratorias }}</p>
                         @endif
                         @if($historia->proxima_cita_recomendada)
-                            <p><strong>{{ $t('form.recommendedNextAppt', 'Próxima Cita Recomendada') }}:</strong> {{ \Carbon\Carbon::parse($historia->proxima_cita_recomendada)->format('d/m/Y') }}</p>
+                            <p style="margin: 0; color: #1f2937;"><strong>{{ $t('form.recommendedNextAppt', 'Próxima Cita Recomendada') }}:</strong> {{ \Carbon\Carbon::parse($historia->proxima_cita_recomendada)->format('d/m/Y') }}</p>
                         @endif
                     </div>
                     @endif

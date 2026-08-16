@@ -46,12 +46,12 @@
 
                 <div class="flex items-center gap-2">
                     {{-- Tema --}}
-                    <button type="button" @click="$store.theme.toggle()" class="flex items-center justify-center w-8 h-8 rounded-md transition-colors focus:outline-none" style="background: var(--vc-surface-elevated); color: var(--vc-emerald);" :data-vc-tooltip="$store.i18n.locale === 'en' ? 'Change theme' : 'Cambiar tema'">
+                    <button type="button" @click="$store.theme.toggle()" class="flex items-center justify-center w-8 h-8 rounded-md transition-colors focus:outline-none" style="background: var(--vc-surface-elevated); color: var(--vc-emerald);" :>
                         <span class="material-symbols-outlined icon-md" x-text="$store.theme.isDark ? 'light_mode' : 'dark_mode'"></span>
                     </button>
 
                     {{-- Idioma --}}
-                    <button type="button" @click="$store.i18n.toggle()" class="text-xs font-bold w-8 h-8 rounded-md transition-colors flex items-center justify-center focus:outline-none" style="background: var(--vc-emerald-glow); color: var(--vc-emerald-light);" x-text="$store.i18n.locale === 'en' ? 'ES' : 'EN'" :data-vc-tooltip="$store.i18n.locale === 'en' ? 'Change language' : 'Cambiar idioma'"></button>
+                    <button type="button" @click="$store.i18n.toggle()" class="text-xs font-bold w-8 h-8 rounded-md transition-colors flex items-center justify-center focus:outline-none" style="background: var(--vc-emerald-glow); color: var(--vc-emerald-light);" x-text="$store.i18n.locale === 'en' ? 'ES' : 'EN'" :></button>
                 </div>
             </div>
 

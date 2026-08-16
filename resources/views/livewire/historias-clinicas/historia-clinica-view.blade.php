@@ -47,28 +47,28 @@
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-7 text-sm">
-                <div class="rounded-xl bg-white p-5 border border-zinc-200 shadow-sm">
-                    <h3 class="font-semibold text-zinc-900 mb-3 border-b border-zinc-200 pb-2" x-text="$store.i18n.t('report.patientData')"></h3>
-                    <div class="grid grid-cols-[100px_1fr] gap-y-1">
-                        <span class="text-zinc-500" x-text="$store.i18n.t('form.nameLabel')"></span> <span class="font-medium">{{ $historia->pet?->name ?? 'N/A' }}</span>
-                        <span class="text-zinc-500" x-text="$store.i18n.t('table.species') || 'Especie:'">Especie:</span> <span>{{ $historia->pet?->especie?->name ?? 'N/A' }}</span>
-                        <span class="text-zinc-500" x-text="$store.i18n.t('table.breed') || 'Raza:'">Raza:</span> <span>{{ $historia->pet?->raza?->name ?? 'N/A' }}</span>
-                        <span class="text-zinc-500" x-text="$store.i18n.t('report.sex')"></span> <span x-text="$store.i18n.t('report.{{ $historia->pet?->gender === 'M' ? 'male' : 'female' }}')"></span>
-                        <span class="text-zinc-500" x-text="$store.i18n.t('report.age')"></span> <span>@if($historia->pet?->birth_date){{ \Carbon\Carbon::parse($historia->pet->birth_date)->age }} <span x-text="$store.i18n.t('report.years')"></span>@else<span x-text="$store.i18n.t('report.unknown')"></span>@endif</span>
-                        <span class="text-zinc-500" x-text="$store.i18n.t('report.weightRef')"></span> <span>@if($historia->weight){{ $historia->weight }} kg @else<span x-text="$store.i18n.t('report.notRegistered')"></span>@endif</span>
+                <div>
+                    <h3 class="font-semibold text-emerald-400 mb-3 border-b border-emerald-500/30 pb-2 uppercase tracking-wider text-xs" x-text="$store.i18n.t('report.patientData')"></h3>
+                    <div class="grid grid-cols-[100px_1fr] gap-y-1.5 text-zinc-300">
+                        <span class="text-zinc-500" x-text="$store.i18n.t('form.nameLabel')"></span> <span class="font-medium text-white">{{ $historia->pet?->name ?? 'N/A' }}</span>
+                        <span class="text-zinc-500" x-text="$store.i18n.t('table.species') || 'Especie:'">Especie:</span> <span class="text-white">{{ $historia->pet?->especie?->name ?? 'N/A' }}</span>
+                        <span class="text-zinc-500" x-text="$store.i18n.t('table.breed') || 'Raza:'">Raza:</span> <span class="text-white">{{ $historia->pet?->raza?->name ?? 'N/A' }}</span>
+                        <span class="text-zinc-500" x-text="$store.i18n.t('report.sex')"></span> <span class="text-white" x-text="$store.i18n.t('report.{{ $historia->pet?->gender === 'M' ? 'male' : 'female' }}')"></span>
+                        <span class="text-zinc-500" x-text="$store.i18n.t('report.age')"></span> <span class="text-white">@if($historia->pet?->birth_date){{ \Carbon\Carbon::parse($historia->pet->birth_date)->age }} <span x-text="$store.i18n.t('report.years')"></span>@else<span x-text="$store.i18n.t('report.unknown')"></span>@endif</span>
+                        <span class="text-zinc-500" x-text="$store.i18n.t('report.weightRef')"></span> <span class="text-white">@if($historia->weight){{ $historia->weight }} kg @else<span x-text="$store.i18n.t('report.notRegistered')"></span>@endif</span>
                     </div>
                 </div>
-                <div class="rounded-xl bg-white p-5 border border-zinc-200 shadow-sm">
-                    <h3 class="font-semibold text-zinc-900 mb-3 border-b border-zinc-200 pb-2" x-text="$store.i18n.t('report.ownerData')"></h3>
+                <div>
+                    <h3 class="font-semibold text-emerald-400 mb-3 border-b border-emerald-500/30 pb-2 uppercase tracking-wider text-xs" x-text="$store.i18n.t('report.ownerData')"></h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="flex flex-col gap-1 text-sm">
-                            <span class="text-zinc-500" x-text="$store.i18n.t('form.nameLabel')"></span> <span class="font-medium">{{ $historia->pet?->cliente?->nombre_completo ?? 'N/A' }}</span>
-                            <span class="text-zinc-500">DNI/RUC:</span> <span>{{ $historia->pet?->cliente?->numero_documento ?? 'N/A' }}</span>
+                        <div class="flex flex-col gap-1.5 text-sm text-zinc-300">
+                            <span class="text-zinc-500" x-text="$store.i18n.t('form.nameLabel')"></span> <span class="font-medium text-white">{{ $historia->pet?->cliente?->nombre_completo ?? 'N/A' }}</span>
+                            <span class="text-zinc-500">DNI/RUC:</span> <span class="text-white">{{ $historia->pet?->cliente?->numero_documento ?? 'N/A' }}</span>
                         </div>
-                        <div class="flex flex-col gap-1 text-sm">
-                            <span class="text-zinc-500" x-text="$store.i18n.t('report.phone')"></span> <span>{{ $historia->pet?->cliente?->phone ?? 'N/A' }}</span>
-                            <span class="text-zinc-500" x-text="$store.i18n.t('report.email')"></span> <span>{{ $historia->pet?->cliente?->email ?? 'N/A' }}</span>
-                            <span class="text-zinc-500" x-text="$store.i18n.t('report.address')"></span> <span>{{ $historia->pet?->cliente?->address ?? 'N/A' }}</span>
+                        <div class="flex flex-col gap-1.5 text-sm text-zinc-300">
+                            <span class="text-zinc-500" x-text="$store.i18n.t('report.phone')"></span> <span class="text-white">{{ $historia->pet?->cliente?->phone ?? 'N/A' }}</span>
+                            <span class="text-zinc-500" x-text="$store.i18n.t('report.email')"></span> <span class="text-white">{{ $historia->pet?->cliente?->email ?? 'N/A' }}</span>
+                            <span class="text-zinc-500" x-text="$store.i18n.t('report.address')"></span> <span class="text-white">{{ $historia->pet?->cliente?->address ?? 'N/A' }}</span>
                         </div>
                     </div>
                 </div>
@@ -289,14 +289,6 @@
     {{-- CSS base para vista normal y estilos de impresión optimizados para A4 --}}
     <style>
         /* Estilos base de las tarjetas médicas */
-        .medical-record-content > div {
-            background: #ffffff;
-            border: 1px solid #e4e4e7;
-            border-left: 4px solid #10b981;
-            border-radius: 0.75rem;
-            padding: 1.25rem;
-            box-shadow: 0 1px 2px rgba(24, 24, 27, 0.04);
-        }
         .medical-record-content > div > h3 {
             padding-bottom: 0.75rem;
             border-bottom: 1px solid #e4e4e7;

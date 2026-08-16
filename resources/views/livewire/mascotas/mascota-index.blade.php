@@ -97,17 +97,17 @@
 
                     {{-- Acciones --}}
                     <div class="pt-4 border-t border-zinc-100 dark:border-zinc-800 flex justify-end gap-1.5 items-center">
-                        <a href="{{ route('historias.index', ['clienteSeleccionadoId' => $mascota->customer_id]) }}" class="vc-btn-action p-1.5 rounded-lg flex items-center gap-1 transition-colors hover:bg-purple-50 dark:hover:bg-purple-500/10 text-purple-600" data-vc-tooltip="Historias Clínicas" x-bind:data-vc-tooltip="$store.i18n.t('page.records') || 'Historias Clínicas'">
+                        <a href="{{ route('historias.index', ['clienteSeleccionadoId' => $mascota->customer_id]) }}" class="vc-btn-action p-1.5 rounded-lg flex items-center gap-1 transition-colors hover:bg-purple-50 dark:hover:bg-purple-500/10 text-purple-600" x-bind:>
                             <span class="material-symbols-outlined text-[18px]">clinical_notes</span>
                         </a>
-                        <button type="button" class="vc-btn-action vc-btn-view" data-vc-tooltip="Ver" x-bind:data-vc-tooltip="$store.i18n.t('btn.view') || 'Ver'" 
+                        <button type="button" class="vc-btn-action vc-btn-view" x-bind:
                             wire:click="ver({{ $mascota->id }})">
                             <span class="material-symbols-outlined text-lg">visibility</span>
                         </button>
-                        <a href="{{ route('mascotas.editar', $mascota) }}" class="vc-btn-action vc-btn-edit" data-vc-tooltip="Editar" x-bind:data-vc-tooltip="$store.i18n.t('btn.edit') || 'Editar'">
+                        <a href="{{ route('mascotas.editar', $mascota) }}" class="vc-btn-action vc-btn-edit" x-bind:>
                             <span class="material-symbols-outlined text-lg">edit</span>
                         </a>
-                        <button type="button" class="vc-btn-action vc-btn-delete" data-vc-tooltip="Eliminar" x-bind:data-vc-tooltip="$store.i18n.t('btn.delete') || 'Eliminar'"
+                        <button type="button" class="vc-btn-action vc-btn-delete" x-bind:
                             @click="$wire.set('mascotaEliminarId', {{ $mascota->id }}); $dispatch('modal-show', { name: 'confirmar-eliminar' })">
                             <span class="material-symbols-outlined text-lg">delete</span>
                         </button>
@@ -137,10 +137,10 @@
             <div class="flex flex-col-reverse sm:flex-row gap-3 w-full mt-6">
                 <flux:spacer class="hidden sm:block" />
                 <flux:modal.close class="w-full sm:w-auto">
-                    <flux:button variant="ghost" class="w-full font-medium px-4 py-2 md:px-5 md:py-2.5 lg:px-6 lg:py-3"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'">Cancelar</span></flux:button>
+                    <flux:button variant="ghost" class="w-full font-medium px-4 py-2 md:px-5 md:py-2.5 lg:px-6 lg:py-3"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'"></span></span></flux:button>
                 </flux:modal.close>
                 <button type="button" class="w-full sm:w-auto btn-danger font-medium justify-center px-4 py-2 md:px-5 md:py-2.5 lg:px-6 lg:py-3" wire:click="eliminar" x-on:click="$dispatch('modal-close', { name: 'confirmar-eliminar' })">
-                    <span x-text="$store.i18n.t('btn.delete') || 'Eliminar'">Eliminar</span>
+                    <span x-text="$store.i18n.t('btn.delete') || 'Eliminar'"><span x-text="$store.i18n.t('btn.delete') || 'Eliminar'"></span></span>
                 </button>
             </div>
         </div>

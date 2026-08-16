@@ -88,11 +88,11 @@
 
                         {{-- Acciones --}}
                         <div class="pt-4 border-t border-zinc-100 dark:border-zinc-800 flex justify-end gap-1.5 items-center">
-                            <a href="{{ route('sucursales.editar', $sucursal) }}" class="vc-btn-action vc-btn-edit" x-bind:data-vc-tooltip="$store.i18n.t('btn.edit') || 'Editar'">
+                            <a href="{{ route('sucursales.editar', $sucursal) }}" class="vc-btn-action vc-btn-edit" x-bind:>
                                 <span class="material-symbols-outlined icon-sm">edit</span>
                             </a>
                             @if(!$sucursal->is_main)
-                                <button type="button" class="vc-btn-action vc-btn-delete" x-bind:data-vc-tooltip="$store.i18n.t('btn.delete') || 'Eliminar'"
+                                <button type="button" class="vc-btn-action vc-btn-delete" x-bind:
                                     wire:click="confirmDeletion({{ $sucursal->id }})">
                                     <span class="material-symbols-outlined icon-sm">delete</span>
                                 </button>
@@ -123,10 +123,10 @@
             <div class="flex flex-col-reverse sm:flex-row gap-3 w-full mt-6">
                 <flux:spacer class="hidden sm:block" />
                 <flux:modal.close class="w-full sm:w-auto">
-                    <flux:button variant="ghost" class="w-full font-medium px-4 py-2 md:px-5 md:py-2.5 lg:px-6 lg:py-3"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'">Cancelar</span></flux:button>
+                    <flux:button variant="ghost" class="w-full font-medium px-4 py-2 md:px-5 md:py-2.5 lg:px-6 lg:py-3"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'"></span></span></flux:button>
                 </flux:modal.close>
                 <button type="button" class="w-full sm:w-auto btn-danger font-medium justify-center px-4 py-2 md:px-5 md:py-2.5 lg:px-6 lg:py-3" wire:click="eliminar" x-on:click="$dispatch('modal-close', { name: 'confirmar-eliminacion' })">
-                    <span x-text="$store.i18n.t('btn.delete') || 'Eliminar'">Eliminar</span>
+                    <span x-text="$store.i18n.t('btn.delete') || 'Eliminar'"><span x-text="$store.i18n.t('btn.delete') || 'Eliminar'"></span></span>
                 </button>
             </div>
         </div>

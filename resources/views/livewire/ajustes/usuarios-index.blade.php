@@ -82,15 +82,15 @@
 
                     {{-- Acciones --}}
                     <div class="pt-4 border-t border-zinc-100 dark:border-zinc-800 flex justify-end gap-1.5 items-center">
-                        <button type="button" class="vc-btn-action vc-btn-view" data-vc-tooltip="Ver" x-bind:data-vc-tooltip="$store.i18n.t('btn.view') || 'Ver'" 
+                        <button type="button" class="vc-btn-action vc-btn-view" x-bind:
                             @click="$wire.ver({{ $user->id }}); $dispatch('modal-show', { name: 'ver-usuario' })">
                             <span class="material-symbols-outlined text-lg">visibility</span>
                         </button>
-                        <a href="{{ route('usuarios.editar', $user) }}" class="vc-btn-action vc-btn-edit" x-bind:data-vc-tooltip="$store.i18n.t('btn.edit') || 'Editar'">
+                        <a href="{{ route('usuarios.editar', $user) }}" class="vc-btn-action vc-btn-edit" x-bind:>
                             <span class="material-symbols-outlined text-lg">edit</span>
                         </a>
                         @if($user->id !== auth()->id())
-                            <button type="button" class="vc-btn-action vc-btn-delete" data-vc-tooltip="Eliminar" x-bind:data-vc-tooltip="$store.i18n.t('btn.delete') || 'Eliminar'"
+                            <button type="button" class="vc-btn-action vc-btn-delete" x-bind:
                                 @click="$wire.set('usuarioEliminarId', {{ $user->id }}); $dispatch('modal-show', { name: 'confirmar-eliminar-usuario' })"
                             >
                                 <span class="material-symbols-outlined text-lg">delete</span>

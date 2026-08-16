@@ -27,29 +27,30 @@
         .header-info p { margin: 1px 0; color: #d1d5db; }
         .header-info strong { color: #ffffff; }
 
-        /* Títulos de sección — barra sólida verde (como historia clínica) */
-        .section-title { font-size: 13px; font-weight: bold; color: #ffffff; background-color: #059669; padding: 4px 8px; margin-bottom: 8px; margin-top: 15px; text-transform: uppercase; border-radius: 3px; }
+        /* Títulos de sección */
+        .section-title { font-size: 11px; font-weight: bold; color: #065f46; border-bottom: 2px solid #34d399; padding-bottom: 3px; margin-bottom: 8px; margin-top: 18px; text-transform: uppercase; letter-spacing: 0.5px; }
 
         /* Tablas de datos (grid 4 columnas) */
-        table.grid { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
-        table.grid td { padding: 4px 6px; vertical-align: top; border: 1px solid #e5e7eb; }
-        table.grid td.label { background-color: #f9fafb; color: #4b5563; font-weight: bold; font-size: 10px; text-transform: uppercase; }
+        table.grid { width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 10px; }
+        table.grid td { padding: 4px 6px; vertical-align: middle; border-bottom: 1px solid #f3f4f6; }
+        table.grid td.label { width: 15%; color: #6b7280; font-weight: bold; text-transform: uppercase; font-size: 9px; }
+        table.grid td.value { width: 35%; color: #111827; }
 
         /* Layout de 2 columnas */
-        table.layout { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+        table.layout { width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 10px; }
         table.layout > tbody > tr > td { padding: 0; vertical-align: top; }
         table.layout > tbody > tr > td:first-child { padding-right: 5px; }
         table.layout > tbody > tr > td:last-child { padding-left: 5px; }
 
         /* Cajas de contenido */
-        .content-box { border: 1px solid #d1d5db; border-radius: 4px; padding: 6px 8px; margin-bottom: 8px; background-color: #f9fafb; }
-        .content-box h4 { margin: 0 0 4px 0; color: #374151; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #e5e7eb; padding-bottom: 2px; }
+        .content-box { border-left: 3px solid #34d399; border-radius: 0px; padding: 6px 8px; margin-bottom: 8px; background-color: #f9fafb; }
+        .content-box h4 { margin: 0 0 4px 0; color: #374151; font-size: 10px; text-transform: uppercase; border-bottom: 1px solid #e5e7eb; padding-bottom: 2px; }
         .content-box p { margin: 0; white-space: pre-wrap; color: #1f2937; }
 
         /* Tabla de datos adicionales */
-        table.compact { width: 100%; border-collapse: collapse; }
-        table.compact th, table.compact td { border: 1px solid #d1d5db; padding: 4px 6px; text-align: left; }
-        table.compact th { background-color: #374151; color: #ffffff; font-weight: bold; font-size: 10px; text-transform: uppercase; }
+        table.compact { width: 100%; border-collapse: collapse; font-size: 10px; }
+        table.compact th, table.compact td { border-bottom: 1px solid #e5e7eb; padding: 6px 4px; text-align: left; }
+        table.compact th { color: #4b5563; font-weight: bold; font-size: 9px; text-transform: uppercase; border-bottom: 2px solid #e5e7eb; }
 
         /* Footer */
         .footer { margin-top: 30px; padding-top: 10px; position: relative; page-break-inside: avoid; }
@@ -89,8 +90,19 @@
         <table class="layout" style="margin-bottom: 15px; border-bottom: 1px solid #e5e7eb; padding-bottom: 10px;">
             <tr>
                 <td style="width: 100%; text-align: center; vertical-align: middle; padding: 10px 0;">
-                    <span style="color: #4b5563; font-weight: bold; font-size: 12px; text-transform: uppercase;">{{ $t('appointment.status', 'Estado de la Cita') }}:</span>
-                    <strong style="text-transform: uppercase; font-size: 14px; margin-left: 8px;">{{ $statusLabel }}</strong>
+                    <span style="color: #4b5563; font-weight: bold; font-size: 12px; text-transform: uppercase; vertical-align: middle;">{{ $t('appointment.status', 'Estado de la Cita') }}:</span>
+                    <span style="font-weight: bold; font-size: 14px; margin-left: 8px; vertical-align: middle; color: {{ match($cita->status) {
+                        'Programada', 'PENDIENTE' => '#3b82f6',
+                        'Confirmada', 'CONFIRMADA' => '#2563eb',
+                        'En Progreso', 'EN_PROGRESO' => '#f59e0b',
+                        'Completada', 'COMPLETADA' => '#10b981',
+                        'Cancelada', 'CANCELADA' => '#ef4444',
+                        'No Asistió' => '#d97706',
+                        'Emergencia', 'EMERGENCIA' => '#dc2626',
+                        default => '#065f46'
+                    } }};">
+                        {{ $statusLabel }}
+                    </span>
                 </td>
             </tr>
         </table>
@@ -153,14 +165,14 @@
         <table class="layout">
             <tr>
                 <td style="width: 50%;">
-                    <div class="content-box" style="background-color: #f0fdf4; border-color: #86efac; height: 100%;">
-                        <h4 style="color: #065f46; border-bottom-color: #bbf7d0;">{{ $t('appointment.reason', 'Motivo / Razón de la Consulta') }}</h4>
+                    <div class="content-box" style="background-color: #f0fdf4; border-color: #86efac; border-radius: 6px;">
+                        <h4 style="color: #065f46; border-bottom-color: #bbf7d0;">📋 {{ $t('appointment.reason', 'Motivo / Razón de la Consulta') }}</h4>
                         <p>{{ $cita->reason ?? $t('misc.notSpecified', 'No especificado') }}</p>
                     </div>
                 </td>
-                <td style="width: 50%;">
-                    <div class="content-box" style="background-color: #eff6ff; border-color: #93c5fd; height: 100%;">
-                        <h4 style="color: #1e40af; border-bottom-color: #bfdbfe;">{{ $t('appointment.previousNotes', 'Notas Adicionales Previas') }}</h4>
+                <td style="width: 50%; padding-left: 8px;">
+                    <div class="content-box" style="background-color: #eff6ff; border-color: #93c5fd; border-radius: 6px;">
+                        <h4 style="color: #1e40af; border-bottom-color: #bfdbfe;">📝 {{ $t('appointment.previousNotes', 'Notas Adicionales Previas') }}</h4>
                         <p>{{ $cita->notes ?? $t('appointment.noAdditionalNotes', 'Sin notas adicionales') }}</p>
                     </div>
                 </td>
