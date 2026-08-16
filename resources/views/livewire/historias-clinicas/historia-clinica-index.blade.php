@@ -113,7 +113,7 @@
                 </div>
                 
                 <div class="mt-6">
-                    {{ $clientes->links(data: ['scrollTo' => false]) }}
+                    {{ $clientes->links('components.pagination.circular', data: ['scrollTo' => false]) }}
                 </div>
             @endif
 
@@ -160,7 +160,7 @@
                                 </div>
                             </div>
                             <div class="flex items-center gap-4">
-                                <a href="{{ route('mascotas.historial.pdf', $mascota->id) }}" download class="btn-primary py-2 px-4 flex gap-2 items-center text-sm rounded-xl transition-all shadow-sm" @click.stop>
+                                <a x-bind:href="'{{ route('mascotas.historial.pdf', $mascota->id) }}?lang=' + $store.i18n.locale" download class="btn-primary py-2 px-4 flex gap-2 items-center text-sm rounded-xl transition-all shadow-sm" @click.stop>
                                     <span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
                                     <span x-text="$store.i18n.t('report.downloadPDF', 'Descargar PDF')"></span>
                                 </a>
@@ -209,55 +209,92 @@
                                                     </div>
                                                 </div>
                                                 <div x-show="detallesAbiertos" x-collapse class="border-t border-zinc-100 dark:border-zinc-800 p-4 bg-zinc-50/30 dark:bg-zinc-900/30 text-sm">
-                                                    <div class="grid grid-cols-1 gap-4">
-                                                        @if($historia->anamnesis)
-                                                        <div>
-                                                            <h4 class="font-bold text-zinc-700 dark:text-zinc-300 border-b border-zinc-200 dark:border-zinc-700 pb-1 mb-2" x-text="$store.i18n.t('report.anamnesisSigns') || 'Anamnesis'"></h4>
-                                                            <p class="text-zinc-600 dark:text-zinc-400">{{ $historia->anamnesis }}</p>
+                                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                        @if($historia->reason || $historia->anamnesis)
+                                                        <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                            <div class="bg-white dark:bg-zinc-800 p-4 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700">
+                                                                <h4 class="font-bold text-zinc-800 dark:text-zinc-200 border-b border-zinc-200 dark:border-zinc-700 pb-2 mb-3 text-sm uppercase tracking-wide flex items-center gap-2">
+                                                                    <span class="material-symbols-outlined text-[18px]">help_center</span>
+                                                                    <span x-text="$store.i18n.t('report.reasonForVisit') || 'Motivo de Consulta'"></span>
+                                                                </h4>
+                                                                <p class="text-zinc-600 dark:text-zinc-400">{{ $historia->reason ?? '-' }}</p>
+                                                            </div>
+                                                            <div class="bg-white dark:bg-zinc-800 p-4 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700">
+                                                                <h4 class="font-bold text-zinc-800 dark:text-zinc-200 border-b border-zinc-200 dark:border-zinc-700 pb-2 mb-3 text-sm uppercase tracking-wide flex items-center gap-2">
+                                                                    <span class="material-symbols-outlined text-[18px]">history_edu</span>
+                                                                    <span x-text="$store.i18n.t('report.anamnesisSigns') || 'Anamnesis y Signos Clínicos'"></span>
+                                                                </h4>
+                                                                <p class="text-zinc-600 dark:text-zinc-400">{{ $historia->anamnesis ?? '-' }}</p>
+                                                            </div>
                                                         </div>
                                                         @endif
                                                         
-                                                        <div>
-                                                            <h4 class="font-bold text-zinc-700 dark:text-zinc-300 border-b border-zinc-200 dark:border-zinc-700 pb-1 mb-2" x-text="$store.i18n.t('report.vitalSigns') || 'Signos Vitales'"></h4>
-                                                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-                                                                <div><span class="font-semibold text-zinc-700 dark:text-zinc-300"><span x-text="$store.i18n.t('form.weight') || 'Peso'"></span>:</span> {{ $historia->weight ?? '-' }} kg</div>
-                                                                <div><span class="font-semibold text-zinc-700 dark:text-zinc-300"><span x-text="$store.i18n.t('form.temperature') || 'Temp'"></span>:</span> {{ $historia->temperature ?? '-' }} °C</div>
-                                                                <div><span class="font-semibold text-zinc-700 dark:text-zinc-300"><span x-text="$store.i18n.t('form.heartRate') || 'FC'"></span>:</span> {{ $historia->heart_rate ?? '-' }} bpm</div>
-                                                                <div><span class="font-semibold text-zinc-700 dark:text-zinc-300"><span x-text="$store.i18n.t('form.respRate') || 'FR'"></span>:</span> {{ $historia->respiratory_rate ?? '-' }} rpm</div>
-                                                                <div><span class="font-semibold text-zinc-700 dark:text-zinc-300"><span x-text="$store.i18n.t('form.bodyCondition') || 'Cond. Corp'"></span>:</span> {{ $historia->condicion_corporal ?? '-' }}</div>
-                                                                <div><span class="font-semibold text-zinc-700 dark:text-zinc-300"><span x-text="$store.i18n.t('form.hydration') || 'Hidratación'"></span>:</span> {{ $historia->nivel_hidratacion ?? '-' }}</div>
-                                                                <div><span class="font-semibold text-zinc-700 dark:text-zinc-300"><span x-text="$store.i18n.t('form.painLevel') || 'Dolor'"></span>:</span> {{ $historia->nivel_dolor ?? '-' }}</div>
+                                                        <div class="md:col-span-2 bg-white dark:bg-zinc-800 p-4 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700">
+                                                            <h4 class="font-bold text-zinc-800 dark:text-zinc-200 border-b border-zinc-200 dark:border-zinc-700 pb-2 mb-3 text-sm uppercase tracking-wide flex items-center gap-2">
+                                                                <span class="material-symbols-outlined text-[18px]">vital_signs</span>
+                                                                <span x-text="$store.i18n.t('report.vitalSigns') || 'Signos Vitales'"></span>
+                                                            </h4>
+                                                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
+                                                                <div class="flex flex-col"><span class="text-xs text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('form.weight') || 'Peso'"></span> <span class="font-medium text-zinc-800 dark:text-zinc-200">{{ $historia->weight ?? '-' }} kg</span></div>
+                                                                <div class="flex flex-col"><span class="text-xs text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('form.temperature') || 'Temp.'"></span> <span class="font-medium text-zinc-800 dark:text-zinc-200">{{ $historia->temperature ?? '-' }} °C</span></div>
+                                                                <div class="flex flex-col"><span class="text-xs text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('form.heartRate') || 'Frec. Card.'"></span> <span class="font-medium text-zinc-800 dark:text-zinc-200">{{ $historia->heart_rate ?? '-' }} bpm</span></div>
+                                                                <div class="flex flex-col"><span class="text-xs text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('form.respRate') || 'Frec. Resp.'"></span> <span class="font-medium text-zinc-800 dark:text-zinc-200">{{ $historia->respiratory_rate ?? '-' }} rpm</span></div>
                                                             </div>
                                                         </div>
 
-                                                        <div>
-                                                            <h4 class="font-bold text-zinc-700 dark:text-zinc-300 border-b border-zinc-200 dark:border-zinc-700 pb-1 mb-2" x-text="$store.i18n.t('form.physicalExam') || 'Examen Físico'"></h4>
-                                                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                                                                <div><span class="font-semibold text-zinc-700 dark:text-zinc-300" x-text="$store.i18n.t('form.cardiovascular') || 'Cardiovascular'"></span>: {{ $historia->examen_cardiovascular ?? '-' }}</div>
-                                                                <div><span class="font-semibold text-zinc-700 dark:text-zinc-300" x-text="$store.i18n.t('form.digestive') || 'Digestivo'"></span>: {{ $historia->examen_digestivo ?? '-' }}</div>
-                                                                <div><span class="font-semibold text-zinc-700 dark:text-zinc-300" x-text="$store.i18n.t('form.lymphNodes') || 'Linfonodos'"></span>: {{ $historia->examen_linfonodos ?? '-' }}</div>
-                                                                <div><span class="font-semibold text-zinc-700 dark:text-zinc-300" x-text="$store.i18n.t('form.mucous') || 'Mucosas'"></span>: {{ $historia->examen_mucosas ?? '-' }}</div>
-                                                                <div><span class="font-semibold text-zinc-700 dark:text-zinc-300" x-text="$store.i18n.t('form.musculoskeletal') || 'Músculoesquelético'"></span>: {{ $historia->examen_musculoesqueletico ?? '-' }}</div>
-                                                                <div><span class="font-semibold text-zinc-700 dark:text-zinc-300" x-text="$store.i18n.t('form.neurological') || 'Neurológico'"></span>: {{ $historia->examen_neurologico ?? '-' }}</div>
-                                                                <div><span class="font-semibold text-zinc-700 dark:text-zinc-300" x-text="$store.i18n.t('form.eyesEars') || 'Ojos/Oídos'"></span>: {{ $historia->examen_ojos_oidos ?? '-' }}</div>
-                                                                <div><span class="font-semibold text-zinc-700 dark:text-zinc-300" x-text="$store.i18n.t('form.skinCoat') || 'Piel/Pelaje'"></span>: {{ $historia->examen_piel_pelaje ?? '-' }}</div>
-                                                                <div><span class="font-semibold text-zinc-700 dark:text-zinc-300" x-text="$store.i18n.t('form.respiratory') || 'Respiratorio'"></span>: {{ $historia->examen_respiratorio ?? '-' }}</div>
-                                                                <div><span class="font-semibold text-zinc-700 dark:text-zinc-300" x-text="$store.i18n.t('form.urinary') || 'Urinario'"></span>: {{ $historia->examen_urinario ?? '-' }}</div>
+                                                        <div class="md:col-span-2 bg-white dark:bg-zinc-800 p-4 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700">
+                                                            <h4 class="font-bold text-zinc-800 dark:text-zinc-200 border-b border-zinc-200 dark:border-zinc-700 pb-2 mb-3 text-sm uppercase tracking-wide flex items-center gap-2">
+                                                                <span class="material-symbols-outlined text-[18px]">accessibility_new</span>
+                                                                <span x-text="$store.i18n.t('form.physicalExam') || 'Examen Físico'"></span>
+                                                            </h4>
+                                                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-xs">
+                                                                <div class="flex flex-col"><span class="text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('form.bodyCondition') || 'Cond. Corp'"></span> <span class="font-medium text-zinc-800 dark:text-zinc-200">{{ $historia->condicion_corporal ?? '-' }}</span></div>
+                                                                <div class="flex flex-col"><span class="text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('form.hydration') || 'Hidratación'"></span> <span class="font-medium text-zinc-800 dark:text-zinc-200">{{ $historia->nivel_hidratacion ?? '-' }}</span></div>
+                                                                <div class="flex flex-col"><span class="text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('form.painLevel') || 'Nivel Dolor'"></span> <span class="font-medium text-zinc-800 dark:text-zinc-200">{{ $historia->nivel_dolor ?? '-' }}</span></div>
+                                                                <div class="flex flex-col"><span class="text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('form.cardiovascular') || 'Cardiovascular'"></span> <span class="font-medium text-zinc-800 dark:text-zinc-200">{{ $historia->examen_cardiovascular ?? '-' }}</span></div>
+                                                                <div class="flex flex-col"><span class="text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('form.digestive') || 'Digestivo'"></span> <span class="font-medium text-zinc-800 dark:text-zinc-200">{{ $historia->examen_digestivo ?? '-' }}</span></div>
+                                                                <div class="flex flex-col"><span class="text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('form.lymphNodes') || 'Linfonodos'"></span> <span class="font-medium text-zinc-800 dark:text-zinc-200">{{ $historia->examen_linfonodos ?? '-' }}</span></div>
+                                                                <div class="flex flex-col"><span class="text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('form.mucous') || 'Mucosas'"></span> <span class="font-medium text-zinc-800 dark:text-zinc-200">{{ $historia->examen_mucosas ?? '-' }}</span></div>
+                                                                <div class="flex flex-col"><span class="text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('form.musculoskeletal') || 'Músculoesquelético'"></span> <span class="font-medium text-zinc-800 dark:text-zinc-200">{{ $historia->examen_musculoesqueletico ?? '-' }}</span></div>
+                                                                <div class="flex flex-col"><span class="text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('form.neurological') || 'Neurológico'"></span> <span class="font-medium text-zinc-800 dark:text-zinc-200">{{ $historia->examen_neurologico ?? '-' }}</span></div>
+                                                                <div class="flex flex-col"><span class="text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('form.eyesEars') || 'Ojos/Oídos'"></span> <span class="font-medium text-zinc-800 dark:text-zinc-200">{{ $historia->examen_ojos_oidos ?? '-' }}</span></div>
+                                                                <div class="flex flex-col"><span class="text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('form.skinCoat') || 'Piel/Pelaje'"></span> <span class="font-medium text-zinc-800 dark:text-zinc-200">{{ $historia->examen_piel_pelaje ?? '-' }}</span></div>
+                                                                <div class="flex flex-col"><span class="text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('form.respiratory') || 'Respiratorio'"></span> <span class="font-medium text-zinc-800 dark:text-zinc-200">{{ $historia->examen_respiratorio ?? '-' }}</span></div>
+                                                                <div class="flex flex-col md:col-span-3"><span class="text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('form.urinary') || 'Urinario'"></span> <span class="font-medium text-zinc-800 dark:text-zinc-200">{{ $historia->examen_urinario ?? '-' }}</span></div>
                                                             </div>
                                                         </div>
 
-                                                        @if($historia->tratamiento_indicaciones || $historia->notas_aclaratorias || $historia->proxima_cita_recomendada)
-                                                        <div>
-                                                            <h4 class="font-bold text-zinc-700 dark:text-zinc-300 border-b border-zinc-200 dark:border-zinc-700 pb-1 mb-2" x-text="$store.i18n.t('report.treatmentIndications') || 'Tratamiento y Notas'"></h4>
-                                                            @if($historia->tratamiento_indicaciones)
-                                                                <p class="text-zinc-600 dark:text-zinc-400 mb-1"><span class="font-semibold text-zinc-700 dark:text-zinc-300" x-text="$store.i18n.t('report.instructions') || 'Indicaciones:'"></span> {{ $historia->tratamiento_indicaciones }}</p>
-                                                            @endif
-                                                            @if($historia->notas_aclaratorias)
-                                                                <p class="text-zinc-600 dark:text-zinc-400 mb-1"><span class="font-semibold text-zinc-700 dark:text-zinc-300" x-text="$store.i18n.t('report.additionalNotes') || 'Notas:'"></span> {{ $historia->notas_aclaratorias }}</p>
-                                                            @endif
-                                                            @if($historia->proxima_cita_recomendada)
-                                                                <p class="text-zinc-600 dark:text-zinc-400"><span class="font-semibold text-zinc-700 dark:text-zinc-300" x-text="$store.i18n.t('report.nextAppt') || 'Próx. Cita:'"></span> {{ $historia->proxima_cita_recomendada->format('d/m/Y') }}</p>
-                                                            @endif
+                                                        <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                            <div class="bg-emerald-50 dark:bg-emerald-900/10 p-4 rounded-xl shadow-sm border border-emerald-100 dark:border-emerald-800/30">
+                                                                <h4 class="font-bold text-emerald-800 dark:text-emerald-400 border-b border-emerald-200 dark:border-emerald-800/50 pb-2 mb-3 text-sm uppercase tracking-wide flex items-center gap-2">
+                                                                    <span class="material-symbols-outlined text-[18px]">diagnosis</span>
+                                                                    <span x-text="$store.i18n.t('report.diagnosis') || 'Diagnóstico Presuntivo'"></span>
+                                                                </h4>
+                                                                <p class="text-emerald-700 dark:text-emerald-300">{{ $historia->diagnostico_presuntivo ?? '-' }}</p>
+                                                            </div>
+                                                            <div class="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-xl shadow-sm border border-blue-100 dark:border-blue-800/30">
+                                                                <h4 class="font-bold text-blue-800 dark:text-blue-400 border-b border-blue-200 dark:border-blue-800/50 pb-2 mb-3 text-sm uppercase tracking-wide flex items-center gap-2">
+                                                                    <span class="material-symbols-outlined text-[18px]">prescriptions</span>
+                                                                    <span x-text="$store.i18n.t('report.treatmentIndications') || 'Tratamiento e Indicaciones'"></span>
+                                                                </h4>
+                                                                <p class="text-blue-700 dark:text-blue-300">{{ $historia->tratamiento_indicaciones ?? '-' }}</p>
+                                                            </div>
+                                                        </div>
+
+                                                        @if($historia->notas_aclaratorias || $historia->proxima_cita_recomendada)
+                                                        <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                            <div class="bg-amber-50 dark:bg-amber-900/10 p-4 rounded-xl shadow-sm border border-amber-100 dark:border-amber-800/30">
+                                                                <h4 class="font-bold text-amber-800 dark:text-amber-400 border-b border-amber-200 dark:border-amber-800/50 pb-2 mb-3 text-sm uppercase tracking-wide flex items-center gap-2">
+                                                                    <span class="material-symbols-outlined text-[18px]">note_alt</span>
+                                                                    <span x-text="$store.i18n.t('report.additionalNotes') || 'Notas Adicionales'"></span>
+                                                                </h4>
+                                                                @if($historia->notas_aclaratorias)
+                                                                    <p class="text-amber-700 dark:text-amber-300 mb-2">{{ $historia->notas_aclaratorias }}</p>
+                                                                @endif
+                                                                @if($historia->proxima_cita_recomendada)
+                                                                    <p class="text-amber-700 dark:text-amber-300"><span class="font-bold tracking-wide" x-text="$store.i18n.t('form.recommendedNextAppt') || 'Próxima Cita Recomendada'"></span>: <span class="font-medium">{{ \Carbon\Carbon::parse($historia->proxima_cita_recomendada)->format('d/m/Y') }}</span></p>
+                                                                @endif
+                                                            </div>
                                                         </div>
                                                         @endif
                                                         
@@ -274,7 +311,11 @@
                                                                         <div class="grid grid-cols-2 gap-2 mt-1 text-zinc-600 dark:text-zinc-400">
                                                                             <div><span class="font-semibold"><span x-text="$store.i18n.t('form.dose') || 'Dosis:'"></span></span> {{ $presc->dosage ?? '-' }}</div>
                                                                             <div><span class="font-semibold"><span x-text="$store.i18n.t('form.frequency') || 'Frecuencia:'"></span></span> {{ $presc->frequency ?? '-' }}</div>
-                                                                            <div class="col-span-2"><span class="font-semibold"><span x-text="$store.i18n.t('form.duration') || 'Duración:'"></span></span> {{ $presc->duration ?? ($presc->duracion_dias ? $presc->duracion_dias . ' días' : '-') }}</div>
+                                                                            <div><span class="font-semibold"><span x-text="$store.i18n.t('form.route') || 'Vía:'"></span></span> {{ $presc->via_administracion ?? '-' }}</div>
+                                                                            <div><span class="font-semibold"><span x-text="$store.i18n.t('form.duration') || 'Duración:'"></span></span> {{ $presc->duration ?? ($presc->duracion_dias ? $presc->duracion_dias . ' días' : '-') }}</div>
+                                                                            @if($presc->indicaciones)
+                                                                            <div class="col-span-2 text-zinc-500 italic"><span class="font-semibold text-zinc-600"><span x-text="$store.i18n.t('form.instructions') || 'Indicaciones:'"></span></span> {{ $presc->indicaciones }}</div>
+                                                                            @endif
                                                                         </div>
                                                                     </div>
                                                                 @endforeach

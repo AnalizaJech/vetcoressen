@@ -168,7 +168,6 @@ class HistoriaClinicaForm extends Component
             foreach ($historia->prescripciones as $rx) {
                 $this->prescripciones[] = [
                     'id'                 => $rx->id,
-                    'product_id'        => (string) ($rx->product_id ?? ''),
                     'medicamento'        => $rx->medicamento,
                     'dosage'              => $rx->dosage,
                     'frequency'         => $rx->frequency,
@@ -346,26 +345,11 @@ class HistoriaClinicaForm extends Component
 
         // Crear prescripciones
         foreach ($this->prescripciones as $rx) {
-            $prodId = $rx['product_id'] ?? null;
-            $medName = '';
-            $productModelId = null;
-
-            if ($prodId && is_numeric($prodId) && (int)$prodId > 0) {
-                $prod = Product::find($prodId);
-                if ($prod) {
-                    $medName = $prod->name;
-                    $productModelId = $prod->id;
-                } else {
-                    $medName = $prodId;
-                }
-            } else if ($prodId) {
-                // Custom string recommendation
-                $medName = $prodId;
-            }
+            $medName = $rx['medicamento'] ?? '';
 
             $historia->prescripciones()->create([
                 'clinic_id'           => $historia->clinic_id,
-                'product_id'          => $productModelId,
+                'product_id'          => null,
                 'medicamento'         => $medName,
                 'dosage'              => $rx['dosage'] ?? '',
                 'frequency'        => $rx['frequency'],
@@ -423,22 +407,11 @@ class HistoriaClinicaForm extends Component
         // Veterinarios (usuarios con rol veterinario)
         $veterinarios = User::role('veterinario')->orderBy('name')->get();
 
-        // Productos para prescripciones (solo medicamentos con stock)
-        $productos = Product::with(['productBatches' => function ($query) {
-                $query->where('stock_actual', '>', 0)->orderBy('fecha_vencimiento', 'asc');
-            }])
-            ->whereRaw('UPPER(type) = ?', ['MEDICAMENTO'])
-            ->where('is_active', true)
-            ->where('current_stock', '>', 0)
-            ->orderBy('name')
-            ->get();
-
         return view('livewire.historias-clinicas.historia-clinica-form', [
             'clientes'     => $clientes,
             'mascotas'     => $mascotas,
             'citas'        => $citas,
             'veterinarios' => $veterinarios,
-            'productos'    => $productos,
         ]);
     }
 }

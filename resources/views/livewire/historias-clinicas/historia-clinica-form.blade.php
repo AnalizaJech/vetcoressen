@@ -462,39 +462,20 @@
                                         foreach ($recomendaciones as $rec) {
                                             $productosOpts[] = ['value' => $rec, 'label' => $rec];
                                         }
-
-                                        foreach ($productos as $prod) {
-                                            $label = $prod->name;
-                                            if ($prod->presentacion || $prod->principio_activo) {
-                                                $label .= ' - ' . $prod->presentacion . ($prod->principio_activo ? ' ('.$prod->principio_activo.')' : '');
-                                            }
-                                            
-                                            // Agregar información de lotes y stock
-                                            if ($prod->productBatches && $prod->productBatches->count() > 0) {
-                                                $lotesInfo = $prod->productBatches->map(function($b) {
-                                                    return ($b->lote ? $b->lote : 'S/L ' . $b->id) . ' (' . round($b->stock_actual) . ')';
-                                                })->implode(', ');
-                                                $label .= ' | Lotes: ' . $lotesInfo;
-                                            } else {
-                                                $label .= ' | Stock: ' . round($prod->current_stock);
-                                            }
-                                            
-                                            $productosOpts[] = ['value' => (string)$prod->id, 'label' => $label];
-                                        }
                                     @endphp
-                                    <div x-data="{ prodPh: $store.i18n.t('form.searchProduct', 'Buscar producto o medicina manual...') }">
+                                    <div x-data="{ prodPh: 'Buscar o escribir medicina...' }">
                                         {{-- Dropdown para seleccionar producto --}}
                                         <x-vc-dropdown
-                                            wire:model.live="prescripciones.{{ $index }}.product_id"
+                                            wire:model.live="prescripciones.{{ $index }}.medicamento"
                                             :options="$productosOpts"
-                                            :selected="$rx['product_id'] ?? ''"
+                                            :selected="$rx['medicamento'] ?? ''"
                                             x-bind:placeholder="prodPh"
                                             searchable="true"
                                             allowCustom="true"
                                             icon="vaccines"
                                         />
                                     </div>
-                                    <flux:error name="prescripciones.{{ $index }}.product_id" />
+                                    <flux:error name="prescripciones.{{ $index }}.medicamento" />
                                 </flux:field>
 
                                 {{-- Dosis --}}

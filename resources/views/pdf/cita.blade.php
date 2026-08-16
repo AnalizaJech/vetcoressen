@@ -13,19 +13,19 @@
 @endphp
 
     <meta charset="UTF-8">
-    <title>Cita #{{ str_pad($cita->id, 6, '0', STR_PAD_LEFT) }}</title>
+    <title>{{ $t('appointment.titleSingular', 'Cita') }} #{{ str_pad($cita->id, 6, '0', STR_PAD_LEFT) }}</title>
     <style>
         body { font-family: 'Helvetica', 'Arial', sans-serif; color: #1f2937; line-height: 1.3; margin: 0; padding: 0; font-size: 11px; }
         .container { width: 100%; max-width: 800px; margin: 0 auto; }
 
         /* Header — mismo estilo que historia clínica */
-        .header { display: table; width: 100%; border-bottom: 2px solid #059669; padding-bottom: 10px; margin-bottom: 15px; }
+        .header { display: table; width: 100%; background-color: #09090b; color: #ffffff; border-bottom: 4px solid #10b981; padding: 15px; margin-bottom: 15px; box-sizing: border-box; }
         .header-logo { display: table-cell; vertical-align: middle; width: 50%; }
-        .header-logo h1 { margin: 0; color: #047857; font-size: 20px; font-weight: bold; text-transform: uppercase; }
-        .header-logo p { margin: 3px 0 0 0; color: #4b5563; font-size: 12px; }
+        .header-logo h1 { margin: 0; color: #ffffff; font-size: 20px; font-weight: bold; text-transform: uppercase; }
+        .header-logo p { margin: 3px 0 0 0; color: #a7f3d0; font-size: 12px; }
         .header-info { display: table-cell; vertical-align: bottom; width: 50%; text-align: right; }
-        .header-info p { margin: 1px 0; color: #4b5563; }
-        .header-info strong { color: #111827; }
+        .header-info p { margin: 1px 0; color: #d1d5db; }
+        .header-info strong { color: #ffffff; }
 
         /* Títulos de sección — barra sólida verde (como historia clínica) */
         .section-title { font-size: 13px; font-weight: bold; color: #ffffff; background-color: #059669; padding: 4px 8px; margin-bottom: 8px; margin-top: 15px; text-transform: uppercase; border-radius: 3px; }
@@ -46,21 +46,6 @@
         .content-box h4 { margin: 0 0 4px 0; color: #374151; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #e5e7eb; padding-bottom: 2px; }
         .content-box p { margin: 0; white-space: pre-wrap; color: #1f2937; }
 
-        /* Badge de estado */
-        .badge { display: inline-block; padding: 4px 10px; font-size: 10px; font-weight: bold; border-radius: 4px; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
-        .badge-pending { background-color: #f59e0b; }
-        .badge-confirmed { background-color: #3b82f6; }
-        .badge-in-progress { background-color: #8b5cf6; }
-        .badge-completed { background-color: #10b981; }
-        .badge-cancelled { background-color: #ef4444; }
-        .badge-emergency { background-color: #b91c1c; }
-
-        /* Caja de estado integrada */
-        .status-row { display: table; width: 100%; margin-bottom: 12px; }
-        .status-row td { padding: 6px 8px; border: 1px solid #e5e7eb; vertical-align: middle; }
-        .status-row td.label { background-color: #f0fdf4; font-weight: bold; color: #065f46; font-size: 11px; text-transform: uppercase; width: 25%; text-align: right; }
-        .status-row td.value { text-align: left; }
-
         /* Tabla de datos adicionales */
         table.compact { width: 100%; border-collapse: collapse; }
         table.compact th, table.compact td { border: 1px solid #d1d5db; padding: 4px 6px; text-align: left; }
@@ -80,96 +65,88 @@
                     <img src="{{ $logoSrc }}" alt="Logo" style="max-height: 40px; margin-bottom: 4px;">
                 @endif
                 <h1>{{ $clinic->name ?? config('app.name', 'VETCORESSEN') }}</h1>
-                <p>Comprobante de Cita Médica</p>
+                <p>{{ $t('appointment.voucher', 'Comprobante de Cita Médica') }}</p>
             </div>
             <div class="header-info">
-                <p>Nº de Cita: <strong>#{{ str_pad($cita->id, 6, '0', STR_PAD_LEFT) }}</strong></p>
-                <p>Fecha Programada: <strong>{{ $cita->fecha_hora ? $cita->fecha_hora->format('d/m/Y H:i') : 'No especificada' }}</strong></p>
+                <p>{{ $t('appointment.apptNumber', 'Nº de Cita') }}: <strong>#{{ str_pad($cita->id, 6, '0', STR_PAD_LEFT) }}</strong></p>
+                <p>{{ $t('appointment.scheduledDate', 'Fecha Programada') }}: <strong>{{ $cita->fecha_hora ? $cita->fecha_hora->format('d/m/Y H:i') : $t('misc.notSpecified', 'No especificada') }}</strong></p>
             </div>
         </div>
 
-        {{-- Estado de la cita — integrado como fila compacta --}}
+        {{-- Estado de la cita --}}
         @php
-            $statusColors = [
-                'PENDIENTE' => 'badge-pending',
-                'CONFIRMADA' => 'badge-confirmed',
-                'EN_PROGRESO' => 'badge-in-progress',
-                'COMPLETADA' => 'badge-completed',
-                'CANCELADA' => 'badge-cancelled',
-                'EMERGENCIA' => 'badge-emergency',
-            ];
-            $badgeClass = $statusColors[$cita->status] ?? 'badge-pending';
-
             $statusLabels = [
-                'PENDIENTE' => 'Pendiente',
-                'CONFIRMADA' => 'Confirmada',
-                'EN_PROGRESO' => 'En Progreso',
-                'COMPLETADA' => 'Completada',
-                'CANCELADA' => 'Cancelada',
-                'EMERGENCIA' => 'Emergencia',
+                'PENDIENTE' => $t('appointment.statusPending', 'Pendiente'),
+                'CONFIRMADA' => $t('appointment.statusConfirmed', 'Confirmada'),
+                'EN_PROGRESO' => $t('appointment.statusInProgress', 'En Progreso'),
+                'COMPLETADA' => $t('appointment.statusCompleted', 'Completada'),
+                'CANCELADA' => $t('appointment.statusCancelled', 'Cancelada'),
+                'EMERGENCIA' => $t('appointment.statusEmergency', 'Emergencia'),
             ];
             $statusLabel = $statusLabels[$cita->status] ?? $cita->status;
         @endphp
 
-        <table class="grid" style="margin-bottom: 12px;">
+        <table class="layout" style="margin-bottom: 15px; border-bottom: 1px solid #e5e7eb; padding-bottom: 10px;">
             <tr>
-                <td class="label" style="width: 20%; background-color: #f0fdf4; color: #065f46; text-align: right;">Estado de la Cita:</td>
-                <td style="width: 80%;"><span class="badge {{ $badgeClass }}">{{ $statusLabel }}</span></td>
+                <td style="width: 100%; text-align: center; vertical-align: middle; padding: 10px 0;">
+                    <span style="color: #4b5563; font-weight: bold; font-size: 12px; text-transform: uppercase;">{{ $t('appointment.status', 'Estado de la Cita') }}:</span>
+                    <strong style="text-transform: uppercase; font-size: 14px; margin-left: 8px;">{{ $statusLabel }}</strong>
+                </td>
             </tr>
         </table>
 
-        {{-- Información General — grid 4 columnas (2 pares label/value) --}}
-        <div class="section-title">Información General</div>
+        {{-- Información General --}}
+        <div class="section-title">{{ $t('misc.generalInformation', 'Información General') }}</div>
         <table class="grid">
             <tr>
-                <td class="label" style="width: 15%">Propietario:</td>
+                <td class="label" style="width: 15%">{{ $t('form.owner', 'Propietario') }}:</td>
                 <td style="width: 35%"><strong>{{ $cita->cliente->nombre_completo ?? 'N/A' }}</strong></td>
-                <td class="label" style="width: 15%">DNI/RUC:</td>
+                <td class="label" style="width: 15%">{{ $t('form.idNumber', 'DNI/RUC') }}:</td>
                 <td style="width: 35%">{{ $cita->cliente->numero_documento ?? 'N/A' }}</td>
             </tr>
             <tr>
-                <td class="label">Teléfono:</td>
+                <td class="label">{{ $t('form.phone', 'Teléfono') }}:</td>
                 <td>{{ $cita->cliente->phone ?? 'N/A' }}</td>
-                <td class="label">Email:</td>
+                <td class="label">{{ $t('form.email', 'Email') }}:</td>
                 <td>{{ $cita->cliente->email ?? 'N/A' }}</td>
             </tr>
             <tr>
-                <td class="label">Dirección:</td>
+                <td class="label">{{ $t('form.address', 'Dirección') }}:</td>
                 <td colspan="3">{{ $cita->cliente->address ?? 'N/A' }}@if($cita->cliente->city || $cita->cliente->state), {{ $cita->cliente->city }} {{ $cita->cliente->state }}@endif</td>
             </tr>
         </table>
 
         {{-- Datos del paciente --}}
-        <div class="section-title">Datos del Paciente</div>
+        <div class="section-title">{{ $t('form.patientData', 'Datos del Paciente') }}</div>
         <table class="grid">
             <tr>
-                <td class="label" style="width: 15%">Mascota:</td>
+                <td class="label" style="width: 15%">{{ $t('form.pet', 'Mascota') }}:</td>
                 <td style="width: 35%"><strong>{{ $cita->mascota?->name ?? 'N/A' }}</strong></td>
-                <td class="label" style="width: 15%">Especie:</td>
+                <td class="label" style="width: 15%">{{ $t('form.species', 'Especie') }}:</td>
                 <td style="width: 35%">{{ $cita->mascota?->especie?->name ?? 'N/A' }}</td>
             </tr>
             <tr>
-                <td class="label">Raza:</td>
+                <td class="label">{{ $t('form.breed', 'Raza') }}:</td>
                 <td>{{ $cita->mascota?->raza?->name ?? 'N/A' }}</td>
-                <td class="label">Sexo:</td>
-                <td>{{ isset($cita->mascota?->gender) ? ($cita->mascota->gender === 'M' ? 'Macho' : 'Hembra') : 'N/A' }}</td>
+                <td class="label">{{ $t('form.sex', 'Sexo') }}:</td>
+                <td>{{ isset($cita->mascota?->gender) ? ($cita->mascota->gender === 'M' ? $t('form.male', 'Macho') : $t('form.female', 'Hembra')) : 'N/A' }}</td>
             </tr>
             @if($cita->mascota?->birth_date || $cita->mascota?->weight)
             <tr>
-                <td class="label">Edad:</td>
-                <td>@if($cita->mascota?->birth_date){{ \Carbon\Carbon::parse($cita->mascota->birth_date)->age }} años @else N/A @endif</td>
-                <td class="label">Peso (Ref.):</td>
+                <td class="label">{{ $t('form.age', 'Edad') }}:</td>
+                <td>@if($cita->mascota?->birth_date){{ \Carbon\Carbon::parse($cita->mascota->birth_date)->age }} {{ $t('misc.years', 'años') }} @else N/A @endif</td>
+                <td class="label">{{ $t('form.weightRef', 'Peso (Ref.)') }}:</td>
                 <td>{{ $cita->mascota?->weight ? $cita->mascota->weight . ' kg' : 'N/A' }}</td>
             </tr>
             @endif
         </table>
 
         {{-- Detalles Clínicos — 2 columnas lado a lado --}}
-        <div class="section-title">Detalles Clínicos de la Cita</div>
+        <div class="section-title">{{ $t('appointment.clinicalDetails', 'Detalles Clínicos de la Cita') }}</div>
         <table class="grid" style="margin-bottom: 6px;">
             <tr>
-                <td class="label" style="width: 15%">Veterinario:</td>
-                <td colspan="3"><strong>{{ $cita->veterinario->name ?? 'No asignado' }} {{ $cita->veterinario->last_name ?? '' }}</strong></td>
+                <td class="label" style="width: 15%">{{ $t('form.veterinarian', 'Veterinario') }}:</td>
+                <td colspan="3"><strong>{{ $cita->veterinario->name ?? $t('misc.unassigned', 'No asignado') }} {{ $cita->veterinario->last_name ?? '' }}</strong></td>
             </tr>
         </table>
 
@@ -177,14 +154,14 @@
             <tr>
                 <td style="width: 50%;">
                     <div class="content-box" style="background-color: #f0fdf4; border-color: #86efac; height: 100%;">
-                        <h4 style="color: #065f46; border-bottom-color: #bbf7d0;">Motivo / Razón de la Consulta</h4>
-                        <p>{{ $cita->reason ?? 'No especificado' }}</p>
+                        <h4 style="color: #065f46; border-bottom-color: #bbf7d0;">{{ $t('appointment.reason', 'Motivo / Razón de la Consulta') }}</h4>
+                        <p>{{ $cita->reason ?? $t('misc.notSpecified', 'No especificado') }}</p>
                     </div>
                 </td>
                 <td style="width: 50%;">
                     <div class="content-box" style="background-color: #eff6ff; border-color: #93c5fd; height: 100%;">
-                        <h4 style="color: #1e40af; border-bottom-color: #bfdbfe;">Notas Adicionales Previas</h4>
-                        <p>{{ $cita->notes ?? 'Sin notas adicionales' }}</p>
+                        <h4 style="color: #1e40af; border-bottom-color: #bfdbfe;">{{ $t('appointment.previousNotes', 'Notas Adicionales Previas') }}</h4>
+                        <p>{{ $cita->notes ?? $t('appointment.noAdditionalNotes', 'Sin notas adicionales') }}</p>
                     </div>
                 </td>
             </tr>
@@ -192,20 +169,20 @@
 
         {{-- Notificaciones enviadas --}}
         @if($cita->notificado_sms || $cita->notificado_whatsapp || $cita->notificado_email)
-        <div class="section-title">Notificaciones Enviadas</div>
+        <div class="section-title">{{ $t('appointment.notificationsSent', 'Notificaciones Enviadas') }}</div>
         <table class="grid">
             <tr>
                 @if($cita->notificado_email)
                 <td class="label" style="width: 15%">Email:</td>
-                <td style="width: 18%">✓ Enviado</td>
+                <td style="width: 18%">✓ {{ $t('appointment.sent', 'Enviado') }}</td>
                 @endif
                 @if($cita->notificado_sms)
                 <td class="label" style="width: 15%">SMS:</td>
-                <td style="width: 18%">✓ Enviado</td>
+                <td style="width: 18%">✓ {{ $t('appointment.sent', 'Enviado') }}</td>
                 @endif
                 @if($cita->notificado_whatsapp)
                 <td class="label" style="width: 15%">WhatsApp:</td>
-                <td style="width: 18%">✓ Enviado</td>
+                <td style="width: 18%">✓ {{ $t('appointment.sent', 'Enviado') }}</td>
                 @endif
             </tr>
         </table>
@@ -214,8 +191,8 @@
         {{-- Footer --}}
         <div class="footer">
             <div class="footer-text">
-                Documento generado automáticamente por {{ config('app.name', 'VETCORESSEN') }} el {{ now()->format('d/m/Y H:i') }}.<br>
-                Este comprobante es de carácter informativo y no constituye un documento fiscal.
+                {{ $t('report.generatedBy', 'Documento generado automáticamente por') }} {{ config('app.name', 'VETCORESSEN') }} {{ $t('misc.on_date', 'el') }} {{ now()->format('d/m/Y H:i') }}.<br>
+                {{ $t('report.notFiscalDoc', 'Este comprobante es de carácter informativo y no constituye un documento fiscal.') }}
             </div>
         </div>
     </div>

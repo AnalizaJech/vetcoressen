@@ -510,7 +510,7 @@
             
             <div class="flex flex-col sm:flex-row flex-wrap justify-end gap-3 pt-6 border-t border-zinc-200 dark:border-zinc-700">
                 <div class="flex-1 flex gap-2">
-                    <a href="{{ route('citas.pdf', $citaVer->id) }}" download class="w-full sm:w-auto px-4 py-2 bg-zinc-600 hover:bg-zinc-700 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center gap-2 transition-all">
+                    <a x-bind:href="'{{ route('citas.pdf', $citaVer->id) }}?lang=' + $store.i18n.locale" download class="w-full sm:w-auto px-4 py-2 bg-zinc-600 hover:bg-zinc-700 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center gap-2 transition-all">
                         <span class="material-symbols-outlined icon-sm">picture_as_pdf</span>
                         <span x-text="$store.i18n.t('report.downloadPDF') || 'Descargar PDF'">Descargar PDF</span>
                     </a>
