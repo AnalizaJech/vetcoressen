@@ -226,8 +226,13 @@ class ClienteForm extends Component
             session()->flash('mensaje', 'Cliente registrado correctamente.');
             
             // Enviar correo de bienvenida asíncrono si tiene email
+            // try-catch: Resend en modo testing solo permite enviar al email verificado
             if ($cliente->email) {
-                SendWelcomeEmailJob::dispatch($cliente->email, $cliente->nombre_completo, 'Cliente');
+                try {
+                    SendWelcomeEmailJob::dispatch($cliente->email, $cliente->nombre_completo, 'Cliente');
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::warning('No se pudo despachar email de bienvenida: ' . $e->getMessage());
+                }
             }
         }
 

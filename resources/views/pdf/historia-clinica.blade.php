@@ -19,13 +19,13 @@
         .container { width: 100%; max-width: 800px; margin: 0 auto; }
         
         /* Header */
-        .header { display: table; width: 100%; border-bottom: 2px solid #059669; padding-bottom: 10px; margin-bottom: 15px; }
+        .header { display: table; width: 100%; background-color: #09090b; color: #ffffff; border-bottom: 4px solid #10b981; padding: 15px; margin-bottom: 15px; box-sizing: border-box; }
         .header-logo { display: table-cell; vertical-align: middle; width: 50%; }
-        .header-logo h1 { margin: 0; color: #047857; font-size: 20px; font-weight: bold; text-transform: uppercase; }
-        .header-logo p { margin: 3px 0 0 0; color: #4b5563; font-size: 12px; }
+        .header-logo h1 { margin: 0; color: #ffffff; font-size: 20px; font-weight: bold; text-transform: uppercase; }
+        .header-logo p { margin: 3px 0 0 0; color: #a7f3d0; font-size: 12px; }
         .header-info { display: table-cell; vertical-align: bottom; width: 50%; text-align: right; }
-        .header-info p { margin: 1px 0; color: #4b5563; }
-        .header-info strong { color: #111827; }
+        .header-info p { margin: 1px 0; color: #d1d5db; }
+        .header-info strong { color: #ffffff; }
 
         /* Titles */
         .section-title { font-size: 13px; font-weight: bold; color: #ffffff; background-color: #059669; padding: 4px 8px; margin-bottom: 8px; margin-top: 15px; text-transform: uppercase; border-radius: 3px; }
@@ -97,6 +97,12 @@
                 <td class="label">Teléfono:</td>
                 <td class="value">{{ $historia->pet->cliente->phone ?? 'N/A' }}</td>
             </tr>
+            <tr>
+                <td class="label">Edad:</td>
+                <td class="value">{{ $historia->pet->birth_date ? \Carbon\Carbon::parse($historia->pet->birth_date)->age . ' años' : 'N/A' }}</td>
+                <td class="label">Email / Dir.:</td>
+                <td class="value">{{ $historia->pet->cliente->email ?? '-' }} <br> <span style="font-size: 9px; color: #4b5563;">{{ $historia->pet->cliente->address ?? '-' }}</span></td>
+            </tr>
         </table>
 
         <div class="section-title">Anamnesis y Signos Vitales</div>
@@ -104,13 +110,13 @@
         <table class="layout">
             <tr>
                 <td style="width: 50%;">
-                    <div class="content-box" style="height: 100%;">
+                    <div class="content-box">
                         <h4>Motivo de Consulta</h4>
                         <p>{{ $historia->reason ?? 'No especificado' }}</p>
                     </div>
                 </td>
                 <td style="width: 50%;">
-                    <div class="content-box" style="height: 100%;">
+                    <div class="content-box">
                         <h4>Anamnesis y Signos Clínicos</h4>
                         <p>{{ $historia->anamnesis ?? 'No especificados' }}</p>
                     </div>
@@ -174,13 +180,13 @@
         <table class="layout">
             <tr>
                 <td style="width: 50%;">
-                    <div class="content-box" style="background-color: #f0fdf4; border-color: #86efac; height: 100%;">
+                    <div class="content-box" style="background-color: #f0fdf4; border-color: #86efac;">
                         <h4 style="color: #065f46; border-bottom-color: #bbf7d0;">Diagnóstico Presuntivo / Definitivo</h4>
                         <p>{{ $historia->diagnostico_presuntivo ?? 'No especificado' }}</p>
                     </div>
                 </td>
                 <td style="width: 50%;">
-                    <div class="content-box" style="background-color: #eff6ff; border-color: #93c5fd; height: 100%;">
+                    <div class="content-box" style="background-color: #eff6ff; border-color: #93c5fd;">
                         <h4 style="color: #1e40af; border-bottom-color: #bfdbfe;">Tratamiento e Indicaciones Médicas</h4>
                         <p>{{ $historia->tratamiento_indicaciones ?? 'No especificado' }}</p>
                     </div>
@@ -193,11 +199,12 @@
         <table class="compact">
             <thead>
                 <tr>
-                    <th style="width: 35%">Medicamento</th>
+                    <th style="width: 25%">Medicamento</th>
                     <th style="width: 15%">Dosis</th>
                     <th style="width: 15%">Frecuencia</th>
-                    <th style="width: 15%">Vía</th>
-                    <th style="width: 20%">Duración</th>
+                    <th style="width: 10%">Vía</th>
+                    <th style="width: 10%">Duración</th>
+                    <th style="width: 25%">Indicaciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -213,6 +220,7 @@
                     <td>{{ $rx->frequency ?? '-' }}</td>
                     <td>{{ $rx->via_administracion ?? '-' }}</td>
                     <td>{{ $rx->duracion_dias ? $rx->duracion_dias . ' días' : '-' }}</td>
+                    <td style="font-size: 10px;">{{ $rx->indicaciones ?? '-' }}</td>
                 </tr>
                 @endforeach
             </tbody>

@@ -98,8 +98,8 @@ class HistoriaClinicaForm extends Component
             'examen_neurologico'      => 'nullable|string|max:1000',
             'examen_urinario'         => 'nullable|string|max:1000',
             // Validación de prescripciones
-            'prescripciones.*.product_id'    => 'nullable|integer',
-            'prescripciones.*.medicamento'   => 'required|string|max:200',
+            'prescripciones.*.product_id'    => 'nullable|string',
+            'prescripciones.*.medicamento'   => 'nullable|string|max:200',
             'prescripciones.*.dosage'         => 'required|string|max:100',
             'prescripciones.*.frequency'    => 'required|string|max:100',
             'prescripciones.*.duracion_dias' => 'required|integer|min:1|max:365',
@@ -346,11 +346,28 @@ class HistoriaClinicaForm extends Component
 
         // Crear prescripciones
         foreach ($this->prescripciones as $rx) {
+            $prodId = $rx['product_id'] ?? null;
+            $medName = '';
+            $productModelId = null;
+
+            if ($prodId && is_numeric($prodId) && (int)$prodId > 0) {
+                $prod = Product::find($prodId);
+                if ($prod) {
+                    $medName = $prod->name;
+                    $productModelId = $prod->id;
+                } else {
+                    $medName = $prodId;
+                }
+            } else if ($prodId) {
+                // Custom string recommendation
+                $medName = $prodId;
+            }
+
             $historia->prescripciones()->create([
-                'clinic_id'        => 1,
-                'product_id'       => $rx['product_id'] ?: null,
-                'medicamento'       => $rx['medicamento'],
-                'dosage'             => $rx['dosage'],
+                'clinic_id'           => $historia->clinic_id,
+                'product_id'          => $productModelId,
+                'medicamento'         => $medName,
+                'dosage'              => $rx['dosage'] ?? '',
                 'frequency'        => $rx['frequency'],
                 'via_administracion' => $rx['via_administracion'] ?: null,
                 'duracion_dias'     => $rx['duracion_dias'],
@@ -406,12 +423,12 @@ class HistoriaClinicaForm extends Component
         // Veterinarios (usuarios con rol veterinario)
         $veterinarios = User::role('veterinario')->orderBy('name')->get();
 
-        // Productos para prescripciones (solo medicamentos y con stock)
+        // Productos para prescripciones (solo medicamentos con stock)
         $productos = Product::with(['productBatches' => function ($query) {
                 $query->where('stock_actual', '>', 0)->orderBy('fecha_vencimiento', 'asc');
             }])
-            ->where('is_active', true)
             ->whereRaw('UPPER(type) = ?', ['MEDICAMENTO'])
+            ->where('is_active', true)
             ->where('current_stock', '>', 0)
             ->orderBy('name')
             ->get();
