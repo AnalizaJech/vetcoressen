@@ -8,6 +8,29 @@ use Illuminate\Http\Request;
 
 class PdfController extends Controller
 {
+    private function getTranslations()
+    {
+        $lang = request()->query('lang', 'es');
+        $jsonPath = public_path("locales/{$lang}.json");
+        $translations = [];
+        if (file_exists($jsonPath)) {
+            $translations = json_decode(file_get_contents($jsonPath), true);
+        }
+
+        return function ($key, $default = null) use ($translations) {
+            $keys = explode('.', $key);
+            $value = $translations;
+            foreach ($keys as $k) {
+                if (isset($value[$k])) {
+                    $value = $value[$k];
+                } else {
+                    return $default !== null ? $default : $key;
+                }
+            }
+            return is_string($value) ? $value : ($default !== null ? $default : $key);
+        };
+    }
+
     public function cita($id)
     {
         $cita = Appointment::with([
@@ -17,7 +40,9 @@ class PdfController extends Controller
             'veterinario',
         ])->findOrFail($id);
 
-        $pdf = Pdf::loadView('pdf.cita', compact('cita'))
+        $t = $this->getTranslations();
+
+        $pdf = Pdf::loadView('pdf.cita', compact('cita', 't'))
             ->setPaper('a4', 'portrait');
 
         return $pdf->download('cita-' . $cita->id . '.pdf');
@@ -27,7 +52,9 @@ class PdfController extends Controller
     {
         $historia = \App\Models\MedicalRecord::with(['pet.cliente', 'veterinario', 'prescripciones.producto'])->findOrFail($id);
 
-        $pdf = Pdf::loadView('pdf.historia-clinica', compact('historia'))
+        $t = $this->getTranslations();
+
+        $pdf = Pdf::loadView('pdf.historia-clinica', compact('historia', 't'))
             ->setPaper('a4', 'portrait');
 
         return $pdf->download('historia-clinica-' . str_pad($historia->id, 6, '0', STR_PAD_LEFT) . '.pdf');
@@ -39,7 +66,9 @@ class PdfController extends Controller
             $q->orderBy('date', 'desc')->with(['veterinario', 'prescripciones.producto']);
         }])->findOrFail($id);
 
-        $pdf = Pdf::loadView('pdf.historial-mascota', compact('mascota'))
+        $t = $this->getTranslations();
+
+        $pdf = Pdf::loadView('pdf.historial-mascota', compact('mascota', 't'))
             ->setPaper('a4', 'portrait');
 
         return $pdf->download('historial-mascota-' . str_pad($mascota->id, 6, '0', STR_PAD_LEFT) . '.pdf');

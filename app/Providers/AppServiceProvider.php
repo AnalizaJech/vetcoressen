@@ -21,5 +21,7 @@ class AppServiceProvider extends ServiceProvider
     {
         \Carbon\Carbon::setLocale('es');
         setlocale(LC_TIME, 'es_ES.utf8', 'es_ES', 'esp');
+        \Illuminate\Pagination\Paginator::defaultView('vendor.pagination.tailwind');
+        \Illuminate\Pagination\Paginator::defaultSimpleView('vendor.pagination.simple-tailwind');
     }
 }

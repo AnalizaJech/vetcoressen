@@ -11,7 +11,7 @@
                 <span class="material-symbols-outlined icon-sm">edit</span>
                 <span x-text="$store.i18n.t('btn.edit')"></span>
             </a>
-            <a href="{{ route('historias.pdf', $historia->id) }}" target="_blank" class="btn-primary text-sm flex items-center gap-2">
+            <a x-bind:href="'{{ route('historias.pdf', $historia->id) }}?lang=' + $store.i18n.locale" target="_blank" class="btn-primary text-sm flex items-center gap-2">
                 <span class="material-symbols-outlined icon-sm">picture_as_pdf</span>
                 <span x-text="$store.i18n.t('report.downloadPDF')"></span>
             </a>
@@ -76,24 +76,26 @@
         </div>
 
         {{-- Contenido Médico --}}
-        <div class="medical-record-content p-6 sm:p-8 bg-zinc-50/60">
+        <div class="medical-record-content p-6 sm:p-8 bg-white">
             
             {{-- Primera fila: Motivo y Examen Físico --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 {{-- Motivo y Signos --}}
-                <div class="flex flex-col h-full">
-                    <h3 class="text-lg font-bold text-zinc-900 mb-3 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-zinc-400">assignment</span>
+                <div class="rounded-2xl bg-zinc-50/80 p-6 border border-zinc-200/60 h-full flex flex-col">
+                    <h3 class="font-semibold text-zinc-900 mb-4 pb-3 border-b border-zinc-200/80 flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-full bg-zinc-200/50 flex items-center justify-center text-zinc-500">
+                            <span class="material-symbols-outlined icon-sm">assignment</span>
+                        </div>
                         <span x-text="$store.i18n.t('report.reasonAndSigns') || 'Motivo y Signos Clínicos'"></span>
                     </h3>
-                    <div class="bg-zinc-50 rounded p-4 border border-zinc-200 flex-1">
-                        <div class="mb-4">
-                            <h4 class="text-sm font-semibold text-zinc-700 mb-1" x-text="$store.i18n.t('report.reasonForVisit') || 'Motivo de Consulta:'"></h4>
-                            <p class="text-sm whitespace-pre-wrap">{{ $historia->reason ?? 'No especificado' }}</p>
+                    <div class="flex-1 flex flex-col gap-5">
+                        <div>
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2" x-text="$store.i18n.t('report.reasonForVisit') || 'MOTIVO DE CONSULTA'"></h4>
+                            <p class="text-sm whitespace-pre-wrap text-zinc-700 leading-relaxed">{{ $historia->reason ?? 'No especificado' }}</p>
                         </div>
                         <div>
-                            <h4 class="text-sm font-semibold text-zinc-700 mb-1" x-text="$store.i18n.t('report.anamnesisSigns') || 'Anamnesis / Signos Clínicos:'"></h4>
-                            <p class="text-sm whitespace-pre-wrap">{{ $historia->anamnesis ?? 'No especificados' }}</p>
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2" x-text="$store.i18n.t('report.anamnesisSigns') || 'ANAMNESIS / SIGNOS CLÍNICOS'"></h4>
+                            <p class="text-sm whitespace-pre-wrap text-zinc-700 leading-relaxed">{{ $historia->anamnesis ?? 'No especificados' }}</p>
                         </div>
                     </div>
                 </div>
@@ -107,42 +109,44 @@
                     $historia->examen_digestivo || $historia->examen_musculoesqueletico || $historia->examen_neurologico ||
                     $historia->examen_urinario
                 )
-                <div class="flex flex-col h-full">
-                    <h3 class="text-lg font-bold text-teal-700 mb-3 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-teal-500">stethoscope</span>
+                <div class="rounded-2xl bg-emerald-50/30 p-6 border border-emerald-100/50 h-full flex flex-col">
+                    <h3 class="font-semibold text-zinc-900 mb-4 pb-3 border-b border-emerald-100 flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-full bg-emerald-100/50 flex items-center justify-center text-emerald-600">
+                            <span class="material-symbols-outlined icon-sm">stethoscope</span>
+                        </div>
                         <span x-text="$store.i18n.t('form.physicalExam') || 'Examen Físico'"></span>
                     </h3>
-                    <div class="bg-teal-50/30 rounded p-4 border border-teal-100 flex-1">
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
+                    <div class="flex-1">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-5 p-4 bg-white rounded-xl border border-emerald-50/80 shadow-sm">
                             @if($historia->weight)
-                            <div><span class="text-xs text-zinc-500 block" x-text="$store.i18n.t('form.weight') || 'Peso'"></span><span class="font-medium text-sm">{{ $historia->weight }} kg</span></div>
+                            <div class="text-center"><span class="text-xs font-semibold text-zinc-400 block uppercase" x-text="$store.i18n.t('form.weight') || 'PESO'"></span><span class="font-bold text-zinc-800">{{ $historia->weight }} <span class="text-xs text-zinc-500 font-normal">kg</span></span></div>
                             @endif
                             @if($historia->temperature)
-                            <div><span class="text-xs text-zinc-500 block" x-text="$store.i18n.t('form.temperature') || 'Temperatura'"></span><span class="font-medium text-sm">{{ $historia->temperature }} °C</span></div>
+                            <div class="text-center"><span class="text-xs font-semibold text-zinc-400 block uppercase" x-text="$store.i18n.t('form.temperature') || 'TEMP'"></span><span class="font-bold text-zinc-800">{{ $historia->temperature }} <span class="text-xs text-zinc-500 font-normal">°C</span></span></div>
                             @endif
                             @if($historia->heart_rate)
-                            <div><span class="text-xs text-zinc-500 block" x-text="$store.i18n.t('form.heartRate') || 'FC'"></span><span class="font-medium text-sm">{{ $historia->heart_rate }} lpm</span></div>
+                            <div class="text-center"><span class="text-xs font-semibold text-zinc-400 block uppercase" x-text="$store.i18n.t('form.heartRate') || 'FC'"></span><span class="font-bold text-zinc-800">{{ $historia->heart_rate }} <span class="text-xs text-zinc-500 font-normal">lpm</span></span></div>
                             @endif
                             @if($historia->respiratory_rate)
-                            <div><span class="text-xs text-zinc-500 block" x-text="$store.i18n.t('form.respRate') || 'FR'"></span><span class="font-medium text-sm">{{ $historia->respiratory_rate }} rpm</span></div>
+                            <div class="text-center"><span class="text-xs font-semibold text-zinc-400 block uppercase" x-text="$store.i18n.t('form.respRate') || 'FR'"></span><span class="font-bold text-zinc-800">{{ $historia->respiratory_rate }} <span class="text-xs text-zinc-500 font-normal">rpm</span></span></div>
                             @endif
                         </div>
                         
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-y-2 gap-x-4 text-sm">
+                        <div class="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
                             @if($historia->examen_mucosas)
-                            <div><span class="text-zinc-500" x-text="$store.i18n.t('form.mucous') || 'Mucosas'"></span>: <span class="font-medium">{{ $historia->examen_mucosas }}</span></div>
+                            <div class="flex justify-between border-b border-emerald-100/30 pb-1"><span class="text-zinc-500" x-text="$store.i18n.t('form.mucous') || 'Mucosas'"></span> <span class="font-medium text-zinc-800 text-right">{{ $historia->examen_mucosas }}</span></div>
                             @endif
                             @if($historia->examen_linfonodos)
-                            <div><span class="text-zinc-500" x-text="$store.i18n.t('form.lymphNodes') || 'Linfonodos'"></span>: <span class="font-medium">{{ $historia->examen_linfonodos }}</span></div>
+                            <div class="flex justify-between border-b border-emerald-100/30 pb-1"><span class="text-zinc-500" x-text="$store.i18n.t('form.lymphNodes') || 'Linfonodos'"></span> <span class="font-medium text-zinc-800 text-right">{{ $historia->examen_linfonodos }}</span></div>
                             @endif
                             @if($historia->nivel_hidratacion)
-                            <div><span class="text-zinc-500" x-text="$store.i18n.t('form.hydration') || 'Hidratación'"></span>: <span class="font-medium">{{ $historia->nivel_hidratacion }}</span></div>
+                            <div class="flex justify-between border-b border-emerald-100/30 pb-1"><span class="text-zinc-500" x-text="$store.i18n.t('form.hydration') || 'Hidratación'"></span> <span class="font-medium text-zinc-800 text-right">{{ $historia->nivel_hidratacion }}</span></div>
                             @endif
                             @if($historia->condicion_corporal)
-                            <div><span class="text-zinc-500" x-text="$store.i18n.t('form.bodyCondition') || 'Condición Corporal'"></span>: <span class="font-medium">{{ $historia->condicion_corporal }}/9</span></div>
+                            <div class="flex justify-between border-b border-emerald-100/30 pb-1"><span class="text-zinc-500" x-text="$store.i18n.t('form.bodyCondition') || 'Condición Corp.'"></span> <span class="font-medium text-zinc-800 text-right">{{ $historia->condicion_corporal }}/9</span></div>
                             @endif
                             @if($historia->nivel_dolor !== null)
-                            <div><span class="text-zinc-500" x-text="$store.i18n.t('form.painLevel') || 'Nivel Dolor'"></span>: <span class="font-medium">{{ $historia->nivel_dolor }}/10</span></div>
+                            <div class="flex justify-between border-b border-emerald-100/30 pb-1"><span class="text-zinc-500" x-text="$store.i18n.t('form.painLevel') || 'Nivel Dolor'"></span> <span class="font-medium text-zinc-800 text-right">{{ $historia->nivel_dolor }}/10</span></div>
                             @endif
                         </div>
                         
@@ -158,14 +162,18 @@
                                 ['label' => 'form.urinary', 'default' => 'Urinario / Genital', 'val' => $historia->examen_urinario],
                             ];
                         @endphp
-                        @foreach($sistemas as $sis)
-                            @if($sis['val'])
-                                <div class="mt-3">
-                                    <h4 class="text-sm font-semibold text-zinc-700" x-text="$store.i18n.t('{{ $sis['label'] }}') || '{{ $sis['default'] }}'"></h4>
-                                    <p class="text-sm whitespace-pre-wrap">{{ $sis['val'] }}</p>
-                                </div>
-                            @endif
-                        @endforeach
+                        @if(collect($sistemas)->filter(fn($s) => $s['val'])->isNotEmpty())
+                            <div class="mt-4 pt-4 border-t border-emerald-100/50 space-y-3">
+                                @foreach($sistemas as $sis)
+                                    @if($sis['val'])
+                                        <div>
+                                            <h4 class="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-1" x-text="$store.i18n.t('{{ $sis['label'] }}') || '{{ $sis['default'] }}'"></h4>
+                                            <p class="text-sm text-zinc-700">{{ $sis['val'] }}</p>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
                 </div>
                 @endif
@@ -174,24 +182,28 @@
             {{-- Segunda fila: Diagnóstico y Tratamiento --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 {{-- Diagnostico --}}
-                <div class="flex flex-col h-full">
-                    <h3 class="text-lg font-bold text-emerald-700 mb-3 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-emerald-500">medical_information</span>
-                        <span x-text="$store.i18n.t('report.diagnosis') || 'Diagnóstico'"></span>
+                <div class="rounded-2xl bg-emerald-500/5 p-6 border border-emerald-500/10 h-full flex flex-col">
+                    <h3 class="font-semibold text-emerald-900 mb-3 pb-2 flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-600">
+                            <span class="material-symbols-outlined icon-sm">medical_information</span>
+                        </div>
+                        <span x-text="$store.i18n.t('report.diagnosis') || 'Diagnóstico Presuntivo / Definitivo'"></span>
                     </h3>
-                    <div class="bg-emerald-50/50 rounded p-4 border border-emerald-100 flex-1">
-                        <p class="text-sm whitespace-pre-wrap font-medium">{{ $historia->diagnostico_presuntivo ?? 'No especificado' }}</p>
+                    <div class="flex-1 bg-white rounded-xl p-4 border border-emerald-500/5 shadow-sm">
+                        <p class="text-sm whitespace-pre-wrap font-medium text-emerald-900">{{ $historia->diagnostico_presuntivo ?? 'No especificado' }}</p>
                     </div>
                 </div>
 
                 {{-- Tratamiento --}}
-                <div class="flex flex-col h-full">
-                    <h3 class="text-lg font-bold text-blue-700 mb-3 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-blue-500">vaccines</span>
+                <div class="rounded-2xl bg-blue-500/5 p-6 border border-blue-500/10 h-full flex flex-col">
+                    <h3 class="font-semibold text-blue-900 mb-3 pb-2 flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-600">
+                            <span class="material-symbols-outlined icon-sm">vaccines</span>
+                        </div>
                         <span x-text="$store.i18n.t('report.treatmentIndications') || 'Tratamiento e Indicaciones'"></span>
                     </h3>
-                    <div class="bg-blue-50/50 rounded p-4 border border-blue-100 flex-1">
-                        <p class="text-sm whitespace-pre-wrap">{{ $historia->tratamiento_indicaciones ?? 'Ninguno' }}</p>
+                    <div class="flex-1 bg-white rounded-xl p-4 border border-blue-500/5 shadow-sm">
+                        <p class="text-sm whitespace-pre-wrap text-blue-900">{{ $historia->tratamiento_indicaciones ?? 'Ninguno' }}</p>
                     </div>
                 </div>
             </div>
@@ -200,30 +212,32 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {{-- Prescripciones --}}
                 @if($historia->prescripciones && count($historia->prescripciones) > 0)
-                <div class="flex flex-col h-full">
-                    <h3 class="text-lg font-bold text-violet-700 mb-3 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-violet-500">prescriptions</span>
-                        <span x-text="$store.i18n.t('report.prescriptions') || 'Prescripciones'"></span>
+                <div class="rounded-2xl bg-violet-50/50 p-6 border border-violet-100/50 h-full flex flex-col">
+                    <h3 class="font-semibold text-violet-900 mb-4 pb-2 flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-full bg-violet-100 flex items-center justify-center text-violet-600">
+                            <span class="material-symbols-outlined icon-sm">prescriptions</span>
+                        </div>
+                        <span x-text="$store.i18n.t('report.prescriptions') || 'Receta Médica'"></span>
                     </h3>
-                    <div class="bg-violet-50/30 rounded p-0 border border-violet-100 overflow-hidden flex-1">
+                    <div class="flex-1 overflow-hidden bg-white border border-violet-100 rounded-xl shadow-sm">
                         <table class="w-full text-sm text-left">
-                            <thead class="bg-violet-100/50 text-violet-800 border-b border-violet-200">
+                            <thead class="bg-violet-50/50 text-violet-700 border-b border-violet-100/50">
                                 <tr>
-                                    <th class="px-4 py-2 font-semibold" x-text="$store.i18n.t('report.medication') || 'Medicamento'"></th>
-                                    <th class="px-4 py-2 font-semibold" x-text="$store.i18n.t('report.dose') || 'Dosis'"></th>
-                                    <th class="px-4 py-2 font-semibold" x-text="$store.i18n.t('report.frequency') || 'Frecuencia'"></th>
+                                    <th class="px-4 py-3 font-semibold text-xs uppercase tracking-wider" x-text="$store.i18n.t('report.medication') || 'Medicamento'"></th>
+                                    <th class="px-4 py-3 font-semibold text-xs uppercase tracking-wider" x-text="$store.i18n.t('report.dose') || 'Dosis'"></th>
+                                    <th class="px-4 py-3 font-semibold text-xs uppercase tracking-wider" x-text="$store.i18n.t('report.frequency') || 'Frecuencia'"></th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-violet-100">
+                            <tbody class="divide-y divide-violet-50/50">
                                 @foreach($historia->prescripciones as $rx)
-                                <tr>
+                                <tr class="hover:bg-violet-50/20 transition-colors">
                                     <td class="px-4 py-3 font-medium text-zinc-800">
-                                        {{ $rx->medicamento }}<br>
-                                        <span class="text-xs font-normal text-zinc-500">{{ $rx->via_administracion }} - {{ $rx->duracion_dias }} d</span>
-                                        @if($rx->indicaciones)<br><span class="text-xs italic text-zinc-400">{{ $rx->indicaciones }}</span>@endif
+                                        {{ $rx->producto->name ?? $rx->medicamento }}<br>
+                                        <span class="text-xs font-normal text-violet-600">{{ $rx->via_administracion }} - {{ $rx->duracion_dias }} d</span>
+                                        @if($rx->indicaciones)<br><span class="text-xs italic text-zinc-500">{{ $rx->indicaciones }}</span>@endif
                                     </td>
-                                    <td class="px-4 py-3 text-zinc-600 align-top">{{ $rx->dosage }}</td>
-                                    <td class="px-4 py-3 text-zinc-600 align-top">{{ $rx->frequency }}</td>
+                                    <td class="px-4 py-3 text-zinc-700 align-top">{{ $rx->dosage }}</td>
+                                    <td class="px-4 py-3 text-zinc-700 align-top">{{ $rx->frequency }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -236,14 +250,25 @@
                 @endif
 
                 {{-- Observaciones adicionales --}}
-                @if($historia->notas_aclaratorias)
-                <div class="flex flex-col h-full">
-                    <h3 class="text-lg font-bold text-zinc-900 mb-3 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-zinc-400">note_alt</span>
+                @if($historia->notas_aclaratorias || $historia->proxima_cita_recomendada)
+                <div class="rounded-2xl bg-amber-50/30 p-6 border border-amber-100/50 h-full flex flex-col">
+                    <h3 class="font-semibold text-amber-900 mb-4 pb-2 flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-full bg-amber-100/50 flex items-center justify-center text-amber-600">
+                            <span class="material-symbols-outlined icon-sm">note_alt</span>
+                        </div>
                         <span x-text="$store.i18n.t('report.additionalNotes') || 'Notas Adicionales'"></span>
                     </h3>
-                    <div class="bg-white rounded p-4 border border-zinc-200 flex-1">
-                        <p class="text-sm whitespace-pre-wrap">{{ $historia->notas_aclaratorias }}</p>
+                    <div class="flex-1 bg-white rounded-xl p-4 border border-amber-50 shadow-sm flex flex-col gap-3">
+                        @if($historia->notas_aclaratorias)
+                            <p class="text-sm whitespace-pre-wrap text-zinc-700">{{ $historia->notas_aclaratorias }}</p>
+                        @endif
+                        @if($historia->proxima_cita_recomendada)
+                            <div class="mt-auto pt-3 border-t border-amber-50 flex items-center gap-2 text-sm">
+                                <span class="material-symbols-outlined text-amber-500 icon-sm">event</span>
+                                <strong class="text-amber-800" x-text="$store.i18n.t('form.recommendedNextAppt') || 'Próxima Cita Recomendada'"></strong>: 
+                                <span class="text-zinc-800">{{ \Carbon\Carbon::parse($historia->proxima_cita_recomendada)->format('d/m/Y') }}</span>
+                            </div>
+                        @endif
                     </div>
                 </div>
                 @endif

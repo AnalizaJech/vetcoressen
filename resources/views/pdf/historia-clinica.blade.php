@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="{{ request()->query('lang', 'es') }}">
 <head>
 @php
     $clinic = \App\Models\Clinic::first();
@@ -13,7 +13,7 @@
 @endphp
 
     <meta charset="UTF-8">
-    <title>Historia Clínica #{{ str_pad($historia->id, 6, '0', STR_PAD_LEFT) }}</title>
+    <title>{{ $t('report.medicalRecordTitle', 'Historia Clínica') }} #{{ str_pad($historia->id, 6, '0', STR_PAD_LEFT) }}</title>
     <style>
         body { font-family: 'Helvetica', 'Arial', sans-serif; color: #1f2937; line-height: 1.3; margin: 0; padding: 0; font-size: 11px; }
         .container { width: 100%; max-width: 800px; margin: 0 auto; }
@@ -69,56 +69,56 @@
                     <img src="{{ $logoSrc }}" alt="Logo" style="max-height: 40px; margin-bottom: 4px;">
                 @endif
                 <h1>{{ $clinic->name ?? config('app.name', 'VETCORESSEN') }}</h1>
-                <p>Reporte Médico Clínico</p>
+                <p>{{ $t('report.medicalReport', 'Reporte Médico Clínico') }}</p>
             </div>
             <div class="header-info">
-                <p>Nº de Registro: <strong>{{ str_pad($historia->id, 6, '0', STR_PAD_LEFT) }}</strong></p>
-                <p>Fecha de Consulta: <strong>{{ $historia->created_at->format('d/m/Y H:i') }}</strong></p>
+                <p>{{ $t('report.recordNumber', 'Nº de Registro') }}: <strong>{{ str_pad($historia->id, 6, '0', STR_PAD_LEFT) }}</strong></p>
+                <p>{{ $t('report.consultDate', 'Fecha de Consulta') }}: <strong>{{ $historia->created_at->format('d/m/Y H:i') }}</strong></p>
             </div>
         </div>
 
-        <div class="section-title">Información General</div>
+        <div class="section-title">{{ $t('report.generalInfo', 'Información General') }}</div>
         <table class="grid">
             <tr>
-                <td class="label">Paciente:</td>
+                <td class="label">{{ $t('table.patient', 'Paciente') }}:</td>
                 <td class="value"><strong>{{ $historia->pet->name ?? 'N/A' }}</strong></td>
-                <td class="label">Propietario:</td>
+                <td class="label">{{ $t('table.owner', 'Propietario') }}:</td>
                 <td class="value">{{ $historia->pet->cliente->nombre_completo ?? 'N/A' }}</td>
             </tr>
             <tr>
-                <td class="label">Especie/Raza:</td>
+                <td class="label">{{ $t('form.species', 'Especie') }}/{{ $t('form.breed', 'Raza') }}:</td>
                 <td class="value">{{ $historia->pet->especie->name ?? 'N/A' }} / {{ $historia->pet->raza->name ?? 'N/A' }}</td>
-                <td class="label">DNI/RUC:</td>
+                <td class="label">{{ $t('form.taxId', 'DNI/RUC') }}:</td>
                 <td class="value">{{ $historia->pet->cliente->numero_documento ?? 'N/A' }}</td>
             </tr>
             <tr>
-                <td class="label">Sexo/Peso:</td>
-                <td class="value">{{ isset($historia->pet->gender) ? ($historia->pet->gender === 'M' ? 'Macho' : 'Hembra') : 'N/A' }} / {{ $historia->weight ? $historia->weight . ' kg' : 'N/A' }}</td>
-                <td class="label">Teléfono:</td>
+                <td class="label">{{ $t('form.gender', 'Sexo') }}:</td>
+                <td class="value">{{ isset($historia->pet->gender) ? ($historia->pet->gender === 'M' ? $t('form.male', 'Macho') : $t('form.female', 'Hembra')) : 'N/A' }}</td>
+                <td class="label">{{ $t('table.phone', 'Teléfono') }}:</td>
                 <td class="value">{{ $historia->pet->cliente->phone ?? 'N/A' }}</td>
             </tr>
             <tr>
-                <td class="label">Edad:</td>
-                <td class="value">{{ $historia->pet->birth_date ? \Carbon\Carbon::parse($historia->pet->birth_date)->age . ' años' : 'N/A' }}</td>
-                <td class="label">Email / Dir.:</td>
+                <td class="label">{{ $t('form.age', 'Edad') }}:</td>
+                <td class="value">{{ $historia->pet->birth_date ? \Carbon\Carbon::parse($historia->pet->birth_date)->age . ' ' . $t('misc.years', 'años') : 'N/A' }}</td>
+                <td class="label">{{ $t('form.email', 'Email') }} / {{ $t('form.address', 'Dir.') }}:</td>
                 <td class="value">{{ $historia->pet->cliente->email ?? '-' }} <br> <span style="font-size: 9px; color: #4b5563;">{{ $historia->pet->cliente->address ?? '-' }}</span></td>
             </tr>
         </table>
 
-        <div class="section-title">Anamnesis y Signos Vitales</div>
+        <div class="section-title">{{ $t('report.anamnesisAndVitals', 'Anamnesis y Signos Vitales') }}</div>
         
         <table class="layout">
             <tr>
                 <td style="width: 50%;">
                     <div class="content-box">
-                        <h4>Motivo de Consulta</h4>
-                        <p>{{ $historia->reason ?? 'No especificado' }}</p>
+                        <h4>{{ $t('report.reasonForVisit', 'Motivo de Consulta') }}</h4>
+                        <p>{{ $historia->reason ?? $t('misc.notSpecified', 'No especificado') }}</p>
                     </div>
                 </td>
                 <td style="width: 50%;">
                     <div class="content-box">
-                        <h4>Anamnesis y Signos Clínicos</h4>
-                        <p>{{ $historia->anamnesis ?? 'No especificados' }}</p>
+                        <h4>{{ $t('report.anamnesisSigns', 'Anamnesis y Signos Clínicos') }}</h4>
+                        <p>{{ $historia->anamnesis ?? $t('misc.notSpecified', 'No especificados') }}</p>
                     </div>
                 </td>
             </tr>
@@ -126,92 +126,96 @@
 
         <table class="compact" style="margin-bottom: 8px;">
             <tr>
-                <th>Temp. (°C)</th>
-                <th>Frec. Cardíaca (bpm)</th>
-                <th>Frec. Resp. (rpm)</th>
-                <th>Cond. Corporal</th>
-                <th>Hidratación</th>
-                <th>Nivel Dolor</th>
+                <th>{{ $t('form.weight', 'Peso') }} (kg)</th>
+                <th>{{ $t('form.temperature', 'Temp.') }} (°C)</th>
+                <th>{{ $t('form.heartRate', 'Frec. Cardíaca') }} (bpm)</th>
+                <th>{{ $t('form.respRate', 'Frec. Resp.') }} (rpm)</th>
             </tr>
             <tr>
+                <td>{{ $historia->weight ?? '-' }}</td>
                 <td>{{ $historia->temperature ?? '-' }}</td>
                 <td>{{ $historia->heart_rate ?? '-' }}</td>
                 <td>{{ $historia->respiratory_rate ?? '-' }}</td>
-                <td>{{ $historia->condicion_corporal ?? '-' }}</td>
-                <td>{{ $historia->nivel_hidratacion ?? '-' }}</td>
-                <td>{{ $historia->nivel_dolor ?? '-' }}</td>
             </tr>
         </table>
 
-        <div class="section-title">Examen Físico por Sistemas</div>
+        <div class="section-title">{{ $t('report.physicalExamBySystem', 'Examen Físico por Sistemas') }}</div>
         <table class="grid">
             <tr>
-                <td class="label" style="width:12%">Cardiovascular:</td>
+                <td class="label" style="width:12%">{{ $t('form.bodyCondition', 'Cond. Corp') }}:</td>
+                <td class="value" style="width:21%">{{ $historia->condicion_corporal ?? '-' }}</td>
+                <td class="label" style="width:12%">{{ $t('form.hydration', 'Hidratación') }}:</td>
+                <td class="value" style="width:21%">{{ $historia->nivel_hidratacion ?? '-' }}</td>
+                <td class="label" style="width:12%">{{ $t('form.painLevel', 'Nivel Dolor') }}:</td>
+                <td class="value" style="width:22%">{{ $historia->nivel_dolor ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td class="label" style="width:12%">{{ $t('form.cardiovascular', 'Cardiovascular') }}:</td>
                 <td class="value" style="width:21%">{{ $historia->examen_cardiovascular ?? '-' }}</td>
-                <td class="label" style="width:12%">Digestivo:</td>
+                <td class="label" style="width:12%">{{ $t('form.digestive', 'Digestivo') }}:</td>
                 <td class="value" style="width:21%">{{ $historia->examen_digestivo ?? '-' }}</td>
-                <td class="label" style="width:12%">Linfonodos:</td>
+                <td class="label" style="width:12%">{{ $t('form.lymphNodes', 'Linfonodos') }}:</td>
                 <td class="value" style="width:22%">{{ $historia->examen_linfonodos ?? '-' }}</td>
             </tr>
             <tr>
-                <td class="label">Mucosas:</td>
+                <td class="label">{{ $t('form.mucous', 'Mucosas') }}:</td>
                 <td class="value">{{ $historia->examen_mucosas ?? '-' }}</td>
-                <td class="label">Músculoesq.:</td>
+                <td class="label">{{ $t('form.musculoskeletal', 'Músculoesq.') }}:</td>
                 <td class="value">{{ $historia->examen_musculoesqueletico ?? '-' }}</td>
-                <td class="label">Neurológico:</td>
+                <td class="label">{{ $t('form.neurological', 'Neurológico') }}:</td>
                 <td class="value">{{ $historia->examen_neurologico ?? '-' }}</td>
             </tr>
             <tr>
-                <td class="label">Ojos/Oídos:</td>
+                <td class="label">{{ $t('form.eyesEars', 'Ojos/Oídos') }}:</td>
                 <td class="value">{{ $historia->examen_ojos_oidos ?? '-' }}</td>
-                <td class="label">Piel/Pelaje:</td>
+                <td class="label">{{ $t('form.skinCoat', 'Piel/Pelaje') }}:</td>
                 <td class="value">{{ $historia->examen_piel_pelaje ?? '-' }}</td>
-                <td class="label">Respiratorio:</td>
+                <td class="label">{{ $t('form.respiratory', 'Respiratorio') }}:</td>
                 <td class="value">{{ $historia->examen_respiratorio ?? '-' }}</td>
             </tr>
             <tr>
-                <td class="label">Urinario:</td>
+                <td class="label">{{ $t('form.urinary', 'Urinario') }}:</td>
                 <td class="value" colspan="5">{{ $historia->examen_urinario ?? '-' }}</td>
             </tr>
         </table>
 
-        <div class="section-title">Diagnóstico y Plan</div>
+        <div class="section-title">{{ $t('report.diagnosisAndPlan', 'Diagnóstico y Plan') }}</div>
 
         <table class="layout">
             <tr>
                 <td style="width: 50%;">
                     <div class="content-box" style="background-color: #f0fdf4; border-color: #86efac;">
-                        <h4 style="color: #065f46; border-bottom-color: #bbf7d0;">Diagnóstico Presuntivo / Definitivo</h4>
-                        <p>{{ $historia->diagnostico_presuntivo ?? 'No especificado' }}</p>
+                        <h4 style="color: #065f46; border-bottom-color: #bbf7d0;">{{ $t('report.diagnosis', 'Diagnóstico Presuntivo / Definitivo') }}</h4>
+                        <p>{{ $historia->diagnostico_presuntivo ?? $t('misc.notSpecified', 'No especificado') }}</p>
                     </div>
                 </td>
                 <td style="width: 50%;">
                     <div class="content-box" style="background-color: #eff6ff; border-color: #93c5fd;">
-                        <h4 style="color: #1e40af; border-bottom-color: #bfdbfe;">Tratamiento e Indicaciones Médicas</h4>
-                        <p>{{ $historia->tratamiento_indicaciones ?? 'No especificado' }}</p>
+                        <h4 style="color: #1e40af; border-bottom-color: #bfdbfe;">{{ $t('report.treatmentIndications', 'Tratamiento e Indicaciones Médicas') }}</h4>
+                        <p>{{ $historia->tratamiento_indicaciones ?? $t('misc.notSpecified', 'No especificado') }}</p>
                     </div>
                 </td>
             </tr>
         </table>
 
         @if($historia->prescripciones && count($historia->prescripciones) > 0)
-        <div class="section-title">Receta Médica</div>
+        <div class="section-title">{{ $t('report.prescriptions', 'Receta Médica') }}</div>
         <table class="compact">
             <thead>
                 <tr>
-                    <th style="width: 25%">Medicamento</th>
-                    <th style="width: 15%">Dosis</th>
-                    <th style="width: 15%">Frecuencia</th>
-                    <th style="width: 10%">Vía</th>
-                    <th style="width: 10%">Duración</th>
-                    <th style="width: 25%">Indicaciones</th>
+                    <th style="width: 25%">{{ $t('report.medication', 'Medicamento') }}</th>
+                    <th style="width: 15%">{{ $t('report.dose', 'Dosis') }}</th>
+                    <th style="width: 15%">{{ $t('report.frequency', 'Frecuencia') }}</th>
+                    <th style="width: 10%">{{ $t('form.route', 'Vía') }}</th>
+                    <th style="width: 10%">{{ $t('form.duration', 'Duración') }}</th>
+                    <th style="width: 25%">{{ $t('form.indications', 'Indicaciones') }}</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($historia->prescripciones as $rx)
                 <tr>
                     <td>
-                        <strong>{{ $rx->producto->name ?? $rx->medicamento ?? 'Medicamento no especificado' }}</strong>
+                        <strong>{{ $rx->producto->name ?? $rx->medicamento ?? $t('misc.unspecifiedMedication', 'Medicamento no especificado') }}</strong>
                         @if($rx->producto && ($rx->producto->presentacion || $rx->producto->principio_activo))
                         <br><span style="font-size: 9px; color: #6b7280;">{{ $rx->producto->presentacion }} ({{ $rx->producto->principio_activo }})</span>
                         @endif
@@ -219,7 +223,7 @@
                     <td>{{ $rx->dosage ?? '-' }}</td>
                     <td>{{ $rx->frequency ?? '-' }}</td>
                     <td>{{ $rx->via_administracion ?? '-' }}</td>
-                    <td>{{ $rx->duracion_dias ? $rx->duracion_dias . ' días' : '-' }}</td>
+                    <td>{{ $rx->duracion_dias ? $rx->duracion_dias . ' ' . $t('misc.days', 'días') : '-' }}</td>
                     <td style="font-size: 10px;">{{ $rx->indicaciones ?? '-' }}</td>
                 </tr>
                 @endforeach
@@ -227,34 +231,38 @@
         </table>
         @endif
 
-        @if($historia->notas_aclaratorias)
-        <div class="content-box" style="margin-top: 8px;">
-            <h4>Notas Adicionales</h4>
-            <p>{{ $historia->notas_aclaratorias }}</p>
-        </div>
-        @endif
-
-        @if($historia->proxima_cita_recomendada)
-        <div class="content-box" style="margin-top: 8px; background-color: #fffbeb; border-color: #fde68a;">
-            <p style="font-weight: bold; color: #92400e; margin: 0;">
-                Próxima cita recomendada: {{ \Carbon\Carbon::parse($historia->proxima_cita_recomendada)->format('d/m/Y') }}
-            </p>
-        </div>
-        @endif
+        <table class="layout" style="margin-top: 8px;">
+            <tr>
+                <td style="width: 50%;">
+                    @if($historia->notas_aclaratorias || $historia->proxima_cita_recomendada)
+                    <div class="content-box" style="background-color: #fffbeb; border-color: #fde68a;">
+                        <h4 style="color: #b45309;">{{ $t('report.additionalNotes', 'Notas Adicionales') }}</h4>
+                        @if($historia->notas_aclaratorias)
+                            <p style="margin-bottom: 5px;">{{ $historia->notas_aclaratorias }}</p>
+                        @endif
+                        @if($historia->proxima_cita_recomendada)
+                            <p><strong>{{ $t('form.recommendedNextAppt', 'Próxima Cita Recomendada') }}:</strong> {{ \Carbon\Carbon::parse($historia->proxima_cita_recomendada)->format('d/m/Y') }}</p>
+                        @endif
+                    </div>
+                    @endif
+                </td>
+                <td style="width: 50%;"></td>
+            </tr>
+        </table>
 
         <div class="footer">
             <div class="signature-box">
                 <div class="signature-line"></div>
                 <strong>{{ $historia->veterinario->name ?? 'N/A' }} {{ $historia->veterinario->last_name ?? '' }}</strong>
-                <span>Médico Veterinario</span>
+                <span>{{ $t('misc.veterinarian', 'Médico Veterinario') }}</span>
                 @if(isset($historia->veterinario->cmvp) && $historia->veterinario->cmvp)
                 <br><span>CMVP: {{ $historia->veterinario->cmvp }}</span>
                 @endif
             </div>
             
             <div class="footer-text">
-                Documento generado automáticamente por {{ config('app.name', 'VETCORESSEN') }} el {{ now()->format('d/m/Y H:i') }}.<br>
-                Este reporte es de uso exclusivamente clínico y confidencial.
+                {{ $t('report.generatedBy', 'Documento generado automáticamente por') }} {{ config('app.name', 'VETCORESSEN') }} {{ $t('misc.on_date', 'el') }} {{ now()->format('d/m/Y H:i') }}.<br>
+                {{ $t('report.confidentiality', 'Este reporte es de uso exclusivamente clínico y confidencial.') }}
             </div>
         </div>
     </div>
