@@ -10,7 +10,7 @@ use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-// Listado de clientes con bÃºsqueda en tiempo real
+// Listado de clientes con filtros select por nombre, documento y teléfono
 #[Layout('components.layouts.app')]
 #[Title('Clientes')]
 class ClienteIndex extends Component
@@ -18,14 +18,30 @@ class ClienteIndex extends Component
     use WithPagination;
 
     #[Url]
-    public string $filtroCliente = '';
+    public ?string $filtroCliente = '';
 
-    // ID del cliente pendiente de eliminar (modal de confirmaciÃ³n)
+    #[Url]
+    public ?string $filtroDocumento = '';
+
+    #[Url]
+    public ?string $filtroTelefono = '';
+
+    // ID del cliente pendiente de eliminar (modal de confirmación)
     public ?int $clienteEliminarId = null;
     public ?Customer $clienteVer = null;
 
-    // Resetear paginaciÃ³n al filtrar
+    // Resetear paginación al cambiar cualquier filtro
     public function updatedFiltroCliente(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedFiltroDocumento(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedFiltroTelefono(): void
     {
         $this->resetPage();
     }
@@ -43,23 +59,21 @@ class ClienteIndex extends Component
         
         $cliente = Customer::findOrFail($this->clienteEliminarId);
         $cliente->delete();
-        session()->flash('mensaje', "Cliente Â«{$cliente->nombre_completo}Â» eliminado correctamente.");
+        session()->flash('mensaje', "Cliente «{$cliente->nombre_completo}» eliminado correctamente.");
         $this->clienteEliminarId = null;
     }
 
-    #[Computed]
-    public function opcionesClientes()
-    {
-        return Customer::select('id', 'name')->orderBy('name')->get();
-    }
-
-    #[Computed]
     public function clientes()
     {
         return Customer::query()
             ->when($this->filtroCliente, function ($query) {
-                // Now filtroCliente holds the ID instead of text search
                 $query->where('id', $this->filtroCliente);
+            })
+            ->when($this->filtroDocumento, function ($query) {
+                $query->where('numero_documento', $this->filtroDocumento);
+            })
+            ->when($this->filtroTelefono, function ($query) {
+                $query->where('phone', $this->filtroTelefono);
             })
             ->withCount('mascotas')
             ->orderBy('id', 'desc')
@@ -68,13 +82,50 @@ class ClienteIndex extends Component
 
     public function render()
     {
+        // 1. Opciones de clientes (solo nombres limpios sin números)
         $clientesOptions = [['value' => '', 'label' => 'filter.allClients']];
         foreach (Customer::orderBy('first_name')->get() as $c) {
-            $clientesOptions[] = ['value' => (string)$c->id, 'label' => $c->nombre_completo . ' - ' . $c->numero_documento];
+            $clientesOptions[] = [
+                'value' => (string)$c->id, 
+                'label' => $c->nombre_completo
+            ];
         }
+
+        // 2. Opciones de documentos de identidad / DNI
+        $documentosOptions = [['value' => '', 'label' => 'filter.allDocuments']];
+        $docs = Customer::whereNotNull('numero_documento')
+            ->where('numero_documento', '!=', '')
+            ->select('numero_documento', 'tipo_documento')
+            ->distinct()
+            ->orderBy('numero_documento')
+            ->get();
+        foreach ($docs as $d) {
+            $documentosOptions[] = [
+                'value' => $d->numero_documento,
+                'label' => ($d->tipo_documento ? $d->tipo_documento . ': ' : '') . $d->numero_documento
+            ];
+        }
+
+        // 3. Opciones de teléfonos
+        $telefonosOptions = [['value' => '', 'label' => 'filter.allPhones']];
+        $phones = Customer::whereNotNull('phone')
+            ->where('phone', '!=', '')
+            ->select('phone')
+            ->distinct()
+            ->orderBy('phone')
+            ->pluck('phone');
+        foreach ($phones as $p) {
+            $telefonosOptions[] = [
+                'value' => $p,
+                'label' => $p
+            ];
+        }
+
         return view('livewire.clientes.cliente-index', [
             'clientes' => $this->clientes(),
-            'clientesOptions' => $clientesOptions
+            'clientesOptions' => $clientesOptions,
+            'documentosOptions' => $documentosOptions,
+            'telefonosOptions' => $telefonosOptions,
         ]);
     }
 }

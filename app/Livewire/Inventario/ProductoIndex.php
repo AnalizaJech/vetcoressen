@@ -17,7 +17,7 @@ class ProductoIndex extends Component
     use WithPagination;
 
     #[Url]
-    public string $filtroProducto = '';
+    public ?string $filtroProducto = '';
 
     #[Url]
     public $filtroStock = '';

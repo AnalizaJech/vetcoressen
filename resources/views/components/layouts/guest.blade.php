@@ -35,11 +35,11 @@
 
     @livewireStyles
 </head>
-<body class="h-screen overflow-hidden font-sans flex items-center justify-center" style="background-color: var(--vc-bg); color: var(--vc-text);">
+<body class="min-h-screen font-sans" style="background-color: var(--vc-bg); color: var(--vc-text);">
     {{-- Fondo con gradiente sutil --}}
-    <div class="fixed inset-0" style="background: radial-gradient(circle at 30% 30%, var(--vc-emerald-glow) 0%, transparent 50%), radial-gradient(circle at 70% 70%, rgba(13, 148, 136, 0.04) 0%, transparent 50%); pointer-events: none;"></div>
+    <div class="fixed inset-0 pointer-events-none" style="background: radial-gradient(circle at 30% 30%, var(--vc-emerald-glow) 0%, transparent 50%), radial-gradient(circle at 70% 70%, rgba(13, 148, 136, 0.04) 0%, transparent 50%);"></div>
 
-    <main class="relative z-10 w-full h-full flex items-center justify-center overflow-y-auto">
+    <main class="relative z-10 w-full min-h-screen flex flex-col items-center justify-start p-4 sm:p-6 lg:p-8">
         {{ $slot }}
     </main>
 

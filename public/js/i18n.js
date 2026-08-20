@@ -9,6 +9,7 @@ document.addEventListener("alpine:init", () => {
         loaded: false,
 
         async init() {
+            document.cookie = "vc_locale=" + this.locale + "; path=/; max-age=31536000; SameSite=Lax";
             await this.loadTranslations(this.locale);
         },
 
@@ -38,6 +39,7 @@ document.addEventListener("alpine:init", () => {
             this.loaded = false;
             this.locale = lang;
             localStorage.setItem("vc_locale", lang);
+            document.cookie = "vc_locale=" + lang + "; path=/; max-age=31536000; SameSite=Lax";
             await this.loadTranslations(lang);
         },
 
@@ -66,6 +68,7 @@ document.addEventListener("alpine:init", () => {
 
 function updateDocumentTitle() {
     const metaKey = document.querySelector('meta[name="current-title-key"]')?.content;
+    const metaSuffix = document.querySelector('meta[name="current-title-suffix"]')?.content || '';
     const store = Alpine.store('i18n');
     if (!metaKey || !store) return;
     
@@ -75,7 +78,7 @@ function updateDocumentTitle() {
                      store.t('page.' + metaKey);
                      
     if (translated) {
-        document.title = `${translated} - VETCORESSEN`;
+        document.title = `${translated}${metaSuffix} - VETCORESSEN`;
     }
 }
 

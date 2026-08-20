@@ -17,7 +17,7 @@ class SucursalIndex extends Component
     use WithPagination;
 
     #[Url]
-    public string $filtroSucursal = '';
+    public ?string $filtroSucursal = '';
 
     public ?int $sucursalEliminarId = null;
 

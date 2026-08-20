@@ -18,10 +18,10 @@ class MascotaIndex extends Component
     use WithPagination;
 
     #[Url]
-    public string $filtroMascota = '';
+    public ?string $filtroMascota = '';
 
     #[Url]
-    public string $filtroCliente = '';
+    public ?string $filtroCliente = '';
 
     // ID de la mascota pendiente de eliminar (modal de confirmación)
     public ?int $mascotaEliminarId = null;

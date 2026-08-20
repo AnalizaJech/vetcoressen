@@ -17,7 +17,7 @@ class ProveedorIndex extends Component
     use WithPagination;
 
     #[Url]
-    public string $filtroProveedor = '';
+    public ?string $filtroProveedor = '';
 
     public ?int $proveedorEliminarId = null;
     public ?Supplier $proveedorVer = null;

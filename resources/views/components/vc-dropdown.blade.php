@@ -93,13 +93,17 @@
         open = false; 
         if (search === '') { 
             if (selectedLabel !== placeholderText) {
-                $wire.set('{{ $attributes->wire('model')->value() }}', null);
+                @if($attributes->wire('model')->value())
+                $wire.set('{{ $attributes->wire('model')->value() }}', '');
+                @endif
                 selectedLabel = placeholderText;
             }
         }
         @if($allowCustom)
         else if (search !== selectedLabel) {
+            @if($attributes->wire('model')->value())
             $wire.set('{{ $attributes->wire('model')->value() }}', search);
+            @endif
             selectedLabel = search;
         }
         @else
@@ -137,12 +141,16 @@
             "
             @change="
                 if (search === '') {
-                    $wire.set('{{ $attributes->wire('model')->value() }}', null);
+                    @if($attributes->wire('model')->value())
+                    $wire.set('{{ $attributes->wire('model')->value() }}', '');
+                    @endif
                     selectedLabel = placeholderText;
                 }
                 @if($allowCustom)
                 else {
+                    @if($attributes->wire('model')->value())
                     $wire.set('{{ $attributes->wire('model')->value() }}', search);
+                    @endif
                 }
                 @endif
             "

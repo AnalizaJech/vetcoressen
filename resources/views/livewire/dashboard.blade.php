@@ -1,7 +1,7 @@
 <div>
     <x-slot:title>Dashboard</x-slot:title>
 
-    <div class="space-y-6" x-data="dashboardCharts({ atenciones: {{ json_encode($atencionesGrafico) }}, ingresos: {{ json_encode($ingresosSemana) }} })" x-init="init()">
+    <div class="space-y-6">
         {{-- ═══ Header de Bienvenida y Accesos Rápidos ═══ --}}
         <div class="vc-panel flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
@@ -48,37 +48,34 @@
                 </h3>
                 <div class="flex items-center gap-2 mt-2">
                     <span class="text-[11px] text-zinc-400">
-                        <span x-text="{{ $totalVentasHoy }} + ' ' + ($store.i18n.t('dashboard.receiptsIssued') || 'comprobantes emitidos')">{{ $totalVentasHoy }} emitidos</span>
+                        {{ $totalVentasHoy }} <span x-text="$store.i18n.t('dashboard.operationsCompleted') || 'operaciones concretadas'">operaciones concretadas</span>
                     </span>
                 </div>
             </div>
 
-            {{-- KPI 2: Citas del Día --}}
+            {{-- KPI 2: Atenciones Realizadas vs Citas de Hoy --}}
             <div class="kpi-card kpi-card--blue shadow-sm">
                 <div class="flex justify-between items-start mb-3">
-                    <span class="text-xs font-semibold text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('dashboard.appointmentsToday') || 'Citas de Hoy'">Citas de Hoy</span>
+                    <span class="text-xs font-semibold text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('dashboard.attentionsToday') || 'Atenciones de Hoy'">Atenciones de Hoy</span>
                     <div class="kpi-icon kpi-icon--blue">
-                        <span class="material-symbols-outlined">calendar_today</span>
+                        <span class="material-symbols-outlined">stethoscope</span>
                     </div>
                 </div>
                 <h3 class="text-2xl md:text-3xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight font-display mb-1">
-                    {{ $citasHoyCount }}
+                    {{ $citasCompletadasHoy }} <span class="text-lg text-zinc-400 font-normal">/ {{ $citasHoyCount }}</span>
                 </h3>
                 <div class="flex items-center gap-2 mt-2">
-                    <span class="badge badge-blue text-[10px]">
-                        <span x-text="{{ $citasCompletadasHoy }} + ' ' + ($store.i18n.t('dashboard.attended') || 'atendidas')">{{ $citasCompletadasHoy }} atendidas</span>
-                    </span>
                     <span class="text-[11px] text-zinc-400">
-                        <span x-text="{{ max(0, $citasHoyCount - $citasCompletadasHoy) }} + ' ' + ($store.i18n.t('status.pending') || 'pendientes')">{{ max(0, $citasHoyCount - $citasCompletadasHoy) }} pendientes</span>
+                        {{ $citasPendientes }} <span x-text="$store.i18n.t('dashboard.pendingScheduled') || 'pendientes en agenda'">pendientes en agenda</span>
                     </span>
                 </div>
             </div>
 
-            {{-- KPI 3: Total Pacientes --}}
-            <div class="kpi-card kpi-card--purple shadow-sm">
+            {{-- KPI 3: Mascotas Registradas y Activas --}}
+            <div class="kpi-card kpi-card--amber shadow-sm">
                 <div class="flex justify-between items-start mb-3">
-                    <span class="text-xs font-semibold text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('dashboard.totalPatients') || 'Total Pacientes'">Total Pacientes</span>
-                    <div class="kpi-icon kpi-icon--purple">
+                    <span class="text-xs font-semibold text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('dashboard.patientsActive') || 'Pacientes Activos'">Pacientes Activos</span>
+                    <div class="kpi-icon kpi-icon--amber">
                         <span class="material-symbols-outlined">pets</span>
                     </div>
                 </div>
@@ -87,42 +84,56 @@
                 </h3>
                 <div class="flex items-center gap-2 mt-2">
                     <span class="text-[11px] text-zinc-400">
-                        <span x-text="{{ $totalClientes }} + ' ' + ($store.i18n.t('dashboard.owners') || 'propietarios')">{{ $totalClientes }} propietarios</span>
+                        {{ $totalClientes }} <span x-text="$store.i18n.t('dashboard.registeredOwners') || 'dueños registrados'">dueños registrados</span>
                     </span>
                 </div>
             </div>
 
-            {{-- KPI 4: Estado de Caja --}}
-            <div class="kpi-card kpi-card--amber shadow-sm">
+            {{-- KPI 4: Alertas de Stock y Lotes Críticos --}}
+            <div class="kpi-card {{ $alertasInventario > 0 ? 'kpi-card--rose' : 'kpi-card--emerald' }} shadow-sm">
                 <div class="flex justify-between items-start mb-3">
-                    <span class="text-xs font-semibold text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('dashboard.cashRegisterStatus') || 'Estado de Caja'">Estado de Caja</span>
-                    <div class="kpi-icon kpi-icon--amber">
-                        <span class="material-symbols-outlined">point_of_sale</span>
+                    <span class="text-xs font-semibold text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('dashboard.stockAlerts') || 'Alertas de Stock'">Alertas de Stock</span>
+                    <div class="kpi-icon {{ $alertasInventario > 0 ? 'kpi-icon--rose' : 'kpi-icon--emerald' }}">
+                        <span class="material-symbols-outlined">inventory_2</span>
                     </div>
                 </div>
-                @if($cajaAbierta)
-                    <h3 class="text-2xl md:text-3xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight font-display mb-1">
-                        S/ {{ number_format($cajaAbierta->monto_inicial, 2) }}
-                    </h3>
-                    <div class="flex items-center gap-2 mt-2">
-                        <span class="badge badge-emerald text-[10px]" x-text="$store.i18n.t('status.open') || 'ABIERTA'">ABIERTA</span>
-                        <span class="text-[11px] text-zinc-400 truncate">{{ $cajaAbierta->usuario->name ?? 'Usuario' }}</span>
-                    </div>
-                @else
-                    <h3 class="text-2xl md:text-3xl font-extrabold text-zinc-400 tracking-tight font-display mb-1" x-text="$store.i18n.t('status.closed') || 'CERRADA'">
-                        CERRADA
-                    </h3>
-                    <div class="flex items-center gap-2 mt-2">
-                        <span class="badge badge-gray text-[10px]" x-text="$store.i18n.t('dashboard.noActiveShift') || 'Sin turno activo'">Sin turno activo</span>
-                    </div>
-                @endif
+                <h3 class="text-2xl md:text-3xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight font-display mb-1">
+                    {{ $alertasInventario }}
+                </h3>
+                <div class="flex items-center gap-2 mt-2">
+                    <span class="text-[11px] text-zinc-400">
+                        {{ $lotesProximosVencer->count() }} <span x-text="$store.i18n.t('dashboard.batchesNearExpiry') || 'lotes por vencer'">lotes por vencer</span>
+                    </span>
+                </div>
             </div>
         </div>
+
+        {{-- ═══ Banner Informativo: Estado de Caja (Solo si está cerrada) ═══ --}}
+        @if(!$cajaAbierta)
+            <div class="p-4 rounded-2xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200/60 dark:border-amber-500/20 flex items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-xl">lock</span>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-amber-900 dark:text-amber-200" x-text="$store.i18n.t('dashboard.cashRegisterClosed') || 'Caja del día cerrada'">Caja del día cerrada</h4>
+                        <p class="text-[11px] text-amber-700 dark:text-amber-400" x-text="$store.i18n.t('dashboard.cashRegisterClosedDesc') || 'Abre turno en caja para registrar ventas'">Abre turno en caja para registrar ventas</p>
+                    </div>
+                </div>
+                <a href="{{ route('caja.index') }}" wire:navigate class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition-colors shrink-0 shadow-xs">
+                    <span x-text="$store.i18n.t('dashboard.openRegister') || 'Abrir Caja'">Abrir Caja</span>
+                </a>
+            </div>
+        @endif
 
         {{-- ═══ Fila 1 (2 en línea): Atenciones Médicas vs Citas Programadas ═══ --}}
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {{-- Columna Izquierda (50%): Gráfico de Atenciones Médicas --}}
-            <div class="vc-panel flex flex-col justify-between">
+            <div class="vc-panel flex flex-col justify-between"
+                 x-data="atencionesChartComponent()"
+                 x-init="initChart(@js($atencionesGrafico))"
+                 x-effect="updateData(@js($atencionesGrafico))"
+            >
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                     <div>
                         <h2 class="text-base font-extrabold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
@@ -209,7 +220,11 @@
         {{-- ═══ Fila 2 (2 en línea): Ingresos Monetarios vs Últimas Ventas ═══ --}}
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {{-- Columna Izquierda (50%): Gráfico de Ingresos Monetarios --}}
-            <div class="vc-panel flex flex-col justify-between">
+            <div class="vc-panel flex flex-col justify-between"
+                 x-data="ingresosChartComponent()"
+                 x-init="initChart(@js($ingresosSemana))"
+                 x-effect="updateData(@js($ingresosSemana))"
+            >
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                     <div>
                         <h2 class="text-base font-extrabold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
@@ -468,184 +483,146 @@
 </div>
 
 <script>
-    function dashboardCharts(initialData) {
-        return {
-            atencionesChartInstance: null,
-            ingresosChartInstance: null,
-            cachedAtencionesRaw: initialData?.atenciones || null,
-            cachedIngresosRaw: initialData?.ingresos || null,
+    function getDashboardDict(key) {
+        const store = Alpine.store('i18n');
+        const isEn = (store?.locale || localStorage.getItem('vc_locale')) === 'en';
+        const fallbackMap = {
+            'dashboard.sun': isEn ? 'Sun' : 'Dom',
+            'dashboard.mon': isEn ? 'Mon' : 'Lun',
+            'dashboard.tue': isEn ? 'Tue' : 'Mar',
+            'dashboard.wed': isEn ? 'Wed' : 'Mié',
+            'dashboard.thu': isEn ? 'Thu' : 'Jue',
+            'dashboard.fri': isEn ? 'Fri' : 'Vie',
+            'dashboard.sat': isEn ? 'Sat' : 'Sáb',
+            'dashboard.week1': isEn ? 'Week 1' : 'Semana 1',
+            'dashboard.week2': isEn ? 'Week 2' : 'Semana 2',
+            'dashboard.week3': isEn ? 'Week 3' : 'Semana 3',
+            'dashboard.week4': isEn ? 'Week 4' : 'Semana 4',
+            'dashboard.week5': isEn ? 'Week 5' : 'Semana 5',
+            'dashboard.jan': isEn ? 'Jan' : 'Ene',
+            'dashboard.feb': isEn ? 'Feb' : 'Feb',
+            'dashboard.mar': isEn ? 'Mar' : 'Mar',
+            'dashboard.apr': isEn ? 'Apr' : 'Abr',
+            'dashboard.may': isEn ? 'May' : 'May',
+            'dashboard.jun': isEn ? 'Jun' : 'Jun',
+            'dashboard.jul': isEn ? 'Jul' : 'Jul',
+            'dashboard.aug': isEn ? 'Aug' : 'Ago',
+            'dashboard.sep': isEn ? 'Sep' : 'Sep',
+            'dashboard.oct': isEn ? 'Oct' : 'Oct',
+            'dashboard.nov': isEn ? 'Nov' : 'Nov',
+            'dashboard.dec': isEn ? 'Dec' : 'Dic',
+            'status.completed': isEn ? 'Completed' : 'Realizadas',
+            'status.pending': isEn ? 'Pending' : 'Por Realizar',
+            'dashboard.incomeSoles': isEn ? 'Income (S/)' : 'Ingresos (S/)'
+        };
+        const val = store?.t(key);
+        if (val && val !== key) return val;
+        return fallbackMap[key] || '';
+    }
 
-            init() {
-                const initCharts = () => {
-                    if (typeof Chart !== 'undefined') {
-                        this.initAtenciones();
-                        this.initIngresos();
+    function formatAtencionesLabelsList(raw) {
+        if (!raw) return [];
+        const keys = raw.keys || [];
+        const labels = raw.labels || [];
+        return labels.map((label, idx) => {
+            const key = keys[idx];
+            if (key) {
+                const translated = getDashboardDict(key);
+                if (translated) {
+                    const parts = String(label).split(' ');
+                    if (parts.length > 1 && parts[1].includes('/')) {
+                        return `${translated} ${parts[1]}`;
+                    }
+                    return translated;
+                }
+            }
+            return label;
+        });
+    }
+
+    function formatIngresosLabelsList(raw) {
+        if (!raw || !Array.isArray(raw)) return [];
+        return raw.map(item => {
+            if (item.key) {
+                const translated = getDashboardDict(item.key);
+                if (translated) {
+                    const isMonth = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'].some(m => item.key.includes(m));
+                    if (item.date && !isMonth) {
+                        return `${translated} ${item.date}`;
+                    }
+                    return translated;
+                }
+            }
+            return item.dia || item.date || '';
+        });
+    }
+
+    function atencionesChartComponent() {
+        return {
+            chart: null,
+            cachedData: null,
+
+            initChart(initialData) {
+                this.cachedData = initialData;
+                const waitForChart = () => {
+                    const ctx = document.getElementById('atencionesChart');
+                    if (typeof Chart !== 'undefined' && ctx) {
+                        this.buildChart(ctx, this.cachedData);
                     } else {
-                        setTimeout(initCharts, 50);
+                        setTimeout(waitForChart, 50);
                     }
                 };
-                this.$nextTick(initCharts);
+                this.$nextTick(waitForChart);
 
                 window.addEventListener('language-changed', () => {
-                    this.refreshChartTranslations();
-                });
-
-                window.addEventListener('dashboard-charts-updated', (e) => {
-                    const data = Array.isArray(e.detail) ? e.detail[0] : (e.detail?.detail ? (Array.isArray(e.detail.detail) ? e.detail.detail[0] : e.detail.detail) : e.detail);
-                    if (data && data.atenciones) {
-                        this.updateAtencionesData(data.atenciones);
-                    }
-                    if (data && data.ingresos) {
-                        this.updateIngresosData(data.ingresos);
+                    if (this.chart && this.cachedData) {
+                        this.updateData(this.cachedData);
                     }
                 });
-
-                this.$watch('$wire.atencionesGrafico', (newVal) => {
-                    if (newVal && Object.keys(newVal).length > 0) this.updateAtencionesData(newVal);
-                });
-
-                this.$watch('$wire.ingresosSemana', (newVal) => {
-                    if (newVal && Array.isArray(newVal) && newVal.length > 0) this.updateIngresosData(newVal);
-                });
             },
 
-            getDict(key) {
-                const store = Alpine.store('i18n');
-                const isEn = (store?.locale || localStorage.getItem('vc_locale')) === 'en';
-                const fallbackMap = {
-                    'dashboard.sun': isEn ? 'Sun' : 'Dom',
-                    'dashboard.mon': isEn ? 'Mon' : 'Lun',
-                    'dashboard.tue': isEn ? 'Tue' : 'Mar',
-                    'dashboard.wed': isEn ? 'Wed' : 'Mié',
-                    'dashboard.thu': isEn ? 'Thu' : 'Jue',
-                    'dashboard.fri': isEn ? 'Fri' : 'Vie',
-                    'dashboard.sat': isEn ? 'Sat' : 'Sáb',
-                    'dashboard.week1': isEn ? 'Week 1' : 'Semana 1',
-                    'dashboard.week2': isEn ? 'Week 2' : 'Semana 2',
-                    'dashboard.week3': isEn ? 'Week 3' : 'Semana 3',
-                    'dashboard.week4': isEn ? 'Week 4' : 'Semana 4',
-                    'dashboard.week5': isEn ? 'Week 5' : 'Semana 5',
-                    'dashboard.jan': isEn ? 'Jan' : 'Ene',
-                    'dashboard.feb': isEn ? 'Feb' : 'Feb',
-                    'dashboard.mar': isEn ? 'Mar' : 'Mar',
-                    'dashboard.apr': isEn ? 'Apr' : 'Abr',
-                    'dashboard.may': isEn ? 'May' : 'May',
-                    'dashboard.jun': isEn ? 'Jun' : 'Jun',
-                    'dashboard.jul': isEn ? 'Jul' : 'Jul',
-                    'dashboard.aug': isEn ? 'Aug' : 'Ago',
-                    'dashboard.sep': isEn ? 'Sep' : 'Sep',
-                    'dashboard.oct': isEn ? 'Oct' : 'Oct',
-                    'dashboard.nov': isEn ? 'Nov' : 'Nov',
-                    'dashboard.dec': isEn ? 'Dec' : 'Dic',
-                    'status.completed': isEn ? 'Completed' : 'Realizadas',
-                    'status.pending': isEn ? 'Pending' : 'Por Realizar',
-                    'dashboard.incomeSoles': isEn ? 'Income (S/)' : 'Ingresos (S/)'
-                };
-                const val = store?.t(key);
-                if (val && val !== key) return val;
-                return fallbackMap[key] || '';
-            },
-
-            formatAtencionesLabels(raw) {
-                if (!raw) return [];
-                const keys = raw.keys || [];
-                const labels = raw.labels || [];
-                return labels.map((label, idx) => {
-                    const key = keys[idx];
-                    if (key) {
-                        const translated = this.getDict(key);
-                        if (translated) {
-                            const parts = String(label).split(' ');
-                            if (parts.length > 1 && parts[1].includes('/')) {
-                                return `${translated} ${parts[1]}`;
-                            }
-                            return translated;
-                        }
-                    }
-                    return label;
-                });
-            },
-
-            formatIngresosLabels(raw) {
-                if (!raw || !Array.isArray(raw)) return [];
-                return raw.map(item => {
-                    if (item.key) {
-                        const translated = this.getDict(item.key);
-                        if (translated) {
-                            const isMonth = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'].some(m => item.key.includes(m));
-                            if (item.date && !isMonth) {
-                                return `${translated} ${item.date}`;
-                            }
-                            return translated;
-                        }
-                    }
-                    return item.dia || item.date || '';
-                });
-            },
-
-            refreshChartTranslations() {
-                if (this.atencionesChartInstance && this.cachedAtencionesRaw) {
-                    this.atencionesChartInstance.data.labels = this.formatAtencionesLabels(this.cachedAtencionesRaw);
-                    this.atencionesChartInstance.data.datasets[0].label = this.getDict('status.completed') || 'Realizadas';
-                    this.atencionesChartInstance.data.datasets[1].label = this.getDict('status.pending') || 'Por Realizar';
-                    this.atencionesChartInstance.update();
-                }
-                if (this.ingresosChartInstance && this.cachedIngresosRaw) {
-                    this.ingresosChartInstance.data.labels = this.formatIngresosLabels(this.cachedIngresosRaw);
-                    this.ingresosChartInstance.data.datasets[0].label = this.getDict('dashboard.incomeSoles') || 'Ingresos (S/)';
-                    this.ingresosChartInstance.update();
-                }
-            },
-
-            updateAtencionesData(data) {
-                this.cachedAtencionesRaw = JSON.parse(JSON.stringify(data));
-                if (!this.atencionesChartInstance) {
-                    this.initAtenciones();
-                    return;
-                }
-                this.atencionesChartInstance.data.labels = this.formatAtencionesLabels(this.cachedAtencionesRaw);
-                this.atencionesChartInstance.data.datasets[0].data = this.cachedAtencionesRaw.realizadas || [];
-                this.atencionesChartInstance.data.datasets[1].data = this.cachedAtencionesRaw.pendientes || [];
-                this.atencionesChartInstance.data.datasets[0].label = this.getDict('status.completed') || 'Realizadas';
-                this.atencionesChartInstance.data.datasets[1].label = this.getDict('status.pending') || 'Por Realizar';
-                this.atencionesChartInstance.update();
-            },
-
-            updateIngresosData(data) {
-                this.cachedIngresosRaw = JSON.parse(JSON.stringify(data));
-                if (!this.ingresosChartInstance) {
-                    this.initIngresos();
-                    return;
-                }
-                this.ingresosChartInstance.data.labels = this.formatIngresosLabels(this.cachedIngresosRaw);
-                this.ingresosChartInstance.data.datasets[0].data = this.cachedIngresosRaw.map(d => d.total) || [];
-                this.ingresosChartInstance.data.datasets[0].label = this.getDict('dashboard.incomeSoles') || 'Ingresos (S/)';
-                this.ingresosChartInstance.update();
-            },
-
-            initAtenciones() {
+            updateData(data) {
+                if (!data) return;
+                this.cachedData = data;
                 const ctx = document.getElementById('atencionesChart');
                 if (!ctx) return;
-                if (this.atencionesChartInstance) this.atencionesChartInstance.destroy();
-
-                if (!this.cachedAtencionesRaw) {
-                    this.cachedAtencionesRaw = JSON.parse(JSON.stringify(this.$wire.atencionesGrafico || { labels: [], keys: [], realizadas: [], pendientes: [] }));
+                if (!this.chart) {
+                    if (typeof Chart !== 'undefined') this.buildChart(ctx, data);
+                    return;
                 }
 
-                this.atencionesChartInstance = new Chart(ctx, {
+                const labels = formatAtencionesLabelsList(data);
+                const compLabel = getDashboardDict('status.completed') || 'Realizadas';
+                const pendLabel = getDashboardDict('status.pending') || 'Por Realizar';
+
+                this.chart.data.labels = labels;
+                this.chart.data.datasets[0].data = data.realizadas || [];
+                this.chart.data.datasets[0].label = compLabel;
+                this.chart.data.datasets[1].data = data.pendientes || [];
+                this.chart.data.datasets[1].label = pendLabel;
+                this.chart.update('active');
+            },
+
+            buildChart(ctx, data) {
+                if (this.chart) this.chart.destroy();
+                const labels = formatAtencionesLabelsList(data);
+                const compLabel = getDashboardDict('status.completed') || 'Realizadas';
+                const pendLabel = getDashboardDict('status.pending') || 'Por Realizar';
+
+                this.chart = new Chart(ctx, {
                     type: 'bar',
                     data: {
-                        labels: this.formatAtencionesLabels(this.cachedAtencionesRaw),
+                        labels: labels,
                         datasets: [
                             {
-                                label: this.getDict('status.completed') || 'Realizadas',
-                                data: this.cachedAtencionesRaw.realizadas || [],
+                                label: compLabel,
+                                data: data?.realizadas || [],
                                 backgroundColor: '#10b981',
                                 borderRadius: 6,
                             },
                             {
-                                label: this.getDict('status.pending') || 'Por Realizar',
-                                data: this.cachedAtencionesRaw.pendientes || [],
+                                label: pendLabel,
+                                data: data?.pendientes || [],
                                 backgroundColor: '#3b82f6',
                                 borderRadius: 6,
                             }
@@ -654,10 +631,33 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false,
+                        },
                         plugins: {
                             legend: {
                                 position: 'top',
                                 labels: { font: { family: 'Plus Jakarta Sans', weight: '600', size: 11 }, color: '#71717a' }
+                            },
+                            tooltip: {
+                                enabled: true,
+                                mode: 'index',
+                                intersect: false,
+                                backgroundColor: 'rgba(24, 24, 27, 0.95)',
+                                titleColor: '#ffffff',
+                                bodyColor: '#e4e4e7',
+                                borderColor: 'rgba(255, 255, 255, 0.1)',
+                                borderWidth: 1,
+                                padding: 10,
+                                cornerRadius: 8,
+                                titleFont: { family: 'Plus Jakarta Sans', weight: '700', size: 12 },
+                                bodyFont: { family: 'Plus Jakarta Sans', size: 11 },
+                                callbacks: {
+                                    label: function(context) {
+                                        return ' ' + context.dataset.label + ': ' + context.raw;
+                                    }
+                                }
                             }
                         },
                         scales: {
@@ -666,40 +666,105 @@
                         }
                     }
                 });
+            }
+        };
+    }
+
+    function ingresosChartComponent() {
+        return {
+            chart: null,
+            cachedData: null,
+
+            initChart(initialData) {
+                this.cachedData = initialData;
+                const waitForChart = () => {
+                    const ctx = document.getElementById('ingresosChart');
+                    if (typeof Chart !== 'undefined' && ctx) {
+                        this.buildChart(ctx, this.cachedData);
+                    } else {
+                        setTimeout(waitForChart, 50);
+                    }
+                };
+                this.$nextTick(waitForChart);
+
+                window.addEventListener('language-changed', () => {
+                    if (this.chart && this.cachedData) {
+                        this.updateData(this.cachedData);
+                    }
+                });
             },
 
-            initIngresos() {
+            updateData(data) {
+                if (!data) return;
+                this.cachedData = data;
                 const ctx = document.getElementById('ingresosChart');
                 if (!ctx) return;
-                if (this.ingresosChartInstance) this.ingresosChartInstance.destroy();
-
-                if (!this.cachedIngresosRaw) {
-                    this.cachedIngresosRaw = JSON.parse(JSON.stringify(this.$wire.ingresosSemana || []));
+                if (!this.chart) {
+                    if (typeof Chart !== 'undefined') this.buildChart(ctx, data);
+                    return;
                 }
 
-                this.ingresosChartInstance = new Chart(ctx, {
+                const labels = formatIngresosLabelsList(data);
+                const incomeLabel = getDashboardDict('dashboard.incomeSoles') || 'Ingresos (S/)';
+
+                this.chart.data.labels = labels;
+                this.chart.data.datasets[0].data = data.map(d => d.total) || [];
+                this.chart.data.datasets[0].label = incomeLabel;
+                this.chart.update('active');
+            },
+
+            buildChart(ctx, data) {
+                if (this.chart) this.chart.destroy();
+                const labels = formatIngresosLabelsList(data);
+                const incomeLabel = getDashboardDict('dashboard.incomeSoles') || 'Ingresos (S/)';
+
+                this.chart = new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: this.formatIngresosLabels(this.cachedIngresosRaw),
+                        labels: labels,
                         datasets: [{
-                            label: this.getDict('dashboard.incomeSoles') || 'Ingresos (S/)',
-                            data: this.cachedIngresosRaw.map(d => d.total) || [],
+                            label: incomeLabel,
+                            data: Array.isArray(data) ? data.map(d => d.total) : [],
                             borderColor: '#10b981',
                             backgroundColor: 'rgba(16, 185, 129, 0.05)',
                             borderWidth: 2.5,
                             fill: true,
                             tension: 0.35,
                             pointBackgroundColor: '#10b981',
-                            pointHoverRadius: 6,
+                            pointHoverRadius: 7,
+                            pointHoverBackgroundColor: '#10b981',
+                            pointHoverBorderColor: '#ffffff',
+                            pointHoverBorderWidth: 2,
+                            hitRadius: 25,
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false,
+                        },
                         plugins: {
                             legend: { display: false },
                             tooltip: {
-                                callbacks: { label: (c) => ' S/ ' + Number(c.raw).toFixed(2) }
+                                enabled: true,
+                                mode: 'index',
+                                intersect: false,
+                                backgroundColor: 'rgba(24, 24, 27, 0.95)',
+                                titleColor: '#ffffff',
+                                bodyColor: '#e4e4e7',
+                                borderColor: 'rgba(255, 255, 255, 0.1)',
+                                borderWidth: 1,
+                                padding: 10,
+                                cornerRadius: 8,
+                                titleFont: { family: 'Plus Jakarta Sans', weight: '700', size: 12 },
+                                bodyFont: { family: 'Plus Jakarta Sans', size: 11 },
+                                callbacks: {
+                                    label: function(context) {
+                                        return ' ' + (context.dataset.label || 'Ingresos') + ': S/ ' + Number(context.raw).toFixed(2);
+                                    }
+                                }
                             }
                         },
                         scales: {

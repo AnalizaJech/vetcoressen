@@ -4,9 +4,16 @@
     {{-- ═══ Header de Historias Clínicas (Estándar Premium) ═══ --}}
     <div class="vc-panel flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200/50 dark:border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                <span class="material-symbols-outlined text-2xl">medical_information</span>
-            </div>
+            @if($clienteSeleccionado)
+                <button wire:click="volver" class="p-2.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 border border-zinc-200/80 dark:border-zinc-700 transition-all flex items-center gap-1.5 text-xs font-bold shadow-xs">
+                    <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                    <span x-text="$store.i18n.t('btn.back') || 'Volver'">Volver</span>
+                </button>
+            @else
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200/50 dark:border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                    <span class="material-symbols-outlined text-2xl">medical_information</span>
+                </div>
+            @endif
             <div>
                 <h1 class="text-xl md:text-2xl font-extrabold text-zinc-900 dark:text-zinc-100 font-display">
                     <span x-text="$store.i18n.t('records.title') || 'Historias Clínicas'">Historias Clínicas</span>
@@ -29,16 +36,18 @@
         {{-- ═══ Barra de Filtros Dinámicos (Estilo Reportes) ═══ --}}
         <div class="vc-panel mb-6">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-end">
-                {{-- Buscador Principal --}}
+                {{-- Filtro de Cliente --}}
                 <div>
-                    <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5" x-text="$store.i18n.t('filter.searchClientPet') || 'Buscar Cliente / Mascota'">
-                        Buscar Cliente / Mascota
+                    <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5" x-text="$store.i18n.t('table.client') || 'Cliente'">
+                        Cliente
                     </label>
-                    <flux:input
-                        wire:model.live.debounce.300ms="search"
-                        icon="magnifying-glass"
-                        placeholder="Buscar por nombre, DNI o mascota..."
-                        x-bind:placeholder="$store.i18n.t('filter.searchClientPet') || 'Buscar por nombre, DNI o mascota...'"
+                    <x-vc-dropdown
+                        wire:model.live="filtroCliente"
+                        :options="$clientesOptions"
+                        :selected="$filtroCliente"
+                        placeholder="filter.allClients"
+                        icon="person"
+                        searchable
                     />
                 </div>
 
@@ -180,10 +189,9 @@
             {{-- Panel Superior: Info del Cliente Seleccionado --}}
             <div class="vc-panel flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div class="flex items-center gap-4">
-                    <button wire:click="volver" class="p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-500/10 dark:hover:text-emerald-400 text-zinc-600 dark:text-zinc-300 border border-zinc-200/60 dark:border-zinc-700/60 transition-all flex items-center gap-1.5 text-xs font-bold" title="Volver al listado">
-                        <span class="material-symbols-outlined text-[18px]">arrow_back</span>
-                        <span x-text="$store.i18n.t('btn.back') || 'Volver'">Volver</span>
-                    </button>
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-500/10 dark:to-teal-500/10 border border-emerald-200/60 dark:border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-extrabold text-base shadow-xs shrink-0">
+                        {{ strtoupper(substr($clienteSeleccionado->first_name, 0, 1) . substr($clienteSeleccionado->last_name, 0, 1)) }}
+                    </div>
                     <div>
                         <div class="flex flex-wrap items-center gap-2">
                             <h2 class="text-lg font-extrabold text-zinc-900 dark:text-zinc-100 font-display">
@@ -215,10 +223,9 @@
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <a href="{{ route('historias.crear') }}" wire:navigate class="btn-primary text-xs px-3.5 py-2 flex items-center gap-1.5 shadow-sm">
-                        <span class="material-symbols-outlined icon-sm">add</span>
-                        <span x-text="$store.i18n.t('btn.newRecord') || 'Nueva Historia'">Nueva Historia</span>
-                    </a>
+                    <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/40">
+                        {{ $clienteSeleccionado->mascotas->count() }} {{ $clienteSeleccionado->mascotas->count() === 1 ? 'Mascota' : 'Mascotas' }}
+                    </span>
                 </div>
             </div>
 
@@ -255,7 +262,7 @@
                             </div>
 
                             <div class="flex items-center gap-2">
-                                <a href="{{ route('mascotas.historial.pdf', $mascota->id) }}" target="_blank" class="px-3 py-1.5 rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 dark:text-emerald-300 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 border border-emerald-200/50 dark:border-emerald-800/40 transition-all flex items-center gap-1.5 shadow-xs" title="Descargar Historial Clínico Completo">
+                                <a x-bind:href="'{{ route('mascotas.historial.pdf', $mascota->id) }}?lang=' + ($store.i18n?.locale || localStorage.getItem('vc_locale') || 'es')" target="_blank" class="px-3 py-1.5 rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 dark:text-emerald-300 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 border border-emerald-200/50 dark:border-emerald-800/40 transition-all flex items-center gap-1.5 shadow-xs" title="Descargar Historial Clínico Completo">
                                     <span class="material-symbols-outlined text-[16px]">picture_as_pdf</span>
                                     <span x-text="$store.i18n.t('report.downloadHistoryPDF') || 'Historial Completo (PDF)'">Historial Completo (PDF)</span>
                                 </a>
@@ -298,23 +305,23 @@
                                                 </div>
 
                                                 <div class="flex items-center gap-2">
-                                                    {{-- Botón Ver Ficha Completa --}}
-                                                    <a href="{{ route('historias.ver', $historia->id) }}" wire:navigate class="p-1.5 rounded-lg text-zinc-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-colors" @click.stop title="Ver Ficha Clínica">
+                                                    {{-- Botón Ver Ficha Completa (Indigo) --}}
+                                                    <a href="{{ route('historias.ver', $historia->id) }}" wire:navigate class="p-2 rounded-xl text-indigo-600 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-500/10 dark:text-indigo-400 dark:hover:bg-indigo-500/20 border border-indigo-200/60 dark:border-indigo-500/20 transition-all shadow-xs flex items-center justify-center" @click.stop x-bind:title="$store.i18n.t('btn.viewRecord') || 'Ver Ficha'">
                                                         <span class="material-symbols-outlined text-[18px]">visibility</span>
                                                     </a>
 
-                                                    {{-- Botón Imprimir PDF --}}
-                                                    <a href="{{ route('historias.pdf', $historia->id) }}" target="_blank" class="p-1.5 rounded-lg text-zinc-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 transition-colors" @click.stop title="Descargar PDF">
+                                                    {{-- Botón Imprimir PDF (Emerald) --}}
+                                                    <a x-bind:href="'{{ route('historias.pdf', $historia->id) }}?lang=' + ($store.i18n?.locale || localStorage.getItem('vc_locale') || 'es')" target="_blank" class="p-2 rounded-xl text-emerald-600 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:hover:bg-emerald-500/20 border border-emerald-200/60 dark:border-emerald-500/20 transition-all shadow-xs flex items-center justify-center" @click.stop x-bind:title="$store.i18n.t('btn.downloadPDF') || 'Descargar PDF'">
                                                         <span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
                                                     </a>
 
-                                                    {{-- Botón Editar --}}
-                                                    <a href="{{ route('historias.editar', $historia->id) }}" wire:navigate class="p-1.5 rounded-lg text-zinc-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors" @click.stop title="Editar">
+                                                    {{-- Botón Editar (Amber) --}}
+                                                    <a href="{{ route('historias.editar', $historia->id) }}" wire:navigate class="p-2 rounded-xl text-amber-600 bg-amber-50 hover:bg-amber-100 dark:bg-amber-500/10 dark:text-amber-400 dark:hover:bg-amber-500/20 border border-amber-200/60 dark:border-amber-500/20 transition-all shadow-xs flex items-center justify-center" @click.stop x-bind:title="$store.i18n.t('btn.edit') || 'Editar'">
                                                         <span class="material-symbols-outlined text-[18px]">edit</span>
                                                     </a>
 
-                                                    {{-- Botón Eliminar --}}
-                                                    <button type="button" wire:click="abrirModalEliminar({{ $historia->id }})" class="p-1.5 rounded-lg text-zinc-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors" @click.stop title="Eliminar">
+                                                    {{-- Botón Eliminar (Red) --}}
+                                                    <button type="button" wire:click="abrirModalEliminar({{ $historia->id }})" class="p-2 rounded-xl text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20 border border-red-200/60 dark:border-red-500/20 transition-all shadow-xs flex items-center justify-center" @click.stop x-bind:title="$store.i18n.t('btn.delete') || 'Eliminar'">
                                                         <span class="material-symbols-outlined text-[18px]">delete</span>
                                                     </button>
 

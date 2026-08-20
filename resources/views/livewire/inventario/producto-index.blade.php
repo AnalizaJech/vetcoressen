@@ -31,20 +31,7 @@
 
     {{-- ═══ Barra de Filtros Dinámicos (Estilo Reportes con Labels) ═══ --}}
     <div class="vc-panel mb-6">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
-            {{-- Buscador Principal --}}
-            <div>
-                <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5" x-text="$store.i18n.t('filter.searchProduct') || 'Buscar Producto'">
-                    Buscar Producto
-                </label>
-                <flux:input
-                    wire:model.live.debounce.300ms="search"
-                    icon="magnifying-glass"
-                    placeholder="Buscar producto por nombre o código..."
-                    x-bind:placeholder="$store.i18n.t('form.productNamePlaceholder') || 'Buscar producto...'"
-                />
-            </div>
-
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-end">
             {{-- Filtro de Producto --}}
             <div>
                 <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5" x-text="$store.i18n.t('filter.product') || 'Producto'">

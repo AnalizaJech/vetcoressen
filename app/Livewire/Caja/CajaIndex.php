@@ -16,7 +16,7 @@ class CajaIndex extends Component
     use WithPagination;
 
     // Resumen
-    public string $filtroTiempo = 'hoy'; // 'hoy', 'semana', 'mes', 'anio'
+    public ?string $filtroTiempo = 'hoy'; // 'hoy', 'semana', 'mes', 'anio'
     public float $totalVentasHoy = 0;
     public int $cantidadVentasHoy = 0;
     public float $totalEfectivo = 0;

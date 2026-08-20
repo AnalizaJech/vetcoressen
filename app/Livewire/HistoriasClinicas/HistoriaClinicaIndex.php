@@ -22,10 +22,10 @@ class HistoriaClinicaIndex extends Component
     public string $search = '';
 
     #[Url]
-    public string $filtroCliente = '';
+    public ?string $filtroCliente = '';
 
     #[Url]
-    public string $filtroMascota = '';
+    public ?string $filtroMascota = '';
 
     #[Url]
     public string $especie_id = '';
@@ -33,6 +33,25 @@ class HistoriaClinicaIndex extends Component
     #[Url]
     public ?int $clienteSeleccionadoId = null;
     public ?int $historiaEliminarId = null;
+
+    public function mount(): void
+    {
+        if (request()->has('clienteSeleccionadoId') && request('clienteSeleccionadoId')) {
+            $this->clienteSeleccionadoId = (int) request('clienteSeleccionadoId');
+        } elseif (request()->has('cliente_id') && request('cliente_id')) {
+            $this->clienteSeleccionadoId = (int) request('cliente_id');
+        } elseif (request()->has('cliente') && request('cliente')) {
+            $this->clienteSeleccionadoId = (int) request('cliente');
+        } elseif (request()->has('mascota_id') && request('mascota_id')) {
+            $pet = \App\Models\Pet::find(request('mascota_id'));
+            if ($pet) {
+                $this->clienteSeleccionadoId = (int) $pet->customer_id;
+                $this->filtroMascota = $pet->name;
+            }
+        } elseif (request()->has('busqueda') && request('busqueda') && !$this->search) {
+            $this->search = (string) request('busqueda');
+        }
+    }
 
     public function updatedSearch(): void
     {

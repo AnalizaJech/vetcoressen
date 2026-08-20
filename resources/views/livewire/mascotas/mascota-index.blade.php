@@ -27,20 +27,7 @@
 
     {{-- ═══ Barra de Filtros Dinámicos (Estilo Reportes con Labels) ═══ --}}
     <div class="vc-panel mb-6">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-end">
-            {{-- Buscador Principal --}}
-            <div>
-                <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5" x-text="$store.i18n.t('filter.searchClientPet') || 'Buscar Mascota / Propietario'">
-                    Buscar Mascota / Propietario
-                </label>
-                <flux:input
-                    wire:model.live.debounce.300ms="search"
-                    icon="magnifying-glass"
-                    placeholder="Buscar por nombre, raza o dueño..."
-                    x-bind:placeholder="$store.i18n.t('filter.searchClientPet') || 'Buscar...'"
-                />
-            </div>
-
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
             {{-- Filtro de Propietario --}}
             <div>
                 <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5" x-text="$store.i18n.t('table.owner') || 'Propietario'">
@@ -132,17 +119,17 @@
 
                     {{-- Acciones --}}
                     <div class="pt-4 border-t border-zinc-100 dark:border-zinc-800 flex justify-end gap-1.5 items-center">
-                        <a href="{{ route('historias.index', ['clienteSeleccionadoId' => $mascota->customer_id]) }}" class="vc-btn-action p-1.5 rounded-lg flex items-center gap-1 transition-colors hover:bg-purple-50 dark:hover:bg-purple-500/10 text-purple-600" x-bind:>
+                        <a href="{{ route('historias.index', ['clienteSeleccionadoId' => $mascota->customer_id, 'filtroMascota' => $mascota->name]) }}" wire:navigate class="vc-btn-action p-1.5 rounded-lg flex items-center gap-1 transition-colors hover:bg-purple-50 dark:hover:bg-purple-500/10 text-purple-600" x-bind:title="$store.i18n.t('records.title') || 'Historias Clínicas'">
                             <span class="material-symbols-outlined text-[18px]">clinical_notes</span>
                         </a>
-                        <button type="button" class="vc-btn-action vc-btn-view" x-bind:
+                        <button type="button" class="vc-btn-action vc-btn-view" x-bind:title="$store.i18n.t('btn.view') || 'Ver'"
                             wire:click="ver({{ $mascota->id }})">
                             <span class="material-symbols-outlined text-lg">visibility</span>
                         </button>
-                        <a href="{{ route('mascotas.editar', $mascota) }}" class="vc-btn-action vc-btn-edit" x-bind:>
+                        <a href="{{ route('mascotas.editar', $mascota) }}" wire:navigate class="vc-btn-action vc-btn-edit" x-bind:title="$store.i18n.t('btn.edit') || 'Editar'">
                             <span class="material-symbols-outlined text-lg">edit</span>
                         </a>
-                        <button type="button" class="vc-btn-action vc-btn-delete" x-bind:
+                        <button type="button" class="vc-btn-action vc-btn-delete" x-bind:title="$store.i18n.t('btn.delete') || 'Eliminar'"
                             @click="$wire.set('mascotaEliminarId', {{ $mascota->id }}); $dispatch('modal-show', { name: 'confirmar-eliminar' })">
                             <span class="material-symbols-outlined text-lg">delete</span>
                         </button>

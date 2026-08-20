@@ -27,21 +27,8 @@
 
     {{-- ═══ Barra de Filtros Dinámicos (Estilo Reportes con Labels) ═══ --}}
     <div class="vc-panel mb-6">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 items-end">
-            {{-- Buscador Principal --}}
-            <div>
-                <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5" x-text="$store.i18n.t('filter.searchClient') || 'Buscar Cliente'">
-                    Buscar Cliente
-                </label>
-                <flux:input
-                    wire:model.live.debounce.300ms="search"
-                    icon="magnifying-glass"
-                    placeholder="Buscar por nombre, DNI, teléfono o email..."
-                    x-bind:placeholder="$store.i18n.t('filter.searchClient') || 'Buscar cliente...'"
-                />
-            </div>
-
-            {{-- Selector / Filtro de Cliente --}}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-end">
+            {{-- Selector / Filtro de Nombre de Cliente --}}
             <div>
                 <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5" x-text="$store.i18n.t('table.client') || 'Cliente'">
                     Cliente
@@ -52,6 +39,36 @@
                     :selected="$filtroCliente"
                     placeholder="filter.allClients"
                     icon="person"
+                    searchable
+                />
+            </div>
+
+            {{-- Selector / Filtro de N° de Identificación / DNI --}}
+            <div>
+                <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5" x-text="$store.i18n.t('filter.idNumber') || 'N° de Identificación / DNI'">
+                    N° de Identificación / DNI
+                </label>
+                <x-vc-dropdown 
+                    wire:model.live="filtroDocumento"
+                    :options="$documentosOptions"
+                    :selected="$filtroDocumento"
+                    placeholder="filter.allDocuments"
+                    icon="badge"
+                    searchable
+                />
+            </div>
+
+            {{-- Selector / Filtro de Teléfono --}}
+            <div>
+                <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5" x-text="$store.i18n.t('table.phone') || 'Teléfono'">
+                    Teléfono
+                </label>
+                <x-vc-dropdown 
+                    wire:model.live="filtroTelefono"
+                    :options="$telefonosOptions"
+                    :selected="$filtroTelefono"
+                    placeholder="filter.allPhones"
+                    icon="call"
                     searchable
                 />
             </div>
@@ -111,17 +128,17 @@
 
                     {{-- Acciones --}}
                     <div class="pt-4 border-t border-zinc-100 dark:border-zinc-800 flex justify-end gap-1.5 items-center">
-                        <a href="{{ route('historias.index', ['busqueda' => $cliente->numero_documento]) }}" class="vc-btn-action p-1.5 rounded-lg flex items-center gap-1 transition-colors hover:bg-purple-50 dark:hover:bg-purple-500/10 text-purple-600" x-bind:>
+                        <a href="{{ route('historias.index', ['clienteSeleccionadoId' => $cliente->id]) }}" wire:navigate class="vc-btn-action p-1.5 rounded-lg flex items-center gap-1 transition-colors hover:bg-purple-50 dark:hover:bg-purple-500/10 text-purple-600" x-bind:title="$store.i18n.t('records.title') || 'Historias Clínicas'">
                             <span class="material-symbols-outlined text-[18px]">clinical_notes</span>
                         </a>
-                        <button type="button" class="vc-btn-action vc-btn-view" x-bind:
+                        <button type="button" class="vc-btn-action vc-btn-view" x-bind:title="$store.i18n.t('btn.view') || 'Ver'"
                             wire:click="ver({{ $cliente->id }})">
                             <span class="material-symbols-outlined text-lg">visibility</span>
                         </button>
-                        <a href="{{ route('clientes.editar', $cliente) }}" class="vc-btn-action vc-btn-edit" x-bind:>
+                        <a href="{{ route('clientes.editar', $cliente) }}" wire:navigate class="vc-btn-action vc-btn-edit" x-bind:title="$store.i18n.t('btn.edit') || 'Editar'">
                             <span class="material-symbols-outlined text-lg">edit</span>
                         </a>
-                        <button type="button" class="vc-btn-action vc-btn-delete" x-bind:
+                        <button type="button" class="vc-btn-action vc-btn-delete" x-bind:title="$store.i18n.t('btn.delete') || 'Eliminar'"
                             @click="$wire.set('clienteEliminarId', {{ $cliente->id }}); $dispatch('modal-show', { name: 'confirmar-eliminar' })"
                         >
                             <span class="material-symbols-outlined text-lg">delete</span>
@@ -229,12 +246,16 @@
             </div>
             @endif
 
-            <div class="flex justify-end mt-4 w-full">
+            <div class="flex flex-col-reverse sm:flex-row justify-end gap-2 mt-4 w-full">
                 <flux:modal.close class="w-full sm:w-auto">
-                    <button type="button" class="bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300 border-none px-4 py-2 md:px-5 md:py-2.5 lg:px-6 lg:py-3 rounded-lg font-medium flex items-center justify-center gap-2 w-full transition-colors">
+                    <button type="button" class="btn-secondary text-xs px-3.5 py-2 flex items-center justify-center gap-1.5 w-full">
                         <span x-text="$store.i18n.t('btn.close') || 'Cerrar'">Cerrar</span>
                     </button>
                 </flux:modal.close>
+                <a href="{{ route('historias.index', ['clienteSeleccionadoId' => $clienteVer->id]) }}" wire:navigate class="btn-primary text-xs px-3.5 py-2 flex items-center justify-center gap-1.5 shadow-sm">
+                    <span class="material-symbols-outlined text-[16px]">clinical_notes</span>
+                    <span x-text="$store.i18n.t('records.title') || 'Historias Clínicas'">Historias Clínicas</span>
+                </a>
             </div>
         </div>
         @endif

@@ -1,4 +1,4 @@
-<div x-data="{}">
+<div x-data="{}" x-on:abrir-modal-ver-cita.window="Flux.modal('ver-cita').show()">
     <x-slot:title>Appointments</x-slot:title>
 
 <div class="animate-slide-up">
@@ -143,32 +143,71 @@
     {{-- ════ VISTA CALENDARIO ════ --}}
     <div x-show="$wire.vistaActiva === 'calendario'" class="animate-fade-in" x-cloak>
         <style>
-            /* Ocultar texto de horas en la primera columna */
-            .fc-theme-standard .fc-timegrid-axis-cushion {
-                display: none !important;
-            }
-            .fc-theme-standard .fc-timegrid-axis {
-                width: 20px !important;
-            }
+            /* Eje de Horas y Celdas de Tiempo */
+            .fc-theme-standard .fc-timegrid-axis-cushion,
             .fc-timegrid-slot-label-cushion {
-                display: none !important;
+                font-family: 'Plus Jakarta Sans', sans-serif !important;
+                font-size: 11px !important;
+                font-weight: 600 !important;
+                color: #71717a !important;
+                padding: 0 6px !important;
             }
-            /* Permitir que el contenido del evento se ajuste sin romper el layout absoluto */
-            .fc-v-event .fc-event-main-frame {
-                min-height: 100%;
+            .dark .fc-theme-standard .fc-timegrid-axis-cushion,
+            .dark .fc-timegrid-slot-label-cushion {
+                color: #a1a1aa !important;
             }
-            .fc-timegrid-event .fc-event-main {
-                padding: 4px;
-                overflow-y: auto;
+            .fc-theme-standard .fc-timegrid-axis-frame,
+            .fc-timegrid-slot-label-frame {
+                min-width: 55px !important;
+                width: 55px !important;
             }
             
-            /* Correcciones de color para modo claro/oscuro (Gris claro no se veía el texto) */
-            .fc-col-header-cell-cushion, .fc-daygrid-day-number { color: #18181b; font-weight: 600; }
-            .dark .fc-col-header-cell-cushion, .dark .fc-daygrid-day-number { color: #f4f4f5; }
-            .dark .fc-theme-standard th, .dark .fc-theme-standard td, .dark .fc-theme-standard .fc-scrollgrid { border-color: #3f3f46; }
-            .dark .fc-day-today { background-color: #27272a !important; }
-            .dark .fc-timegrid-slot-lane { border-color: #3f3f46; }
-            .dark .fc-list-day-cushion { background-color: #27272a; color: #f4f4f5; }
+            /* Encabezados de Columna (Días) */
+            .fc-col-header-cell-cushion, .fc-daygrid-day-number { 
+                color: #18181b; 
+                font-weight: 700; 
+                font-size: 12px;
+                text-decoration: none !important;
+            }
+            .dark .fc-col-header-cell-cushion, .dark .fc-daygrid-day-number { 
+                color: #f4f4f5; 
+            }
+            .dark .fc-theme-standard th, 
+            .dark .fc-theme-standard td, 
+            .dark .fc-theme-standard .fc-scrollgrid { 
+                border-color: rgba(63, 63, 70, 0.5) !important; 
+            }
+            .dark .fc-day-today { 
+                background-color: rgba(16, 185, 129, 0.04) !important; 
+            }
+            .fc-day-today { 
+                background-color: rgba(16, 185, 129, 0.03) !important; 
+            }
+            .dark .fc-timegrid-slot-lane { 
+                border-color: rgba(63, 63, 70, 0.3) !important; 
+            }
+            
+            /* Eventos y Cards en Calendario */
+            .fc-timegrid-event {
+                border-radius: 8px !important;
+                border: none !important;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+                overflow: hidden !important;
+                transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+            }
+            .fc-timegrid-event:hover {
+                transform: scale(1.02);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+                z-index: 50 !important;
+            }
+            .fc-timegrid-event .fc-event-main {
+                padding: 4px 6px !important;
+                height: 100% !important;
+            }
+            .fc-daygrid-event {
+                border-radius: 6px !important;
+                margin: 1px 2px !important;
+            }
         </style>
         <div 
             wire:ignore 
@@ -186,11 +225,10 @@
     @if($vistaActiva === 'lista')
         <x-vc-table-layout 
             :data="$citas"
+            :searchable="false"
             icon="calendar_month"
             emptyTitle="table.empty"
             emptyText="table.emptyText"
-            searchModel="busqueda"
-            searchPlaceholder="table.searchClientPet"
         >
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
                 @foreach($citas as $cita)
@@ -413,10 +451,13 @@
     {{-- Modal Ver Cita --}}
     <flux:modal :closable="true" name="ver-cita" class="w-[90vw] md:w-full max-w-2xl overflow-y-auto max-h-[85vh]">
         @if($citaVer)
-        <div class="space-y-6">
             <div class="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-700 pb-4">
                 <flux:heading size="lg"><span x-text="$store.i18n.t('modal.appointmentDetails') || 'Detalles de la Cita'">Detalles de la Cita</span></flux:heading>
                 <div class="flex items-center gap-2">
+                    <a x-bind:href="'{{ route('citas.pdf', $citaVer->id) }}?lang=' + ($store.i18n?.locale || localStorage.getItem('vc_locale') || 'es')" target="_blank" class="px-3 py-1 bg-emerald-50 dark:bg-emerald-500/10 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20 rounded-lg text-xs font-bold flex items-center gap-1 transition-all">
+                        <span class="material-symbols-outlined text-[15px]">picture_as_pdf</span>
+                        <span x-text="$store.i18n.t('btn.pdf') || 'PDF'">PDF</span>
+                    </a>
                     <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-300">
                         <span x-text="$store.i18n.t('status.' + '{{ strtolower($citaVer->status) }}') || '{{ $citaVer->status }}'"></span>
                     </span>
@@ -499,44 +540,37 @@
             </div>
             @endif
             
-            <div class="flex flex-col sm:flex-row flex-wrap justify-end gap-3 pt-6 border-t border-zinc-200 dark:border-zinc-700">
-                <div class="flex-1 flex gap-2">
-                    <a x-bind:href="'{{ route('citas.pdf', $citaVer->id) }}?lang=' + $store.i18n.locale" download class="w-full sm:w-auto px-4 py-2 bg-zinc-600 hover:bg-zinc-700 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center gap-2 transition-all">
-                        <span class="material-symbols-outlined icon-sm">picture_as_pdf</span>
-                        <span x-text="$store.i18n.t('report.downloadPDF') || 'Descargar PDF'">Descargar PDF</span>
-                    </a>
-                </div>
-                <div class="flex flex-col-reverse sm:flex-row gap-2">
-                    @if($citaVer->status === 'PENDIENTE')
-                        <button type="button" wire:click="cambiarEstado({{ $citaVer->id }}, 'CONFIRMADA')" class="w-full sm:w-auto px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center gap-2 transition-all">
-                            <span class="material-symbols-outlined icon-sm">check_circle</span>
-                            <span x-text="$store.i18n.t('btn.confirm') || 'Confirmar'">Confirmar</span>
-                        </button>
-                    @endif
-
-                    @if($citaVer->historiaClinica)
-                        <a href="{{ route('historias.ver', $citaVer->historiaClinica->id) }}" class="w-full sm:w-auto px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center gap-2 transition-all">
-                            <span class="material-symbols-outlined icon-sm">description</span>
-                            <span x-text="$store.i18n.t('btn.viewHC') || 'Ver HC'">Ver HC</span>
-                        </a>
-                    @elseif(in_array($citaVer->status, ['CONFIRMADA', 'EN_PROGRESO']) && $citaVer->fecha_hora?->isToday())
-                        <button type="button" wire:click="iniciarAtencion({{ $citaVer->id }})" class="w-full sm:w-auto px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center gap-2 transition-all">
-                            <span class="material-symbols-outlined icon-sm">clinical_notes</span>
-                            <span x-text="$store.i18n.t('btn.startAttention') || 'Iniciar Atención'">Iniciar Atención</span>
-                        </button>
-                    @endif
-
-                    <flux:modal.close>
-                        <flux:button variant="ghost"><span x-text="$store.i18n.t('btn.close') || 'Cerrar'">Cerrar</span></flux:button>
-                    </flux:modal.close>
-                    <a href="{{ route('citas.editar', $citaVer->id) }}" class="w-full sm:w-auto px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center transition-all" x-bind:aria-label="$store.i18n.t('btn.edit') || 'Edit'" x-bind:title="$store.i18n.t('btn.edit') || 'Edit'">
-                        <span class="material-symbols-outlined icon-sm">edit</span>
-                    </a>
-                    
-                    <button type="button" @click="$wire.citaEliminarId = {{ $citaVer->id }}; Flux.modal('ver-cita').close(); Flux.modal('confirmar-eliminar').show()" class="btn-danger w-full sm:w-auto justify-center">
-                        <span class="material-symbols-outlined icon-sm">delete</span>
+            <div class="flex flex-col sm:flex-row flex-wrap justify-end gap-2 pt-6 border-t border-zinc-200 dark:border-zinc-700">
+                @if($citaVer->status === 'PENDIENTE')
+                    <button type="button" wire:click="cambiarEstado({{ $citaVer->id }}, 'CONFIRMADA')" class="w-full sm:w-auto px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center gap-2 transition-all">
+                        <span class="material-symbols-outlined icon-sm">check_circle</span>
+                        <span x-text="$store.i18n.t('btn.confirm') || 'Confirmar'">Confirmar</span>
                     </button>
-                </div>
+                @endif
+
+                @if($citaVer->historiaClinica)
+                    <a href="{{ route('historias.ver', $citaVer->historiaClinica->id) }}" class="w-full sm:w-auto px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center gap-2 transition-all">
+                        <span class="material-symbols-outlined icon-sm">description</span>
+                        <span x-text="$store.i18n.t('btn.viewHC') || 'Ver HC'">Ver HC</span>
+                    </a>
+                @elseif(in_array($citaVer->status, ['CONFIRMADA', 'EN_PROGRESO']) && $citaVer->fecha_hora?->isToday())
+                    <button type="button" wire:click="iniciarAtencion({{ $citaVer->id }})" class="w-full sm:w-auto px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center gap-2 transition-all">
+                        <span class="material-symbols-outlined icon-sm">clinical_notes</span>
+                        <span x-text="$store.i18n.t('btn.startAttention') || 'Iniciar Atención'">Iniciar Atención</span>
+                    </button>
+                @endif
+
+                <flux:modal.close>
+                    <flux:button variant="ghost"><span x-text="$store.i18n.t('btn.close') || 'Cerrar'">Cerrar</span></flux:button>
+                </flux:modal.close>
+                <a href="{{ route('citas.editar', $citaVer->id) }}" class="w-full sm:w-auto px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center transition-all" x-bind:aria-label="$store.i18n.t('btn.edit') || 'Edit'" x-bind:title="$store.i18n.t('btn.edit') || 'Edit'">
+                    <span class="material-symbols-outlined icon-sm">edit</span>
+                </a>
+                
+                <button type="button" @click="$wire.citaEliminarId = {{ $citaVer->id }}; Flux.modal('ver-cita').close(); Flux.modal('confirmar-eliminar').show()" class="btn-danger w-full sm:w-auto justify-center">
+                    <span class="material-symbols-outlined icon-sm">delete</span>
+                </button>
+            </div>
             </div>
         </div>
         @endif
@@ -565,8 +599,6 @@
             </div>
         </div>
     </flux:modal>
-
-</div>
 
 @script
 <script>
@@ -942,3 +974,5 @@ html.dark .fc .fc-col-header-cell-cushion {
     border-radius: 6px !important;
 }
 </style>
+    </div>
+</div>

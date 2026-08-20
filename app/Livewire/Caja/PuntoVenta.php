@@ -19,7 +19,7 @@ class PuntoVenta extends Component
 {
     // Búsqueda de producto
     public string $buscarProducto = '';
-    public string $filtroTipo = '';
+    public ?string $filtroTipo = '';
 
     // Carrito: array de items [{producto_id, nombre, cantidad, precio_unitario, afecto_igv, subtotal}]
     public array $carrito = [];

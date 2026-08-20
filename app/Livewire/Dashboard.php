@@ -18,9 +18,9 @@ use Livewire\Component;
 #[Title('Dashboard')]
 class Dashboard extends Component
 {
-    public string $filtroTiempo = 'semana'; // 'hoy', 'semana', 'mes', 'anio' (Ingresos)
-    public string $filtroTiempoCitas = 'hoy'; // 'hoy', 'semana', 'mes', 'anio' (Lista de citas)
-    public string $filtroAtenciones = 'semana'; // 'hoy', 'semana', 'mes', 'anio' (Gráfico de atenciones)
+    public ?string $filtroTiempo = 'semana'; // 'hoy', 'semana', 'mes', 'anio' (Ingresos)
+    public ?string $filtroTiempoCitas = 'hoy'; // 'hoy', 'semana', 'mes', 'anio' (Lista de citas)
+    public ?string $filtroAtenciones = 'semana'; // 'hoy', 'semana', 'mes', 'anio' (Gráfico de atenciones)
 
     public array $atencionesGrafico = [];
     public array $ingresosSemana = [];
