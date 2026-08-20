@@ -59,6 +59,7 @@ class CajaIndex extends Component
 
     public function updatedFiltroTiempo(): void
     {
+        $this->resetPage();
         $this->cargarResumen();
     }
 

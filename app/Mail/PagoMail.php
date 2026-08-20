@@ -42,7 +42,7 @@ class PagoMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.pago',
+            view: 'emails.pago',
         );
     }
 

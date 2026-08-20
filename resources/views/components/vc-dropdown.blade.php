@@ -153,7 +153,7 @@
                 x-bind:placeholder="placeholderText"
             @endif
             @if($disabled) disabled @endif
-            style="padding-right: 1rem; padding-left: {{ $icon ? '3rem' : '1rem' }};"
+            style="padding-right: 1rem; padding-left: {{ $icon ? '2.5rem' : '1rem' }};"
         />
     </div>
 
@@ -180,7 +180,6 @@
                 @click="
                     @if($attributes->wire('model')->value())
                     $wire.set('{{ $attributes->wire('model')->value() }}', option.value);
-                    $wire.$commit();
                     @endif
                     let translated = $store.i18n?.t(option.label) || option.label;
                     selectedLabel = translated;

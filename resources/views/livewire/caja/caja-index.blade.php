@@ -1,19 +1,23 @@
 <div x-data>
     <x-slot:title>Cashier</x-slot:title>
 
-    {{-- Cabecera con icono --}}
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+    {{-- ═══ Header de Caja y Ventas (Estándar Premium) ═══ --}}
+    <div class="vc-panel flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div class="flex items-center gap-3">
-            <div class="kpi-icon kpi-icon--cyan">
-                <span class="material-symbols-outlined">point_of_sale</span>
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200/50 dark:border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                <span class="material-symbols-outlined text-2xl">point_of_sale</span>
             </div>
             <div>
-                <flux:heading size="xl"><span x-text="$store.i18n.t('page.cashier')"></span></flux:heading>
-                <flux:subheading><span x-text="$store.i18n.t('page.cashierSub')"></span></flux:subheading>
+                <h1 class="text-xl md:text-2xl font-extrabold text-zinc-900 dark:text-zinc-100 font-display">
+                    <span x-text="$store.i18n.t('page.cashier') || 'Caja y Ventas'">Caja y Ventas</span>
+                </h1>
+                <p class="text-xs text-zinc-500 dark:text-zinc-400" x-text="$store.i18n.t('page.cashierSub') || 'Control de transacciones, ingresos diarios y comprobantes de venta'">
+                    Control de transacciones, ingresos diarios y comprobantes de venta
+                </p>
             </div>
         </div>
-        <div class="w-full sm:w-auto mt-2 sm:mt-0 flex flex-col sm:flex-row items-center gap-3">
-            <div class="w-40">
+        <div class="flex flex-wrap items-center gap-2.5">
+            <div class="w-40 sm:w-48">
                 <x-vc-dropdown 
                     wire:model.live="filtroTiempo"
                     :options="[
@@ -24,11 +28,12 @@
                     ]"
                     :selected="$filtroTiempo"
                     placeholder="filter.filter"
+                    icon="calendar_month"
                 />
             </div>
-            <a href="{{ route('caja.venta') }}" class="w-full sm:w-auto btn-primary justify-center">
+            <a href="{{ route('caja.venta') }}" wire:navigate class="btn-primary text-xs px-3.5 py-2 flex items-center justify-center gap-1.5 shadow-sm">
                 <span class="material-symbols-outlined icon-sm">add</span>
-                <span x-text="$store.i18n.t('btn.newSale')"></span>
+                <span x-text="$store.i18n.t('btn.newSale') || 'Nueva Venta'">Nueva Venta</span>
             </a>
         </div>
     </div>

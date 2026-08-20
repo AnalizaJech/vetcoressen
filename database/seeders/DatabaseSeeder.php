@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             CategorySeeder::class,
             SpeciesBreedSeeder::class,
+            OneYearDataSeeder::class,
         ]);
     }
 }

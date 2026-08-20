@@ -42,7 +42,7 @@ class RecetaMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.receta',
+            view: 'emails.receta',
         );
     }
 

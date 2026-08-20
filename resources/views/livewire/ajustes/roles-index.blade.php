@@ -1,21 +1,25 @@
 <div x-data>
     <x-slot:title>Roles y Permisos</x-slot:title>
 
-    {{-- Cabecera con icono --}}
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+    {{-- ═══ Header de Roles (Estándar Premium) ═══ --}}
+    <div class="vc-panel flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div class="flex items-center gap-3">
-            <div class="kpi-icon kpi-icon--emerald">
-                <span class="material-symbols-outlined">shield_person</span>
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200/50 dark:border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                <span class="material-symbols-outlined text-2xl">shield_person</span>
             </div>
             <div>
-                <flux:heading size="xl"><span x-text="$store.i18n.t('settings.roles') || 'Roles y Permisos'"></span></flux:heading>
-                <flux:subheading><span x-text="$store.i18n.t('settings.rolesSub') || 'Gestión de roles y control de accesos del sistema'"></span></flux:subheading>
+                <h1 class="text-xl md:text-2xl font-extrabold text-zinc-900 dark:text-zinc-100 font-display">
+                    <span x-text="$store.i18n.t('settings.roles') || 'Roles y Permisos'">Roles y Permisos</span>
+                </h1>
+                <p class="text-xs text-zinc-500 dark:text-zinc-400" x-text="$store.i18n.t('settings.rolesSub') || 'Gestión de roles y control de accesos del sistema'">
+                    Gestión de roles y control de accesos del sistema
+                </p>
             </div>
         </div>
-        <div class="w-full sm:w-auto mt-2 sm:mt-0">
-            <a href="{{ route('roles.crear') }}" class="w-full sm:w-auto btn-primary justify-center">
+        <div class="flex items-center gap-2.5">
+            <a href="{{ route('roles.crear') }}" wire:navigate class="btn-primary text-xs px-3.5 py-2 flex items-center justify-center gap-1.5 shadow-sm">
                 <span class="material-symbols-outlined icon-sm">add</span>
-                <span x-text="$store.i18n.t('btn.newRole') || 'Nuevo Rol'"></span>
+                <span x-text="$store.i18n.t('btn.newRole') || 'Nuevo Rol'">Nuevo Rol</span>
             </a>
         </div>
     </div>

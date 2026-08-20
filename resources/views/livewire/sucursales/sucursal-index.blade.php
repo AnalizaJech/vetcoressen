@@ -2,20 +2,27 @@
     <x-slot:title>Sucursales</x-slot:title>
 
     <div class="animate-slide-up">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+        {{-- ═══ Header de Sucursales (Estándar Premium) ═══ --}}
+        <div class="vc-panel flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <div class="flex items-center gap-3">
-                <div class="kpi-icon kpi-icon--blue">
-                    <span class="material-symbols-outlined">storefront</span>
+                <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 border border-blue-200/50 dark:border-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                    <span class="material-symbols-outlined text-2xl">storefront</span>
                 </div>
                 <div>
-                    <flux:heading size="xl"><span x-text="$store.i18n.t('page.branches') || 'Sucursales'"></span></flux:heading>
-                    <flux:subheading><span x-text="$store.i18n.t('page.branchesSub') || 'Administración de locales de la clínica.'"></span></flux:subheading>
+                    <h1 class="text-xl md:text-2xl font-extrabold text-zinc-900 dark:text-zinc-100 font-display">
+                        <span x-text="$store.i18n.t('page.branches') || 'Sucursales'">Sucursales</span>
+                    </h1>
+                    <p class="text-xs text-zinc-500 dark:text-zinc-400" x-text="$store.i18n.t('page.branchesSub') || 'Administración de sedes y locales de la clínica'">
+                        Administración de sedes y locales de la clínica
+                    </p>
                 </div>
             </div>
-            <a href="{{ route('sucursales.crear') }}" class="w-full sm:w-auto btn-primary justify-center">
-                <span class="material-symbols-outlined icon-sm">add</span>
-                <span><span x-text="$store.i18n.t('btn.newBranch') || 'Nueva Sucursal'">Nueva Sucursal</span></span>
-            </a>
+            <div class="flex items-center gap-2.5">
+                <a href="{{ route('sucursales.crear') }}" wire:navigate class="btn-primary text-xs px-3.5 py-2 flex items-center justify-center gap-1.5 shadow-sm">
+                    <span class="material-symbols-outlined icon-sm">add</span>
+                    <span x-text="$store.i18n.t('btn.newBranch') || 'Nueva Sucursal'">Nueva Sucursal</span>
+                </a>
+            </div>
         </div>
 
         <x-vc-table-layout 
@@ -33,7 +40,7 @@
                     placeholder="filter.allBranches"
                     :selected="$filtroSucursal"
                     searchable
-                    class="w-full sm:w-64"
+                    class="w-48 sm:w-60"
                 />
             </x-slot:filters>
 
@@ -88,11 +95,11 @@
 
                         {{-- Acciones --}}
                         <div class="pt-4 border-t border-zinc-100 dark:border-zinc-800 flex justify-end gap-1.5 items-center">
-                            <a href="{{ route('sucursales.editar', $sucursal) }}" class="vc-btn-action vc-btn-edit" x-bind:>
+                            <a href="{{ route('sucursales.editar', $sucursal) }}" class="vc-btn-action vc-btn-edit" title="Editar">
                                 <span class="material-symbols-outlined icon-sm">edit</span>
                             </a>
                             @if(!$sucursal->is_main)
-                                <button type="button" class="vc-btn-action vc-btn-delete" x-bind:
+                                <button type="button" class="vc-btn-action vc-btn-delete" title="Eliminar"
                                     wire:click="confirmDeletion({{ $sucursal->id }})">
                                     <span class="material-symbols-outlined icon-sm">delete</span>
                                 </button>

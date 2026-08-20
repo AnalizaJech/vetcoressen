@@ -13,8 +13,6 @@ document.addEventListener("alpine:init", () => {
         },
 
         async loadTranslations(lang) {
-            // Never retain the previous language if the requested dictionary is
-            // missing or malformed; that made a broken Spanish file look English.
             this.dict = {};
             this.loaded = false;
             try {
@@ -64,6 +62,27 @@ document.addEventListener("alpine:init", () => {
             return result;
         }
     });
+});
+
+function updateDocumentTitle() {
+    const metaKey = document.querySelector('meta[name="current-title-key"]')?.content;
+    const store = Alpine.store('i18n');
+    if (!metaKey || !store) return;
+    
+    let translated = store.t('title.' + metaKey) || 
+                     store.t('sidebar.' + metaKey) || 
+                     store.t('nav.' + metaKey) || 
+                     store.t('page.' + metaKey);
+                     
+    if (translated) {
+        document.title = `${translated} - VETCORESSEN`;
+    }
+}
+
+window.addEventListener('language-changed', updateDocumentTitle);
+document.addEventListener('livewire:navigated', updateDocumentTitle);
+document.addEventListener('alpine:initialized', () => {
+    setTimeout(updateDocumentTitle, 50);
 });
 
 window.addEventListener("storage", (e) => {

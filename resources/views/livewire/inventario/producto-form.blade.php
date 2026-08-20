@@ -68,7 +68,7 @@
                         wire:model.live="nombre"
                         :options="$nameOptions"
                         selected="{{ $nombre }}"
-                        x-bind:placeholder="'Product name...'"
+                        x-bind:placeholder="$store.i18n.t('form.productNamePlaceholder') || 'Product name...'"
                         :allow-custom="true"
                     />
                     <flux:error name="nombre" />
@@ -84,7 +84,7 @@
                         wire:model.live="categoria"
                         :options="$catOptions"
                         selected="{{ $categoria }}"
-                        x-bind:placeholder="$wire.tipo === 'Medicamento' ? 'Ej: Antibióticos...' : ($wire.tipo === 'Alimento' ? 'Ej: Seco, Húmedo...' : ($wire.tipo === 'Accesorio' ? 'Ej: Juguetes...' : 'Categoría'))"
+                        x-bind:placeholder="$store.i18n.t('form.categoryPlaceholder') || 'Category...'"
                         :allow-custom="true"
                     />
                 </flux:field>
@@ -92,7 +92,7 @@
                 <flux:field class="col-span-full md:col-span-1" x-show="$wire.tipo !== 'Servicio'" x-transition x-cloak>
                     <flux:label class="flex justify-between w-full">
                         <span x-text="$store.i18n.t('form.barcode')"></span>
-                        <button type="button" wire:click="generarCodigoBarras" class="text-xs text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-medium flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">autorenew</span> Generar automático</button>
+                        <button type="button" wire:click="generarCodigoBarras" class="text-xs text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-medium flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">autorenew</span> <span x-text="$store.i18n.t('form.generateAutomatically') || 'Generate automatically'"></span></button>
                     </flux:label>
                     <flux:input wire:model="codigo_barras" placeholder="EAN/UPC (Opcional)">
                         <x-slot:iconLeading>
@@ -174,7 +174,7 @@
                     </flux:input>
                     <p class="text-xs text-zinc-500 mt-1 flex items-center gap-1">
                         <span class="material-symbols-outlined text-[14px]">info</span>
-                        Ingresa el precio que pagará el cliente. El sistema calculará el IGV automáticamente.
+                        <span x-text="$store.i18n.t('form.salePriceHelp') || 'Enter the price paid by the client. IGV is calculated automatically.'"></span>
                     </p>
                     <flux:error name="precio_final" />
                 </flux:field>
@@ -182,7 +182,7 @@
                 <div x-data="{ openAvanzado: false }">
                     <button type="button" @click="openAvanzado = !openAvanzado" class="text-sm font-medium text-vc-primary flex items-center gap-1 mt-7">
                         <span class="material-symbols-outlined text-[18px]" x-text="openAvanzado ? 'expand_less' : 'expand_more'"></span>
-                        Opciones Avanzadas (IGV)
+                        <span x-text="$store.i18n.t('form.advancedTaxOptions') || 'Advanced options (IGV)'"></span>
                     </button>
                     
                     <div x-show="openAvanzado" x-collapse class="mt-4 p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-200 dark:border-zinc-700">

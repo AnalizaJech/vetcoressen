@@ -2,76 +2,112 @@
     <x-slot:title>Inventory</x-slot:title>
 
 <div class="animate-slide-up">
-    {{-- Cabecera con icono --}}
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+    {{-- ═══ Header de Inventario (Estándar Premium) ═══ --}}
+    <div class="vc-panel flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div class="flex items-center gap-3">
-            <div class="kpi-icon kpi-icon--emerald">
-                <span class="material-symbols-outlined">inventory_2</span>
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200/50 dark:border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                <span class="material-symbols-outlined text-2xl">inventory_2</span>
             </div>
             <div>
-                <flux:heading size="xl"><span x-text="$store.i18n.t('page.inventory')"></span></flux:heading>
-                <flux:subheading><span x-text="$store.i18n.t('page.inventorySub')"></span></flux:subheading>
+                <h1 class="text-xl md:text-2xl font-extrabold text-zinc-900 dark:text-zinc-100 font-display">
+                    <span x-text="$store.i18n.t('page.inventory') || 'Inventario'">Inventario</span>
+                </h1>
+                <p class="text-xs text-zinc-500 dark:text-zinc-400" x-text="$store.i18n.t('page.inventorySub') || 'Gestión de productos, medicamentos y servicios clínicos'">
+                    Gestión de productos, medicamentos y servicios clínicos
+                </p>
             </div>
         </div>
-        <div class="w-full sm:w-auto mt-2 sm:mt-0 flex items-center gap-2">
-            <a href="{{ route('inventario.entrada') }}" class="w-full sm:w-auto btn-secondary justify-center">
+        <div class="flex items-center gap-2.5">
+            <a href="{{ route('inventario.entrada') }}" wire:navigate class="btn-secondary text-xs px-3.5 py-2 flex items-center justify-center gap-1.5 shadow-sm">
                 <span class="material-symbols-outlined icon-sm">add_box</span>
                 <span x-text="$store.i18n.t('btn.receiveOrder') || 'Recepcionar Pedido'">Recepcionar Pedido</span>
             </a>
-            <a href="{{ route('inventario.crear') }}" class="w-full sm:w-auto btn-primary justify-center">
+            <a href="{{ route('inventario.crear') }}" wire:navigate class="btn-primary text-xs px-3.5 py-2 flex items-center justify-center gap-1.5 shadow-sm">
                 <span class="material-symbols-outlined icon-sm">add</span>
-                <span x-text="$store.i18n.t('btn.newProduct')"></span>
+                <span x-text="$store.i18n.t('btn.newProduct') || 'Nuevo Producto'">Nuevo Producto</span>
             </a>
+        </div>
+    </div>
+
+    {{-- ═══ Barra de Filtros Dinámicos (Estilo Reportes con Labels) ═══ --}}
+    <div class="vc-panel mb-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+            {{-- Buscador Principal --}}
+            <div>
+                <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5" x-text="$store.i18n.t('filter.searchProduct') || 'Buscar Producto'">
+                    Buscar Producto
+                </label>
+                <flux:input
+                    wire:model.live.debounce.300ms="search"
+                    icon="magnifying-glass"
+                    placeholder="Buscar producto por nombre o código..."
+                    x-bind:placeholder="$store.i18n.t('form.productNamePlaceholder') || 'Buscar producto...'"
+                />
+            </div>
+
+            {{-- Filtro de Producto --}}
+            <div>
+                <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5" x-text="$store.i18n.t('filter.product') || 'Producto'">
+                    Producto
+                </label>
+                <x-vc-dropdown
+                    wire:model.live="filtroProducto"
+                    :options="$productosOptions"
+                    :selected="$filtroProducto"
+                    placeholder="filter.allProducts"
+                    icon="inventory_2"
+                    searchable
+                />
+            </div>
+
+            {{-- Filtro de Tipo / Categoría --}}
+            <div>
+                <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5" x-text="$store.i18n.t('filter.category') || 'Categoría / Tipo'">
+                    Categoría / Tipo
+                </label>
+                <x-vc-dropdown
+                    wire:model.live="filtroTipo"
+                    :options="[
+                        ['value' => '', 'label' => 'filter.allTypes'],
+                        ['value' => 'Medicamento', 'label' => 'inventory.medication'],
+                        ['value' => 'Alimento', 'label' => 'inventory.food'],
+                        ['value' => 'Accesorio', 'label' => 'inventory.accessory'],
+                        ['value' => 'Servicio', 'label' => 'inventory.service'],
+                    ]"
+                    :selected="$filtroTipo"
+                    placeholder="filter.allTypes"
+                    icon="category"
+                />
+            </div>
+
+            {{-- Solo Stock Bajo --}}
+            <div>
+                <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5" x-text="$store.i18n.t('filter.stockStatus') || 'Estado de Stock'">
+                    Estado de Stock
+                </label>
+                <label class="flex items-center gap-2 px-3 bg-white dark:bg-vc-surface-alt rounded-xl border border-zinc-200 dark:border-zinc-700 h-10 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors" style="user-select: none;">
+                    <input type="checkbox" wire:model.live="soloStockBajo" class="rounded border-zinc-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer" />
+                    <span class="text-xs font-medium whitespace-nowrap pointer-events-none text-zinc-700 dark:text-zinc-300" x-text="$store.i18n.t('misc.lowStockOnly') || 'Solo stock bajo'">Solo stock bajo</span>
+                </label>
+            </div>
         </div>
     </div>
 
     <x-vc-table-layout 
         :data="$productos"
+        :searchable="false"
         icon="inventory_2"
         emptyTitle="Sin productos"
         emptyTitleKey="table.empty"
         emptyText="No hay productos registrados."
         emptyTextKey="table.emptyText"
     >
-        <x-slot:filters>
-            <x-vc-dropdown
-                wire:model.live="filtroProducto"
-                :options="$productosOptions"
-                placeholder="filter.allProducts"
-                searchable
-                class="w-full sm:w-64"
-            />
-            <x-vc-dropdown
-                wire:model.live="filtroTipo"
-                :options="[
-                    ['value' => '', 'label' => 'filter.allTypes'],
-                    ['value' => 'Medicamento', 'label' => 'inventory.medication'],
-                    ['value' => 'Alimento', 'label' => 'inventory.food'],
-                    ['value' => 'Accesorio', 'label' => 'inventory.accessory'],
-                    ['value' => 'Servicio', 'label' => 'inventory.service'],
-                ]"
-                :selected="$filtroTipo"
-                placeholder="filter.allTypes"
-            />
-            <label class="flex items-center gap-2 px-3 bg-white dark:bg-vc-surface-alt rounded-lg border border-zinc-200 dark:border-zinc-700 h-10 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors" style="user-select: none;">
-                <input type="checkbox" wire:model.live="soloStockBajo" class="rounded border-zinc-300 text-violet-600 focus:ring-violet-600 cursor-pointer" />
-                <span class="text-sm whitespace-nowrap pointer-events-none" style="color: var(--vc-text-muted);" x-text="$store.i18n.t('misc.lowStockOnly') || 'Solo stock bajo'"></span>
-            </label>
-        </x-slot:filters>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
             @foreach($productos as $producto)
                 <div class="vc-card flex flex-col justify-between p-5 rounded-2xl bg-white dark:bg-vc-surface border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-md transition-shadow relative">
-                    {{-- Status Badge --}}
-                    <div class="absolute top-4 right-4">
-                        <span class="badge {{ $producto->is_active ? 'badge-emerald' : 'badge-zinc' }}">
-                            <span class="material-symbols-outlined text-xs mr-1">{{ $producto->is_active ? 'check_circle' : 'cancel' }}</span>
-                            <span x-text="$store.i18n.t('{{ $producto->is_active ? 'status.activo' : 'status.inactivo' }}')"></span>
-                        </span>
-                    </div>
-
                     {{-- Avatar y Nombre --}}
-                    <div class="flex items-center gap-4 mb-5">
+                    <div class="flex items-center gap-4 mb-5 min-w-0">
                         @php
                             $tipoLimpio = trim(strtoupper($producto->type));
                             $avatarClasses = match($tipoLimpio) {
@@ -102,12 +138,16 @@
                         <div class="w-12 h-12 rounded-xl {{ $avatarClasses }} flex items-center justify-center shrink-0">
                             <span class="material-symbols-outlined text-2xl">{{ $iconName }}</span>
                         </div>
-                        <div class="pr-12">
+                        <div class="flex-1 min-w-0">
                             <h3 class="text-lg font-bold text-zinc-900 dark:text-zinc-100 truncate" title="{{ $producto->name }}">{{ $producto->name }}</h3>
-                            <div class="flex items-center mt-1">
+                            <div class="flex items-center gap-1.5 mt-1 flex-wrap">
                                 <span class="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium ring-1 ring-inset {{ $badgeClasses }}">
                                     <span class="material-symbols-outlined text-[12px]">{{ $iconName }}</span>
                                     <span x-text="$store.i18n.t('inventory.{{ strtolower($producto->type) }}') || '{{ $producto->type }}'"></span>
+                                </span>
+                                <span class="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-semibold ring-1 ring-inset {{ $producto->is_active ? 'bg-emerald-50 text-emerald-700 ring-emerald-700/10 dark:bg-emerald-400/10 dark:text-emerald-400 dark:ring-emerald-400/20' : 'bg-zinc-50 text-zinc-700 ring-zinc-700/10 dark:bg-zinc-400/10 dark:text-zinc-400 dark:ring-zinc-400/20' }}">
+                                    <span class="material-symbols-outlined text-[10px]">{{ $producto->is_active ? 'check_circle' : 'cancel' }}</span>
+                                    <span x-text="$store.i18n.t('{{ $producto->is_active ? 'status.activo' : 'status.inactivo' }}')"></span>
                                 </span>
                             </div>
                         </div>
@@ -139,7 +179,7 @@
                             </div>
                             @if(in_array($tipoLimpio, ['MEDICAMENTO', 'ALIMENTO']))
                             <div class="ml-auto text-right">
-                                <p class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">Lote / Venc.</p>
+                                <p class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold" x-text="$store.i18n.t('table.lotExp') || 'Lote / Venc.'">Lote / Venc.</p>
                                 <div class="mt-0.5">
                                     @php
                                         $loteProximo = $producto->productBatches->where('stock_actual', '>', 0)->sortBy('fecha_vencimiento')->first();
@@ -166,14 +206,14 @@
 
                     {{-- Acciones --}}
                     <div class="pt-4 border-t border-zinc-100 dark:border-zinc-800 flex justify-end gap-1.5 items-center">
-                        <button type="button" class="vc-btn-action vc-btn-view" x-bind:
+                        <button type="button" class="vc-btn-action vc-btn-view"
                             @click="$wire.ver({{ $producto->id }}).then(() => Flux.modal('ver-producto').show())">
                             <span class="material-symbols-outlined text-lg">visibility</span>
                         </button>
-                        <a href="{{ route('inventario.editar', $producto) }}" class="vc-btn-action vc-btn-edit" x-bind:>
+                        <a href="{{ route('inventario.editar', $producto) }}" class="vc-btn-action vc-btn-edit">
                             <span class="material-symbols-outlined text-lg">edit</span>
                         </a>
-                        <button type="button" class="vc-btn-action vc-btn-delete" x-bind:
+                        <button type="button" class="vc-btn-action vc-btn-delete"
                             @click="$wire.confirmDeletion({{ $producto->id }}).then(() => Flux.modal('confirmar-eliminar').show())"
                         >
                             <span class="material-symbols-outlined text-lg">delete</span>

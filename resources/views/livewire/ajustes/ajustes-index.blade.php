@@ -1,15 +1,19 @@
-<div x-data>
-    <x-slot:title>Configuraci�n</x-slot:title>
+﻿<div x-data>
+    <x-slot:title>Configuracion</x-slot:title>
 
-    {{-- Cabecera con icono --}}
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+    {{-- Header de Configuracion (Estandar Premium) --}}
+    <div class="vc-panel flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div class="flex items-center gap-3">
-            <div class="kpi-icon kpi-icon--emerald">
-                <span class="material-symbols-outlined">settings</span>
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200/50 dark:border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                <span class="material-symbols-outlined text-2xl">settings</span>
             </div>
             <div>
-                <flux:heading size="xl"><span x-text="$store.i18n.t('nav.settings') || 'Configuración'"></span></flux:heading>
-                <flux:subheading><span x-text="$store.i18n.t('settings.subheading') || 'Configuración general de la cuenta y sistema'"></span></flux:subheading>
+                <h1 class="text-xl md:text-2xl font-extrabold text-zinc-900 dark:text-zinc-100 font-display">
+                    <span x-text="$store.i18n.t('nav.settings') || 'Configuración'">Configuración</span>
+                </h1>
+                <p class="text-xs text-zinc-500 dark:text-zinc-400" x-text="$store.i18n.t('settings.subheading') || 'Configuración general de la cuenta y parámetros del sistema'">
+                    Configuración general de la cuenta y parámetros del sistema
+                </p>
             </div>
         </div>
     </div>
@@ -19,14 +23,14 @@
         <a href="{{ route('configuracion.index', ['tab' => 'perfil']) }}" wire:navigate
                 class="flex items-center gap-2 px-4 py-3 border-b-2 font-medium text-sm transition-colors whitespace-nowrap outline-none focus:outline-none focus:ring-0 {{ $tab === 'perfil' ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400' : 'border-transparent text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300' }}">
             <span class="material-symbols-outlined text-[18px]">person</span>
-            <span x-text="$store.i18n.t('settings.profile') || 'Mi Perfil'"></span>
+            <span x-text="$store.i18n.t('settings.profile') || 'Mi Perfil'">Mi Perfil</span>
         </a>
         
         @role('super_admin')
             <a href="{{ route('configuracion.index', ['tab' => 'clinica']) }}" wire:navigate
                     class="flex items-center gap-2 px-4 py-3 border-b-2 font-medium text-sm transition-colors whitespace-nowrap outline-none focus:outline-none focus:ring-0 {{ $tab === 'clinica' ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400' : 'border-transparent text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300' }}">
                 <span class="material-symbols-outlined text-[18px]">storefront</span>
-                <span x-text="$store.i18n.t('settings.clinic') || 'Clínica'"></span>
+                <span x-text="$store.i18n.t('settings.clinic') || 'Clínica'">Clínica</span>
             </a>
         @endrole
     </div>

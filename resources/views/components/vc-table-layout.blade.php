@@ -11,31 +11,37 @@
     'searchPlaceholderKey' => null,
 ])
 
+@php
+    $effectiveKey = $searchPlaceholderKey ?? (str_contains($searchPlaceholder, '.') ? $searchPlaceholder : null);
+@endphp
+
 <div class="vc-table-wrapper animate-slide-up relative pb-20 md:pb-0">
-    {{-- Topbar: Buscador, Filtros y Acciones --}}
+    {{-- Topbar: Buscador, Filtros y Acciones en línea --}}
     @if($searchable || isset($filters) || isset($actions))
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
-            <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto flex-1">
+        <div class="vc-panel mb-6 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3.5">
+            <div class="flex flex-wrap items-center gap-3 flex-1 min-w-0">
                 @if($searchable)
-                    <div class="w-full sm:max-w-xs relative">
+                    <div class="w-full sm:w-72 relative shrink-0">
                         <flux:input
                             wire:model.live.debounce.300ms="{{ $searchModel }}"
                             icon="magnifying-glass"
                             placeholder="{{ $searchPlaceholder }}"
-                            x-bind:placeholder="{{ $searchPlaceholderKey ? '$store.i18n.t(\''.$searchPlaceholderKey.'\') || \''.$searchPlaceholder.'\'' : 'null' }}"
+                            @if($effectiveKey)
+                                x-bind:placeholder="$store.i18n.t('{{ $effectiveKey }}') || '{{ $searchPlaceholder }}'"
+                            @endif
                         />
                     </div>
                 @endif
                 
                 @if(isset($filters))
-                    <div class="flex gap-2 w-full sm:w-auto">
+                    <div class="flex flex-wrap items-center gap-2.5">
                         {{ $filters }}
                     </div>
                 @endif
             </div>
 
             @if(isset($actions))
-                <div class="w-full sm:w-auto mt-2 sm:mt-0 flex gap-2 justify-end">
+                <div class="flex items-center gap-2 justify-end shrink-0 mt-1 lg:mt-0">
                     {{ $actions }}
                 </div>
             @endif

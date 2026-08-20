@@ -2,56 +2,72 @@
     <x-slot:title>Appointments</x-slot:title>
 
 <div class="animate-slide-up">
-    {{-- Cabecera con icono --}}
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+    {{-- ═══ Header de Citas (Estándar Premium) ═══ --}}
+    <div class="vc-panel flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div class="flex items-center gap-3">
-            <div class="kpi-icon kpi-icon--blue">
-                <span class="material-symbols-outlined">calendar_month</span>
+            <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 border border-blue-200/50 dark:border-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                <span class="material-symbols-outlined text-2xl">calendar_month</span>
             </div>
             <div>
-                <flux:heading size="xl" class="font-extrabold text-zinc-900 dark:text-zinc-100"><span x-text="$store.i18n.t('page.appointments')"></span></flux:heading>
-                <flux:subheading><span x-text="$store.i18n.t('page.appointmentsSub')"></span></flux:subheading>
+                <h1 class="text-xl md:text-2xl font-extrabold text-zinc-900 dark:text-zinc-100 font-display">
+                    <span x-text="$store.i18n.t('page.appointments') || 'Citas Médicas'">Citas Médicas</span>
+                </h1>
+                <p class="text-xs text-zinc-500 dark:text-zinc-400" x-text="$store.i18n.t('page.appointmentsSub') || 'Programación y seguimiento de agenda clínica'">
+                    Programación y seguimiento de agenda clínica
+                </p>
             </div>
         </div>
-        <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto mt-2 sm:mt-0">
-            {{-- Toggle Vista Lista / Calendario --}}
-            <div class="flex items-center bg-zinc-200/50 dark:bg-zinc-800/80 rounded-full p-1 border border-zinc-300/50 dark:border-zinc-700/50 backdrop-blur-md shadow-inner gap-1">
+        <div class="flex flex-wrap items-center gap-2.5">
+            {{-- Toggle Circular Animado Vista Lista / Calendario --}}
+            <div class="relative flex items-center bg-zinc-100 dark:bg-zinc-800/90 rounded-full p-1 border border-zinc-200/80 dark:border-zinc-700/80 shadow-inner">
+                {{-- Indicador circular deslizante animado --}}
+                <div class="absolute top-1 bottom-1 w-8 rounded-full bg-white dark:bg-zinc-700 shadow-xs border border-zinc-200/60 dark:border-zinc-600/60 transition-transform duration-300 ease-out"
+                     style="transform: translateX({{ $vistaActiva === 'calendario' ? '0px' : '32px' }});"></div>
+
+                {{-- Botón Calendario --}}
                 <button 
+                    type="button"
                     wire:click="$set('vistaActiva', 'calendario')" 
+                    class="relative z-10 w-8 h-8 rounded-full flex items-center justify-center transition-colors {{ $vistaActiva === 'calendario' ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200' }}"
                     x-bind:title="$store.i18n.t('citas.vistaCalendario') || 'Calendario'"
-                    class="w-10 h-10 rounded-full transition-all duration-300 flex items-center justify-center {{ $vistaActiva === 'calendario' ? 'bg-white dark:bg-zinc-700 text-emerald-600 dark:text-emerald-400 shadow-md ring-1 ring-black/5 dark:ring-white/10 scale-105' : 'text-zinc-500 hover:text-zinc-700 hover:bg-zinc-300/30 dark:hover:text-zinc-300 dark:hover:bg-zinc-600/30' }}"
                 >
-                    <span class="material-symbols-outlined text-[22px] {{ $vistaActiva === 'calendario' ? 'animate-pop font-bold' : '' }}">calendar_month</span>
+                    <span class="material-symbols-outlined text-[18px]">calendar_month</span>
                 </button>
+
+                {{-- Botón Lista --}}
                 <button 
+                    type="button"
                     wire:click="$set('vistaActiva', 'lista')" 
+                    class="relative z-10 w-8 h-8 rounded-full flex items-center justify-center transition-colors {{ $vistaActiva === 'lista' ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200' }}"
                     x-bind:title="$store.i18n.t('citas.vistaLista') || 'Lista'"
-                    class="w-10 h-10 rounded-full transition-all duration-300 flex items-center justify-center {{ $vistaActiva === 'lista' ? 'bg-white dark:bg-zinc-700 text-emerald-600 dark:text-emerald-400 shadow-md ring-1 ring-black/5 dark:ring-white/10 scale-105' : 'text-zinc-500 hover:text-zinc-700 hover:bg-zinc-300/30 dark:hover:text-zinc-300 dark:hover:bg-zinc-600/30' }}"
                 >
-                    <span class="material-symbols-outlined text-[22px] {{ $vistaActiva === 'lista' ? 'animate-pop font-bold' : '' }}">view_list</span>
+                    <span class="material-symbols-outlined text-[18px]">view_list</span>
                 </button>
             </div>
 
-            <flux:modal.trigger name="reasignar-modal" class="overflow-y-auto max-h-[85vh]">
-                <flux:button variant="subtle" icon="arrows-right-left">
-                    <span x-text="$store.i18n.t('btn.massReassign') || 'Reasignación Masiva'">Reasignación Masiva</span>
-                </flux:button>
-            </flux:modal.trigger>
-            <flux:modal.trigger name="emergencia-modal" class="overflow-y-auto max-h-[85vh]">
-                <button type="button" class="w-full sm:w-auto px-4 py-2 bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center gap-2 transition-all border border-red-600 dark:border-red-500">
-                    <span class="material-symbols-outlined icon-sm">emergency</span>
-                    <span x-text="$store.i18n.t('btn.emergencyAppt') || 'Cita Emergencia'">Cita Emergencia</span>
+            <flux:modal.trigger name="reasignar-modal">
+                <button type="button" class="btn-secondary text-xs px-3 py-2 flex items-center gap-1.5 shadow-sm">
+                    <span class="material-symbols-outlined icon-sm">sync_alt</span>
+                    <span x-text="$store.i18n.t('btn.massReassign') || 'Reasignación'">Reasignación</span>
                 </button>
             </flux:modal.trigger>
-            <a href="{{ route('citas.crear') }}" class="w-full sm:w-auto btn-primary justify-center">
+
+            <flux:modal.trigger name="emergencia-modal">
+                <button type="button" class="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl shadow-sm text-xs font-bold flex items-center justify-center gap-1.5 transition-all">
+                    <span class="material-symbols-outlined icon-sm">emergency</span>
+                    <span x-text="$store.i18n.t('btn.emergencyAppt') || 'Emergencia'">Emergencia</span>
+                </button>
+            </flux:modal.trigger>
+
+            <a href="{{ route('citas.crear') }}" wire:navigate class="btn-primary text-xs px-3.5 py-2 flex items-center justify-center gap-1.5 shadow-sm">
                 <span class="material-symbols-outlined icon-sm">add</span>
-                <span x-text="$store.i18n.t('btn.newAppointment') || 'Nueva Cita'"></span>
+                <span x-text="$store.i18n.t('btn.newAppointment') || 'Nueva Cita'">Nueva Cita</span>
             </a>
         </div>
     </div>
 
-    {{-- Filtros compartidos para ambas vistas --}}
-    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 w-full mb-6">
+    {{-- ═══ Barra de Filtros Dinámicos (Estilo Reportes con Labels) ═══ --}}
+    <div class="vc-panel mb-6">
         @php
             $estadoOptions = [
                 ['value' => '', 'label' => 'status.all'],
@@ -62,91 +78,66 @@
                 ['value' => 'CANCELADA', 'label' => 'status.cancelled'],
                 ['value' => 'EMERGENCIA', 'label' => 'status.emergency'],
             ];
-        @endphp
-        <div class="col-span-1">
-            <x-vc-dropdown
-                wire:model.live="filtroEstado"
-                :options="$estadoOptions"
-                :selected="$filtroEstado"
-                placeholder="table.status"
-                class="w-full"
-            />
-        </div>
-
-        @php
             $vetOptions = [['value' => '', 'label' => 'table.allVets']];
             foreach ($veterinarios as $vet) {
                 $vetOptions[] = ['value' => (string)$vet->id, 'label' => $vet->name];
             }
         @endphp
-        <div class="col-span-1">
-            <x-vc-dropdown
-                wire:model.live="filtroVeterinario"
-                :options="$vetOptions"
-                :selected="$filtroVeterinario"
-                placeholder="table.veterinarian"
-                searchable
-                class="w-full"
-            />
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 {{ $vistaActiva === 'lista' ? 'lg:grid-cols-3' : 'lg:grid-cols-2' }} gap-4 items-end">
+            {{-- Filtro de Estado --}}
+            <div>
+                <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5" x-text="$store.i18n.t('table.status') || 'Estado'">
+                    Estado
+                </label>
+                <x-vc-dropdown
+                    wire:model.live="filtroEstado"
+                    :options="$estadoOptions"
+                    :selected="$filtroEstado"
+                    placeholder="table.status"
+                    icon="flag"
+                    class="w-full"
+                />
+            </div>
+
+            {{-- Filtro de Veterinario --}}
+            <div>
+                <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5" x-text="$store.i18n.t('table.veterinarian') || 'Veterinario'">
+                    Veterinario
+                </label>
+                <x-vc-dropdown
+                    wire:model.live="filtroVeterinario"
+                    :options="$vetOptions"
+                    :selected="$filtroVeterinario"
+                    placeholder="table.veterinarian"
+                    icon="stethoscope"
+                    searchable
+                    class="w-full"
+                />
+            </div>
+
+            {{-- Filtro de Fecha (en vista lista) --}}
+            @if($vistaActiva === 'lista')
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5" x-text="$store.i18n.t('table.date') || 'Fecha'">
+                        Fecha
+                    </label>
+                    <x-vc-date-picker 
+                        wire:model.live="filtroFecha" 
+                        x-bind:placeholder="$store.i18n.t('table.date') || 'Fecha'"
+                        class="w-full"
+                    />
+                </div>
+            @endif
         </div>
-
-        @if($vistaActiva === 'lista')
-            <div class="col-span-1">
-                <x-vc-date-picker 
-                    wire:model.live="filtroFecha" 
-                    x-bind:placeholder="$store.i18n.t('table.date') || 'Fecha'"
-                    class="w-full"
-                />
-            </div>
-
-            <div class="col-span-1">
-                <x-vc-time-picker 
-                    wire:model.live="filtroHora" 
-                    x-bind:placeholder="$store.i18n.t('table.time') || 'Hora'"
-                    class="w-full"
-                />
-            </div>
-
-            @php
-                $clienteOptions = [['value' => '', 'label' => 'table.allClients']];
-                foreach ($clientes as $cliente) {
-                    $clienteOptions[] = ['value' => (string)$cliente->id, 'label' => $cliente->first_name . ' ' . $cliente->last_name];
-                }
-            @endphp
-            <div class="col-span-1 md:col-span-2 lg:col-span-1">
-                <x-vc-dropdown
-                    wire:model.live="filtroCliente"
-                    :options="$clienteOptions"
-                    :selected="$filtroCliente"
-                    placeholder="table.client"
-                    searchable
-                    class="w-full"
-                />
-            </div>
-
-            @php
-                $mascotaOptions = [['value' => '', 'label' => 'table.allPets']];
-                foreach ($mascotas as $mascota) {
-                    $mascotaOptions[] = ['value' => (string)$mascota->id, 'label' => $mascota->name];
-                }
-            @endphp
-            <div class="col-span-1">
-                <x-vc-dropdown
-                    wire:model.live="filtroMascota"
-                    :options="$mascotaOptions"
-                    :selected="$filtroMascota"
-                    placeholder="table.pet"
-                    searchable
-                    class="w-full"
-                />
-            </div>
-        @endif
-
+        
         @if($filtroEstado || $filtroFecha || $filtroHora || $filtroVeterinario || $filtroCliente || $filtroMascota)
-            <div class="col-span-full">
-                <flux:button variant="ghost" wire:click="limpiarFiltros" icon="x-mark" class="text-zinc-500 w-full sm:w-auto"><span x-text="$store.i18n.t('btn.clearFilters') || 'Limpiar Filtros'">Limpiar Filtros</span></flux:button>
-            </div>
-        @endif
+            <div class="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+                <flux:button variant="ghost" wire:click="limpiarFiltros" icon="x-mark" class="text-zinc-500 text-xs">
+                    <span x-text="$store.i18n.t('btn.clearFilters') || 'Limpiar Filtros'">Limpiar Filtros</span>
+                </flux:button>
+            @endif
+        </div>
     </div>
 
     {{-- ════ VISTA CALENDARIO ════ --}}
@@ -538,9 +529,8 @@
                     <flux:modal.close>
                         <flux:button variant="ghost"><span x-text="$store.i18n.t('btn.close') || 'Cerrar'">Cerrar</span></flux:button>
                     </flux:modal.close>
-                    <a href="{{ route('citas.editar', $citaVer->id) }}" class="w-full sm:w-auto px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center gap-2 transition-all">
+                    <a href="{{ route('citas.editar', $citaVer->id) }}" class="w-full sm:w-auto px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center transition-all" x-bind:aria-label="$store.i18n.t('btn.edit') || 'Edit'" x-bind:title="$store.i18n.t('btn.edit') || 'Edit'">
                         <span class="material-symbols-outlined icon-sm">edit</span>
-                        <span x-text="$store.i18n.t('btn.edit') || 'Editar'">Editar</span>
                     </a>
                     
                     <button type="button" @click="$wire.citaEliminarId = {{ $citaVer->id }}; Flux.modal('ver-cita').close(); Flux.modal('confirmar-eliminar').show()" class="btn-danger w-full sm:w-auto justify-center">

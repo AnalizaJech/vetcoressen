@@ -307,11 +307,12 @@
 
             /* Posición y dimensiones del área imprimible */
             #historia-print-area {
-                position: absolute;
-                top: 0;
-                left: 0;
+                position: static !important;
+                display: block !important;
                 width: 100% !important;
                 max-width: 100% !important;
+                height: auto !important;
+                overflow: visible !important;
                 box-shadow: none !important;
                 border: none !important;
                 border-radius: 0 !important;

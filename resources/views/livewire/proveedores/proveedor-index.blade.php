@@ -2,20 +2,27 @@
     <x-slot:title>Proveedores</x-slot:title>
 
     <div class="animate-slide-up">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+        {{-- ═══ Header de Proveedores (Estándar Premium) ═══ --}}
+        <div class="vc-panel flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <div class="flex items-center gap-3">
-                <div class="kpi-icon kpi-icon--emerald">
-                    <span class="material-symbols-outlined">local_shipping</span>
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200/50 dark:border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                    <span class="material-symbols-outlined text-2xl">local_shipping</span>
                 </div>
                 <div>
-                    <flux:heading size="xl"><span x-text="$store.i18n.t('page.providers') || 'Proveedores'"></span></flux:heading>
-                    <flux:subheading><span x-text="$store.i18n.t('page.providersSub') || 'Gestión de proveedores e importadores.'"></span></flux:subheading>
+                    <h1 class="text-xl md:text-2xl font-extrabold text-zinc-900 dark:text-zinc-100 font-display">
+                        <span x-text="$store.i18n.t('page.providers') || 'Proveedores'">Proveedores</span>
+                    </h1>
+                    <p class="text-xs text-zinc-500 dark:text-zinc-400" x-text="$store.i18n.t('page.providersSub') || 'Gestión de proveedores e importadores'">
+                        Gestión de proveedores e importadores
+                    </p>
                 </div>
             </div>
-            <a href="{{ route('proveedores.crear') }}" class="w-full sm:w-auto btn-primary justify-center">
-                <span class="material-symbols-outlined icon-sm">add</span>
-                <span><span x-text="$store.i18n.t('btn.newSupplier') || 'Nuevo Proveedor'">Nuevo Proveedor</span></span>
-            </a>
+            <div class="flex items-center gap-2.5">
+                <a href="{{ route('proveedores.crear') }}" wire:navigate class="btn-primary text-xs px-3.5 py-2 flex items-center justify-center gap-1.5 shadow-sm">
+                    <span class="material-symbols-outlined icon-sm">add</span>
+                    <span x-text="$store.i18n.t('btn.newSupplier') || 'Nuevo Proveedor'">Nuevo Proveedor</span>
+                </a>
+            </div>
         </div>
 
         <x-vc-table-layout 
@@ -33,7 +40,7 @@
                     placeholder="filter.allSuppliers"
                     :selected="$filtroProveedor"
                     searchable
-                    class="w-full sm:w-64"
+                    class="w-48 sm:w-60"
                 />
             </x-slot:filters>
 
