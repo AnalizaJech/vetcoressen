@@ -94,8 +94,14 @@ window.initVetCalendar = function (el, wire) {
         eventClick: function (info) {
             info.jsEvent.preventDefault();
             const citaId = parseInt(info.event.id);
-            if (wire && wire.abrirModalVer) {
-                wire.abrirModalVer(citaId);
+            if (wire) {
+                if (typeof wire.abrirModalVer === 'function') {
+                    wire.abrirModalVer(citaId);
+                } else if (typeof wire.ver === 'function') {
+                    wire.ver(citaId).then(() => {
+                        if (window.Flux) Flux.modal('ver-cita').show();
+                    });
+                }
             }
         },
 

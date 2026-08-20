@@ -10,7 +10,15 @@ class PdfController extends Controller
 {
     private function getTranslations()
     {
-        $lang = request()->query('lang', 'es');
+        $lang = request()->query('lang') 
+            ?? request()->cookie('vc_locale') 
+            ?? session('locale') 
+            ?? 'es';
+            
+        if (!in_array($lang, ['es', 'en'])) {
+            $lang = 'es';
+        }
+        
         $jsonPath = public_path("locales/{$lang}.json");
         $translations = [];
         if (file_exists($jsonPath)) {

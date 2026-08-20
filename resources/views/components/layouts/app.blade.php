@@ -7,64 +7,104 @@
     @php
         $cleanTitle = trim(str_replace(' - VETCORESSEN', '', $title ?? 'Vetcoressen'));
         $lowerTitle = mb_strtolower($cleanTitle);
+        $titleSuffix = '';
+
+        if (str_starts_with($lowerTitle, 'historia clínica - ') || str_starts_with($lowerTitle, 'historia clinica - ') || str_starts_with($lowerTitle, 'medical record - ')) {
+            $lowerTitle = 'ver_historia';
+            $titleSuffix = ' ' . mb_substr($cleanTitle, mb_strpos($cleanTitle, '-'));
+        } elseif (str_starts_with($lowerTitle, 'historia clínica #') || str_starts_with($lowerTitle, 'historia clinica #') || str_starts_with($lowerTitle, 'medical record #')) {
+            $lowerTitle = 'ver_historia';
+            $titleSuffix = ' ' . mb_substr($cleanTitle, mb_strpos($cleanTitle, '#'));
+        } elseif (str_starts_with($lowerTitle, 'historial clínico - ') || str_starts_with($lowerTitle, 'historial clinico - ') || str_starts_with($lowerTitle, 'medical history - ')) {
+            $lowerTitle = 'historial_mascota';
+            $titleSuffix = ' ' . mb_substr($cleanTitle, mb_strpos($cleanTitle, '-'));
+        }
+
         $titleAliases = [
             'dashboard' => 'dashboard',
             'panel' => 'dashboard',
             'pets' => 'pets',
             'mascotas' => 'pets',
             'nueva mascota' => 'nueva_mascota',
+            'new pet' => 'nueva_mascota',
             'editar mascota' => 'editar_mascota',
+            'edit pet' => 'editar_mascota',
             'clients' => 'clients',
             'clientes' => 'clients',
             'nuevo cliente' => 'nuevo_cliente',
+            'new client' => 'nuevo_cliente',
             'editar cliente' => 'editar_cliente',
+            'edit client' => 'editar_cliente',
             'appointments' => 'appointments',
             'citas' => 'appointments',
             'nueva cita' => 'nueva_cita',
+            'new appointment' => 'nueva_cita',
             'editar cita' => 'editar_cita',
+            'edit appointment' => 'editar_cita',
             'inventory' => 'inventory',
             'inventario' => 'inventory',
             'nuevo producto' => 'nuevo_producto',
+            'new product' => 'nuevo_producto',
             'editar producto' => 'editar_producto',
+            'edit product' => 'editar_producto',
+            'recepcionar pedido (entrada de stock)' => 'entrada_productos',
             'entrada de productos' => 'entrada_productos',
+            'stock entry' => 'entrada_productos',
             'historias clínicas' => 'records',
             'historias clinicas' => 'records',
             'historial clínico' => 'records',
             'medical records' => 'records',
             'nueva historia clínica' => 'nueva_historia',
+            'new medical record' => 'nueva_historia',
             'editar historia clínica' => 'editar_historia',
+            'edit medical record' => 'editar_historia',
+            'ver_historia' => 'ver_historia',
+            'historial_mascota' => 'historial_mascota',
             'cashier' => 'cashier',
             'caja' => 'cashier',
             'point of sale' => 'point_of_sale',
             'punto de venta' => 'point_of_sale',
             'arqueo de caja' => 'arqueo_caja',
+            'cash count' => 'arqueo_caja',
             'proveedores' => 'suppliers',
             'suppliers' => 'suppliers',
             'nuevo proveedor' => 'nuevo_proveedor',
+            'new supplier' => 'nuevo_proveedor',
             'editar proveedor' => 'editar_proveedor',
+            'edit supplier' => 'editar_proveedor',
             'sucursales' => 'branches',
             'branches' => 'branches',
             'nueva sucursal' => 'nueva_sucursal',
+            'new branch' => 'nueva_sucursal',
             'editar sucursal' => 'editar_sucursal',
+            'edit branch' => 'editar_sucursal',
             'usuarios' => 'users',
             'users' => 'users',
             'nuevo usuario' => 'nuevo_usuario',
+            'new user' => 'nuevo_usuario',
             'editar usuario' => 'editar_usuario',
+            'edit user' => 'editar_usuario',
             'roles y permisos' => 'roles_and_permissions',
+            'roles & permissions' => 'roles_and_permissions',
             'roles' => 'roles_and_permissions',
             'nuevo rol' => 'nuevo_rol',
+            'new role' => 'nuevo_rol',
             'editar rol' => 'editar_rol',
+            'edit role' => 'editar_rol',
             'reportes y estadísticas' => 'reports',
+            'reports & statistics' => 'reports',
             'reportes' => 'reports',
             'reports' => 'reports',
             'ajustes' => 'settings',
             'configuración' => 'settings',
+            'configuracion' => 'settings',
             'settings' => 'settings',
         ];
         $titleKey = $titleAliases[$lowerTitle] ?? str_replace(' ', '_', $lowerTitle);
     @endphp
     <meta name="current-title-key" content="{{ $titleKey }}">
-    <title x-text="($store.i18n.t('title.' + '{{ $titleKey }}') || $store.i18n.t('sidebar.' + '{{ $titleKey }}') || $store.i18n.t('nav.' + '{{ $titleKey }}') || '{{ $cleanTitle }}') + ' - {{ config('app.name', 'VETCORESSEN') }}'">{{ $cleanTitle }} - {{ config('app.name', 'VETCORESSEN') }}</title>
+    <meta name="current-title-suffix" content="{{ $titleSuffix }}">
+    <title x-text="($store.i18n.t('title.' + '{{ $titleKey }}') || $store.i18n.t('sidebar.' + '{{ $titleKey }}') || $store.i18n.t('nav.' + '{{ $titleKey }}') || '{{ $cleanTitle }}') + '{{ $titleSuffix }} - {{ config('app.name', 'VETCORESSEN') }}'">{{ $cleanTitle }} - {{ config('app.name', 'VETCORESSEN') }}</title>
     <meta name="description" content="{{ config('app.name') }} - Sistema de Gestión Veterinaria">
 
     <!-- Configuración de Favicon para Laravel -->

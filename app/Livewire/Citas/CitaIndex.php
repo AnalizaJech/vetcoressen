@@ -21,34 +21,39 @@ class CitaIndex extends Component
     public string $busqueda = '';
 
     #[Url]
-    public string $filtroEstado = '';
+    public ?string $filtroEstado = '';
 
     #[Url]
-    public string $filtroFecha = '';
+    public ?string $filtroFecha = '';
 
     #[Url]
-    public string $filtroHora = '';
+    public ?string $filtroHora = '';
 
     #[Url]
-    public string $filtroVeterinario = '';
+    public ?string $filtroVeterinario = '';
 
     #[Url]
-    public string $filtroCliente = '';
+    public ?string $filtroCliente = '';
 
     #[Url]
-    public string $filtroMascota = '';
+    public ?string $filtroMascota = '';
 
     // Toggle de vista: 'calendario' (default) o 'lista'
     #[Url]
     public string $vistaActiva = 'calendario';
 
     // ID de la cita pendiente de eliminar (modal de confirmación)
-    public ?int $citaEliminarId = null;
     public ?Appointment $citaVer = null;
 
     public function ver(int $id): void
     {
-        $this->citaVer = Appointment::findOrFail($id);
+        $this->citaVer = Appointment::with(['cliente', 'mascota', 'veterinario', 'historiaClinica'])->findOrFail($id);
+    }
+
+    public function abrirModalVer(int $id): void
+    {
+        $this->ver($id);
+        $this->dispatch('abrir-modal-ver-cita');
     }
 
     public function confirmDeletion(int $id): void
@@ -209,9 +214,21 @@ class CitaIndex extends Component
             $colors = $colorMap[$cita->status] ?? ['bg' => '#6b7280', 'border' => '#4b5563', 'text' => '#ffffff'];
             
             $start = $cita->fecha_hora ? $cita->fecha_hora->format('Y-m-d\TH:i:s') : '';
-            $end = $cita->end_time 
-                ? \Carbon\Carbon::parse($cita->end_time)->format('Y-m-d\TH:i:s') 
-                : ($cita->fecha_hora ? $cita->fecha_hora->copy()->addMinutes(30)->format('Y-m-d\TH:i:s') : '');
+            if ($cita->fecha_hora) {
+                if ($cita->end_time) {
+                    $endTimeStr = is_string($cita->end_time) ? trim(substr($cita->end_time, -8)) : $cita->end_time;
+                    $dateStr = $cita->fecha_hora->format('Y-m-d');
+                    try {
+                        $end = \Carbon\Carbon::parse($dateStr . ' ' . $endTimeStr)->format('Y-m-d\TH:i:s');
+                    } catch (\Exception $e) {
+                        $end = $cita->fecha_hora->copy()->addMinutes(30)->format('Y-m-d\TH:i:s');
+                    }
+                } else {
+                    $end = $cita->fecha_hora->copy()->addMinutes(30)->format('Y-m-d\TH:i:s');
+                }
+            } else {
+                $end = '';
+            }
 
             return [
                 'id' => $cita->id,

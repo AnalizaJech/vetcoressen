@@ -401,17 +401,37 @@
                             tension: 0.35,
                             borderWidth: 2.5,
                             pointBackgroundColor: '#10b981',
-                            pointHoverRadius: 6,
+                            pointHoverRadius: 7,
+                            pointHoverBackgroundColor: '#10b981',
+                            pointHoverBorderColor: '#ffffff',
+                            pointHoverBorderWidth: 2,
+                            hitRadius: 25,
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false,
+                        },
                         plugins: {
                             legend: { display: false },
                             tooltip: {
+                                enabled: true,
+                                mode: 'index',
+                                intersect: false,
+                                backgroundColor: 'rgba(24, 24, 27, 0.95)',
+                                titleColor: '#ffffff',
+                                bodyColor: '#e4e4e7',
+                                borderColor: 'rgba(255, 255, 255, 0.1)',
+                                borderWidth: 1,
+                                padding: 10,
+                                cornerRadius: 8,
+                                titleFont: { family: 'Plus Jakarta Sans', weight: '700', size: 12 },
+                                bodyFont: { family: 'Plus Jakarta Sans', size: 11 },
                                 callbacks: {
-                                    label: (c) => ' S/ ' + Number(c.raw).toFixed(2)
+                                    label: (c) => ' ' + (Alpine.store('i18n')?.t('report.income') || 'Ingresos') + ': S/ ' + Number(c.raw).toFixed(2)
                                 }
                             }
                         },
@@ -440,13 +460,29 @@
                             data: data.citasData || [0, 0, 0],
                             backgroundColor: ['#10b981', '#ef4444', '#8b5cf6'],
                             borderWidth: 0,
+                            hoverOffset: 6
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
-                            legend: { position: 'bottom', labels: { font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' }, color: '#71717a' } }
+                            legend: { position: 'bottom', labels: { font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' }, color: '#71717a' } },
+                            tooltip: {
+                                enabled: true,
+                                backgroundColor: 'rgba(24, 24, 27, 0.95)',
+                                titleColor: '#ffffff',
+                                bodyColor: '#e4e4e7',
+                                borderColor: 'rgba(255, 255, 255, 0.1)',
+                                borderWidth: 1,
+                                padding: 10,
+                                cornerRadius: 8,
+                                titleFont: { family: 'Plus Jakarta Sans', weight: '700', size: 12 },
+                                bodyFont: { family: 'Plus Jakarta Sans', size: 11 },
+                                callbacks: {
+                                    label: (c) => ' ' + c.label + ': ' + c.raw + ' ' + (Alpine.store('i18n')?.t('sidebar.appointments') || 'citas')
+                                }
+                            }
                         },
                         cutout: '70%'
                     }
@@ -472,11 +508,27 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false,
+                        },
                         plugins: {
                             legend: { display: false },
                             tooltip: {
+                                enabled: true,
+                                mode: 'index',
+                                intersect: false,
+                                backgroundColor: 'rgba(24, 24, 27, 0.95)',
+                                titleColor: '#ffffff',
+                                bodyColor: '#e4e4e7',
+                                borderColor: 'rgba(255, 255, 255, 0.1)',
+                                borderWidth: 1,
+                                padding: 10,
+                                cornerRadius: 8,
+                                titleFont: { family: 'Plus Jakarta Sans', weight: '700', size: 12 },
+                                bodyFont: { family: 'Plus Jakarta Sans', size: 11 },
                                 callbacks: {
-                                    label: (c) => ' S/ ' + Number(c.raw).toFixed(2)
+                                    label: (c) => ' ' + (Alpine.store('i18n')?.t('report.totalGenerated') || 'Total') + ': S/ ' + Number(c.raw).toFixed(2)
                                 }
                             }
                         },
@@ -501,6 +553,7 @@
                             data: data.pagosData || [0, 0, 0, 0],
                             backgroundColor: ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b'],
                             borderWidth: 0,
+                            hoverOffset: 6
                         }]
                     },
                     options: {
@@ -509,8 +562,18 @@
                         plugins: {
                             legend: { position: 'bottom', labels: { font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' }, color: '#71717a' } },
                             tooltip: {
+                                enabled: true,
+                                backgroundColor: 'rgba(24, 24, 27, 0.95)',
+                                titleColor: '#ffffff',
+                                bodyColor: '#e4e4e7',
+                                borderColor: 'rgba(255, 255, 255, 0.1)',
+                                borderWidth: 1,
+                                padding: 10,
+                                cornerRadius: 8,
+                                titleFont: { family: 'Plus Jakarta Sans', weight: '700', size: 12 },
+                                bodyFont: { family: 'Plus Jakarta Sans', size: 11 },
                                 callbacks: {
-                                    label: (c) => ' S/ ' + Number(c.raw).toFixed(2)
+                                    label: (c) => ' ' + c.label + ': S/ ' + Number(c.raw).toFixed(2)
                                 }
                             }
                         },
