@@ -1,17 +1,27 @@
 <div>
     <x-slot:title>{{ $roleId ? 'Editar Rol' : 'Nuevo Rol' }}</x-slot:title>
 
-    <div class="flex items-center gap-3 mb-6">
-        <flux:button href="{{ route('roles.index') }}" variant="ghost" size="sm" icon="arrow-left" />
-        <div>
-            <flux:heading size="xl" class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-emerald-500">security</span>
-                @if($roleId)
-                    <span x-text="$store.i18n.t('title.editar_rol') || 'Editar Rol'"></span>
-                @else
-                    <span x-text="$store.i18n.t('title.nuevo_rol') || 'Nuevo Rol'"></span>
-                @endif
-            </flux:heading>
+    {{-- ═══ Header de Formulario de Rol (Estándar Premium) ═══ --}}
+    <div class="vc-panel flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+        <div class="flex items-center gap-3">
+            <a href="{{ route('roles.index') }}" wire:navigate class="w-10 h-10 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center text-zinc-600 dark:text-zinc-400 transition-colors">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </a>
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200/50 dark:border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                <span class="material-symbols-outlined text-2xl">shield</span>
+            </div>
+            <div>
+                <h1 class="text-xl md:text-2xl font-extrabold text-zinc-900 dark:text-zinc-100 font-display">
+                    @if($roleId)
+                        <span x-text="$store.i18n.t('title.editar_rol') || 'Editar Rol'">Editar Rol</span>
+                    @else
+                        <span x-text="$store.i18n.t('title.nuevo_rol') || 'Nuevo Rol'">Nuevo Rol</span>
+                    @endif
+                </h1>
+                <p class="text-xs text-zinc-500 dark:text-zinc-400" x-text="$store.i18n.t('settings.rolesSub') || 'Defina los permisos y accesos para este perfil de usuario'">
+                    Defina los permisos y accesos para este perfil de usuario
+                </p>
+            </div>
         </div>
     </div>
 
@@ -22,13 +32,13 @@
                 <div class="vc-section-icon">
                     <span class="material-symbols-outlined">shield</span>
                 </div>
-                <span class="vc-section-title">Información del Rol</span>
+                <span class="vc-section-title" x-text="$store.i18n.t('role.info') || 'Información del Rol'">Información del Rol</span>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <flux:field>
-                    <flux:label>Nombre del Rol</flux:label>
-                    <flux:input wire:model="name" placeholder="Ej: Recepcionista, Asistente, etc." icon="identification" />
+                    <flux:label><span x-text="$store.i18n.t('table.roleName') || 'Nombre del Rol'">Nombre del Rol</span></flux:label>
+                    <flux:input wire:model="name" x-bind:placeholder="$store.i18n.t('role.namePlaceholder') || 'Ej: Recepcionista, Asistente, etc.'" icon="shield-check" />
                     <flux:error name="name" />
                 </flux:field>
             </div>
@@ -40,13 +50,15 @@
                 <div class="vc-section-icon">
                     <span class="material-symbols-outlined">vpn_key</span>
                 </div>
-                <span class="vc-section-title">Asignación de Permisos</span>
+                <span class="vc-section-title" x-text="$store.i18n.t('role.permissionsAssignment') || 'Asignación de Permisos'">Asignación de Permisos</span>
             </div>
             
-            <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">Selecciona los permisos que tendrá este rol. Están agrupados por módulo del sistema.</p>
+            <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6" x-text="$store.i18n.t('role.permissionsSubtitle') || 'Selecciona los permisos que tendrá este rol. Están agrupados por módulo del sistema.'">
+                Selecciona los permisos que tendrá este rol. Están agrupados por módulo del sistema.
+            </p>
 
             @if(empty($groupedPermissions))
-                <div class="col-span-full py-4 text-center text-zinc-500 text-sm bg-zinc-50 dark:bg-vc-surface-alt/50 rounded-xl border border-dashed border-zinc-200 dark:border-zinc-700">
+                <div class="col-span-full py-4 text-center text-zinc-500 text-sm bg-zinc-50 dark:bg-vc-surface-alt/50 rounded-xl border border-dashed border-zinc-200 dark:border-zinc-700" x-text="$store.i18n.t('role.noPermissions') || 'No hay permisos registrados en el sistema.'">
                     No hay permisos registrados en el sistema.
                 </div>
             @else
@@ -59,7 +71,9 @@
                                     <div class="w-8 h-8 rounded-lg bg-vc-primary/10 border border-vc-primary/20 flex items-center justify-center">
                                         <span class="material-symbols-outlined text-vc-primary text-base">{{ $moduleIcons[$module] ?? 'extension' }}</span>
                                     </div>
-                                    <span class="text-sm font-bold text-zinc-800 dark:text-zinc-100 uppercase tracking-wider">{{ $module }}</span>
+                                    <span class="text-sm font-bold text-zinc-800 dark:text-zinc-100 uppercase tracking-wider">
+                                        <span x-text="$store.i18n.t('sidebar.{{ strtolower(str_replace(' ', '_', $module)) }}') || '{{ $module }}'">{{ $module }}</span>
+                                    </span>
                                     <span class="text-xs text-zinc-400 dark:text-zinc-500 font-medium">({{ count($perms) }})</span>
                                 </div>
                                 {{-- Botón marcar/desmarcar todos del módulo --}}
@@ -79,7 +93,11 @@
                                             : 'bg-zinc-200/50 dark:bg-zinc-700/50 text-zinc-500 dark:text-zinc-400 border border-zinc-300/50 dark:border-zinc-600/50 hover:bg-vc-primary/10 hover:text-vc-primary' 
                                         }}"
                                 >
-                                    {{ $allSelected ? 'Desmarcar todos' : 'Marcar todos' }}
+                                    @if($allSelected)
+                                        <span x-text="$store.i18n.t('btn.uncheckAll') || 'Desmarcar todos'">Desmarcar todos</span>
+                                    @else
+                                        <span x-text="$store.i18n.t('btn.checkAll') || 'Marcar todos'">Marcar todos</span>
+                                    @endif
                                 </button>
                             </div>
 
@@ -98,6 +116,7 @@
                                                 ? 'text-vc-primary dark:text-vc-primary-light' 
                                                 : 'text-zinc-700 dark:text-zinc-300'
                                             }}"
+                                            x-text="$store.i18n.t('permissions.{{ $perm['name'] }}') || '{{ $perm['label'] }}'"
                                         >{{ $perm['label'] }}</span>
                                     </label>
                                 @endforeach
@@ -111,16 +130,20 @@
 
         <div class="flex flex-col-reverse sm:flex-row items-center justify-end gap-3">
             <flux:button href="{{ route('roles.index') }}" variant="ghost" class="w-full sm:w-auto">
-                Cancelar
+                <span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'">Cancelar</span>
             </flux:button>
             <button type="submit" class="w-full sm:w-auto {{ $roleId ? 'btn-violet' : 'btn-primary' }} justify-center" wire:loading.attr="disabled">
                 <span wire:loading.remove class="flex items-center gap-2">
                     <span class="material-symbols-outlined icon-sm">{{ $roleId ? 'edit' : 'save' }}</span>
-                    <span>{{ $roleId ? 'Actualizar' : 'Registrar' }}</span>
+                    @if($roleId)
+                        <span x-text="$store.i18n.t('btn.update') || 'Actualizar'">Actualizar</span>
+                    @else
+                        <span x-text="$store.i18n.t('btn.register') || 'Registrar'">Registrar</span>
+                    @endif
                 </span>
                 <span wire:loading class="flex items-center gap-2">
                     <span class="material-symbols-outlined icon-sm vc-spinner">progress_activity</span>
-                    <span>Guardando...</span>
+                    <span x-text="$store.i18n.t('btn.saving') || 'Guardando...'">Guardando...</span>
                 </span>
             </button>
         </div>

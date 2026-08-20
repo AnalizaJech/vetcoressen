@@ -1,116 +1,124 @@
-<div class="voucher-wrapper bg-zinc-100 dark:bg-zinc-900 min-h-screen w-full pt-36 sm:pt-40 pb-12 px-4 relative overflow-y-auto">
-<style>
-    @media print {
-        @page { size: A4 portrait; margin: 15mm 20mm; }
-        body { 
-            -webkit-print-color-adjust: exact !important; 
-            print-color-adjust: exact !important; 
-            background: white !important;
-        }
-        body * { visibility: hidden; }
-        body, main { background: white !important; height: auto !important; overflow: visible !important; position: static !important; }
-        #voucher-imprimible, #voucher-imprimible * { visibility: visible; }
-        #voucher-imprimible {
-            position: absolute;
-            left: 0; top: 0; width: 100%;
-            margin: 0 !important; padding: 0 !important; box-shadow: none !important; border: none !important;
-        }
-        .print-btn-container { display: none !important; }
-    }
-</style>
-
-@php
-    function numeroALetras($numero) {
-        $formatter = new class {
-            private $unidades = ['', 'UNO', 'DOS', 'TRES', 'CUATRO', 'CINCO', 'SEIS', 'SIETE', 'OCHO', 'NUEVE'];
-            private $decenas = ['', 'DIEZ', 'VEINTE', 'TREINTA', 'CUARENTA', 'CINCUENTA', 'SESENTA', 'SETENTA', 'OCHENTA', 'NOVENTA'];
-            private $centenas = ['', 'CIENTO', 'DOSCIENTOS', 'TRESCIENTOS', 'CUATROCIENTOS', 'QUINIENTOS', 'SEISCIENTOS', 'SETECIENTOS', 'OCHOCIENTOS', 'NOVECIENTOS'];
-            private $especiales = [11=>'ONCE', 12=>'DOCE', 13=>'TRECE', 14=>'CATORCE', 15=>'QUINCE', 16=>'DIECISEIS', 17=>'DIECISIETE', 18=>'DIECIOCHO', 19=>'DIECINUEVE', 21=>'VEINTIUNO', 22=>'VEINTIDOS', 23=>'VEINTITRES', 24=>'VEINTICUATRO', 25=>'VEINTICINCO', 26=>'VEINTISEIS', 27=>'VEINTISIETE', 28=>'VEINTIOCHO', 29=>'VEINTINUEVE'];
-
-            public function convertir($num) {
-                if ($num == 0) return 'CERO';
-                if ($num == 100) return 'CIEN';
-                
-                $letras = '';
-                if ($num >= 1000) {
-                    $miles = floor($num / 1000);
-                    $num = $num % 1000;
-                    if ($miles == 1) $letras .= 'MIL ';
-                    else $letras .= $this->convertir($miles) . ' MIL ';
-                }
-                
-                if ($num >= 100) {
-                    $centenas = floor($num / 100);
-                    $num = $num % 100;
-                    $letras .= $this->centenas[$centenas] . ' ';
-                }
-                
-                if ($num >= 10 && $num <= 29) {
-                    if (isset($this->especiales[$num])) {
-                        $letras .= $this->especiales[$num] . ' ';
-                    } else {
-                        $letras .= $this->decenas[floor($num / 10)] . ' ';
-                    }
-                    $num = 0;
-                } elseif ($num >= 30) {
-                    $decena = floor($num / 10);
-                    $num = $num % 10;
-                    $letras .= $this->decenas[$decena];
-                    if ($num > 0) $letras .= ' Y ';
-                    else $letras .= ' ';
-                }
-                
-                if ($num > 0) {
-                    $letras .= $this->unidades[$num] . ' ';
-                }
-                
-                return trim($letras);
+<div class="w-full py-4 pb-20 px-2 sm:px-4 relative">
+    <style>
+        @media print {
+            @page { size: A4 portrait; margin: 15mm 20mm; }
+            body { 
+                -webkit-print-color-adjust: exact !important; 
+                print-color-adjust: exact !important; 
+                background: white !important;
             }
+            body * { visibility: hidden; }
+            body, main { background: white !important; height: auto !important; overflow: visible !important; position: static !important; }
+            #voucher-imprimible, #voucher-imprimible * { visibility: visible; }
+            #voucher-imprimible {
+                position: absolute;
+                left: 0; top: 0; width: 100%;
+                margin: 0 !important; padding: 0 !important; box-shadow: none !important; border: none !important;
+            }
+            .print-btn-container { display: none !important; }
+        }
+    </style>
+
+    @php
+        function numeroALetras($numero) {
+            $formatter = new class {
+                private $unidades = ['', 'UN', 'DOS', 'TRES', 'CUATRO', 'CINCO', 'SEIS', 'SIETE', 'OCHO', 'NUEVE'];
+                private $decenas = ['', 'DIEZ', 'VEINTE', 'TREINTA', 'CUARENTA', 'CINCUENTA', 'SESENTA', 'SETENTA', 'OCHENTA', 'NOVENTA'];
+                private $especiales = [
+                    11 => 'ONCE', 12 => 'DOCE', 13 => 'TRECE', 14 => 'CATORCE', 15 => 'QUINCE',
+                    16 => 'DIECISEIS', 17 => 'DIECISIETE', 18 => 'DIECIOCHO', 19 => 'DIECINUEVE',
+                    21 => 'VEINTIUNO', 22 => 'VEINTIDOS', 23 => 'VEINTITRES', 24 => 'VEINTICUATRO',
+                    25 => 'VEINTICINCO', 26 => 'VEINTISEIS', 27 => 'VEINTISIETE', 28 => 'VEINTIOCHO', 29 => 'VEINTINUEVE'
+                ];
+                private $centenas = ['', 'CIENTO', 'DOSCIENTOS', 'TRESCIENTOS', 'CUATROCIENTOS', 'QUINIENTOS', 'SEISCIENTOS', 'SETECIENTOS', 'OCHOCIENTOS', 'NOVECIENTOS'];
+
+                public function convertir($num) {
+                    if ($num == 0) return 'CERO';
+                    if ($num == 100) return 'CIEN';
+                    $letras = '';
+                    if ($num >= 1000) {
+                        $miles = floor($num / 1000);
+                        $num = $num % 1000;
+                        if ($miles == 1) $letras .= 'MIL ';
+                        else $letras .= $this->convertir($miles) . ' MIL ';
+                    }
+                    if ($num >= 100) {
+                        $centenas = floor($num / 100);
+                        $num = $num % 100;
+                        $letras .= $this->centenas[$centenas] . ' ';
+                    }
+                    if ($num >= 10 && $num <= 29) {
+                        if (isset($this->especiales[$num])) {
+                            $letras .= $this->especiales[$num] . ' ';
+                        } else {
+                            $letras .= $this->decenas[floor($num / 10)] . ' ';
+                        }
+                        $num = 0;
+                    } elseif ($num >= 30) {
+                        $decena = floor($num / 10);
+                        $num = $num % 10;
+                        $letras .= $this->decenas[$decena];
+                        if ($num > 0) $letras .= ' Y ';
+                        else $letras .= ' ';
+                    }
+                    if ($num > 0) {
+                        $letras .= $this->unidades[$num] . ' ';
+                    }
+                    return trim($letras);
+                }
+            };
+            return $formatter->convertir(floor($numero));
+        }
+
+        $tipoComp = strtoupper($venta->tipo_comprobante ?? 'BOLETA');
+        $isFactura = $tipoComp === 'FACTURA';
+        $tipoDoc = match($tipoComp) {
+            'FACTURA' => 'FACTURA ELECTRÓNICA',
+            'BOLETA' => 'BOLETA DE VENTA ELECTRÓNICA',
+            default => 'NOTA DE VENTA / COMPROBANTE',
         };
-        return $formatter->convertir(floor($numero));
-    }
+        $serie = match($tipoComp) {
+            'FACTURA' => 'F001',
+            'BOLETA' => 'B001',
+            default => 'NV01',
+        };
+        $numero = str_pad($venta->numero_comprobante ?? $venta->id, 8, '0', STR_PAD_LEFT);
+        $clinica = $venta->clinica ?? \App\Models\Clinic::first();
+        $cliente = $venta->cliente;
+    @endphp
 
-    $isFactura = str_contains(strtolower($venta->tipo_comprobante), 'factura') || (strlen(preg_replace('/[^0-9]/', '', $venta->cliente->numero_documento ?? '')) === 11 && str_starts_with($venta->cliente->numero_documento ?? '', '20'));
-    $tipoDoc = $isFactura ? 'FACTURA ELECTRÓNICA' : 'BOLETA DE VENTA ELECTRÓNICA';
-    $serie = $isFactura ? 'F001' : 'B001';
-    $numero = str_pad($venta->numero_comprobante ?? $venta->id, 8, '0', STR_PAD_LEFT);
-    $clinica = $venta->clinica ?? \App\Models\Clinic::first();
-@endphp
-
-<div class="w-full max-w-[800px] mx-auto flex flex-col gap-6 mt-10">
-
-    <div id="voucher-imprimible" class="w-full bg-white text-zinc-800 p-12 font-sans text-sm rounded-[2rem] shadow-2xl shadow-zinc-200/50 border border-zinc-200/80 print:shadow-none print:border-none print:rounded-none mx-auto relative overflow-hidden">
+    <div id="voucher-imprimible" class="w-full max-w-[800px] bg-white text-zinc-800 p-8 sm:p-12 font-sans text-sm rounded-[2rem] shadow-2xl shadow-zinc-200/50 border border-zinc-200/80 print:shadow-none print:border-none print:rounded-none mx-auto relative">
         
         {{-- Header --}}
         <div class="flex justify-between items-start mb-8">
             <div class="w-2/3 pr-6">
                 <div class="flex items-center gap-4 mb-4">
                     @php
-                        $logo = $clinica?->logo ? asset('storage/' . $clinica->logo) : asset('img/logo.png');
+                        $logo = $clinica?->logo ? asset('storage/' . $clinica->logo) : asset('favicon.svg');
                     @endphp
-                    <img src="{{ $logo }}" onerror="this.style.display='none'" class="h-16 w-auto object-contain">
+                    <img src="{{ $logo }}" alt="Logo" class="h-16 w-auto object-contain">
                     <div>
-                        <h1 class="font-extrabold text-3xl tracking-tight text-zinc-900 leading-none">{{ mb_strtoupper($clinica?->razon_social ?? config('app.name', 'VetCoressen') . ' S.A.C.') }}</h1>
-                        <p class="font-bold text-sm uppercase text-zinc-600 mt-1.5">{{ $clinica?->name ?? 'Veterinaria y Pet Shop' }}</p>
+                        <h1 class="font-extrabold text-2xl sm:text-3xl tracking-tight text-zinc-900 leading-none">{{ mb_strtoupper($clinica?->razon_social ?? config('app.name', 'VetCoressen') . ' S.A.C.') }}</h1>
+                        <p class="font-bold text-sm uppercase text-zinc-600 mt-1.5">{{ $clinica?->name ?? 'Clínica Veterinaria' }}</p>
                     </div>
                 </div>
                 <div class="text-[13px] text-zinc-700 space-y-1.5 pl-1">
-                    <p class="uppercase"><span class="font-bold text-zinc-900 mr-1">Dirección:</span> {{ $clinica?->address ?: '-' }}</p>
-                    <p class="uppercase"><span class="font-bold text-zinc-900 mr-1">Teléfono:</span> {{ $clinica?->phone ?: '-' }}</p>
-                    <p class="uppercase"><span class="font-bold text-zinc-900 mr-1">Correo:</span> {{ $clinica?->email ?: '-' }}</p>
+                    <p class="uppercase"><span class="font-bold text-zinc-900 mr-1">Dirección:</span> {{ $clinica?->address ?: 'Av. Principal 123' }}</p>
+                    <p class="uppercase"><span class="font-bold text-zinc-900 mr-1">Teléfono:</span> {{ $clinica?->phone ?: '01-555-0100' }}</p>
+                    <p class="uppercase"><span class="font-bold text-zinc-900 mr-1">Correo:</span> {{ $clinica?->email ?: 'contacto@vetcoressen.pe' }}</p>
                 </div>
             </div>
             
             <div class="w-1/3">
                 <div class="border border-zinc-300 rounded-xl text-center overflow-hidden">
                     <div class="py-3 px-2 bg-zinc-50 border-b border-zinc-300">
-                        <p class="font-bold text-lg text-zinc-900">RUC: {{ $clinica?->ruc ?: '20123456789' }}</p>
+                        <p class="font-bold text-lg text-zinc-900">RUC: {{ $clinica?->ruc ?: '20612345678' }}</p>
                     </div>
                     <div class="bg-zinc-800 text-white py-2" style="-webkit-print-color-adjust: exact; background-color: #27272a !important;">
                         <p class="font-bold text-sm uppercase tracking-wider">{{ $tipoDoc }}</p>
                     </div>
-                    <div class="py-3 px-2 bg-white">
-                        <p class="font-bold text-xl tracking-widest text-zinc-900">{{ $serie }}-{{ $numero }}</p>
+                    <div class="py-2.5 px-2 bg-white">
+                        <p class="font-extrabold text-xl tracking-widest text-zinc-900">{{ $serie }}-{{ $numero }}</p>
                     </div>
                 </div>
             </div>
@@ -124,18 +132,18 @@
                     <div class="col-span-7 uppercase text-zinc-900 font-semibold">{{ $venta->created_at->setTimezone('America/Lima')->format('d/m/Y') }}</div>
                     
                     <div class="col-span-5 font-bold text-zinc-700">Señor(es):</div>
-                    <div class="col-span-7 uppercase text-zinc-900 font-semibold">{{ $venta->cliente->nombre_completo ?? 'CLIENTE GENERAL / PUBLICO EN GENERAL' }}</div>
+                    <div class="col-span-7 uppercase text-zinc-900 font-semibold">{{ $cliente ? $cliente->nombre_completo : 'CLIENTE GENERAL / PUBLICO EN GENERAL' }}</div>
                     
                     <div class="col-span-5 font-bold text-zinc-700">Dirección:</div>
-                    <div class="col-span-7 uppercase text-zinc-900 font-semibold">{{ $venta->cliente->address ?: '-' }}</div>
+                    <div class="col-span-7 uppercase text-zinc-900 font-semibold">{{ $cliente?->address ?: '-' }}</div>
                 </div>
                 
                 <div class="col-span-12 sm:col-span-6 grid grid-cols-12 gap-3">
                     <div class="col-span-5 font-bold text-zinc-700">Forma de Pago:</div>
                     <div class="col-span-7 uppercase text-zinc-900 font-semibold">CONTADO</div>
                     
-                    <div class="col-span-5 font-bold text-zinc-700">{{ $isFactura ? 'RUC' : 'DNI/CE' }}:</div>
-                    <div class="col-span-7 uppercase text-zinc-900 font-semibold">{{ $venta->cliente->numero_documento ?? '00000000' }}</div>
+                    <div class="col-span-5 font-bold text-zinc-700">{{ $isFactura ? 'RUC' : ($cliente?->tipo_documento ?? 'DNI/CE') }}:</div>
+                    <div class="col-span-7 uppercase text-zinc-900 font-semibold">{{ $cliente?->numero_documento ?: '00000000' }}</div>
                     
                     <div class="col-span-5 font-bold text-zinc-700">Moneda:</div>
                     <div class="col-span-7 uppercase text-zinc-900 font-semibold">SOLES</div>
@@ -151,7 +159,7 @@
         {{-- Items Table --}}
         <div class="mb-8 rounded-xl overflow-hidden border border-zinc-300">
             <table class="w-full text-[13px] text-left">
-                <thead class="text-white font-bold bg-zinc-800 dark:bg-zinc-900" style="-webkit-print-color-adjust: exact; background-color: #27272a !important; color: white !important;">
+                <thead class="text-white font-bold bg-zinc-800" style="-webkit-print-color-adjust: exact; background-color: #27272a !important; color: white !important;">
                     <tr>
                         <th class="py-4 px-5 text-center w-24 border-r border-zinc-700" style="background-color: #27272a !important; border-color: #3f3f46 !important; color: #ffffff !important;">CANT.</th>
                         <th class="py-4 px-5 text-center w-28 border-r border-zinc-700" style="background-color: #27272a !important; border-color: #3f3f46 !important; color: #ffffff !important;">U. MEDIDA</th>
@@ -221,13 +229,12 @@
                 <p class="text-[10px] text-zinc-500 leading-tight">Este comprobante puede ser verificado utilizando la clave SOL en el sistema de SUNAT.</p>
             </div>
         </div>
-        
     </div>
     
+    {{-- Botón Flotante de Impresión Original --}}
     <div class="fixed bottom-6 right-6 z-[100] print-btn-container" style="z-index: 9999;">
-        <button onclick="window.print()" class="w-14 h-14 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center transition-all">
-            <span class="material-symbols-outlined text-[24px]">print</span>
+        <button onclick="window.print()" class="w-14 h-14 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full shadow-2xl hover:shadow-emerald-500/50 flex items-center justify-center transition-all cursor-pointer">
+            <span class="material-symbols-outlined text-[26px]">print</span>
         </button>
     </div>
-</div>
 </div>

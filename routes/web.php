@@ -96,6 +96,8 @@ Route::middleware('auth')->group(function () {
     // Reportes
     Route::middleware('permission:view_settings')->group(function () { // TODO: change permission if needed
         Route::get('/reports', ReporteIndex::class)->name('reportes.index');
+        Route::get('/reports/export/pdf', [\App\Http\Controllers\ReportExportController::class, 'pdf'])->name('reportes.export.pdf');
+        Route::get('/reports/export/excel', [\App\Http\Controllers\ReportExportController::class, 'excel'])->name('reportes.export.excel');
     });
 
     // Administración

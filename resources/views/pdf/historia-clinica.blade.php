@@ -3,12 +3,15 @@
 <head>
 @php
     $clinic = \App\Models\Clinic::first();
-    $logoPath = $clinic && $clinic->logo ? public_path('storage/' . $clinic->logo) : public_path('favicon.svg');
     $logoSrc = '';
-    if (file_exists($logoPath)) {
-        $logoData = base64_encode(file_get_contents($logoPath));
-        $logoMime = mime_content_type($logoPath);
-        $logoSrc = 'data:' . $logoMime . ';base64,' . $logoData;
+    if ($clinic && $clinic->logo && file_exists(public_path('storage/' . $clinic->logo))) {
+        $path = public_path('storage/' . $clinic->logo);
+        $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        if (in_array($ext, ['png', 'jpg', 'jpeg', 'gif'])) {
+            $logoData = base64_encode(file_get_contents($path));
+            $logoMime = mime_content_type($path);
+            $logoSrc = 'data:' . $logoMime . ';base64,' . $logoData;
+        }
     }
 @endphp
 

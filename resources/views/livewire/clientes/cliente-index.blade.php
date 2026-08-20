@@ -2,41 +2,69 @@
     <x-slot:title>Clients</x-slot:title>
 
 <div class="animate-slide-up">
-    {{-- Cabecera con icono --}}
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+    {{-- ═══ Header de Clientes (Estándar Premium) ═══ --}}
+    <div class="vc-panel flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div class="flex items-center gap-3">
-            <div class="kpi-icon kpi-icon--emerald">
-                <span class="material-symbols-outlined">group</span>
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200/50 dark:border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                <span class="material-symbols-outlined text-2xl">group</span>
             </div>
             <div>
-                <flux:heading size="xl"><span x-text="$store.i18n.t('page.clients')"></span></flux:heading>
-                <flux:subheading><span x-text="$store.i18n.t('page.clientsSub')"></span></flux:subheading>
+                <h1 class="text-xl md:text-2xl font-extrabold text-zinc-900 dark:text-zinc-100 font-display">
+                    <span x-text="$store.i18n.t('page.clients') || 'Clientes'">Clientes</span>
+                </h1>
+                <p class="text-xs text-zinc-500 dark:text-zinc-400" x-text="$store.i18n.t('page.clientsSub') || 'Gestión y directorio de propietarios de mascotas'">
+                    Gestión y directorio de propietarios de mascotas
+                </p>
             </div>
         </div>
-        <div class="w-full sm:w-auto mt-2 sm:mt-0">
-            <a href="{{ route('clientes.crear') }}" class="w-full sm:w-auto btn-primary justify-center">
+        <div class="flex items-center gap-2.5">
+            <a href="{{ route('clientes.crear') }}" wire:navigate class="btn-primary text-xs px-3.5 py-2 flex items-center justify-center gap-1.5 shadow-sm">
                 <span class="material-symbols-outlined icon-sm">add</span>
-                <span x-text="$store.i18n.t('btn.newClient')"></span>
+                <span x-text="$store.i18n.t('btn.newClient') || 'Nuevo Cliente'">Nuevo Cliente</span>
             </a>
+        </div>
+    </div>
+
+    {{-- ═══ Barra de Filtros Dinámicos (Estilo Reportes con Labels) ═══ --}}
+    <div class="vc-panel mb-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 items-end">
+            {{-- Buscador Principal --}}
+            <div>
+                <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5" x-text="$store.i18n.t('filter.searchClient') || 'Buscar Cliente'">
+                    Buscar Cliente
+                </label>
+                <flux:input
+                    wire:model.live.debounce.300ms="search"
+                    icon="magnifying-glass"
+                    placeholder="Buscar por nombre, DNI, teléfono o email..."
+                    x-bind:placeholder="$store.i18n.t('filter.searchClient') || 'Buscar cliente...'"
+                />
+            </div>
+
+            {{-- Selector / Filtro de Cliente --}}
+            <div>
+                <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5" x-text="$store.i18n.t('table.client') || 'Cliente'">
+                    Cliente
+                </label>
+                <x-vc-dropdown 
+                    wire:model.live="filtroCliente"
+                    :options="$clientesOptions"
+                    :selected="$filtroCliente"
+                    placeholder="filter.allClients"
+                    icon="person"
+                    searchable
+                />
+            </div>
         </div>
     </div>
 
     <x-vc-table-layout 
         :data="$clientes"
+        :searchable="false"
         icon="group"
         emptyTitle="Sin clientes"
         emptyText="No hay clientes que coincidan con los filtros."
     >
-        <x-slot:filters>
-            <x-vc-dropdown 
-                wire:model.live="filtroCliente"
-                :options="$clientesOptions"
-                :selected="$filtroCliente"
-                placeholder="filter.allClients"
-                searchable
-                class="w-full sm:w-64"
-            />
-        </x-slot:filters>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
             @foreach($clientes as $cliente)
                 <div wire:key="cliente-{{ $cliente->id }}" class="vc-card flex flex-col justify-between p-5 rounded-2xl bg-white dark:bg-vc-surface border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-md transition-shadow relative">

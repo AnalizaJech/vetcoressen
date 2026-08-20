@@ -5,25 +5,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @php
-        $cleanTitle = str_replace(' - VETCORESSEN', '', $title ?? 'Vetcoressen');
+        $cleanTitle = trim(str_replace(' - VETCORESSEN', '', $title ?? 'Vetcoressen'));
+        $lowerTitle = mb_strtolower($cleanTitle);
         $titleAliases = [
+            'dashboard' => 'dashboard',
+            'panel' => 'dashboard',
             'pets' => 'pets',
+            'mascotas' => 'pets',
+            'nueva mascota' => 'nueva_mascota',
+            'editar mascota' => 'editar_mascota',
             'clients' => 'clients',
+            'clientes' => 'clients',
+            'nuevo cliente' => 'nuevo_cliente',
+            'editar cliente' => 'editar_cliente',
             'appointments' => 'appointments',
+            'citas' => 'appointments',
+            'nueva cita' => 'nueva_cita',
+            'editar cita' => 'editar_cita',
             'inventory' => 'inventory',
+            'inventario' => 'inventory',
+            'nuevo producto' => 'nuevo_producto',
+            'editar producto' => 'editar_producto',
+            'entrada de productos' => 'entrada_productos',
+            'historias clínicas' => 'records',
+            'historias clinicas' => 'records',
+            'historial clínico' => 'records',
+            'medical records' => 'records',
+            'nueva historia clínica' => 'nueva_historia',
+            'editar historia clínica' => 'editar_historia',
             'cashier' => 'cashier',
+            'caja' => 'cashier',
             'point of sale' => 'point_of_sale',
+            'punto de venta' => 'point_of_sale',
+            'arqueo de caja' => 'arqueo_caja',
             'proveedores' => 'suppliers',
+            'suppliers' => 'suppliers',
+            'nuevo proveedor' => 'nuevo_proveedor',
+            'editar proveedor' => 'editar_proveedor',
             'sucursales' => 'branches',
-            'roles y permisos' => 'roles_and_permissions',
+            'branches' => 'branches',
+            'nueva sucursal' => 'nueva_sucursal',
+            'editar sucursal' => 'editar_sucursal',
             'usuarios' => 'users',
+            'users' => 'users',
+            'nuevo usuario' => 'nuevo_usuario',
+            'editar usuario' => 'editar_usuario',
+            'roles y permisos' => 'roles_and_permissions',
+            'roles' => 'roles_and_permissions',
+            'nuevo rol' => 'nuevo_rol',
+            'editar rol' => 'editar_rol',
+            'reportes y estadísticas' => 'reports',
+            'reportes' => 'reports',
+            'reports' => 'reports',
             'ajustes' => 'settings',
+            'configuración' => 'settings',
+            'settings' => 'settings',
         ];
-        $titleKey = $titleAliases[mb_strtolower($cleanTitle)]
-            ?? str_replace(' ', '_', mb_strtolower($cleanTitle));
+        $titleKey = $titleAliases[$lowerTitle] ?? str_replace(' ', '_', $lowerTitle);
     @endphp
     <meta name="current-title-key" content="{{ $titleKey }}">
-    <title x-text="($store.i18n.t('nav.' + '{{ $titleKey }}') || '{{ $cleanTitle }}') + ' - {{ config('app.name', 'VETCORESSEN') }}'">{{ $cleanTitle }} - {{ config('app.name', 'VETCORESSEN') }}</title>
+    <title x-text="($store.i18n.t('title.' + '{{ $titleKey }}') || $store.i18n.t('sidebar.' + '{{ $titleKey }}') || $store.i18n.t('nav.' + '{{ $titleKey }}') || '{{ $cleanTitle }}') + ' - {{ config('app.name', 'VETCORESSEN') }}'">{{ $cleanTitle }} - {{ config('app.name', 'VETCORESSEN') }}</title>
     <meta name="description" content="{{ config('app.name') }} - Sistema de Gestión Veterinaria">
 
     <!-- Configuración de Favicon para Laravel -->
@@ -34,17 +75,17 @@
     <meta name="apple-mobile-web-app-title" content="{{ config('app.name') }}" />
     <link rel="manifest" href="{{ asset('site.webmanifest') }}" />
 
-    {{-- Google Fonts: Plus Jakarta Sans + DM Sans --}}
+    {{-- Google Fonts: Plus Jakarta Sans + DM Sans + Material Symbols --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
-
-    {{-- Material Symbols Outlined: ahora self-hosted via Vite (npm material-symbols) --}}
-
-    {{-- CSS Design System --}}
     <link rel="stylesheet" href="{{ asset('css/vetcoressen.css') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    {{-- Chart.js global library --}}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     {{-- Theme & i18n Scripts (antes de Alpine para registrar stores) --}}
     <script src="{{ asset('js/theme.js') }}"></script>

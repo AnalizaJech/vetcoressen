@@ -129,10 +129,10 @@
                 </flux:field>
             </div>
 
-            <div class="mt-5" x-data="{ ph: $store.i18n.t('form.reasonPlaceholder') }">
+            <div class="mt-5">
                 <flux:field>
-                    <flux:label class="mb-2 font-medium"><span x-text="$store.i18n.t('table.reason')"></span></flux:label>
-                    <flux:textarea wire:model="reason" x-bind:placeholder="ph" class="resize-none" rows="2" />
+                    <flux:label class="mb-2 font-medium"><span x-text="$store.i18n.t('table.reason') || 'Motivo de Consulta'">Motivo de Consulta</span></flux:label>
+                    <flux:textarea wire:model="reason" x-bind:placeholder="$store.i18n.t('form.reasonPlaceholder') || 'Motivo de consulta...'" class="resize-none" rows="2" />
                     <flux:error name="reason" />
                 </flux:field>
             </div>
@@ -510,22 +510,20 @@
 
                                 {{-- Via de administracion --}}
                                 <flux:field>
-                                    <flux:label class="mb-2 font-medium"><span x-text="$store.i18n.t('form.route')"></span></flux:label>
-                                    <div x-data="{ ph: $store.i18n.t('form.routePlaceholder') || 'Seleccionar vía' }">
-                                        <x-vc-dropdown
-                                            wire:model="prescripciones.{{ $index }}.via_administracion"
-                                            :options="[
-                                                ['value' => 'Oral', 'label' => 'Oral'],
-                                                ['value' => 'Intramuscular', 'label' => 'Intramuscular'],
-                                                ['value' => 'Intravenosa', 'label' => 'Intravenosa'],
-                                                ['value' => 'Subcutánea', 'label' => 'Subcutánea'],
-                                                ['value' => 'Tópica', 'label' => 'Tópica'],
-                                            ]"
-                                            :selected="$rx['via_administracion'] ?? 'Oral'"
-                                            x-bind:placeholder="ph"
-                                            icon="science"
-                                        />
-                                    </div>
+                                    <flux:label class="mb-2 font-medium"><span x-text="$store.i18n.t('form.route') || 'Vía de administración'">Vía de administración</span></flux:label>
+                                    <x-vc-dropdown
+                                        wire:model="prescripciones.{{ $index }}.via_administracion"
+                                        :options="[
+                                            ['value' => 'Oral', 'label' => 'Oral'],
+                                            ['value' => 'Intramuscular', 'label' => 'Intramuscular'],
+                                            ['value' => 'Intravenosa', 'label' => 'Intravenosa'],
+                                            ['value' => 'Subcutánea', 'label' => 'Subcutánea'],
+                                            ['value' => 'Tópica', 'label' => 'Tópica'],
+                                        ]"
+                                        :selected="$rx['via_administracion'] ?? 'Oral'"
+                                        placeholder="form.select"
+                                        icon="science"
+                                    />
                                 </flux:field>
                             </div>
                             

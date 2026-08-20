@@ -19,6 +19,9 @@ class HistoriaClinicaIndex extends Component
     use WithPagination;
 
     #[Url]
+    public string $search = '';
+
+    #[Url]
     public string $filtroCliente = '';
 
     #[Url]
@@ -30,6 +33,11 @@ class HistoriaClinicaIndex extends Component
     #[Url]
     public ?int $clienteSeleccionadoId = null;
     public ?int $historiaEliminarId = null;
+
+    public function updatedSearch(): void
+    {
+        $this->resetPage();
+    }
 
     public function updatedFiltroCliente(): void
     {
@@ -54,6 +62,17 @@ class HistoriaClinicaIndex extends Component
     public function volver(): void
     {
         $this->clienteSeleccionadoId = null;
+    }
+
+    public function deseleccionarCliente(): void
+    {
+        $this->volver();
+    }
+
+    public function abrirModalEliminar(int $id): void
+    {
+        $this->historiaEliminarId = $id;
+        Flux::modal('confirmar-eliminar')->show();
     }
 
     // Eliminar historia clínica (soft delete)
@@ -90,11 +109,20 @@ class HistoriaClinicaIndex extends Component
                     ]);
                 }
             ])
+            ->when($this->search, function ($q) {
+                $term = '%' . $this->search . '%';
+                $q->where(function ($sub) use ($term) {
+                    $sub->where('first_name', 'like', $term)
+                        ->orWhere('last_name', 'like', $term)
+                        ->orWhere('numero_documento', 'like', $term)
+                        ->orWhereHas('mascotas', fn ($m) => $m->where('name', 'like', $term));
+                });
+            })
             ->when($this->filtroCliente, function ($q) {
                 $q->where('id', $this->filtroCliente);
             })
             ->when($this->filtroMascota, function ($q) {
-                $q->whereHas('mascotas', fn ($m) => $m->where('id', $this->filtroMascota));
+                $q->whereHas('mascotas', fn ($m) => $m->where('name', $this->filtroMascota));
             })
             ->when($this->especie_id, function ($q) {
                 $q->whereHas('mascotas', fn ($m) => $m->where('species_id', $this->especie_id));
@@ -130,12 +158,23 @@ class HistoriaClinicaIndex extends Component
         }
 
         $mascotasOptions = [['value' => '', 'label' => 'filter.allPets']];
-        foreach (\App\Models\Pet::orderBy('name')->get() as $m) {
-            $mascotasOptions[] = ['value' => (string)$m->id, 'label' => $m->name];
+        $nombresMascotas = \App\Models\Pet::whereNotNull('name')
+            ->where('name', '!=', '')
+            ->select('name')
+            ->distinct()
+            ->orderBy('name')
+            ->pluck('name');
+
+        foreach ($nombresMascotas as $nombre) {
+            $mascotasOptions[] = ['value' => $nombre, 'label' => $nombre];
         }
 
         $especies = Species::orderBy('name')->get();
+        $especiesOptions = [['value' => '', 'label' => 'filter.allSpecies']];
+        foreach ($especies as $esp) {
+            $especiesOptions[] = ['value' => (string) $esp->id, 'label' => $esp->name];
+        }
 
-        return view('livewire.historias-clinicas.historia-clinica-index', compact('clientes', 'clienteSeleccionado', 'clientesOptions', 'mascotasOptions', 'especies'));
+        return view('livewire.historias-clinicas.historia-clinica-index', compact('clientes', 'clienteSeleccionado', 'clientesOptions', 'mascotasOptions', 'especiesOptions', 'especies'));
     }
 }

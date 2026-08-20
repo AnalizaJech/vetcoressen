@@ -3,11 +3,13 @@
 namespace App\Livewire\Ajustes;
 
 use App\Models\User;
+use App\Models\Branch;
 use App\Jobs\SendWelcomeEmailJob;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Spatie\Permission\Models\Role;
 
 #[Layout('components.layouts.app')]
 #[Title('Usuario')]
@@ -16,11 +18,13 @@ class UsuarioForm extends Component
     public ?int $usuarioId = null;
     public string $tipo_documento = 'DNI';
     public string $numero_documento = '';
-    public string $name = ''; // Will act as Nombres
+    public string $name = '';
     public string $last_name = '';
     public string $email = '';
     public string $password = '';
+    public string $password_confirmation = '';
     public string $rol = 'veterinario';
+    public ?int $branch_id = null;
     public string $phone = '';
     public string $address = '';
     public string $country = '';
@@ -43,15 +47,20 @@ class UsuarioForm extends Component
             $this->last_name = $user->last_name ?? '';
             $this->email = $user->email;
             $this->phone = $user->phone ?? '';
+            $this->branch_id = $user->branch_id;
             $this->address = $user->address ?? '';
             $this->country = $user->country ?? '';
             $this->state = $user->state ?? '';
             $this->city = $user->city ?? '';
             $this->notes = $user->notes ?? '';
             $this->cmvp = $user->cmvp ?? '';
-            // If user has roles, pick the first one
             if ($user->roles->count() > 0) {
                 $this->rol = $user->roles->first()->name;
+            }
+        } else {
+            $mainBranch = Branch::where('principal', true)->first() ?? Branch::first();
+            if ($mainBranch) {
+                $this->branch_id = $mainBranch->id;
             }
         }
     }
@@ -142,7 +151,7 @@ class UsuarioForm extends Component
 
     public function guardar()
     {
-            $this->validate([
+        $rules = [
             'tipo_documento' => 'required|in:DNI,RUC,CE,PASAPORTE',
             'numero_documento' => 'nullable|string|max:20',
             'name' => 'required|string|max:255',
@@ -150,6 +159,7 @@ class UsuarioForm extends Component
             'email' => 'required|email|max:255|unique:users,email,' . $this->usuarioId,
             'password' => $this->usuarioId ? 'nullable|string|min:8' : 'required|string|min:8',
             'rol' => 'required|exists:roles,name',
+            'branch_id' => 'nullable|exists:branches,id',
             'phone' => 'required|string|max:20',
             'address' => 'nullable|string|max:255',
             'country' => 'nullable|string|max:255',
@@ -157,7 +167,13 @@ class UsuarioForm extends Component
             'city' => 'nullable|string|max:255',
             'notes' => 'nullable|string|max:500',
             'cmvp' => 'nullable|string|max:20',
-        ]);
+        ];
+
+        if (!empty($this->password)) {
+            $rules['password'] = 'required|string|min:8|same:password_confirmation';
+        }
+
+        $this->validate($rules);
 
         $datos = [
             'tipo_documento' => $this->tipo_documento,
@@ -166,24 +182,23 @@ class UsuarioForm extends Component
             'last_name' => $this->last_name,
             'email' => $this->email,
             'phone' => $this->phone,
+            'branch_id' => $this->branch_id,
             'address' => $this->address,
             'country' => $this->country,
             'state' => $this->state,
             'city' => $this->city,
             'notes' => $this->notes,
             'cmvp' => $this->rol === 'veterinario' ? $this->cmvp : null,
-            'dni' => $this->tipo_documento === 'DNI' ? $this->numero_documento : null, // Retrocompatibilidad
+            'dni' => $this->tipo_documento === 'DNI' ? $this->numero_documento : null,
         ];
 
-        if ($this->password) {
+        if (!empty($this->password)) {
             $datos['password'] = Hash::make($this->password);
         }
 
         if ($this->usuarioId) {
             $user = User::findOrFail($this->usuarioId);
             $user->update($datos);
-            
-            // Sync role
             $user->syncRoles([$this->rol]);
 
             session()->flash('mensaje', 'Usuario actualizado correctamente.');
@@ -192,7 +207,6 @@ class UsuarioForm extends Component
             $user->assignRole($this->rol);
             session()->flash('mensaje', 'Usuario creado correctamente.');
             
-            // Enviar correo de bienvenida asíncrono si tiene email
             if ($user->email) {
                 SendWelcomeEmailJob::dispatch($user->email, $user->name . ' ' . $user->last_name, 'Usuario');
             }
@@ -203,10 +217,12 @@ class UsuarioForm extends Component
 
     public function render()
     {
-        $rolesDisponibles = \Spatie\Permission\Models\Role::orderBy('name')->get();
+        $roles = Role::orderBy('name')->get();
+        $sucursales = Branch::where('is_active', true)->get();
 
         return view('livewire.ajustes.usuario-form', [
-            'rolesDisponibles' => $rolesDisponibles,
+            'roles' => $roles,
+            'sucursales' => $sucursales,
         ]);
     }
 }

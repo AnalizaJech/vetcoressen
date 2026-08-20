@@ -58,7 +58,7 @@ class MascotaIndex extends Component
     {
         $mascotas = Pet::with(['cliente', 'clinica', 'especie', 'raza'])
             ->when($this->filtroMascota, function ($q) {
-                $q->where('id', $this->filtroMascota);
+                $q->where('name', $this->filtroMascota);
             })
             ->when($this->filtroCliente, function ($q) {
                 $q->where('customer_id', $this->filtroCliente);
@@ -67,8 +67,15 @@ class MascotaIndex extends Component
             ->paginate(15);
 
         $mascotasOptions = [['value' => '', 'label' => 'filter.allPets']];
-        foreach (Pet::orderBy('name')->get() as $m) {
-            $mascotasOptions[] = ['value' => (string)$m->id, 'label' => $m->name];
+        $nombresMascotas = Pet::whereNotNull('name')
+            ->where('name', '!=', '')
+            ->select('name')
+            ->distinct()
+            ->orderBy('name')
+            ->pluck('name');
+
+        foreach ($nombresMascotas as $nombre) {
+            $mascotasOptions[] = ['value' => $nombre, 'label' => $nombre];
         }
 
         $clientesOptions = [['value' => '', 'label' => 'filter.allClients']];

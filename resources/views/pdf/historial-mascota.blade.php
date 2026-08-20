@@ -3,12 +3,15 @@
 <head>
 @php
     $clinic = \App\Models\Clinic::first();
-    $logoPath = $clinic && $clinic->logo ? public_path('storage/' . $clinic->logo) : public_path('favicon.svg');
     $logoSrc = '';
-    if (file_exists($logoPath)) {
-        $logoData = base64_encode(file_get_contents($logoPath));
-        $logoMime = mime_content_type($logoPath);
-        $logoSrc = 'data:' . $logoMime . ';base64,' . $logoData;
+    if ($clinic && $clinic->logo && file_exists(public_path('storage/' . $clinic->logo))) {
+        $path = public_path('storage/' . $clinic->logo);
+        $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        if (in_array($ext, ['png', 'jpg', 'jpeg', 'gif'])) {
+            $logoData = base64_encode(file_get_contents($path));
+            $logoMime = mime_content_type($path);
+            $logoSrc = 'data:' . $logoMime . ';base64,' . $logoData;
+        }
     }
 @endphp
 
@@ -28,11 +31,11 @@
         .header-info strong { color: #ffffff; }
 
         /* Titles */
-        .section-title { font-size: 11px; font-weight: bold; color: #065f46; border-bottom: 2px solid #34d399; padding-bottom: 3px; margin-bottom: 8px; margin-top: 18px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .record-title { font-size: 13px; font-weight: bold; color: #111827; border-bottom: 1px solid #10b981; padding-bottom: 4px; margin-top: 30px; margin-bottom: 15px; }
+        .section-title { font-size: 11px; font-weight: bold; color: #065f46; border-bottom: 2px solid #34d399; border-left: 4px solid #10b981; padding: 5px 0 5px 9px; margin-bottom: 8px; margin-top: 18px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .record-title { font-size: 13px; font-weight: bold; color: #111827; border: 1px solid #a7f3d0; border-left: 4px solid #10b981; border-radius: 9px; background: #f0fdf4; padding: 8px 10px; margin-top: 24px; margin-bottom: 12px; }
         
         /* Grid Tables */
-        table.grid { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 10px; }
+        table.grid { width: 100%; border-collapse: separate; border-spacing: 0; margin-bottom: 10px; font-size: 10px; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; }
         table.grid td { padding: 4px 6px; vertical-align: middle; border-bottom: 1px solid #f3f4f6; }
         table.grid td.label { width: 15%; color: #6b7280; font-weight: bold; text-transform: uppercase; font-size: 9px; }
         table.grid td.value { width: 35%; color: #111827; }
@@ -44,7 +47,7 @@
         table.layout > tbody > tr > td:last-child { padding-left: 5px; }
 
         /* Content boxes */
-        .content-box { border-left: 3px solid #34d399; border-radius: 0px; padding: 8px 10px; margin-bottom: 10px; background-color: #f9fafb; }
+        .content-box { border-left: 3px solid #34d399; border-radius: 9px; padding: 8px 10px; margin-bottom: 10px; background-color: #f9fafb; border-top: 1px solid #ecfdf5; border-right: 1px solid #ecfdf5; border-bottom: 1px solid #ecfdf5; }
         .content-box h4 { margin: 0 0 5px 0; color: #374151; font-size: 10px; text-transform: uppercase; border-bottom: 1px solid #e5e7eb; padding-bottom: 2px; }
         .content-box p { margin: 0; white-space: pre-wrap; color: #1f2937; }
 

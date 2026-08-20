@@ -15,9 +15,11 @@ class Branch extends Model
     protected $table = 'branches';
 
     protected $fillable = [
-        'clinic_id', 'name', 'ruc', 'address', 'phone',
-        'email', 'codigo_ubigeo', 'principal', 'is_active',
+        'clinic_id', 'name', 'ruc', 'address', 'country', 'state', 'city', 'phone',
+        'email', 'codigo_ubigeo', 'principal', 'is_main', 'is_active',
     ];
+
+    protected $appends = ['is_main'];
 
     protected function casts(): array
     {
@@ -25,6 +27,16 @@ class Branch extends Model
             'principal' => 'boolean',
             'is_active' => 'boolean',
         ];
+    }
+
+    public function getIsMainAttribute(): bool
+    {
+        return (bool) ($this->attributes['principal'] ?? false);
+    }
+
+    public function setIsMainAttribute($value): void
+    {
+        $this->attributes['principal'] = (bool) $value;
     }
 
     public function clinica(): BelongsTo

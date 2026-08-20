@@ -13,8 +13,8 @@
     </div>
 
     <form x-on:submit.prevent="{{ $citaId ? '$dispatch(\'modal-show\', { name: \'confirmar-actualizacion\' })' : '$wire.guardar()' }}" class="space-y-6">
-        {{-- â•â•â• Paciente â•â•â• --}}
-        <div class="vc-panel">
+        {{-- ——— Paciente ——— --}}
+        <div class="vc-panel overflow-visible relative">
             <div class="vc-section-header">
                 <div class="vc-section-icon">
                     <span class="material-symbols-outlined">pets</span>
@@ -66,7 +66,7 @@
         </div>
 
         {{-- --- Detalle --- --}}
-        <div class="vc-panel">
+        <div class="vc-panel overflow-visible relative">
             <div class="vc-section-header">
                 <div class="vc-section-icon">
                     <span class="material-symbols-outlined">calendar_month</span>

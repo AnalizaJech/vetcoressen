@@ -45,7 +45,11 @@ class PdfController extends Controller
         $pdf = Pdf::loadView('pdf.cita', compact('cita', 't'))
             ->setPaper('a4', 'portrait');
 
-        return $pdf->download('cita-' . $cita->id . '.pdf');
+        $filename = 'cita-' . str_pad($cita->id, 6, '0', STR_PAD_LEFT) . '.pdf';
+        if (request()->query('download')) {
+            return $pdf->download($filename);
+        }
+        return $pdf->stream($filename);
     }
 
     public function historia($id)
@@ -57,7 +61,11 @@ class PdfController extends Controller
         $pdf = Pdf::loadView('pdf.historia-clinica', compact('historia', 't'))
             ->setPaper('a4', 'portrait');
 
-        return $pdf->download('historia-clinica-' . str_pad($historia->id, 6, '0', STR_PAD_LEFT) . '.pdf');
+        $filename = 'historia-clinica-' . str_pad($historia->id, 6, '0', STR_PAD_LEFT) . '.pdf';
+        if (request()->query('download')) {
+            return $pdf->download($filename);
+        }
+        return $pdf->stream($filename);
     }
 
     public function historialMascota($id)
@@ -71,6 +79,10 @@ class PdfController extends Controller
         $pdf = Pdf::loadView('pdf.historial-mascota', compact('mascota', 't'))
             ->setPaper('a4', 'portrait');
 
-        return $pdf->download('historial-mascota-' . str_pad($mascota->id, 6, '0', STR_PAD_LEFT) . '.pdf');
+        $filename = 'historial-mascota-' . str_pad($mascota->id, 6, '0', STR_PAD_LEFT) . '.pdf';
+        if (request()->query('download')) {
+            return $pdf->download($filename);
+        }
+        return $pdf->stream($filename);
     }
 }
