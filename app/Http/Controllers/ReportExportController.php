@@ -152,9 +152,11 @@ class ReportExportController extends Controller
 
         $filename = 'reporte_ejecutivo_' . $data['periodo'] . '_' . date('Ymd_His') . '.csv';
 
-        return response($csv, 200, [
+        return response("\xEF\xBB\xBF" . $csv, 200, [
             'Content-Type' => 'text/csv; charset=UTF-8',
             'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+            'Pragma' => 'no-cache',
+            'Expires' => '0',
         ]);
     }
 }

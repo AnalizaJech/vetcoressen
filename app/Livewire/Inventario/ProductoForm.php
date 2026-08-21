@@ -143,10 +143,10 @@ class ProductoForm extends Component
             ->select('name')->distinct()->orderBy('name')->pluck('name')->toArray();
             
         $defaultNombres = match($this->tipo) {
-            'Medicamento' => ['Amoxicilina', 'Bravecto', 'NexGard', 'Simparica', 'Paracetamol', 'Meloxicam', 'Tramadol', 'Doxiciclina', 'Cefalexina', 'Ivermectina', 'Prednisona', 'Clindamicina'],
-            'Alimento' => ['Ricocan Adultos', 'Dog Chow', 'Cat Chow', 'Pro Plan', 'Royal Canin', 'Hills Prescription Diet', 'Eukanuba', 'Brit Care', 'Taste of the Wild', 'Felix', 'Whiskas'],
-            'Accesorio' => ['Collar', 'Correa', 'Juguete Kong', 'Cama', 'Rascador', 'Plato', 'Bebedero', 'Arenero', 'Pechera', 'Cepillo', 'Cortauñas', 'Transportadora'],
-            'Servicio' => ['Consulta General', 'Consulta Especializada', 'Corte de Pelo', 'Baño', 'Vacunación', 'Desparasitación', 'Hemograma', 'Radiografía', 'Ecografía', 'Hospitalización', 'Cirugía Menor', 'Limpieza Dental', 'Corte de Uñas', 'Profilaxis', 'Esterilización'],
+            'Medicamento' => ['Amoxicillin 500mg', 'Bravecto Chewable Dog', 'NexGard Spectra', 'Simparica Trio', 'Meloxicam 1.5mg Drops', 'Tramadol 50mg Tablets', 'Doxycycline 100mg', 'Cephalexin 250mg', 'Ivermectin Injection', 'Prednisone 5mg', 'Clindamycin Oral Drops'],
+            'Alimento' => ['Royal Canin Medium Adult', 'Hill\'s Science Diet Canine', 'Pro Plan Adult Dog', 'Taste of the Wild High Prairie', 'Purina ONE Feline', 'Eukanuba Adult', 'Brit Care Sensitive Dog'],
+            'Accesorio' => ['Adjustable Nylon Collar', 'Heavy Duty Dog Leash', 'Orthopedic Dog Bed', 'Cat Scratching Post Tree', 'Stainless Steel Food Bowl', 'Grooming Deshedding Brush', 'Ergonomic Nail Trimmer', 'Airline Approved Pet Carrier'],
+            'Servicio' => ['General Consultation', 'Specialized Consultation', 'Grooming & Bath Spa', 'Vaccination Service', 'Internal Deworming', 'Complete Blood Count (CBC)', 'Digital Thoracic X-Ray', 'Abdominal Ultrasound', 'Dental Cleaning & Prophylaxis', 'Spay / Neuter Surgery'],
             default => []
         };
         
@@ -156,10 +156,10 @@ class ProductoForm extends Component
         $allCategories = Category::where('type', $this->tipo)->orderBy('name')->pluck('name')->toArray();
         
         $defaultCategories = match($this->tipo) {
-            'Medicamento' => ['Antibióticos', 'Antiinflamatorios', 'Antiparasitarios', 'Analgésicos', 'Vitaminas', 'Dermatológicos'],
-            'Alimento' => ['Seco (Croquetas)', 'Húmedo (Latas/Sobres)', 'Prescripción Médica', 'Snacks y Premios', 'Leche Maternizada'],
-            'Accesorio' => ['Collares y Correas', 'Juguetes', 'Camas y Mantas', 'Higiene y Belleza', 'Platos y Bebederos', 'Ropa'],
-            'Servicio' => ['Consultas', 'Vacunación', 'Peluquería', 'Laboratorio', 'Cirugía'],
+            'Medicamento' => ['Antibiotics', 'Anti-inflammatories', 'Antiparasitics', 'Analgesics & Pain Relief', 'Vitamins & Supplements', 'Dermatology & Topicals'],
+            'Alimento' => ['Dry Food (Kibble)', 'Wet Food (Cans/Pouches)', 'Veterinary Prescription Diet', 'Snacks & Treats', 'Kitten & Puppy Milk Replacers'],
+            'Accesorio' => ['Collars & Leashes', 'Toys & Interactive', 'Beds & Rest', 'Hygiene & Grooming', 'Feeders & Waterers', 'Pet Apparel'],
+            'Servicio' => ['Consultations & Wellness', 'Vaccinations', 'Grooming & Spa', 'Laboratory Diagnostics', 'Surgeries & Procedures'],
             default => []
         };
         

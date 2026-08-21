@@ -46,7 +46,7 @@
         </div>
 
         {{-- ═══ Barra de Filtros Dinámicos Interactivos ═══ --}}
-        <div class="vc-panel">
+        <div class="vc-panel relative z-30">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
                 {{-- Selector de Periodo --}}
                 <div>
@@ -62,6 +62,7 @@
                         ]"
                         :selected="$periodo"
                         placeholder="filter.period"
+                        icon="calendar_month"
                     />
                 </div>
 
@@ -98,6 +99,7 @@
                         ]"
                         :selected="$categoria"
                         placeholder="report.allCategories"
+                        icon="category"
                     />
                 </div>
             </div>
@@ -114,7 +116,7 @@
         @endphp
 
         {{-- ═══ KPIs Principales ═══ --}}
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 relative z-10">
             {{-- Ingresos Totales --}}
             <div class="kpi-card kpi-card--emerald shadow-sm">
                 <div class="flex justify-between items-start mb-3">
@@ -298,7 +300,7 @@
                                     {{ $v->created_at->format('d/m/Y H:i') }}
                                 </td>
                                 <td class="py-3 text-zinc-600 dark:text-zinc-400">
-                                    {{ $v->metodo_pago ?? 'Efectivo' }}
+                                    <span x-text="$store.i18n.t('payment.' + '{{ strtolower(str_replace(' ', '_', $v->payment_method ?? $v->metodo_pago ?? 'cash')) }}') || '{{ $v->payment_method ?? $v->metodo_pago ?? 'Cash' }}'"></span>
                                 </td>
                                 <td class="py-3 text-right font-extrabold text-emerald-600 dark:text-emerald-400 font-display">
                                     S/ {{ number_format($v->total, 2) }}
@@ -354,25 +356,42 @@
             },
 
             updateTranslations() {
-                if (this.c1) {
-                    this.c1.data.datasets[0].label = Alpine.store('i18n')?.t('report.salesEvol') || 'Ingresos (S/)';
-                    this.c1.update();
+                const isEn = (Alpine.store('i18n')?.locale || localStorage.getItem('vc_locale')) === 'en';
+                if (this.c1 && this.lastData?.ventasLabels) {
+                    this.c1.data.labels = this.formatVentasLabels(this.lastData.ventasLabels);
+                    this.c1.data.datasets[0].label = Alpine.store('i18n')?.t('report.salesEvol') || (isEn ? 'Revenue (S/)' : 'Ingresos (S/)');
+                    this.c1.update('none');
                 }
                 if (this.c2) {
                     this.c2.data.labels = [
-                        Alpine.store('i18n')?.t('status.completed') || 'Completadas',
-                        Alpine.store('i18n')?.t('status.cancelled') || 'Canceladas',
-                        Alpine.store('i18n')?.t('status.pending') || 'Pendientes'
+                        Alpine.store('i18n')?.t('status.completed') || (isEn ? 'Completed' : 'Completadas'),
+                        Alpine.store('i18n')?.t('status.cancelled') || (isEn ? 'Cancelled' : 'Canceladas'),
+                        Alpine.store('i18n')?.t('status.pending') || (isEn ? 'Pending' : 'Pendientes')
                     ];
-                    this.c2.update();
+                    this.c2.update('none');
                 }
                 if (this.c3) {
-                    this.c3.data.datasets[0].label = Alpine.store('i18n')?.t('report.totalGenerated') || 'Total (S/)';
-                    this.c3.update();
+                    this.c3.data.datasets[0].label = Alpine.store('i18n')?.t('report.totalGenerated') || (isEn ? 'Total (S/)' : 'Total (S/)');
+                    this.c3.update('none');
                 }
                 if (this.c4) {
-                    this.c4.update();
+                    this.c4.data.labels = isEn ? ['Cash', 'Card', 'Yape / Plin', 'Bank Transfer'] : ['Efectivo', 'Tarjeta', 'Yape / Plin', 'Transferencia'];
+                    this.c4.update('none');
                 }
+            },
+
+            formatVentasLabels(rawLabels) {
+                const isEn = (Alpine.store('i18n')?.locale || localStorage.getItem('vc_locale')) === 'en';
+                return (rawLabels || []).map(l => {
+                    if (typeof l === 'string') {
+                        if (isEn) {
+                            return l.replace('Sem ', 'Week ');
+                        } else {
+                            return l.replace('Week ', 'Sem ');
+                        }
+                    }
+                    return l;
+                });
             },
 
             initAllCharts(data) {
@@ -384,28 +403,39 @@
             },
 
             initVentas(data) {
-                const ctx = document.getElementById('repVentasChart');
-                if (!ctx) return;
-                if (this.c1) this.c1.destroy();
+                const canvas = document.getElementById('repVentasChart');
+                if (!canvas) return;
+                const existing = Chart.getChart(canvas);
+                if (existing) existing.destroy();
+                if (this.c1) {
+                    try { this.c1.destroy(); } catch(e) {}
+                    this.c1 = null;
+                }
+                const ctx = canvas.getContext('2d');
+
+                const isEn = (Alpine.store('i18n')?.locale || localStorage.getItem('vc_locale')) === 'en';
+                const formattedLabels = this.formatVentasLabels(data.ventasLabels);
 
                 this.c1 = new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: data.ventasLabels || [],
+                        labels: formattedLabels,
                         datasets: [{
-                            label: Alpine.store('i18n')?.t('report.salesEvol') || 'Ingresos (S/)',
+                            label: Alpine.store('i18n')?.t('report.salesEvol') || (isEn ? 'Revenue (S/)' : 'Ingresos (S/)'),
                             data: data.ventasData || [],
                             borderColor: '#10b981',
                             backgroundColor: 'rgba(16, 185, 129, 0.08)',
                             fill: true,
                             tension: 0.35,
                             borderWidth: 2.5,
-                            pointBackgroundColor: '#10b981',
+                            pointRadius: 4,
                             pointHoverRadius: 7,
+                            pointBackgroundColor: '#10b981',
                             pointHoverBackgroundColor: '#10b981',
                             pointHoverBorderColor: '#ffffff',
                             pointHoverBorderWidth: 2,
-                            hitRadius: 25,
+                            hitRadius: 30,
+                            pointHitRadius: 30,
                         }]
                     },
                     options: {
@@ -413,7 +443,7 @@
                         maintainAspectRatio: false,
                         interaction: {
                             mode: 'index',
-                            intersect: false,
+                            intersect: false
                         },
                         plugins: {
                             legend: { display: false },
@@ -431,7 +461,7 @@
                                 titleFont: { family: 'Plus Jakarta Sans', weight: '700', size: 12 },
                                 bodyFont: { family: 'Plus Jakarta Sans', size: 11 },
                                 callbacks: {
-                                    label: (c) => ' ' + (Alpine.store('i18n')?.t('report.income') || 'Ingresos') + ': S/ ' + Number(c.raw).toFixed(2)
+                                    label: (c) => ' ' + (Alpine.store('i18n')?.t('report.income') || (isEn ? 'Revenue' : 'Ingresos')) + ': S/ ' + Number(c.raw).toFixed(2)
                                 }
                             }
                         },
@@ -444,17 +474,25 @@
             },
 
             initCitas(data) {
-                const ctx = document.getElementById('repCitasChart');
-                if (!ctx) return;
-                if (this.c2) this.c2.destroy();
+                const canvas = document.getElementById('repCitasChart');
+                if (!canvas) return;
+                const existing = Chart.getChart(canvas);
+                if (existing) existing.destroy();
+                if (this.c2) {
+                    try { this.c2.destroy(); } catch(e) {}
+                    this.c2 = null;
+                }
+                const ctx = canvas.getContext('2d');
+
+                const isEn = (Alpine.store('i18n')?.locale || localStorage.getItem('vc_locale')) === 'en';
 
                 this.c2 = new Chart(ctx, {
                     type: 'doughnut',
                     data: {
                         labels: [
-                            Alpine.store('i18n')?.t('status.completed') || 'Completadas',
-                            Alpine.store('i18n')?.t('status.cancelled') || 'Canceladas',
-                            Alpine.store('i18n')?.t('status.pending') || 'Pendientes'
+                            Alpine.store('i18n')?.t('status.completed') || (isEn ? 'Completed' : 'Completadas'),
+                            Alpine.store('i18n')?.t('status.cancelled') || (isEn ? 'Cancelled' : 'Canceladas'),
+                            Alpine.store('i18n')?.t('status.pending') || (isEn ? 'Pending' : 'Pendientes')
                         ],
                         datasets: [{
                             data: data.citasData || [0, 0, 0],
@@ -466,10 +504,16 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'nearest',
+                            intersect: true
+                        },
                         plugins: {
                             legend: { position: 'bottom', labels: { font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' }, color: '#71717a' } },
                             tooltip: {
                                 enabled: true,
+                                mode: 'nearest',
+                                intersect: true,
                                 backgroundColor: 'rgba(24, 24, 27, 0.95)',
                                 titleColor: '#ffffff',
                                 bodyColor: '#e4e4e7',
@@ -480,7 +524,7 @@
                                 titleFont: { family: 'Plus Jakarta Sans', weight: '700', size: 12 },
                                 bodyFont: { family: 'Plus Jakarta Sans', size: 11 },
                                 callbacks: {
-                                    label: (c) => ' ' + c.label + ': ' + c.raw + ' ' + (Alpine.store('i18n')?.t('sidebar.appointments') || 'citas')
+                                    label: (c) => ' ' + c.label + ': ' + c.raw + ' ' + (Alpine.store('i18n')?.t('sidebar.appointments') || (isEn ? 'appointments' : 'citas'))
                                 }
                             }
                         },
@@ -490,19 +534,28 @@
             },
 
             initTopProductos(data) {
-                const ctx = document.getElementById('repTopProdChart');
-                if (!ctx) return;
-                if (this.c3) this.c3.destroy();
+                const canvas = document.getElementById('repTopProdChart');
+                if (!canvas) return;
+                const existing = Chart.getChart(canvas);
+                if (existing) existing.destroy();
+                if (this.c3) {
+                    try { this.c3.destroy(); } catch(e) {}
+                    this.c3 = null;
+                }
+                const ctx = canvas.getContext('2d');
+
+                const isEn = (Alpine.store('i18n')?.locale || localStorage.getItem('vc_locale')) === 'en';
 
                 this.c3 = new Chart(ctx, {
                     type: 'bar',
                     data: {
                         labels: (data.topProductosLabels || []).map(l => l.length > 20 ? l.substring(0, 20) + '...' : l),
                         datasets: [{
-                            label: Alpine.store('i18n')?.t('report.totalGenerated') || 'Total (S/)',
+                            label: Alpine.store('i18n')?.t('report.totalGenerated') || (isEn ? 'Total (S/)' : 'Total (S/)'),
                             data: data.topProductosData || [],
                             backgroundColor: '#3b82f6',
                             borderRadius: 6,
+                            maxBarThickness: 45,
                         }]
                     },
                     options: {
@@ -510,7 +563,7 @@
                         maintainAspectRatio: false,
                         interaction: {
                             mode: 'index',
-                            intersect: false,
+                            intersect: false
                         },
                         plugins: {
                             legend: { display: false },
@@ -528,7 +581,7 @@
                                 titleFont: { family: 'Plus Jakarta Sans', weight: '700', size: 12 },
                                 bodyFont: { family: 'Plus Jakarta Sans', size: 11 },
                                 callbacks: {
-                                    label: (c) => ' ' + (Alpine.store('i18n')?.t('report.totalGenerated') || 'Total') + ': S/ ' + Number(c.raw).toFixed(2)
+                                    label: (c) => ' ' + (Alpine.store('i18n')?.t('report.totalGenerated') || (isEn ? 'Total' : 'Total')) + ': S/ ' + Number(c.raw).toFixed(2)
                                 }
                             }
                         },
@@ -541,14 +594,23 @@
             },
 
             initPagos(data) {
-                const ctx = document.getElementById('repPagosChart');
-                if (!ctx) return;
-                if (this.c4) this.c4.destroy();
+                const canvas = document.getElementById('repPagosChart');
+                if (!canvas) return;
+                const existing = Chart.getChart(canvas);
+                if (existing) existing.destroy();
+                if (this.c4) {
+                    try { this.c4.destroy(); } catch(e) {}
+                    this.c4 = null;
+                }
+                const ctx = canvas.getContext('2d');
+
+                const isEn = (Alpine.store('i18n')?.locale || localStorage.getItem('vc_locale')) === 'en';
+                const defaultPagosLabels = isEn ? ['Cash', 'Card', 'Yape / Plin', 'Bank Transfer'] : ['Efectivo', 'Tarjeta', 'Yape / Plin', 'Transferencia'];
 
                 this.c4 = new Chart(ctx, {
                     type: 'doughnut',
                     data: {
-                        labels: data.pagosLabels || ['Efectivo', 'Tarjeta', 'Yape / Plin', 'Transferencia'],
+                        labels: defaultPagosLabels,
                         datasets: [{
                             data: data.pagosData || [0, 0, 0, 0],
                             backgroundColor: ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b'],
@@ -559,10 +621,16 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'nearest',
+                            intersect: true
+                        },
                         plugins: {
                             legend: { position: 'bottom', labels: { font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' }, color: '#71717a' } },
                             tooltip: {
                                 enabled: true,
+                                mode: 'nearest',
+                                intersect: true,
                                 backgroundColor: 'rgba(24, 24, 27, 0.95)',
                                 titleColor: '#ffffff',
                                 bodyColor: '#e4e4e7',

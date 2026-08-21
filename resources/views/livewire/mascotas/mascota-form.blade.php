@@ -106,8 +106,8 @@
                     <x-vc-dropdown
                         wire:model="gender"
                         :options="[
-                            ['value' => 'M', 'label' => 'Macho'],
-                            ['value' => 'H', 'label' => 'Hembra'],
+                            ['value' => 'M', 'label' => 'form.genderMale'],
+                            ['value' => 'H', 'label' => 'form.genderFemale'],
                         ]"
                         :selected="$gender"
                         placeholder="form.select"
@@ -120,13 +120,14 @@
                     <x-vc-dropdown
                         wire:model="color"
                         :options="[
-                            ['value' => 'Blanco', 'label' => 'Blanco'],
-                            ['value' => 'Negro', 'label' => 'Negro'],
-                            ['value' => 'Marrón', 'label' => 'Marrón'],
-                            ['value' => 'Dorado', 'label' => 'Dorado'],
-                            ['value' => 'Gris', 'label' => 'Gris'],
-                            ['value' => 'Manchado', 'label' => 'Manchado'],
-                            ['value' => 'Otro', 'label' => 'Otro'],
+                            ['value' => 'White', 'label' => 'color.white'],
+                            ['value' => 'Black', 'label' => 'color.black'],
+                            ['value' => 'Brown', 'label' => 'color.brown'],
+                            ['value' => 'Golden', 'label' => 'color.golden'],
+                            ['value' => 'Gray', 'label' => 'color.gray'],
+                            ['value' => 'Brindle', 'label' => 'color.brindle'],
+                            ['value' => 'Spotted', 'label' => 'color.spotted'],
+                            ['value' => 'Other', 'label' => 'color.other'],
                         ]"
                         :selected="$color"
                         placeholder="form.select"
@@ -136,7 +137,7 @@
 
                 <flux:field>
                     <flux:label><span x-text="$store.i18n.t('form.birthDate')"></span></flux:label>
-                    <x-vc-date-picker wire:model="birth_date" x-bind:placeholder="$store.i18n.t('form.birthDate')" />
+                    <x-vc-date-picker wire:model="birth_date" :isBirthdate="true" x-bind:placeholder="$store.i18n.t('form.birthDate')" />
                 </flux:field>
 
                 <flux:field>

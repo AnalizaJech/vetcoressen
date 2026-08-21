@@ -350,41 +350,41 @@ class Dashboard extends Component
 
         $enfermedades = [];
         
-        // Mapeo predictivo realista de medicamentos e insumos según enfermedad
+        // Predictive mapping of drugs and supplies based on diagnosis in English
         $medicinaSugerida = [
-            'Dermatitis alérgica por pulgas' => [
-                'recs' => 'Fipronil Pipeta, Shampoo Medicado con Clorhexidina',
-                'equipo' => 'Microscopio para citología cutánea',
-                'pred_factor' => 1.25, // Incremento por calor/verano
+            'Flea Allergy Dermatitis' => [
+                'recs' => 'Fipronil Spot-On, Chlorhexidine Medicated Shampoo',
+                'equipo' => 'Skin cytology microscope, Wood\'s lamp',
+                'pred_factor' => 1.25,
             ],
-            'Gastroenteritis aguda' => [
-                'recs' => 'Amoxicilina 500mg, Meloxicam Gotas, Ringer Lactato',
-                'equipo' => 'Test rápido de Parvovirus, Ecógrafo',
+            'Acute Gastroenteritis' => [
+                'recs' => 'Amoxicillin 500mg, Meloxicam Drops, Lactated Ringer\'s',
+                'equipo' => 'Parvovirus Rapid Antigen Test, Abdominal Ultrasound',
                 'pred_factor' => 1.05,
             ],
-            'Otitis externa bilateral' => [
-                'recs' => 'Gotas Otomax, Limpiador OtiClean',
-                'equipo' => 'Otoscopio Digital',
+            'Bilateral External Otitis' => [
+                'recs' => 'Otomax Otic Drops, OtiClean Ear Cleanser',
+                'equipo' => 'Digital Clinical Otoscope',
                 'pred_factor' => 1.10,
             ],
-            'Tos de las perreras (traqueobronquitis)' => [
-                'recs' => 'Cefalexina 250mg, Jarabes expectorantes, Vacuna KC',
-                'equipo' => 'Estetoscopio de alta resolución, Nebulizador',
-                'pred_factor' => 1.30, // Alto incremento en invierno
+            'Kennel Cough (Tracheobronchitis)' => [
+                'recs' => 'Cephalexin 250mg, Expectorant Syrups, KC Vaccine',
+                'equipo' => 'High-resolution Stethoscope, Nebulization Chamber',
+                'pred_factor' => 1.30,
             ],
-            'Rinotraqueitis felina' => [
-                'recs' => 'Vacuna Triple Felina, Doxiciclina 100mg',
-                'equipo' => 'Cámara de nebulización felina',
+            'Feline Viral Rhinotracheitis' => [
+                'recs' => 'Feline Triple FVRCP Vaccine, Doxycycline 100mg',
+                'equipo' => 'Feline Nebulization Mask & Chamber',
                 'pred_factor' => 1.20,
             ],
-            'Ehrlichiosis canina' => [
-                'recs' => 'Doxiciclina 100mg, Hemolitan Gold',
-                'equipo' => 'Test rápido 4Dx',
+            'Canine Ehrlichiosis' => [
+                'recs' => 'Doxycycline 100mg, Hemolitan Gold Vitamin Booster',
+                'equipo' => '4Dx Rapid Diagnostic Test Kit, Hematology Analyzer',
                 'pred_factor' => 1.15,
             ],
-            'Paciente sano - control preventivo' => [
-                'recs' => 'Vacuna Séxtuple, Praziquantel + Pirantel',
-                'equipo' => 'Balanza digital, Lector de Microchip',
+            'Healthy patient - wellness' => [
+                'recs' => 'DHPP Booster Vaccine, Praziquantel + Pyrantel Dewormer',
+                'equipo' => 'Digital Scale, RFID Microchip Scanner',
                 'pred_factor' => 1.00,
             ]
         ];
@@ -393,7 +393,7 @@ class Dashboard extends Component
             $nombre = $enfermedad->diagnostico_presuntivo;
             $total = $enfermedad->total;
 
-            // Simular tendencia en base a los últimos 30 días
+            // Simulate trend based on last 30 days
             $casosUltimoMes = DB::table('medical_records')
                 ->where('diagnostico_presuntivo', $nombre)
                 ->where('date', '>=', Carbon::now()->subDays(30))
@@ -402,10 +402,10 @@ class Dashboard extends Component
             $promedioMensual = round($total / 12, 1);
             $tendencia = $casosUltimoMes > $promedioMensual ? 'ALZA' : ($casosUltimoMes < $promedioMensual ? 'BAJA' : 'ESTABLE');
             
-            // Predicción inteligente
+            // Smart prediction
             $sug = $medicinaSugerida[$nombre] ?? [
-                'recs' => 'Amoxicilina 500mg, analgésicos genéricos',
-                'equipo' => 'Kits de diagnóstico rápido',
+                'recs' => 'Amoxicillin 500mg, Broad-spectrum supportive care',
+                'equipo' => 'General Clinical Diagnostic Kits',
                 'pred_factor' => 1.05
             ];
 
@@ -438,24 +438,29 @@ class Dashboard extends Component
 
         $sintomas = [];
 
-        // Mapeo de síntomas a equipamiento y pruebas sugeridas
+        // Mapping symptoms to suggested equipment and clinical diagnostic tests in English
         $sintomaRelacion = [
-            'Prurito excesivo y enrojecimiento en la piel' => 'Kit de raspado cutáneo, lámpara de Wood, champús de tratamiento',
-            'Pérdida de pelaje y picazón constante' => 'Citología cutánea, pruebas de descarte de ácaros/hongos',
-            'Sacudidas frecuentes de cabeza y mal olor en oídos' => 'Otoscopio clínico, hisopos estériles para cultivo de secreciones',
-            'Vómitos frecuentes y decaimiento' => 'Ecógrafo abdominal, test rápido de Parvovirus/Coronavirus',
-            'Tos seca persistente y secreción nasal' => 'Radiografías torácicas, estetoscopio, cámara de nebulización',
-            'Chequeo preventivo general y desparasitación' => 'Balanza digital, lector de microchips, antiparasitarios internos/externos',
-            'Estornudos constantes y secreción ocular abundante' => 'Prueba PCR respiratoria felina, colirios antibióticos',
-            'Fiebre alta, inapetencia y encías pálidas' => 'Analizador hematológico para hemograma, test rápido de Ehrlichia',
-            'Orina con frecuencia y en poca cantidad' => 'Tiras reactivas de orina, analizador de sedimento urinario, ecógrafo',
+            'Excessive pruritus, skin erythema and constant scratching' => 'Skin scraping kit, Wood\'s lamp, therapeutic medicated shampoos',
+            'Hair loss in lumbar area and severe itching' => 'Skin cytology, ectoparasite/mite screening tests',
+            'Frequent head shaking, ear canal inflammation and odor' => 'Clinical otoscope, sterile swabs for secretion culture',
+            'Frequent vomiting, mild dehydration and lethargy' => 'Abdominal ultrasound, Parvovirus/Coronavirus rapid test',
+            'Persistent dry cough, mild fever and clear nasal discharge' => 'Thoracic X-rays, stethoscope, nebulizer chamber',
+            'Frequent sneezing, conjunctivitis and ocular discharge' => 'Feline respiratory PCR, antibiotic ophthalmic drops',
+            'Watery diarrhea, inappetence and abdominal discomfort' => 'Electrolyte panel, Giardia rapid antigen test',
+            'Ear scratching, head tilt and cerumen buildup' => 'Cytological ear swab, antiseptic ceruminolytic cleanser',
+            'Annual booster vaccination and general evaluation' => 'Digital precision scale, microchip reader, clinical thermography',
+            'Routine preventive wellness check and deworming' => 'Digital weight scale, internal/external broad-spectrum antiparasitics',
+            'High fever, lethargy, pale mucous membranes and anorexia' => 'Automated hematology blood analyzer, 4Dx Ehrlichia test',
+            'Lumbar alopecia and severe flea bite irritation' => 'Trichogram, flea comb, dermatologist cytology kit',
+            'Soft stools, vomiting and decreased appetite' => 'Blood biochemistry analyzer, intravenous fluid pump',
+            'Annual health review, dental check and weight control' => 'Dental scaler & polisher, ultrasonic examination probe',
         ];
 
         foreach ($topSintomas as $sintoma) {
             $sintomas[] = [
                 'nombre' => $sintoma->reason,
                 'total' => $sintoma->total,
-                'insumos' => $sintomaRelacion[$sintoma->reason] ?? 'Kits de diagnóstico general, guantes, jeringas y termómetro',
+                'insumos' => $sintomaRelacion[$sintoma->reason] ?? 'General clinical diagnostic kits, gloves, syringes and digital thermometer',
             ];
         }
 

@@ -7,18 +7,42 @@
         "product_created": "Product registered successfully. Remember to register its batch entry to add stock.",
         "entry_created": "Product entry registered successfully."
     },
-    "receipt": {
-        "{{ strtolower($ventaVer->tipo_comprobante) }}": "{{ strtolower($ventaVer->tipo comprobante) }}"
+    "doc": {
+        "dni": "DNI",
+        "ruc": "RUC",
+        "ce": "Foreigner ID",
+        "passport": "Passport"
     },
     "payment": {
         "method": "Payment Method",
         "cash": "Cash",
         "card": "Card",
         "yapePlin": "Yape / Plin",
-        "transfer": "Transfer",
+        "transfer": "Bank Transfer",
+        "efectivo": "Cash",
+        "tarjeta": "Card",
+        "yape_plin": "Yape / Plin",
+        "transferencia": "Bank Transfer",
         "paid": "Paid",
         "pending": "Pending",
         "cancelled": "Cancelled"
+    },
+    "roles": {
+        "super_admin": "Super Admin",
+        "veterinarian": "Veterinarian",
+        "veterinario": "Veterinarian",
+        "user": "User",
+        "usuario": "User"
+    },
+    "color": {
+        "white": "White",
+        "black": "Black",
+        "brown": "Brown",
+        "golden": "Golden",
+        "gray": "Gray",
+        "brindle": "Brindle",
+        "spotted": "Spotted",
+        "other": "Other"
     },
     "misc": {
         "emergencyMode": "Emergency mode (allows sale without stock)",
@@ -354,6 +378,8 @@
         "timePlaceholder": "Select time",
         "male": "Male",
         "female": "Female",
+        "genderMale": "Male",
+        "genderFemale": "Female",
         "species": "Species",
         "breed": "Breed",
         "gender": "Gender",
@@ -362,7 +388,25 @@
         "age": "Age",
         "addr": "Addr.",
         "indications": "Indications",
-        "owner": "Owner"
+        "owner": "Owner",
+        "pendingAptsDetected": "Pending Appointments Detected",
+        "pendingAptsDescPrefix": "This pet has",
+        "pendingAptsDescSuffix": "scheduled appointment(s). Do you want to autocomplete the data?",
+        "system_piel": "Skin & Coat",
+        "system_ojos": "Eyes & Ears",
+        "system_cardio": "Cardiovascular",
+        "system_resp": "Respiratory",
+        "system_digestivo": "Digestive / Abdomen",
+        "system_musculo": "Musculoskeletal",
+        "system_neuro": "Neurological",
+        "system_urinario": "Urinary / Genital",
+        "clarificationNotes": "Clarification Notes (Post 24h)",
+        "searchOrTypeMedicine": "Search or type medicine...",
+        "routeOral": "Oral",
+        "routeIntramuscular": "Intramuscular",
+        "routeIntravenous": "Intravenous",
+        "routeSubcutaneous": "Subcutaneous",
+        "routeTopical": "Topical"
     },
     "profile": {
         "contact": "Contact",
@@ -506,7 +550,9 @@
         "newRecord": "New Medical Record",
         "viewRecord": "View Record",
         "pdf": "PDF",
-        "downloadPdf": "Download PDF"
+        "downloadPdf": "Download PDF",
+        "autocompleteAppt": "Autocomplete with appointment",
+        "addPrescription": "+ Add Prescription"
     },
     "login": {
         "title": "VETCORESSEN",
@@ -1302,8 +1348,12 @@
         "settings": "Settings"
     },
     "citas": {
-        "vistaCalendario": "VistaCalendario",
-        "vistaLista": "VistaLista"
+        "dayView": "Day View",
+        "weekView": "Week View",
+        "monthView": "Month View",
+        "listView": "Agenda List",
+        "vistaCalendario": "Calendar View",
+        "vistaLista": "List View"
     },
     "action": {
         "print": "Print"

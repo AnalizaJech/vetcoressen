@@ -98,69 +98,108 @@
             'ajustes' => 'settings',
             'configuración' => 'settings',
             'configuracion' => 'settings',
-            'settings' => 'settings',
         ];
-        $titleKey = $titleAliases[$lowerTitle] ?? str_replace(' ', '_', $lowerTitle);
+
+        $titleKey = $titleAliases[$lowerTitle] ?? null;
     @endphp
     <meta name="current-title-key" content="{{ $titleKey }}">
     <meta name="current-title-suffix" content="{{ $titleSuffix }}">
-    <title x-text="($store.i18n.t('title.' + '{{ $titleKey }}') || $store.i18n.t('sidebar.' + '{{ $titleKey }}') || $store.i18n.t('nav.' + '{{ $titleKey }}') || '{{ $cleanTitle }}') + '{{ $titleSuffix }} - {{ config('app.name', 'VETCORESSEN') }}'">{{ $cleanTitle }} - {{ config('app.name', 'VETCORESSEN') }}</title>
-    <meta name="description" content="{{ config('app.name') }} - Sistema de Gestión Veterinaria">
+    <title>{{ $cleanTitle }} - VETCORESSEN</title>
 
-    <!-- Configuración de Favicon para Laravel -->
-    <link rel="icon" type="image/png" href="{{ asset('favicon-96x96.png') }}" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}" />
-    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" />
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}" />
-    <meta name="apple-mobile-web-app-title" content="{{ config('app.name') }}" />
-    <link rel="manifest" href="{{ asset('site.webmanifest') }}" />
-
-    {{-- Google Fonts: Plus Jakarta Sans + DM Sans + Material Symbols --}}
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    
+    {{-- Chart.js para Dashboard y Reportes (Versión UMD estable) --}}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 
-    <link rel="stylesheet" href="{{ asset('css/vetcoressen.css') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    {{-- Chart.js global library --}}
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    {{-- Theme & i18n Scripts (antes de Alpine para registrar stores) --}}
-    <script src="{{ asset('js/theme.js') }}"></script>
     <script src="{{ asset('js/i18n.js') }}"></script>
+    <script>
+        // Pre-render theme check to prevent flickering
+        (function() {
+            const saved = localStorage.getItem('vc_theme');
+            const isDark = saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+                document.documentElement.classList.remove('light');
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.documentElement.classList.add('light');
+            }
+        })();
 
-    @livewireStyles
+        document.addEventListener('alpine:init', () => {
+            Alpine.store('theme', {
+                isDark: localStorage.getItem('vc_theme') === 'dark' || (!('vc_theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
+                init() {
+                    this.apply();
+                },
+                toggle() {
+                    this.isDark = !this.isDark;
+                    localStorage.setItem('vc_theme', this.isDark ? 'dark' : 'light');
+                    this.apply();
+                },
+                apply() {
+                    if (this.isDark) {
+                        document.documentElement.classList.add('dark');
+                        document.documentElement.classList.remove('light');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                        document.documentElement.classList.add('light');
+                    }
+                    window.dispatchEvent(new CustomEvent('theme-changed', { detail: { isDark: this.isDark } }));
+                }
+            });
+        });
+    </script>
+    @fluxAppearance
 </head>
-<body class="h-screen overflow-hidden overflow-x-hidden font-sans antialiased selection:bg-emerald-500 selection:text-white" style="background-color: var(--vc-bg); color: var(--vc-text);" x-data="{ sidebarOpen: false, clinicName: '{{ addslashes(\App\Models\Clinic::first()->name ?? config('app.name')) }}' }" @clinic-updated.window="clinicName = $event.detail[0].name">
+<body class="h-screen max-h-screen overflow-hidden antialiased text-zinc-800 dark:text-zinc-100 flex flex-col font-sans" style="background-color: var(--vc-bg);">
 
-    <div class="h-screen overflow-hidden flex flex-col md:flex-row md:p-4 md:gap-4">
-        {{-- Overlay Movil con Glass Blur --}}
-        <div x-show="sidebarOpen" @click="sidebarOpen = false" x-cloak class="fixed inset-0 z-40 bg-black/70 md:hidden backdrop-blur-md transition-opacity"></div>
+    @php
+        $clinic = \App\Models\Clinic::first();
+        $clinicName = $clinic->name ?? 'VETCORESSEN';
+        $clinicLogo = ($clinic && $clinic->logo && file_exists(public_path('storage/' . $clinic->logo))) ? asset('storage/' . $clinic->logo) : asset('favicon.svg');
+    @endphp
 
-        {{-- ═══ SIDEBAR ═══ --}}
-        <aside class="fixed md:static inset-y-0 left-0 z-50 w-64 vc-glass-sidebar border-r md:border flex flex-col transition-transform duration-300 ease-in-out shrink-0 vc-mobile-sidebar md:rounded-3xl shadow-sm overflow-hidden" :class="{'is-open': sidebarOpen}" style="border-color: var(--vc-border);">
-            @php
-                $clinic = \App\Models\Clinic::first();
-                $clinicName = $clinic->name ?? config('app.name');
-                $clinicLogo = $clinic->logo ? asset('storage/' . $clinic->logo) : asset('favicon.svg');
-            @endphp
-            {{-- Brand / Logo --}}
-            <div class="h-16 flex items-center justify-between px-5" style="border-bottom: 1px solid var(--vc-border);">
+    <div class="flex-1 flex h-screen max-h-screen overflow-hidden p-2 md:p-3 lg:p-4 gap-2 md:gap-3" 
+         x-data="{ sidebarOpen: false, clinicName: '{{ addslashes($clinicName) }}' }"
+         @configuracion-actualizada.window="clinicName = $event.detail.clinica_nombre || clinicName">
+        
+        {{-- Backdrop Movil --}}
+        <div x-show="sidebarOpen" 
+             x-transition:enter="transition-opacity ease-linear duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition-opacity ease-linear duration-300"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             @click="sidebarOpen = false" 
+             class="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 md:hidden"
+             x-cloak></div>
+
+        {{-- ═══ SIDEBAR NAVEGACION ═══ --}}
+        <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'"
+               class="fixed md:static inset-y-0 left-0 z-50 w-64 lg:w-72 h-full flex flex-col transition-transform duration-300 ease-in-out rounded-2xl md:rounded-3xl shadow-sm border shrink-0 overflow-hidden"
+               style="background-color: var(--vc-sidebar-bg); border-color: var(--vc-border);">
+            
+            {{-- Logo / Header Clinica --}}
+            <div class="h-16 flex items-center justify-between px-5 shrink-0" style="border-bottom: 1px solid var(--vc-border);">
                 <a href="{{ route('dashboard') }}" class="flex items-center gap-3.5 group focus:outline-none">
-                    <div class="vc-sidebar-logo shrink-0" style="background: transparent;">
-                    <img src="{{ $clinicLogo }}" alt="{{ $clinicName }} Logo" class="w-12 h-12 object-contain">
-                </div>
-                    <div class="flex flex-col">
-                        <span class="font-extrabold text-base tracking-wider font-display" style="color: var(--vc-text);" x-text="clinicName"></span>
-                        <span class="text-[10px] font-medium tracking-widest uppercase" style="color: var(--vc-emerald-light); opacity: 0.8;" x-text="$store.i18n.t('sidebar.clinic')"></span>
+                    <div class="shrink-0 flex items-center justify-center">
+                        <img src="{{ $clinicLogo }}" alt="{{ $clinicName }} Logo" class="w-10 h-10 object-contain rounded-lg">
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                        <span class="font-extrabold text-sm tracking-wider font-display uppercase truncate" style="color: var(--vc-text);" x-text="clinicName"></span>
+                        <span class="text-[10px] font-semibold tracking-widest uppercase truncate" style="color: var(--vc-primary-light); opacity: 0.9;" x-text="$store.i18n.t('sidebar.clinic')"></span>
                     </div>
                 </a>
             </div>
 
-            {{-- Navegacion --}}
-            <nav class="flex-1 overflow-y-auto p-4 space-y-6">
+            {{-- Navegacion con scroll interno --}}
+            <nav class="flex-1 overflow-y-auto p-3 space-y-4 vc-custom-scroll pr-2">
                 {{-- Principal --}}
                 <div x-data="{ open: {{ request()->routeIs('dashboard') || request()->routeIs('reportes.*') ? 'true' : 'false' }} }">
                     <button @click="open = !open" class="w-full flex items-center justify-between sidebar-section-title outline-none focus:outline-none focus:ring-0">
@@ -170,7 +209,7 @@
                         </div>
                         <span class="material-symbols-outlined text-[16px] transition-transform duration-200" :class="open ? 'rotate-180' : ''">expand_more</span>
                     </button>
-                    <div x-show="open" x-collapse class="space-y-1 mt-2">
+                    <div x-show="open" x-collapse class="flex flex-col space-y-1 mt-2">
                         <a href="{{ route('dashboard') }}" class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                             <span class="material-symbols-outlined sidebar-icon">dashboard</span>
                             <span x-text="$store.i18n.t('sidebar.dashboard')"></span>
@@ -191,7 +230,7 @@
                         </div>
                         <span class="material-symbols-outlined text-[16px] transition-transform duration-200" :class="open ? 'rotate-180' : ''">expand_more</span>
                     </button>
-                    <div x-show="open" x-collapse class="space-y-1 mt-2">
+                    <div x-show="open" x-collapse class="flex flex-col space-y-1 mt-2">
                         <a href="{{ route('clientes.index') }}" class="sidebar-link {{ request()->routeIs('clientes.*') ? 'active' : '' }}">
                             <span class="material-symbols-outlined sidebar-icon">group</span>
                             <span x-text="$store.i18n.t('sidebar.clients')"></span>
@@ -216,7 +255,7 @@
                         </div>
                         <span class="material-symbols-outlined text-[16px] transition-transform duration-200" :class="open ? 'rotate-180' : ''">expand_more</span>
                     </button>
-                    <div x-show="open" x-collapse class="space-y-1 mt-2">
+                    <div x-show="open" x-collapse class="flex flex-col space-y-1 mt-2">
                         <a href="{{ route('historias.index') }}" class="sidebar-link {{ request()->routeIs('historias.*') ? 'active' : '' }}">
                             <span class="material-symbols-outlined sidebar-icon">clinical_notes</span>
                             <span x-text="$store.i18n.t('sidebar.records')"></span>
@@ -233,7 +272,7 @@
                         </div>
                         <span class="material-symbols-outlined text-[16px] transition-transform duration-200" :class="open ? 'rotate-180' : ''">expand_more</span>
                     </button>
-                    <div x-show="open" x-collapse class="space-y-1 mt-2">
+                    <div x-show="open" x-collapse class="flex flex-col space-y-1 mt-2">
                         <a href="{{ route('inventario.index') }}" class="sidebar-link {{ request()->routeIs('inventario.*') ? 'active' : '' }}">
                             <span class="material-symbols-outlined sidebar-icon">inventory_2</span>
                             <span x-text="$store.i18n.t('sidebar.inventory')"></span>
@@ -259,7 +298,7 @@
                         </div>
                         <span class="material-symbols-outlined text-[16px] transition-transform duration-200" :class="open ? 'rotate-180' : ''">expand_more</span>
                     </button>
-                    <div x-show="open" x-collapse class="space-y-1 mt-2">
+                    <div x-show="open" x-collapse class="flex flex-col space-y-1 mt-2">
                         <a href="{{ route('usuarios.index') }}" class="sidebar-link {{ request()->routeIs('usuarios.*') ? 'active' : '' }}">
                             <span class="material-symbols-outlined sidebar-icon">group</span>
                             <span x-text="$store.i18n.t('sidebar.users')"></span>
@@ -275,6 +314,7 @@
                     </div>
                 </div>
                 @endrole
+
                 {{-- Configuración --}}
                 <div>
                     <a href="{{ route('configuracion.index') }}" class="sidebar-link {{ request()->routeIs('configuracion.*') ? 'active' : '' }}">
@@ -305,22 +345,22 @@
                               x-text="$store.i18n.locale === 'en' ? 'EN' : 'ES'"></span>
                     </button>
                         
-                        {{-- Logout --}}
-                        <div class="pt-4 mt-2" style="border-top: 1px solid var(--vc-border);">
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit" class="w-full sidebar-link sidebar-link-logout text-red-500 border border-transparent">
-                                    <span class="material-symbols-outlined sidebar-icon text-red-500">logout</span>
-                                    <span x-text="$store.i18n.t('sidebar.logout')"></span>
-                                </button>
-                            </form>
-                        </div>
+                    {{-- Logout --}}
+                    <div class="pt-4 mt-2" style="border-top: 1px solid var(--vc-border);">
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="w-full sidebar-link sidebar-link-logout text-red-500 border border-transparent">
+                                <span class="material-symbols-outlined sidebar-icon text-red-500">logout</span>
+                                <span x-text="$store.i18n.t('sidebar.logout')"></span>
+                            </button>
+                        </form>
                     </div>
+                </div>
             </nav>
         </aside>
 
         {{-- ═══ AREA PRINCIPAL ═══ --}}
-        <div class="flex-1 flex flex-col min-w-0 overflow-hidden md:rounded-3xl shadow-sm md:border relative" style="border-color: var(--vc-border); background: var(--vc-bg);">
+        <div class="flex-1 flex flex-col min-w-0 h-full overflow-hidden rounded-2xl md:rounded-3xl shadow-sm border relative" style="border-color: var(--vc-border); background-color: var(--vc-surface);">
             {{-- Header Movil --}}
             <header class="h-16 flex items-center justify-between px-4 md:hidden z-30 sticky top-0" style="border-bottom: 1px solid var(--vc-border); background: var(--vc-glass-bg); backdrop-filter: blur(12px);">
                 <button @click="sidebarOpen = true" class="p-2 rounded-xl bg-white/50 dark:bg-black/20 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-vc-primary transition-colors">
@@ -333,10 +373,8 @@
                 <div class="w-10"></div>
             </header>
 
-
-
             {{-- Contenido Principal --}}
-            <main class="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto z-10 relative">
+            <main class="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto vc-custom-scroll z-10 relative">
                 {{ $slot }}
             </main>
         </div>
@@ -401,7 +439,6 @@
             let fallbackTitle = type === 'error' ? 'Error' : 'Éxito';
             let title = window.Alpine?.store('i18n')?.t('alert.' + type, fallbackTitle) || fallbackTitle;
             document.getElementById('global-success-title').innerText = title;
-            
             let translatedMsg = window.Alpine?.store('i18n')?.t(message, message) || message;
             document.getElementById('global-success-text').innerText = translatedMsg;
             
@@ -424,12 +461,10 @@
         }
     </script>
 
-
-
     @fluxScripts
     @livewireScripts
     <script>
-        const updateDocumentTitle = () => {
+        window.updateDocumentTitle = function() {
             const meta = document.querySelector('meta[name="current-title-key"]');
             if (meta && window.Alpine && Alpine.store('i18n')) {
                 const key = 'title.' + meta.content;
@@ -440,12 +475,9 @@
             }
         };
 
-        document.addEventListener('livewire:navigated', updateDocumentTitle);
-        window.addEventListener('language-changed', updateDocumentTitle);
+        document.addEventListener('livewire:navigated', () => { updateDocumentTitle(); });
+        window.addEventListener('language-changed', () => { updateDocumentTitle(); });
         document.addEventListener('alpine:init', () => {
-            // i18n may finish before this bottom-of-page script is evaluated.
-            // Retry briefly so the first page load is translated too.
-            setTimeout(updateDocumentTitle, 0);
             setTimeout(updateDocumentTitle, 300);
         });
         setTimeout(updateDocumentTitle, 300);

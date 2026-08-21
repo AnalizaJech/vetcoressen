@@ -8,47 +8,50 @@ use App\Models\Breed;
 
 class SpeciesBreedSeeder extends Seeder
 {
+    /**
+     * Especies y razas en inglés para soporte internacional.
+     */
     public function run(): void
     {
         $especiesData = [
-            'Canino' => [
-                'Mestizo', 'Affenpinscher', 'Akita', 'Akita Americano', 'Basset Hound', 'Beagle',
-                'Bichón Frisé', 'Bichón Maltés', 'Border Collie', 'Bóxer', 'Bulldog Francés',
-                'Bulldog Inglés', 'Bull Terrier', 'Caniche (Poodle)', 'Chihuahua', 'Chow Chow',
-                'Cocker Spaniel', 'Corgi', 'Dálmata', 'Dóberman', 'Dogo Argentino',
-                'Golden Retriever', 'Gran Danés', 'Husky Siberiano', 'Jack Russell Terrier',
-                'Labrador Retriever', 'Mastín Napolitano', 'Pastor Alemán', 'Pastor Australiano',
-                'Pastor Belga Malinois', 'Pekinés', 'Perro Sin Pelo del Perú', 'Pitbull',
-                'Pomerania', 'Pug (Carlino)', 'Rottweiler', 'San Bernardo', 'Schnauzer',
-                'Shar Pei', 'Shih Tzu', 'Staffordshire Bull Terrier', 'Teckel (Salchicha)',
-                'Terrier de Boston', 'Yorkshire Terrier'
+            'Canine' => [
+                'Mixed Breed', 'Affenpinscher', 'Akita', 'American Akita', 'Basset Hound', 'Beagle',
+                'Bichon Frise', 'Maltese', 'Border Collie', 'Boxer', 'French Bulldog',
+                'English Bulldog', 'Bull Terrier', 'Poodle (Standard/Toy)', 'Chihuahua', 'Chow Chow',
+                'Cocker Spaniel', 'Corgi', 'Dalmatian', 'Doberman Pinscher', 'Dogo Argentino',
+                'Golden Retriever', 'Great Dane', 'Siberian Husky', 'Jack Russell Terrier',
+                'Labrador Retriever', 'Neapolitan Mastiff', 'German Shepherd', 'Australian Shepherd',
+                'Belgian Malinois', 'Pekingese', 'Peruvian Hairless Dog', 'Pitbull Terrier',
+                'Pomeranian', 'Pug', 'Rottweiler', 'Saint Bernard', 'Schnauzer',
+                'Shar Pei', 'Shih Tzu', 'Staffordshire Bull Terrier', 'Dachshund',
+                'Boston Terrier', 'Yorkshire Terrier'
             ],
-            'Felino' => [
-                'Mestizo', 'Abisinio', 'Angora Turco', 'Azul Ruso', 'Bengalí', 'Bobtail Japonés',
-                'Bombay', 'Bosque de Noruega', 'Británico de Pelo Corto', 'Burmés',
-                'Esfinge (Sphynx)', 'Exótico de Pelo Corto', 'Himalayo', 'Maine Coon',
-                'Mau Egipcio', 'Oriental', 'Persa', 'Ragdoll', 'Sagrado de Birmania',
-                'Siamés', 'Siberiano', 'Singapura', 'Somalí', 'Toyger'
+            'Feline' => [
+                'Mixed Breed', 'Abyssinian', 'Turkish Angora', 'Russian Blue', 'Bengal', 'Japanese Bobtail',
+                'Bombay', 'Norwegian Forest Cat', 'British Shorthair', 'Burmese',
+                'Sphynx', 'Exotic Shorthair', 'Himalayan', 'Maine Coon',
+                'Egyptian Mau', 'Oriental Shorthair', 'Persian', 'Ragdoll', 'Birman',
+                'Siamese', 'Siberian', 'Singapura', 'Somali', 'Toyger'
             ],
-            'Ave' => [
-                'Mestizo', 'Agapornis', 'Cacatúa', 'Canario', 'Cotorra', 'Diamante Mandarín',
-                'Guacamayo', 'Loro Gris (Yaco)', 'Loro Amazónico', 'Ninfa (Carolina)',
-                'Periquito Australiano', 'Tucán'
+            'Bird' => [
+                'Mixed Breed', 'Lovebird', 'Cockatoo', 'Canary', 'Parakeet', 'Zebra Finch',
+                'Macaw', 'African Grey Parrot', 'Amazon Parrot', 'Cockatiel',
+                'Budgerigar', 'Toucan'
             ],
-            'Roedor' => [
-                'Mestizo', 'Chinchilla', 'Cobaya (Cuy)', 'Gerbo', 'Hámster Ruso', 'Hámster Sirio',
-                'Hámster Roborovski', 'Ratón Doméstico', 'Rata Doméstica'
+            'Small Mammal' => [
+                'Mixed Breed', 'Chinchilla', 'Guinea Pig', 'Gerbil', 'Russian Dwarf Hamster', 'Syrian Hamster',
+                'Roborovski Hamster', 'Fancy Mouse', 'Fancy Rat'
             ],
-            'Lagomorfo' => [
-                'Mestizo', 'Conejo Angora', 'Conejo Belier', 'Conejo Cabeza de León',
-                'Conejo Enano (Netherland Dwarf)', 'Conejo Holandés', 'Conejo Rex', 'Conejo Toy'
+            'Lagomorph' => [
+                'Mixed Breed', 'Angora Rabbit', 'Lop Rabbit', 'Lionhead Rabbit',
+                'Netherland Dwarf', 'Dutch Rabbit', 'Rex Rabbit', 'Toy Rabbit'
             ],
-            'Reptil' => [
-                'Mestizo', 'Camaleón', 'Dragón Barbudo', 'Gecko Leopardo', 'Iguana',
-                'Serpiente del Maíz', 'Pitón Bola', 'Tortuga de Agua', 'Tortuga de Tierra'
+            'Reptile' => [
+                'Mixed Breed', 'Chameleon', 'Bearded Dragon', 'Leopard Gecko', 'Green Iguana',
+                'Corn Snake', 'Ball Python', 'Water Turtle', 'Tortoise'
             ],
-            'Otro' => [
-                'Mestizo', 'Hurón', 'Erizo de Tierra', 'Cerdo Miniatura (Mini Pig)'
+            'Other' => [
+                'Mixed Breed', 'Ferret', 'Hedgehog', 'Miniature Pig'
             ]
         ];
 

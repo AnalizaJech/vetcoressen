@@ -56,11 +56,11 @@
                             <h3 class="text-lg font-bold text-zinc-900 dark:text-zinc-100">{{ $user->name }} {{ $user->last_name }}</h3>
                             <div class="flex items-center gap-1.5 mt-0.5">
                                 @if($user->hasRole('super_admin'))
-                                    <span class="badge badge-purple">Super Admin</span>
+                                    <span class="badge badge-purple" x-text="$store.i18n.t('roles.super_admin') || 'Super Admin'">Super Admin</span>
                                 @elseif($user->hasRole('veterinario'))
-                                    <span class="badge badge-blue">Veterinario</span>
+                                    <span class="badge badge-blue" x-text="$store.i18n.t('roles.veterinarian') || 'Veterinarian'">Veterinarian</span>
                                 @else
-                                    <span class="badge badge-zinc">Usuario</span>
+                                    <span class="badge badge-zinc" x-text="$store.i18n.t('roles.user') || 'User'">User</span>
                                 @endif
                             </div>
                         </div>
@@ -124,7 +124,7 @@
                         <div>
                             <h2 class="text-xl font-bold text-zinc-900 dark:text-white">{{ $usuarioVer->name }} {{ $usuarioVer->last_name }}</h2>
                             <p class="text-sm text-zinc-500 dark:text-zinc-400">
-                                {{ $usuarioVer->tipo_documento ?? 'Doc.' }}: {{ $usuarioVer->numero_documento ?? 'No registrado' }}
+                                <span x-text="'{{ $usuarioVer->tipo_documento ?? 'Doc.' }}: ' + ('{{ $usuarioVer->numero_documento }}' ? '{{ $usuarioVer->numero_documento }}' : ($store.i18n.t('report.notRegistered') || 'Not registered'))"></span>
                             </p>
                         </div>
                     </div>
@@ -181,11 +181,11 @@
                                 <span class="text-xs text-zinc-500 block" x-text="$store.i18n.t('profile.systemPermissions') || 'Permisos en el sistema'">Permisos en el sistema</span>
                                 <div class="mt-1">
                                     @if($usuarioVer->hasRole('super_admin'))
-                                        <span class="badge badge-purple">Super Admin</span>
+                                        <span class="badge badge-purple" x-text="$store.i18n.t('roles.super_admin') || 'Super Admin'">Super Admin</span>
                                     @elseif($usuarioVer->hasRole('veterinario'))
-                                        <span class="badge badge-blue">Veterinario</span>
+                                        <span class="badge badge-blue" x-text="$store.i18n.t('roles.veterinarian') || 'Veterinarian'">Veterinarian</span>
                                     @else
-                                        <span class="badge badge-zinc">Usuario</span>
+                                        <span class="badge badge-zinc" x-text="$store.i18n.t('roles.user') || 'User'">User</span>
                                     @endif
                                 </div>
                             </div>

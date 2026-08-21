@@ -222,7 +222,7 @@ class ReporteIndex extends Component
                 for ($i = 0; $i < $weeks; $i++) {
                     $wStart = $startDate->copy()->addWeeks($i);
                     $wEnd = $wStart->copy()->endOfWeek();
-                    $ventasChartLabels[] = 'Sem ' . ($i + 1) . ' (' . $wStart->format('d/m') . ')';
+                    $ventasChartLabels[] = 'Week ' . ($i + 1) . ' (' . $wStart->format('d/m') . ')';
                     $ventasChartData[$i] = 0;
 
                     foreach ($sales as $s) {
@@ -237,10 +237,10 @@ class ReporteIndex extends Component
 
         // 2. Métodos de Pago
         $pagosMap = [
-            'EFECTIVO'       => 'Efectivo',
-            'TARJETA'        => 'Tarjeta',
+            'EFECTIVO'       => 'Cash',
+            'TARJETA'        => 'Card',
             'YAPE_PLIN'      => 'Yape / Plin',
-            'TRANSFERENCIA'  => 'Transferencia',
+            'TRANSFERENCIA'  => 'Bank Transfer',
         ];
         $pagosTotales = [];
         foreach ($pagosMap as $key => $label) {
@@ -264,7 +264,7 @@ class ReporteIndex extends Component
         $citasCanceladas = $appointments->where('status', 'CANCELADA')->count();
         $citasPendientes = $appointments->whereIn('status', ['PENDIENTE', 'CONFIRMADA', 'EN_PROGRESO'])->count();
 
-        $citasChartLabels = ['Completadas', 'Canceladas', 'Pendientes / En Progreso'];
+        $citasChartLabels = ['Completed', 'Cancelled', 'Pending'];
         $citasChartData = [$citasCompletadas, $citasCanceladas, $citasPendientes];
 
         // 4. Top Productos y Servicios más vendidos

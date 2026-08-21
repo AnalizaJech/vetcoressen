@@ -36,10 +36,10 @@
                         <x-vc-dropdown
                             wire:model.live="tipo_documento"
                             :options="[
-                                ['value' => 'DNI', 'label' => 'DNI'],
-                                ['value' => 'RUC', 'label' => 'RUC'],
-                                ['value' => 'CE', 'label' => 'Carnet Extranjería'],
-                                ['value' => 'PASAPORTE', 'label' => 'Pasaporte'],
+                                ['value' => 'DNI', 'label' => 'doc.dni'],
+                                ['value' => 'RUC', 'label' => 'doc.ruc'],
+                                ['value' => 'CE', 'label' => 'doc.ce'],
+                                ['value' => 'PASAPORTE', 'label' => 'doc.passport'],
                             ]"
                             :selected="$tipo_documento"
                             placeholder="form.select"

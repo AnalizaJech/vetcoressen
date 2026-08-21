@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 
 /**
- * Seeder masivo de producción que simula 1 año de operación real de VETCORESSEN.
- * Genera datos coherentes para consultas, ventas, inventario e historias clínicas.
+ * Production-grade massive seeder simulating 1 year of real VETCORESSEN clinic operations.
+ * Generates coherent consultations, sales, inventory movements, medical records, and prescriptions in English.
  */
 class OneYearDataSeeder extends Seeder
 {
@@ -23,9 +23,9 @@ class OneYearDataSeeder extends Seeder
     public function run(): void
     {
         $this->startDate = Carbon::now()->subYear()->startOfMonth();
-        $this->endDate   = Carbon::now()->addMonth()->endOfMonth(); // Hasta el mes que viene (Septiembre 2026)
+        $this->endDate   = Carbon::now()->addMonth()->endOfMonth();
 
-        $this->command->info('🧹 Limpiando tablas de datos previos...');
+        $this->command->info('🧹 Cleaning previous database records...');
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::table('prescriptions')->truncate();
         DB::table('medical_records')->truncate();
@@ -39,11 +39,12 @@ class OneYearDataSeeder extends Seeder
         DB::table('customers')->truncate();
         DB::table('suppliers')->truncate();
         DB::table('products')->truncate();
+        DB::table('appointment_reasons')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        $this->command->info('🏥 Iniciando simulación de datos para 1 año y medio de uso real...');
+        $this->command->info('🏥 Starting full 1-year data simulation in English...');
 
-        // 1. Detectar o crear veterinarios
+        // 1. Detect or assign veterinarians
         $this->adminId = DB::table('users')->where('clinic_id', $this->clinicId)->min('id') ?? 1;
         
         $vetRoleId = DB::table('roles')->where('name', 'veterinario')->value('id');
@@ -59,7 +60,7 @@ class OneYearDataSeeder extends Seeder
             $this->createSampleVets();
         }
 
-        // Ejecutar los sub-seeders dentro de una transacción para velocidad y consistencia
+        // Execute sub-seeders in transactional block for consistency
         DB::transaction(function () {
             $this->seedAppointmentReasons();
             $this->seedSuppliers();
@@ -69,7 +70,7 @@ class OneYearDataSeeder extends Seeder
             $this->seedInventoryAndSales();
         });
 
-        $this->command->info('✅ Carga masiva completada con éxito.');
+        $this->command->info('✅ Massive English data seeding completed successfully.');
     }
 
     private function createSampleVets(): void
@@ -78,9 +79,9 @@ class OneYearDataSeeder extends Seeder
         $branchId = $branch ? $branch->id : null;
 
         $vets = [
-            ['name' => 'Dr. Carlos', 'last_name' => 'Rodríguez Vargas',   'email' => 'carlos.vet@vetcoressen.pe', 'phone' => '999111222', 'dni' => '87654321', 'cmvp' => 'CMVP-4521'],
-            ['name' => 'Dra. María', 'last_name' => 'López Mendoza',      'email' => 'maria.vet@vetcoressen.pe',  'phone' => '999333444', 'dni' => '11223344', 'cmvp' => 'CMVP-3892'],
-            ['name' => 'Dr. Jorge',  'last_name' => 'Méndez Castillo',    'email' => 'jorge.vet@vetcoressen.pe',  'phone' => '999555666', 'dni' => '55667788', 'cmvp' => 'CMVP-6103'],
+            ['name' => 'Dr. Carlos', 'last_name' => 'Rodriguez Vargas',   'email' => 'carlos.vet@vetcoressen.com', 'phone' => '999111222', 'dni' => '87654321', 'cmvp' => 'CMVP-4521'],
+            ['name' => 'Dr. Maria',  'last_name' => 'Lopez Mendoza',      'email' => 'maria.vet@vetcoressen.com',  'phone' => '999333444', 'dni' => '11223344', 'cmvp' => 'CMVP-3892'],
+            ['name' => 'Dr. George', 'last_name' => 'Mendez Castillo',    'email' => 'george.vet@vetcoressen.com', 'phone' => '999555666', 'dni' => '55667788', 'cmvp' => 'CMVP-6103'],
         ];
 
         foreach ($vets as $v) {
@@ -123,20 +124,20 @@ class OneYearDataSeeder extends Seeder
     private function seedAppointmentReasons(): void
     {
         $reasons = [
-            ['name' => 'Consulta General',          'duration_minutes' => 30],
-            ['name' => 'Vacunación',                'duration_minutes' => 20],
-            ['name' => 'Desparasitación',           'duration_minutes' => 15],
-            ['name' => 'Control Post-Operatorio',   'duration_minutes' => 30],
-            ['name' => 'Emergencia',                'duration_minutes' => 60],
-            ['name' => 'Cirugía Programada',        'duration_minutes' => 120],
-            ['name' => 'Baño y Grooming',           'duration_minutes' => 60],
-            ['name' => 'Ecografía',                 'duration_minutes' => 45],
-            ['name' => 'Radiografía',               'duration_minutes' => 40],
-            ['name' => 'Análisis de Laboratorio',   'duration_minutes' => 30],
-            ['name' => 'Dermatología',              'duration_minutes' => 40],
-            ['name' => 'Odontología',               'duration_minutes' => 45],
-            ['name' => 'Esterilización',            'duration_minutes' => 90],
-            ['name' => 'Control de Peso',           'duration_minutes' => 20],
+            ['name' => 'General Consultation',     'duration_minutes' => 30],
+            ['name' => 'Vaccination',               'duration_minutes' => 20],
+            ['name' => 'Deworming',                'duration_minutes' => 15],
+            ['name' => 'Post-Op Checkup',          'duration_minutes' => 30],
+            ['name' => 'Emergency',                'duration_minutes' => 60],
+            ['name' => 'Scheduled Surgery',        'duration_minutes' => 120],
+            ['name' => 'Bathing & Grooming',       'duration_minutes' => 60],
+            ['name' => 'Ultrasound',               'duration_minutes' => 45],
+            ['name' => 'X-Ray Radiography',        'duration_minutes' => 40],
+            ['name' => 'Laboratory Analysis',      'duration_minutes' => 30],
+            ['name' => 'Dermatology Exam',         'duration_minutes' => 40],
+            ['name' => 'Dental Cleaning',          'duration_minutes' => 45],
+            ['name' => 'Spay / Neuter',            'duration_minutes' => 90],
+            ['name' => 'Weight Control',           'duration_minutes' => 20],
         ];
 
         foreach ($reasons as $r) {
@@ -148,17 +149,17 @@ class OneYearDataSeeder extends Seeder
                 'updated_at'       => Carbon::now(),
             ]);
         }
-        $this->command->info('  ✔ Motivos de cita creados.');
+        $this->command->info('  ✔ Appointment reasons created in English.');
     }
 
     private function seedSuppliers(): void
     {
         $suppliers = [
-            ['name' => 'Agrovet Market S.A.',       'ruc' => '20100134021', 'phone' => '01-6133535', 'email' => 'ventas@agrovetmarket.com',  'contact_name' => 'Luis Paredes',    'address' => 'Av. Canadá 3198, San Luis, Lima'],
-            ['name' => 'MSD Animal Health Perú',    'ruc' => '20505672381', 'phone' => '01-7108800', 'email' => 'pedidos@msd-animal.com.pe', 'contact_name' => 'Rosa Mendoza',    'address' => 'Av. Javier Prado Este 4600, Surco, Lima'],
-            ['name' => 'Droguería Montana S.A.',    'ruc' => '20100127912', 'phone' => '01-2173500', 'email' => 'ventas@montana.com.pe',     'contact_name' => 'Fernando Quispe', 'address' => 'Jr. Monterrey 341, Chacarilla, Lima'],
-            ['name' => 'Royal Canin Perú',          'ruc' => '20512948761', 'phone' => '01-7156200', 'email' => 'distribuidores@royalcanin.com', 'contact_name' => 'Carla Vega',  'address' => 'Av. Primavera 1050, Surco, Lima'],
-            ['name' => 'Hill\'s Pet Nutrition',     'ruc' => '20501523837', 'phone' => '01-6280500', 'email' => 'hillsperu@colgate.com',     'contact_name' => 'Diego Torres',    'address' => 'Av. República de Panamá 3535, San Isidro'],
+            ['name' => 'Agrovet Market Global Inc.', 'ruc' => '20100134021', 'phone' => '+1-555-0192', 'email' => 'sales@agrovetmarket.com',  'contact_name' => 'Louis Parker',    'address' => '3198 Canada Ave, Lima'],
+            ['name' => 'MSD Animal Health Global',   'ruc' => '20505672381', 'phone' => '+1-555-0188', 'email' => 'orders@msd-animal.com',    'contact_name' => 'Rose Mendoza',    'address' => '4600 East Parkway, Surco, Lima'],
+            ['name' => 'Montana Veterinary Pharma',  'ruc' => '20100127912', 'phone' => '+1-555-0145', 'email' => 'supplies@montana-pharma.com','contact_name' => 'Frank Miller', 'address' => '341 Monterrey Rd, Lima'],
+            ['name' => 'Royal Canin International',  'ruc' => '20512948761', 'phone' => '+1-555-0176', 'email' => 'distributors@royalcanin.com','contact_name' => 'Clara Vance',   'address' => '1050 Spring Blvd, Lima'],
+            ['name' => 'Hill\'s Pet Nutrition Inc.', 'ruc' => '20501523837', 'phone' => '+1-555-0162', 'email' => 'hills.sales@colgate.com',   'contact_name' => 'David Turner',   'address' => '3535 Republic Way, San Isidro'],
         ];
 
         foreach ($suppliers as $s) {
@@ -169,32 +170,30 @@ class OneYearDataSeeder extends Seeder
                 'updated_at' => Carbon::now(),
             ]));
         }
-        $this->command->info('  ✔ Proveedores creados.');
+        $this->command->info('  ✔ Suppliers created in English.');
     }
 
     private function seedProducts(): void
     {
-        $cats = DB::table('categories')->pluck('id', 'name')->toArray();
-
         $products = [
-            ['type' => 'MEDICAMENTO', 'cat' => 'Antibióticos',     'name' => 'Amoxicilina 500mg x 100 tab',        'principio_activo' => 'Amoxicilina',        'presentacion' => 'Tableta', 'costo' => 35.00,  'precio' => 65.00,  'stock' => 120, 'min' => 20, 'requiere_receta' => true],
-            ['type' => 'MEDICAMENTO', 'cat' => 'Antibióticos',     'name' => 'Cefalexina 250mg/5ml Suspensión',    'principio_activo' => 'Cefalexina',         'presentacion' => 'Frasco',  'costo' => 18.00,  'precio' => 38.00,  'stock' => 45,  'min' => 10, 'requiere_receta' => true],
-            ['type' => 'MEDICAMENTO', 'cat' => 'Antibióticos',     'name' => 'Enrofloxacina 50mg x 10 tab',        'principio_activo' => 'Enrofloxacina',      'presentacion' => 'Tableta', 'costo' => 12.00,  'precio' => 25.00,  'stock' => 80,  'min' => 15, 'requiere_receta' => true],
-            ['type' => 'MEDICAMENTO', 'cat' => 'Antibióticos',     'name' => 'Doxiciclina 100mg x 100 cap',        'principio_activo' => 'Doxiciclina',        'presentacion' => 'Cápsula', 'costo' => 22.00,  'precio' => 45.00,  'stock' => 60,  'min' => 10, 'requiere_receta' => true],
-            ['type' => 'MEDICAMENTO', 'cat' => 'Analgésicos y Antiinflamatorios', 'name' => 'Meloxicam 1.5mg/ml Gotas 15ml',  'principio_activo' => 'Meloxicam',  'presentacion' => 'Gotas',   'costo' => 15.00,  'precio' => 32.00,  'stock' => 55,  'min' => 10, 'requiere_receta' => true],
-            ['type' => 'MEDICAMENTO', 'cat' => 'Analgésicos y Antiinflamatorios', 'name' => 'Carprofeno 100mg x 14 tab',      'principio_activo' => 'Carprofeno', 'presentacion' => 'Tableta', 'costo' => 45.00,  'precio' => 85.00,  'stock' => 30,  'min' => 5,  'requiere_receta' => true],
-            ['type' => 'MEDICAMENTO', 'cat' => 'Antiparasitarios Internos', 'name' => 'Praziquantel + Pirantel x 4 tab',   'principio_activo' => 'Praziquantel/Pirantel', 'presentacion' => 'Tableta',   'costo' => 6.00,  'precio' => 15.00, 'stock' => 200, 'min' => 40, 'requiere_receta' => false],
-            ['type' => 'MEDICAMENTO', 'cat' => 'Antiparasitarios Externos', 'name' => 'Fipronil Pipeta Perro 10-20kg',     'principio_activo' => 'Fipronil',              'presentacion' => 'Pipeta',    'costo' => 8.00,  'precio' => 22.00, 'stock' => 150, 'min' => 30, 'requiere_receta' => false],
-            ['type' => 'MEDICAMENTO', 'cat' => 'Vacunas', 'name' => 'Vacuna Séxtuple Canina',           'principio_activo' => 'Parvovirus/Moquillo/Leptospira', 'presentacion' => 'Dosis',  'costo' => 18.00,  'precio' => 45.00,  'stock' => 80,  'min' => 15, 'requiere_receta' => false],
-            ['type' => 'MEDICAMENTO', 'cat' => 'Vacunas', 'name' => 'Vacuna Antirrábica',               'principio_activo' => 'Virus Rábico Inactivado',                               'presentacion' => 'Dosis',  'costo' => 10.00,  'precio' => 30.00,  'stock' => 100, 'min' => 20, 'requiere_receta' => false],
-            ['type' => 'MEDICAMENTO', 'cat' => 'Vacunas', 'name' => 'Vacuna Triple Felina',             'principio_activo' => 'Rinotraqueitis/Calicivirus/Panleucopenia',               'presentacion' => 'Dosis',  'costo' => 22.00,  'precio' => 55.00,  'stock' => 40,  'min' => 8,  'requiere_receta' => false],
-            ['type' => 'ALIMENTO', 'cat' => 'Alimento Seco (Croquetas)', 'name' => 'Royal Canin Medium Adult 15kg',     'principio_activo' => null, 'presentacion' => 'Saco',   'costo' => 185.00, 'precio' => 289.00, 'stock' => 12, 'min' => 3, 'requiere_receta' => false],
-            ['type' => 'ALIMENTO', 'cat' => 'Alimento Seco (Croquetas)', 'name' => 'Hill\'s Science Diet Puppy 6.8kg',  'principio_activo' => null, 'presentacion' => 'Saco',   'costo' => 125.00, 'precio' => 195.00, 'stock' => 8,  'min' => 2, 'requiere_receta' => false],
-            ['type' => 'ACCESORIO', 'cat' => 'Juguetes', 'name' => 'Kong Classic Mediano',                                 'principio_activo' => null, 'presentacion' => 'Unidad', 'costo' => 28.00, 'precio' => 55.00,  'stock' => 12, 'min' => 3, 'requiere_receta' => false],
-            ['type' => 'SERVICIO', 'cat' => 'Servicios Clínicos',       'name' => 'Consulta General',              'principio_activo' => null, 'presentacion' => null, 'costo' => 0,     'precio' => 50.00,  'stock' => 0, 'min' => 0, 'requiere_receta' => false],
-            ['type' => 'SERVICIO', 'cat' => 'Servicios Clínicos',       'name' => 'Consulta de Emergencia',        'principio_activo' => null, 'presentacion' => null, 'costo' => 0,     'precio' => 120.00, 'stock' => 0, 'min' => 0, 'requiere_receta' => false],
-            ['type' => 'SERVICIO', 'cat' => 'Servicios Clínicos',       'name' => 'Ecografía Abdominal',           'principio_activo' => null, 'presentacion' => null, 'costo' => 0,     'precio' => 150.00, 'stock' => 0, 'min' => 0, 'requiere_receta' => false],
-            ['type' => 'SERVICIO', 'cat' => 'Peluquería Canina/Felina', 'name' => 'Baño y Corte Completo Raza Pequeña',           'principio_activo' => null, 'presentacion' => null, 'costo' => 0, 'precio' => 45.00,  'stock' => 0, 'min' => 0, 'requiere_receta' => false],
+            ['type' => 'MEDICAMENTO', 'cat' => 'Antibiotics',                        'name' => 'Amoxicillin 500mg x 100 tab',      'principio_activo' => 'Amoxicillin',         'presentacion' => 'Tablets',  'costo' => 35.00,  'precio' => 65.00,  'stock' => 120, 'min' => 20, 'requiere_receta' => true],
+            ['type' => 'MEDICAMENTO', 'cat' => 'Antibiotics',                        'name' => 'Cephalexin 250mg/5ml Suspension',  'principio_activo' => 'Cephalexin',          'presentacion' => 'Bottle',   'costo' => 18.00,  'precio' => 38.00,  'stock' => 45,  'min' => 10, 'requiere_receta' => true],
+            ['type' => 'MEDICAMENTO', 'cat' => 'Antibiotics',                        'name' => 'Enrofloxacin 50mg x 10 tab',       'principio_activo' => 'Enrofloxacin',       'presentacion' => 'Tablets',  'costo' => 12.00,  'precio' => 25.00,  'stock' => 80,  'min' => 15, 'requiere_receta' => true],
+            ['type' => 'MEDICAMENTO', 'cat' => 'Antibiotics',                        'name' => 'Doxycycline 100mg x 100 cap',      'principio_activo' => 'Doxycycline',         'presentacion' => 'Capsules', 'costo' => 22.00,  'precio' => 45.00,  'stock' => 60,  'min' => 10, 'requiere_receta' => true],
+            ['type' => 'MEDICAMENTO', 'cat' => 'Analgesics and Anti-inflammatories', 'name' => 'Meloxicam 1.5mg/ml Drops 15ml',    'principio_activo' => 'Meloxicam',           'presentacion' => 'Drops',    'costo' => 15.00,  'precio' => 32.00,  'stock' => 55,  'min' => 10, 'requiere_receta' => true],
+            ['type' => 'MEDICAMENTO', 'cat' => 'Analgesics and Anti-inflammatories', 'name' => 'Carprofen 100mg x 14 tab',        'principio_activo' => 'Carprofen',           'presentacion' => 'Tablets',  'costo' => 45.00,  'precio' => 85.00,  'stock' => 30,  'min' => 5,  'requiere_receta' => true],
+            ['type' => 'MEDICAMENTO', 'cat' => 'Internal Antiparasitics',            'name' => 'Praziquantel + Pyrantel x 4 tab',  'principio_activo' => 'Praziquantel/Pyrantel','presentacion' => 'Tablets',  'costo' => 6.00,   'precio' => 15.00,  'stock' => 200, 'min' => 40, 'requiere_receta' => false],
+            ['type' => 'MEDICAMENTO', 'cat' => 'External Antiparasitics',            'name' => 'Fipronil Spot-On Dog 10-20kg',     'principio_activo' => 'Fipronil',            'presentacion' => 'Pipette',  'costo' => 8.00,   'precio' => 22.00,  'stock' => 150, 'min' => 30, 'requiere_receta' => false],
+            ['type' => 'MEDICAMENTO', 'cat' => 'Vaccines',                           'name' => 'Canine DHPP Sextuple Vaccine',     'principio_activo' => 'Parvo/Distemper/Lepto','presentacion' => 'Vial',     'costo' => 18.00,  'precio' => 45.00,  'stock' => 80,  'min' => 15, 'requiere_receta' => false],
+            ['type' => 'MEDICAMENTO', 'cat' => 'Vaccines',                           'name' => 'Rabies Vaccine Inactivated',       'principio_activo' => 'Inactivated Rabies',  'presentacion' => 'Vial',     'costo' => 10.00,  'precio' => 30.00,  'stock' => 100, 'min' => 20, 'requiere_receta' => false],
+            ['type' => 'MEDICAMENTO', 'cat' => 'Vaccines',                           'name' => 'Feline Triple FVRCP Vaccine',       'principio_activo' => 'Rhinotracheitis/Calici/Panleuko','presentacion' => 'Vial','costo' => 22.00,'precio' => 55.00,  'stock' => 40,  'min' => 8,  'requiere_receta' => false],
+            ['type' => 'ALIMENTO',    'cat' => 'Dry Food (Kibble)',                  'name' => 'Royal Canin Medium Adult 15kg',    'principio_activo' => null,                  'presentacion' => 'Bag',      'costo' => 185.00, 'precio' => 289.00, 'stock' => 12,  'min' => 3,  'requiere_receta' => false],
+            ['type' => 'ALIMENTO',    'cat' => 'Dry Food (Kibble)',                  'name' => 'Hill\'s Science Diet Puppy 6.8kg', 'principio_activo' => null,                  'presentacion' => 'Bag',      'costo' => 125.00, 'precio' => 195.00, 'stock' => 8,   'min' => 2,  'requiere_receta' => false],
+            ['type' => 'ACCESORIO',   'cat' => 'Toys',                               'name' => 'Kong Classic Medium Dog Toy',      'principio_activo' => null,                  'presentacion' => 'Unit',     'costo' => 28.00,  'precio' => 55.00,  'stock' => 12,  'min' => 3,  'requiere_receta' => false],
+            ['type' => 'SERVICIO',    'cat' => 'Clinical Services',                  'name' => 'General Consultation',             'principio_activo' => null,                  'presentacion' => null,       'costo' => 0,      'precio' => 50.00,  'stock' => 0,   'min' => 0,  'requiere_receta' => false],
+            ['type' => 'SERVICIO',    'cat' => 'Clinical Services',                  'name' => 'Emergency Consultation',           'principio_activo' => null,                  'presentacion' => null,       'costo' => 0,      'precio' => 120.00, 'stock' => 0,   'min' => 0,  'requiere_receta' => false],
+            ['type' => 'SERVICIO',    'cat' => 'Clinical Services',                  'name' => 'Abdominal Ultrasound Scan',        'principio_activo' => null,                  'presentacion' => null,       'costo' => 0,      'precio' => 150.00, 'stock' => 0,   'min' => 0,  'requiere_receta' => false],
+            ['type' => 'SERVICIO',    'cat' => 'Dog/Cat Grooming',                   'name' => 'Full Bath & Haircut Small Breed',  'principio_activo' => null,                  'presentacion' => null,       'costo' => 0,      'precio' => 45.00,  'stock' => 0,   'min' => 0,  'requiere_receta' => false],
         ];
 
         foreach ($products as $p) {
@@ -226,44 +225,46 @@ class OneYearDataSeeder extends Seeder
             }
 
             if ($p['type'] !== 'SERVICIO') {
-                // Generar fecha de expiración realista
                 $daysToExpiry = match($p['name']) {
-                    'Cefalexina 250mg/5ml Suspensión' => 15,  // Expira en 15 días (alerta crítica)
-                    'Meloxicam 1.5mg/ml Gotas 15ml' => 45,    // Expira en 45 días (alerta)
-                    'Enrofloxacina 50mg x 10 tab' => -10,     // Expirado hace 10 días
-                    default => rand(180, 540),                // Futuro lejano
+                    'Cephalexin 250mg/5ml Suspension' => 15,
+                    'Meloxicam 1.5mg/ml Drops 15ml'   => 45,
+                    'Enrofloxacin 50mg x 10 tab'      => -10,
+                    default => rand(180, 540),
                 };
 
                 DB::table('product_batches')->insert([
-                    'product_id' => $productId,
-                    'supplier_id' => rand(1, 5),
-                    'lote' => 'LOT-' . rand(1000, 9999),
+                    'product_id'        => $productId,
+                    'supplier_id'       => rand(1, 5),
+                    'lote'              => 'LOT-' . rand(1000, 9999),
                     'fecha_vencimiento' => Carbon::now()->addDays($daysToExpiry)->format('Y-m-d'),
-                    'costo_unitario' => $p['costo'],
-                    'precio_venta' => $p['precio'],
-                    'stock_inicial' => $p['stock'] + 20,
-                    'stock_actual' => $p['stock'],
-                    'created_at' => $this->startDate,
-                    'updated_at' => Carbon::now(),
+                    'costo_unitario'    => $p['costo'],
+                    'precio_venta'      => $p['precio'],
+                    'stock_inicial'     => $p['stock'] + 20,
+                    'stock_actual'      => $p['stock'],
+                    'created_at'        => $this->startDate,
+                    'updated_at'        => Carbon::now(),
                 ]);
             }
         }
-        $this->command->info('  ✔ Productos/Servicios base y Lotes de Inventario creados.');
+        $this->command->info('  ✔ Products, services, and inventory batches created in English.');
     }
 
     private function seedCustomersAndPets(): void
     {
-        $firstNames = ['Juan', 'Pedro', 'María', 'Luis', 'Ana', 'Carlos', 'Sofía', 'Diego', 'Carmen', 'Jorge', 'Patricia', 'Fernando', 'Lucía', 'Roberto', 'Andrea'];
-        $lastNames = ['Quispe', 'Flores', 'Sánchez', 'García', 'Rodríguez', 'Rojas', 'Huamán', 'Mendoza', 'Torres', 'López', 'Espinoza', 'Chávez', 'Vargas'];
-        $districts = ['La Molina', 'Santiago de Surco', 'San Borja', 'Miraflores', 'San Isidro', 'Jesús María'];
+        $firstNames = ['John', 'Emily', 'Michael', 'Sarah', 'David', 'Jessica', 'Daniel', 'Ashley', 'James', 'Amanda', 'Robert', 'Jennifer', 'William', 'Elizabeth', 'Matthew', 'Megan'];
+        $lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Miller', 'Davis', 'Wilson', 'Anderson', 'Taylor', 'Thomas', 'Moore', 'Jackson', 'Martin', 'White', 'Harris'];
+        $districts = ['La Molina', 'Surco', 'San Borja', 'Miraflores', 'San Isidro', 'Uptown District'];
 
         $speciesIds = DB::table('species')->pluck('id', 'name')->toArray();
+        $canineId = $speciesIds['Canine'] ?? ($speciesIds['Canino'] ?? 1);
+        $felineId = $speciesIds['Feline'] ?? ($speciesIds['Felino'] ?? 2);
+
         $breedsBySpecies = [];
-        foreach ($speciesIds as $spName => $spId) {
+        foreach ([$canineId, $felineId] as $spId) {
             $breedsBySpecies[$spId] = DB::table('breeds')->where('species_id', $spId)->pluck('id')->toArray();
         }
 
-        // Crear 200 clientes (Total ~320 mascotas)
+        // Create 200 clients (~320 pets)
         for ($i = 0; $i < 200; $i++) {
             $fn = $firstNames[array_rand($firstNames)];
             $ln = $lastNames[array_rand($lastNames)] . ' ' . $lastNames[array_rand($lastNames)];
@@ -280,7 +281,7 @@ class OneYearDataSeeder extends Seeder
                 'email'            => strtolower($fn . '.' . explode(' ', $ln)[0] . rand(10, 99) . '@gmail.com'),
                 'email_valido'     => true,
                 'phone'            => '9' . rand(10000000, 99999999),
-                'address'          => 'Av. Principal ' . rand(100, 999) . ', ' . $district,
+                'address'          => 'Avenue ' . rand(100, 999) . ', ' . $district,
                 'country'          => 'Perú',
                 'state'            => 'Lima',
                 'city'             => $district,
@@ -289,14 +290,13 @@ class OneYearDataSeeder extends Seeder
                 'updated_at'       => $createdAt,
             ]);
 
-            // Generar 1-2 mascotas por cliente (Total ~320)
             $numPets = rand(1, 2);
             for ($p = 0; $p < $numPets; $p++) {
                 $isDog = rand(1, 10) <= 7;
-                $spId = $isDog ? ($speciesIds['Canino'] ?? 1) : ($speciesIds['Felino'] ?? 2);
+                $spId = $isDog ? $canineId : $felineId;
                 $petNames = $isDog 
-                    ? ['Max', 'Luna', 'Rocky', 'Toby', 'Lola', 'Bruno', 'Pelusa', 'Coco', 'Kira', 'Thor']
-                    : ['Michi', 'Salem', 'Cleo', 'Pelusa', 'Tom', 'Kitty', 'Simón', 'Félix', 'Minino', 'Mía'];
+                    ? ['Max', 'Bella', 'Charlie', 'Luna', 'Cooper', 'Bailey', 'Daisy', 'Rocky', 'Lola', 'Buster', 'Teddy', 'Zoe']
+                    : ['Milo', 'Oliver', 'Leo', 'Chloe', 'Sophie', 'Cleo', 'Kitty', 'Simba', 'Felix', 'Luna', 'Shadow', 'Jasper'];
                 
                 $breedIds = $breedsBySpecies[$spId] ?? [];
                 $razaId = !empty($breedIds) ? $breedIds[array_rand($breedIds)] : null;
@@ -308,7 +308,7 @@ class OneYearDataSeeder extends Seeder
                     'species_id'    => $spId,
                     'raza_id'       => $razaId,
                     'gender'        => rand(0, 1) ? 'M' : 'H',
-                    'color'         => ['Marrón', 'Negro', 'Blanco', 'Gris', 'Dorado', 'Atigrado'][array_rand(['Marrón', 'Negro', 'Blanco', 'Gris', 'Dorado', 'Atigrado'])],
+                    'color'         => ['Brown', 'Black', 'White', 'Gray', 'Golden', 'Brindle'][array_rand(['Brown', 'Black', 'White', 'Gray', 'Golden', 'Brindle'])],
                     'birth_date'    => Carbon::now()->subMonths(rand(3, 120))->format('Y-m-d'),
                     'current_weight'=> $isDog ? rand(3, 35) : rand(2, 6),
                     'esterilizado'  => rand(0, 1),
@@ -318,7 +318,7 @@ class OneYearDataSeeder extends Seeder
                 ]);
             }
         }
-        $this->command->info('  ✔ 200 Clientes y ~320 Mascotas creados.');
+        $this->command->info('  ✔ 200 Customers and ~320 Pets created with English names.');
     }
 
     private function seedAppointmentsAndRecords(): void
@@ -326,54 +326,49 @@ class OneYearDataSeeder extends Seeder
         $pets = DB::table('pets')->select('id', 'customer_id', 'species_id', 'current_weight')->get();
         $reasonIds = DB::table('appointment_reasons')->pluck('id', 'name')->toArray();
 
-        // Estructura de Enfermedades con sus Síntomas correspondientes para simular estacionalidad y relaciones coherentes
+        // Clinical data mapped seasonally in English
         $clinicalData = [
-            'Verano' => [ // Meses de calor (Diciembre a Marzo) -> Más Dermatitis y Otitis
-                ['enfermedad' => 'Dermatitis alérgica por pulgas', 'sintoma' => 'Prurito excesivo y enrojecimiento en la piel'],
-                ['enfermedad' => 'Dermatitis alérgica por pulgas', 'sintoma' => 'Pérdida de pelaje y picazón constante'],
-                ['enfermedad' => 'Otitis externa bilateral', 'sintoma' => 'Sacudidas frecuentes de cabeza y mal olor en oídos'],
-                ['enfermedad' => 'Gastroenteritis aguda', 'sintoma' => 'Vómitos frecuentes y decaimiento'],
-                ['enfermedad' => 'Paciente sano - control preventivo', 'sintoma' => 'Chequeo preventivo general y desparasitación'],
+            'Summer' => [
+                ['disease' => 'Flea Allergy Dermatitis',       'symptom' => 'Excessive pruritus, skin erythema and constant scratching'],
+                ['disease' => 'Flea Allergy Dermatitis',       'symptom' => 'Hair loss in lumbar area and severe itching'],
+                ['disease' => 'Bilateral External Otitis',     'symptom' => 'Frequent head shaking, ear canal inflammation and odor'],
+                ['disease' => 'Acute Gastroenteritis',         'symptom' => 'Frequent vomiting, mild dehydration and lethargy'],
+                ['disease' => 'Healthy patient - wellness',    'symptom' => 'Routine preventive wellness check and deworming'],
             ],
-            'Invierno' => [ // Meses de frío (Junio a Septiembre) -> Más Problemas Respiratorios
-                ['enfermedad' => 'Tos de las perreras (traqueobronquitis)', 'sintoma' => 'Tos seca persistente y secreción nasal'],
-                ['enfermedad' => 'Rinotraqueitis felina', 'sintoma' => 'Estornudos constantes y secreción ocular abundante'],
-                ['enfermedad' => 'Gastroenteritis aguda', 'sintoma' => 'Diarrea líquida y falta de apetito'],
-                ['enfermedad' => 'Otitis externa bilateral', 'sintoma' => 'Rascado constante de orejas'],
-                ['enfermedad' => 'Paciente sano - control preventivo', 'sintoma' => 'Vacunación anual de refuerzo'],
+            'Winter' => [
+                ['disease' => 'Kennel Cough (Tracheobronchitis)', 'symptom' => 'Persistent dry cough, mild fever and clear nasal discharge'],
+                ['disease' => 'Feline Viral Rhinotracheitis',     'symptom' => 'Frequent sneezing, conjunctivitis and ocular discharge'],
+                ['disease' => 'Acute Gastroenteritis',           'symptom' => 'Watery diarrhea, inappetence and abdominal discomfort'],
+                ['disease' => 'Bilateral External Otitis',       'symptom' => 'Ear scratching, head tilt and cerumen buildup'],
+                ['disease' => 'Healthy patient - wellness',      'symptom' => 'Annual booster vaccination and general evaluation'],
             ],
-            'Transición' => [ // Abril, Mayo, Octubre, Noviembre -> Equilibrado
-                ['enfermedad' => 'Ehrlichiosis canina', 'sintoma' => 'Fiebre alta, inapetencia y encías pálidas'],
-                ['enfermedad' => 'Otitis externa bilateral', 'sintoma' => 'Mal olor y dolor al tocar la oreja'],
-                ['enfermedad' => 'Dermatitis alérgica por pulgas', 'sintoma' => 'Rasguños y lesiones en zona lumbar'],
-                ['enfermedad' => 'Gastroenteritis aguda', 'sintoma' => 'Deposiciones blandas y vómitos'],
-                ['enfermedad' => 'Paciente sano - control preventivo', 'sintoma' => 'Revisión anual y control de peso'],
+            'Transition' => [
+                ['disease' => 'Canine Ehrlichiosis',           'symptom' => 'High fever, lethargy, pale mucous membranes and anorexia'],
+                ['disease' => 'Bilateral External Otitis',     'symptom' => 'Ear sensitivity, odor and mild discharge'],
+                ['disease' => 'Flea Allergy Dermatitis',       'symptom' => 'Lumbar alopecia and severe flea bite irritation'],
+                ['disease' => 'Acute Gastroenteritis',         'symptom' => 'Soft stools, vomiting and decreased appetite'],
+                ['disease' => 'Healthy patient - wellness',    'symptom' => 'Annual health review, dental check and weight control'],
             ]
         ];
 
-        $appointments = [];
-        $records = [];
         $appointmentIdCounter = 1;
-
         $totalMonths = (int)$this->startDate->diffInMonths($this->endDate) + 1;
 
-        // Generar citas en todo el rango
         for ($month = 0; $month < $totalMonths; $month++) {
             $monthStart = $this->startDate->copy()->addMonths($month);
             $monthEnd = $monthStart->copy()->endOfMonth();
             if ($monthEnd->isAfter($this->endDate)) $monthEnd = $this->endDate->copy();
 
-            // Determinar la estación del mes
             $monthNumber = $monthStart->month;
             if (in_array($monthNumber, [12, 1, 2, 3])) {
-                $season = 'Verano';
+                $season = 'Summer';
             } elseif (in_array($monthNumber, [6, 7, 8, 9])) {
-                $season = 'Invierno';
+                $season = 'Winter';
             } else {
-                $season = 'Transición';
+                $season = 'Transition';
             }
 
-            // Generar ~150 citas por mes
+            // ~150 appointments per month
             for ($c = 0; $c < 150; $c++) {
                 $pet = $pets->random();
                 $apptDate = $monthStart->copy()->addDays(rand(0, 27))->setTime(rand(8, 17), rand(0, 3) * 15, 0);
@@ -381,17 +376,16 @@ class OneYearDataSeeder extends Seeder
                 if ($apptDate->isFuture()) {
                     $status = rand(0, 1) ? 'CONFIRMADA' : 'PENDIENTE';
                 } else {
-                    // Histórico: 85% completadas, 10% canceladas, 5% excedido
                     $randVal = rand(1, 100);
                     $status = $randVal <= 85 ? 'COMPLETADA' : ($randVal <= 95 ? 'CANCELADA' : 'EXCEDIDO');
                 }
 
                 $clinicalCase = $clinicalData[$season][array_rand($clinicalData[$season])];
-                $reasonName = str_contains($clinicalCase['enfermedad'], 'sano') ? 'Vacunación' : 'Consulta General';
+                $reasonName = str_contains($clinicalCase['disease'], 'wellness') ? 'Vaccination' : 'General Consultation';
                 $reasonId = $reasonIds[$reasonName] ?? 1;
                 $vetId = $this->vetIds[array_rand($this->vetIds)];
 
-                // Insertar cita
+                // Insert Appointment
                 DB::table('appointments')->insert([
                     'id'                    => $appointmentIdCounter,
                     'clinic_id'             => $this->clinicId,
@@ -400,15 +394,15 @@ class OneYearDataSeeder extends Seeder
                     'veterinarian_id'       => $vetId,
                     'fecha_hora'            => $apptDate,
                     'end_time'              => $apptDate->copy()->addMinutes(30)->format('H:i:s'),
-                    'reason'                => $clinicalCase['sintoma'],
+                    'reason'                => $clinicalCase['symptom'],
                     'appointment_reason_id' => $reasonId,
                     'status'                => $status,
-                    'notes'                 => 'Cita programada vía sistema.',
+                    'notes'                 => 'Scheduled via clinical appointment system.',
                     'created_at'            => $apptDate->copy()->subDays(rand(1, 5)),
                     'updated_at'            => $apptDate,
                 ]);
 
-                // Si está completada, generar historia clínica y receta
+                // If completed, create Medical Record & Prescription
                 if ($status === 'COMPLETADA') {
                     $recordId = DB::table('medical_records')->insertGetId([
                         'clinic_id'                => $this->clinicId,
@@ -416,82 +410,81 @@ class OneYearDataSeeder extends Seeder
                         'veterinarian_id'          => $vetId,
                         'appointment_id'           => $appointmentIdCounter,
                         'date'                     => $apptDate,
-                        'reason'                   => $clinicalCase['sintoma'],
+                        'reason'                   => $clinicalCase['symptom'],
                         'weight'                   => round($pet->current_weight + (rand(-10, 10) / 10), 2),
                         'temperature'              => round(rand(378, 395) / 10, 1),
                         'heart_rate'               => $pet->species_id == 2 ? rand(120, 200) : rand(70, 140),
                         'respiratory_rate'         => rand(15, 35),
-                        'anamnesis'                => 'Paciente acude por consulta de triaje general. ' . $clinicalCase['sintoma'],
-                        'diagnostico_presuntivo'   => $clinicalCase['enfermedad'],
-                        'tratamiento_indicaciones' => 'Tratamiento sintomático de soporte según protocolo de la clínica.',
+                        'anamnesis'                => 'Patient presented for general clinical triage. ' . $clinicalCase['symptom'],
+                        'diagnostico_presuntivo'   => $clinicalCase['disease'],
+                        'tratamiento_indicaciones' => 'Supportive and symptomatic treatment according to veterinary clinical protocols.',
                         'created_at'               => $apptDate,
                         'updated_at'               => $apptDate,
                     ]);
 
-                    // Sembrar receta correspondiente si no es paciente sano
-                    if (!str_contains($clinicalCase['enfermedad'], 'sano')) {
-                        $this->seedPrescriptionForRecord($recordId, $clinicalCase['enfermedad'], $apptDate);
+                    if (!str_contains($clinicalCase['disease'], 'wellness')) {
+                        $this->seedPrescriptionForRecord($recordId, $clinicalCase['disease'], $apptDate);
                     }
                 }
 
                 $appointmentIdCounter++;
             }
         }
-        $this->command->info('  ✔ Citas e Historias Clínicas (con Recetas Médicas vinculadas) creadas con lógica estacional.');
+        $this->command->info('  ✔ Appointments, Medical Records, and Prescriptions created in English.');
     }
 
     private function seedPrescriptionForRecord(int $recordId, string $disease, Carbon $date): void
     {
         $prescriptionData = match ($disease) {
-            'Dermatitis alérgica por pulgas' => [
-                'name' => 'Fipronil Pipeta Perro 10-20kg',
-                'dosage' => '1 pipeta',
-                'frequency' => 'Cada 30 días',
-                'duration' => '1 aplicación',
+            'Flea Allergy Dermatitis' => [
+                'name' => 'Fipronil Spot-On Dog 10-20kg',
+                'dosage' => '1 pipette',
+                'frequency' => 'Every 30 days',
+                'duration' => '1 application',
                 'via' => 'TÓPICA',
                 'days' => 1,
                 'qty' => 1,
-                'indicaciones' => 'Aplicar directamente sobre la piel de la nuca.'
+                'indicaciones' => 'Apply directly to the skin at the base of the neck.'
             ],
-            'Otitis externa bilateral' => [
-                'name' => 'Meloxicam 1.5mg/ml Gotas 15ml',
-                'dosage' => '5 gotas',
-                'frequency' => 'Cada 24 horas',
-                'duration' => '5 días',
+            'Bilateral External Otitis' => [
+                'name' => 'Meloxicam 1.5mg/ml Drops 15ml',
+                'dosage' => '5 drops',
+                'frequency' => 'Every 24 hours',
+                'duration' => '5 days',
                 'via' => 'ORAL',
                 'days' => 5,
                 'qty' => 1,
-                'indicaciones' => 'Dar junto con el alimento.'
+                'indicaciones' => 'Administer with food. Do not exceed recommended dosage.'
             ],
-            'Gastroenteritis aguda' => [
-                'name' => 'Cefalexina 250mg/5ml Suspensión',
+            'Acute Gastroenteritis' => [
+                'name' => 'Cephalexin 250mg/5ml Suspension',
                 'dosage' => '2.5 ml',
-                'frequency' => 'Cada 12 horas',
-                'duration' => '7 días',
+                'frequency' => 'Every 12 hours',
+                'duration' => '7 days',
                 'via' => 'ORAL',
                 'days' => 7,
                 'qty' => 1,
-                'indicaciones' => 'Agitar bien antes de usar. Mantener refrigerado.'
+                'indicaciones' => 'Shake well before use. Keep refrigerated.'
             ],
-            'Tos de las perreras (traqueobronquitis)', 'Ehrlichiosis canina' => [
-                'name' => 'Doxiciclina 100mg x 100 cap',
-                'dosage' => '1/2 tableta',
-                'frequency' => 'Cada 12 horas',
-                'duration' => '10 días',
+            'Kennel Cough (Tracheobronchitis)', 'Canine Ehrlichiosis' => [
+                'name' => 'Doxycycline 100mg x 100 cap',
+                'dosage' => '1/2 tablet',
+                'frequency' => 'Every 12 hours',
+                'duration' => '10 days',
                 'via' => 'ORAL',
                 'days' => 10,
                 'qty' => 10,
-                'indicaciones' => 'Administrar después de las comidas. No suspender tratamiento.'
+                'indicaciones' => 'Give after meals. Complete the full antibiotic course.'
             ],
-            'Rinotraqueitis felina' => [
-                'name' => 'Amoxicilina 500mg x 100 tab',
-                'dosage' => '1/4 tableta',
-                'frequency' => 'Cada 12 horas',
-                'duration' => '7 días',
+            'Feline Viral Rhinotracheitis' => [
+                'name' => 'Amoxicillin 500mg x 100 tab',
+                'dosage' => '1/4 tablet',
+                'frequency' => 'Every 12 hours',
+                'duration' => '7 days',
                 'via' => 'ORAL',
                 'days' => 7,
                 'qty' => 4,
-                'indicaciones' => 'Disolver en agua si es necesario para facilitar toma.'
+                'indicaciones' => 'May be dissolved in water if needed to facilitate intake.'
             ],
             default => null
         };
@@ -499,20 +492,20 @@ class OneYearDataSeeder extends Seeder
         if ($prescriptionData) {
             $prodId = $this->medicationIds[$prescriptionData['name']] ?? null;
             DB::table('prescriptions')->insert([
-                'clinic_id' => $this->clinicId,
-                'medical_record_id' => $recordId,
-                'product_id' => $prodId,
-                'medicamento' => $prescriptionData['name'],
-                'dosage' => $prescriptionData['dosage'],
-                'frequency' => $prescriptionData['frequency'],
-                    'duration' => $prescriptionData['duration'],
-                'via_administracion' => $prescriptionData['via'],
-                'duracion_dias' => $prescriptionData['days'],
-                'indicaciones' => $prescriptionData['indicaciones'],
+                'clinic_id'           => $this->clinicId,
+                'medical_record_id'   => $recordId,
+                'product_id'          => $prodId,
+                'medicamento'         => $prescriptionData['name'],
+                'dosage'              => $prescriptionData['dosage'],
+                'frequency'           => $prescriptionData['frequency'],
+                'duration'            => $prescriptionData['duration'],
+                'via_administracion'  => $prescriptionData['via'],
+                'duracion_dias'       => $prescriptionData['days'],
+                'indicaciones'        => $prescriptionData['indicaciones'],
                 'cantidad_dispensada' => $prescriptionData['qty'],
-                'dispensado' => (bool)rand(0, 1),
-                'created_at' => $date,
-                'updated_at' => $date,
+                'dispensado'          => (bool)rand(0, 1),
+                'created_at'          => $date,
+                'updated_at'          => $date,
             ]);
         }
     }
@@ -525,7 +518,7 @@ class OneYearDataSeeder extends Seeder
 
         $totalMonths = (int)$this->startDate->diffInMonths($this->endDate) + 1;
 
-        // 1. Crear Cajas Registradoras mensuales para justificar ventas
+        // 1. Monthly cash registers
         for ($month = 0; $month < $totalMonths; $month++) {
             $monthStart = $this->startDate->copy()->addMonths($month);
             $openedAt = $monthStart->copy()->setTime(8, 0, 0);
@@ -536,7 +529,7 @@ class OneYearDataSeeder extends Seeder
                 'opened_at'         => $openedAt,
                 'closed_at'         => $closedAt,
                 'opening_amount'    => 200.00,
-                'calculated_amount' => 18500.00, // Aprox mensual
+                'calculated_amount' => 18500.00,
                 'real_amount'       => 18500.00,
                 'difference'        => 0.00,
                 'status'            => 'CERRADA',
@@ -545,7 +538,7 @@ class OneYearDataSeeder extends Seeder
             ]);
         }
 
-        // 2. Generar 1800 ventas distribuidas
+        // 2. 1800 sales
         $saleIdCounter = 1;
         $totalDays = (int)$this->startDate->diffInDays($this->endDate);
 
@@ -554,7 +547,6 @@ class OneYearDataSeeder extends Seeder
             $customerId = $customers[array_rand($customers)];
             $cajeroId = $vetsAndAdmin[array_rand($vetsAndAdmin)];
 
-            // Seleccionar 1-3 productos aleatorios
             $selectedProducts = $products->random(rand(1, 3));
             $subtotalVenta = 0;
             $igvVenta = 0;
@@ -585,7 +577,6 @@ class OneYearDataSeeder extends Seeder
                 $igvVenta += $igvItem;
                 $totalVenta += $subtotalItem;
 
-                // Generar movimiento de inventario si no es servicio
                 if ($prod->type !== 'SERVICIO') {
                     DB::table('inventory_movements')->insert([
                         'clinic_id'          => $this->clinicId,
@@ -604,7 +595,6 @@ class OneYearDataSeeder extends Seeder
                 }
             }
 
-            // Insertar Venta
             DB::table('sales')->insert([
                 'id'               => $saleIdCounter,
                 'clinic_id'        => $this->clinicId,
@@ -620,11 +610,10 @@ class OneYearDataSeeder extends Seeder
                 'updated_at'       => $saleDate,
             ]);
 
-            // Insertar Detalles
             DB::table('sale_details')->insert($details);
 
             $saleIdCounter++;
         }
-        $this->command->info('  ✔ 1800 Ventas y movimientos de Kardex coherentes cargados.');
+        $this->command->info('  ✔ 1800 Sales and inventory movements seeded successfully.');
     }
 }

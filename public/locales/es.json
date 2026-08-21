@@ -7,8 +7,11 @@
         "product_created": "Producto registrado correctamente. Recuerda registrar su lote de entrada para agregar stock.",
         "entry_created": "Entrada de producto registrada exitosamente."
     },
-    "receipt": {
-        "{{ strtolower($ventaVer->tipo_comprobante) }}": "{{ strtolower($ventaVer->tipo comprobante) }}"
+    "doc": {
+        "dni": "DNI",
+        "ruc": "RUC",
+        "ce": "Carnet de Extranjería",
+        "passport": "Pasaporte"
     },
     "payment": {
         "method": "Método de Pago",
@@ -16,9 +19,30 @@
         "card": "Tarjeta",
         "yapePlin": "Yape / Plin",
         "transfer": "Transferencia",
+        "efectivo": "Efectivo",
+        "tarjeta": "Tarjeta",
+        "yape_plin": "Yape / Plin",
+        "transferencia": "Transferencia",
         "paid": "Pagado",
         "pending": "Pendiente",
         "cancelled": "Anulado"
+    },
+    "roles": {
+        "super_admin": "Super Admin",
+        "veterinarian": "Veterinario",
+        "veterinario": "Veterinario",
+        "user": "Usuario",
+        "usuario": "Usuario"
+    },
+    "color": {
+        "white": "Blanco",
+        "black": "Negro",
+        "brown": "Marrón",
+        "golden": "Dorado",
+        "gray": "Gris",
+        "brindle": "Atigrado",
+        "spotted": "Manchado",
+        "other": "Otro"
     },
     "misc": {
         "emergencyMode": "Modo de emergencia (permite venta sin stock)",
@@ -354,6 +378,8 @@
         "timePlaceholder": "Seleccione hora",
         "male": "Macho",
         "female": "Hembra",
+        "genderMale": "Macho",
+        "genderFemale": "Hembra",
         "species": "Especie",
         "breed": "Raza",
         "gender": "Sexo",
@@ -362,7 +388,25 @@
         "age": "Edad",
         "addr": "Dir.",
         "indications": "Indicaciones",
-        "owner": "Propietario"
+        "owner": "Propietario",
+        "pendingAptsDetected": "Citas Pendientes Detectadas",
+        "pendingAptsDescPrefix": "Esta mascota tiene",
+        "pendingAptsDescSuffix": "cita(s) programada(s). ¿Deseas autocompletar la información?",
+        "system_piel": "Piel y Pelaje",
+        "system_ojos": "Ojos y Oídos",
+        "system_cardio": "Cardiovascular",
+        "system_resp": "Respiratorio",
+        "system_digestivo": "Digestivo / Abdomen",
+        "system_musculo": "Musculoesquelético",
+        "system_neuro": "Neurológico",
+        "system_urinario": "Urinario / Genital",
+        "clarificationNotes": "Notas Aclaratorias Anexas (Posterior a 24h)",
+        "searchOrTypeMedicine": "Buscar o escribir medicina...",
+        "routeOral": "Oral",
+        "routeIntramuscular": "Intramuscular",
+        "routeIntravenous": "Intravenosa",
+        "routeSubcutaneous": "Subcutánea",
+        "routeTopical": "Tópica"
     },
     "profile": {
         "contact": "Contacto",
@@ -506,7 +550,9 @@
         "newRecord": "Nueva Historia",
         "viewRecord": "Ver Ficha",
         "pdf": "PDF",
-        "downloadPdf": "Descargar PDF"
+        "downloadPdf": "Descargar PDF",
+        "autocompleteAppt": "Autocompletar con cita",
+        "addPrescription": "+ Añadir prescripción"
     },
     "login": {
         "title": "VETCORESSEN",
@@ -1302,8 +1348,12 @@
         "settings": "Configuración"
     },
     "citas": {
-        "vistaCalendario": "VistaCalendario",
-        "vistaLista": "VistaLista"
+        "dayView": "Vista Día",
+        "weekView": "Vista Semana",
+        "monthView": "Vista Mes",
+        "listView": "Lista Agenda",
+        "vistaCalendario": "Vista Calendario",
+        "vistaLista": "Vista Lista"
     },
     "action": {
         "print": "Imprimir"

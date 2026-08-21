@@ -167,7 +167,7 @@
             </div>
 
             {{-- Columna Derecha (50%): Citas Programadas --}}
-            <div class="vc-panel flex flex-col justify-between">
+            <div class="vc-panel flex flex-col">
                 <div class="flex items-center justify-between mb-4">
                     <div>
                         <h2 class="text-base font-extrabold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
@@ -184,7 +184,7 @@
                     </a>
                 </div>
 
-                <div class="space-y-3 overflow-y-auto max-h-64 pr-1">
+                <div class="space-y-3 overflow-y-auto max-h-64 pr-1 flex-1">
                     @forelse($citasHoy as $cita)
                         <div class="p-3 rounded-xl border border-zinc-100 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-800/30 flex items-center justify-between gap-3 hover:border-emerald-500/30 transition-all">
                             <div class="flex items-center gap-3 min-w-0">
@@ -208,7 +208,7 @@
                             </span>
                         </div>
                     @empty
-                        <div class="py-12 text-center text-zinc-400 text-xs">
+                        <div class="py-8 text-center text-zinc-400 text-xs">
                             <span class="material-symbols-outlined text-3xl mb-1 text-zinc-300 dark:text-zinc-600">event_available</span>
                             <p x-text="$store.i18n.t('dashboard.noAppointmentsPeriod') || 'Sin citas programadas en este período'">Sin citas programadas en este período</p>
                         </div>
@@ -483,6 +483,13 @@
 </div>
 
 <script>
+    if (typeof Chart !== 'undefined') {
+        Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
+        Chart.defaults.interaction.mode = 'index';
+        Chart.defaults.interaction.intersect = false;
+        Chart.defaults.plugins.tooltip.enabled = true;
+    }
+
     function getDashboardDict(key) {
         const store = Alpine.store('i18n');
         const isEn = (store?.locale || localStorage.getItem('vc_locale')) === 'en';
@@ -513,7 +520,7 @@
             'dashboard.dec': isEn ? 'Dec' : 'Dic',
             'status.completed': isEn ? 'Completed' : 'Realizadas',
             'status.pending': isEn ? 'Pending' : 'Por Realizar',
-            'dashboard.incomeSoles': isEn ? 'Income (S/)' : 'Ingresos (S/)'
+            'dashboard.incomeSoles': isEn ? 'Revenue (S/)' : 'Ingresos (S/)'
         };
         const val = store?.t(key);
         if (val && val !== key) return val;
@@ -575,9 +582,11 @@
                 this.$nextTick(waitForChart);
 
                 window.addEventListener('language-changed', () => {
-                    if (this.chart && this.cachedData) {
-                        this.updateData(this.cachedData);
-                    }
+                    requestAnimationFrame(() => {
+                        if (this.chart && this.cachedData) {
+                            this.updateData(this.cachedData);
+                        }
+                    });
                 });
             },
 
@@ -600,11 +609,18 @@
                 this.chart.data.datasets[0].label = compLabel;
                 this.chart.data.datasets[1].data = data.pendientes || [];
                 this.chart.data.datasets[1].label = pendLabel;
-                this.chart.update('active');
+                this.chart.update('none');
             },
 
-            buildChart(ctx, data) {
-                if (this.chart) this.chart.destroy();
+            buildChart(canvas, data) {
+                if (!canvas) return;
+                const existing = Chart.getChart(canvas);
+                if (existing) existing.destroy();
+                if (this.chart) {
+                    try { this.chart.destroy(); } catch(e) {}
+                    this.chart = null;
+                }
+                const ctx = canvas.getContext('2d');
                 const labels = formatAtencionesLabelsList(data);
                 const compLabel = getDashboardDict('status.completed') || 'Realizadas';
                 const pendLabel = getDashboardDict('status.pending') || 'Por Realizar';
@@ -619,12 +635,14 @@
                                 data: data?.realizadas || [],
                                 backgroundColor: '#10b981',
                                 borderRadius: 6,
+                                maxBarThickness: 40,
                             },
                             {
                                 label: pendLabel,
                                 data: data?.pendientes || [],
                                 backgroundColor: '#3b82f6',
                                 borderRadius: 6,
+                                maxBarThickness: 40,
                             }
                         ]
                     },
@@ -633,7 +651,7 @@
                         maintainAspectRatio: false,
                         interaction: {
                             mode: 'index',
-                            intersect: false,
+                            intersect: false
                         },
                         plugins: {
                             legend: {
@@ -678,9 +696,9 @@
             initChart(initialData) {
                 this.cachedData = initialData;
                 const waitForChart = () => {
-                    const ctx = document.getElementById('ingresosChart');
-                    if (typeof Chart !== 'undefined' && ctx) {
-                        this.buildChart(ctx, this.cachedData);
+                    const canvas = document.getElementById('ingresosChart');
+                    if (typeof Chart !== 'undefined' && canvas) {
+                        this.buildChart(canvas, this.cachedData);
                     } else {
                         setTimeout(waitForChart, 50);
                     }
@@ -688,19 +706,21 @@
                 this.$nextTick(waitForChart);
 
                 window.addEventListener('language-changed', () => {
-                    if (this.chart && this.cachedData) {
-                        this.updateData(this.cachedData);
-                    }
+                    requestAnimationFrame(() => {
+                        if (this.chart && this.cachedData) {
+                            this.updateData(this.cachedData);
+                        }
+                    });
                 });
             },
 
             updateData(data) {
                 if (!data) return;
                 this.cachedData = data;
-                const ctx = document.getElementById('ingresosChart');
-                if (!ctx) return;
+                const canvas = document.getElementById('ingresosChart');
+                if (!canvas) return;
                 if (!this.chart) {
-                    if (typeof Chart !== 'undefined') this.buildChart(ctx, data);
+                    if (typeof Chart !== 'undefined') this.buildChart(canvas, data);
                     return;
                 }
 
@@ -710,11 +730,18 @@
                 this.chart.data.labels = labels;
                 this.chart.data.datasets[0].data = data.map(d => d.total) || [];
                 this.chart.data.datasets[0].label = incomeLabel;
-                this.chart.update('active');
+                this.chart.update('none');
             },
 
-            buildChart(ctx, data) {
-                if (this.chart) this.chart.destroy();
+            buildChart(canvas, data) {
+                if (!canvas) return;
+                const existing = Chart.getChart(canvas);
+                if (existing) existing.destroy();
+                if (this.chart) {
+                    try { this.chart.destroy(); } catch(e) {}
+                    this.chart = null;
+                }
+                const ctx = canvas.getContext('2d');
                 const labels = formatIngresosLabelsList(data);
                 const incomeLabel = getDashboardDict('dashboard.incomeSoles') || 'Ingresos (S/)';
 
@@ -730,12 +757,14 @@
                             borderWidth: 2.5,
                             fill: true,
                             tension: 0.35,
-                            pointBackgroundColor: '#10b981',
+                            pointRadius: 4,
                             pointHoverRadius: 7,
+                            pointBackgroundColor: '#10b981',
                             pointHoverBackgroundColor: '#10b981',
                             pointHoverBorderColor: '#ffffff',
                             pointHoverBorderWidth: 2,
-                            hitRadius: 25,
+                            hitRadius: 30,
+                            pointHitRadius: 30,
                         }]
                     },
                     options: {
@@ -743,7 +772,7 @@
                         maintainAspectRatio: false,
                         interaction: {
                             mode: 'index',
-                            intersect: false,
+                            intersect: false
                         },
                         plugins: {
                             legend: { display: false },

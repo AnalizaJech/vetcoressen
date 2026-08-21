@@ -215,9 +215,65 @@
             x-init="initCalendar($refs.calendarEl)"
             @calendar-refresh.window="refreshCalendar()"
             @vista-cambiada.window="if ($event.detail === 'calendario') setTimeout(() => updateSize(), 150)"
-            class="vc-panel p-4 md:p-6"
+            class="vc-panel p-4 md:p-6 space-y-4"
         >
-            <div x-ref="calendarEl" class="min-h-[600px]"></div>
+            {{-- Barra de Controles Superiores del Calendario --}}
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-100 dark:border-zinc-800">
+                {{-- Navegación: Botones Prev, Hoy y Next separados con título --}}
+                <div class="flex items-center gap-2">
+                    <button 
+                        type="button" 
+                        @click="prev()" 
+                        class="w-9 h-9 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-950 dark:hover:text-white flex items-center justify-center transition-all shadow-xs"
+                        title="Previous"
+                    >
+                        <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+                    </button>
+
+                    <button 
+                        type="button" 
+                        @click="today()" 
+                        class="px-3.5 h-9 rounded-xl border border-emerald-300/80 dark:border-emerald-700/80 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 text-xs font-extrabold flex items-center gap-1.5 transition-all shadow-xs hover:shadow"
+                    >
+                        <span class="material-symbols-outlined text-[16px]">today</span>
+                        <span x-text="$store.i18n.t('form.today') || 'Today'">Today</span>
+                    </button>
+
+                    <button 
+                        type="button" 
+                        @click="next()" 
+                        class="w-9 h-9 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-950 dark:hover:text-white flex items-center justify-center transition-all shadow-xs"
+                        title="Next"
+                    >
+                        <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+                    </button>
+
+                    <h2 class="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-100 ml-2 tracking-tight capitalize" x-text="currentTitle"></h2>
+                </div>
+
+                {{-- Selector de Períodos: Dropdown Custom en vez de botones --}}
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-semibold text-zinc-400 dark:text-zinc-500 hidden sm:inline" x-text="$store.i18n.locale === 'en' ? 'Period:' : 'Período:'"></span>
+                    <div class="w-44">
+                        <x-vc-dropdown
+                            :options="[
+                                ['value' => 'timeGridDay', 'label' => 'citas.dayView', 'icon' => 'calendar_view_day'],
+                                ['value' => 'timeGridWeek', 'label' => 'citas.weekView', 'icon' => 'calendar_view_week'],
+                                ['value' => 'dayGridMonth', 'label' => 'citas.monthView', 'icon' => 'calendar_view_month'],
+                                ['value' => 'listWeek', 'label' => 'citas.listView', 'icon' => 'list_alt'],
+                            ]"
+                            selected="timeGridWeek"
+                            placeholder="citas.weekView"
+                            icon="calendar_month"
+                            @input="changeView($event.detail)"
+                            @change="changeView($event.detail)"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            {{-- Contenedor del Calendario --}}
+            <div wire:ignore x-ref="calendarEl" id="vc-fullcalendar" class="min-h-[600px] w-full"></div>
         </div>
     </div>
 
@@ -540,36 +596,42 @@
             </div>
             @endif
             
-            <div class="flex flex-col sm:flex-row flex-wrap justify-end gap-2 pt-6 border-t border-zinc-200 dark:border-zinc-700">
-                @if($citaVer->status === 'PENDIENTE')
-                    <button type="button" wire:click="cambiarEstado({{ $citaVer->id }}, 'CONFIRMADA')" class="w-full sm:w-auto px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center gap-2 transition-all">
-                        <span class="material-symbols-outlined icon-sm">check_circle</span>
-                        <span x-text="$store.i18n.t('btn.confirm') || 'Confirmar'">Confirmar</span>
-                    </button>
-                @endif
-
-                @if($citaVer->historiaClinica)
-                    <a href="{{ route('historias.ver', $citaVer->historiaClinica->id) }}" class="w-full sm:w-auto px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center gap-2 transition-all">
-                        <span class="material-symbols-outlined icon-sm">description</span>
-                        <span x-text="$store.i18n.t('btn.viewHC') || 'Ver HC'">Ver HC</span>
-                    </a>
-                @elseif(in_array($citaVer->status, ['CONFIRMADA', 'EN_PROGRESO']) && $citaVer->fecha_hora?->isToday())
-                    <button type="button" wire:click="iniciarAtencion({{ $citaVer->id }})" class="w-full sm:w-auto px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center gap-2 transition-all">
-                        <span class="material-symbols-outlined icon-sm">clinical_notes</span>
-                        <span x-text="$store.i18n.t('btn.startAttention') || 'Iniciar Atención'">Iniciar Atención</span>
-                    </button>
-                @endif
-
+            <div class="flex flex-col sm:flex-row flex-wrap justify-between items-center gap-3 pt-6 border-t border-zinc-200 dark:border-zinc-700">
                 <flux:modal.close>
-                    <flux:button variant="ghost"><span x-text="$store.i18n.t('btn.close') || 'Cerrar'">Cerrar</span></flux:button>
+                    <button type="button" class="w-full sm:w-auto px-4 py-2 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all">
+                        <span class="material-symbols-outlined icon-sm">close</span>
+                        <span x-text="$store.i18n.t('btn.close') || 'Cerrar'">Cerrar</span>
+                    </button>
                 </flux:modal.close>
-                <a href="{{ route('citas.editar', $citaVer->id) }}" class="w-full sm:w-auto px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center transition-all" x-bind:aria-label="$store.i18n.t('btn.edit') || 'Edit'" x-bind:title="$store.i18n.t('btn.edit') || 'Edit'">
-                    <span class="material-symbols-outlined icon-sm">edit</span>
-                </a>
-                
-                <button type="button" @click="$wire.citaEliminarId = {{ $citaVer->id }}; Flux.modal('ver-cita').close(); Flux.modal('confirmar-eliminar').show()" class="btn-danger w-full sm:w-auto justify-center">
-                    <span class="material-symbols-outlined icon-sm">delete</span>
-                </button>
+
+                <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
+                    @if($citaVer->status === 'PENDIENTE')
+                        <button type="button" wire:click="cambiarEstado({{ $citaVer->id }}, 'CONFIRMADA')" class="w-full sm:w-auto px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center gap-2 transition-all">
+                            <span class="material-symbols-outlined icon-sm">check_circle</span>
+                            <span x-text="$store.i18n.t('btn.confirm') || 'Confirmar'">Confirmar</span>
+                        </button>
+                    @endif
+
+                    @if($citaVer->historiaClinica)
+                        <a href="{{ route('historias.ver', $citaVer->historiaClinica->id) }}" class="w-full sm:w-auto px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center gap-2 transition-all">
+                            <span class="material-symbols-outlined icon-sm">description</span>
+                            <span x-text="$store.i18n.t('btn.viewHC') || 'Ver HC'">Ver HC</span>
+                        </a>
+                    @elseif(in_array($citaVer->status, ['CONFIRMADA', 'EN_PROGRESO']) && $citaVer->fecha_hora?->isToday())
+                        <button type="button" wire:click="iniciarAtencion({{ $citaVer->id }})" class="w-full sm:w-auto px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center gap-2 transition-all">
+                            <span class="material-symbols-outlined icon-sm">clinical_notes</span>
+                            <span x-text="$store.i18n.t('btn.startAttention') || 'Iniciar Atención'">Iniciar Atención</span>
+                        </button>
+                    @endif
+
+                    <a href="{{ route('citas.editar', $citaVer->id) }}" class="w-full sm:w-auto px-3.5 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl shadow-sm hover:shadow text-sm font-semibold flex items-center justify-center transition-all" x-bind:aria-label="$store.i18n.t('btn.edit') || 'Edit'" x-bind:title="$store.i18n.t('btn.edit') || 'Edit'">
+                        <span class="material-symbols-outlined icon-sm">edit</span>
+                    </a>
+                    
+                    <button type="button" @click="$wire.citaEliminarId = {{ $citaVer->id }}; Flux.modal('ver-cita').close(); Flux.modal('confirmar-eliminar').show()" class="btn-danger w-full sm:w-auto justify-center">
+                        <span class="material-symbols-outlined icon-sm">delete</span>
+                    </button>
+                </div>
             </div>
             </div>
         </div>
@@ -603,6 +665,9 @@
 @script
 <script>
     Alpine.data('vcCalendar', () => ({
+        currentTitle: '',
+        currentView: 'timeGridWeek',
+
         initCalendar(el) {
             let retries = 0;
             const tryInit = () => {
@@ -610,16 +675,74 @@
                     window.initVetCalendar(el, $wire);
                 } else if (retries < 50) {
                     retries++;
-                    setTimeout(tryInit, 200);
+                    setTimeout(tryInit, 150);
                 }
             };
             tryInit();
+
+            window.addEventListener('calendar-view-updated', (e) => {
+                if (e.detail?.title) {
+                    this.currentTitle = e.detail.title;
+                }
+                if (e.detail?.type) {
+                    this.currentView = e.detail.type;
+                }
+            });
+
+            this.$watch('currentView', (viewName) => {
+                if (viewName) {
+                    window.dispatchEvent(new CustomEvent('calendar-set-view', { detail: { view: viewName } }));
+                }
+            });
+
+            // Re-calcular tamaño al cerrar cualquier modal para evitar que se rompa la estilización
+            window.addEventListener('modal-close', () => {
+                setTimeout(() => this.updateSize(), 100);
+            });
+            window.addEventListener('modal-hide', () => {
+                setTimeout(() => this.updateSize(), 100);
+            });
         },
+
+        changeView(v) {
+            if (!v) return;
+            this.currentView = v;
+            if (window._vcActiveCalendar) {
+                window._vcActiveCalendar.changeView(v);
+                if (window._vcActiveCalendar.view) {
+                    this.currentTitle = window._vcActiveCalendar.view.title;
+                }
+            }
+            window.dispatchEvent(new CustomEvent('calendar-set-view', { detail: { view: v } }));
+        },
+
+        prev() {
+            window.dispatchEvent(new CustomEvent('calendar-prev'));
+            if (window._vcActiveCalendar?.view) {
+                this.currentTitle = window._vcActiveCalendar.view.title;
+            }
+        },
+
+        next() {
+            window.dispatchEvent(new CustomEvent('calendar-next'));
+            if (window._vcActiveCalendar?.view) {
+                this.currentTitle = window._vcActiveCalendar.view.title;
+            }
+        },
+
+        today() {
+            window.dispatchEvent(new CustomEvent('calendar-today'));
+            if (window._vcActiveCalendar?.view) {
+                this.currentTitle = window._vcActiveCalendar.view.title;
+            }
+        },
+
         refreshCalendar() {
             if (window._vcActiveCalendar) {
                 window._vcActiveCalendar.refetchEvents();
             }
         },
+
         updateSize() {
             if (window._vcActiveCalendar) {
                 window._vcActiveCalendar.updateSize();

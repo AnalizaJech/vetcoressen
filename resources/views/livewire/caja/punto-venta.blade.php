@@ -302,7 +302,7 @@
                                         <div class="flex items-center gap-2">
                                             <span class="material-symbols-outlined text-[14px] text-zinc-400">badge</span>
                                             <span class="font-bold text-zinc-700 dark:text-zinc-300">Doc:</span> 
-                                            {{ $clienteSeleccionado->numero_documento ?? 'No registrado' }} 
+                                            <span x-text="'{{ $clienteSeleccionado->numero_documento }}' ? '{{ $clienteSeleccionado->numero_documento }}' : ($store.i18n.t('report.notRegistered') || 'Not registered')"></span>
                                             <span class="px-1.5 py-0.5 rounded bg-zinc-200 dark:bg-zinc-700 text-[10px] font-bold">{{ $clienteSeleccionado->tipo_documento ?? 'S/N' }}</span>
                                         </div>
                                         @if($clienteSeleccionado->email)

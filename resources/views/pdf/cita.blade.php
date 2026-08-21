@@ -97,13 +97,19 @@
         }
 
         /* ═══ Estado de la Cita ═══ */
-        .status-badge-container {
+        .status-badge-table {
+            width: 100%;
+            border-collapse: collapse;
             margin: 6px 0 10px 0;
-            padding: 6px 10px;
             background-color: #f8fafc;
             border: 1px solid #cbd5e1;
             border-radius: 4px;
+        }
+        .status-badge-cell {
             text-align: center;
+            vertical-align: middle;
+            padding: 6px 10px;
+            line-height: 1;
         }
         .status-label {
             font-size: 8.5px;
@@ -112,6 +118,9 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-right: 6px;
+            vertical-align: middle;
+            display: inline-block;
+            line-height: 14px;
         }
         .status-pill {
             display: inline-block;
@@ -120,6 +129,8 @@
             padding: 2.5px 8px;
             border-radius: 10px;
             text-transform: uppercase;
+            vertical-align: middle;
+            line-height: 12px;
         }
 
         /* ═══ Títulos de Sección ═══ */
@@ -265,12 +276,16 @@
             $statusLabel = $t('status.' . strtolower($cita->status), $cita->status);
         @endphp
 
-        <div class="status-badge-container">
-            <span class="status-label">{{ $t('appointment.status', 'Estado de la Cita') }}:</span>
-            <span class="status-pill" style="color: {{ $statusConfig['color'] }}; background-color: {{ $statusConfig['bg'] }}; border: 1px solid {{ $statusConfig['border'] }};">
-                {{ $statusLabel }}
-            </span>
-        </div>
+        <table class="status-badge-table">
+            <tr>
+                <td class="status-badge-cell">
+                    <span class="status-label">{{ $t('appointment.status', 'Estado de la Cita') }}:</span>
+                    <span class="status-pill" style="color: {{ $statusConfig['color'] }}; background-color: {{ $statusConfig['bg'] }}; border: 1px solid {{ $statusConfig['border'] }};">
+                        {{ $statusLabel }}
+                    </span>
+                </td>
+            </tr>
+        </table>
 
         {{-- Información del Propietario --}}
         <div class="section-title">{{ $t('misc.generalInformation', 'Información General') }}</div>

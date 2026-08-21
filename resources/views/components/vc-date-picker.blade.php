@@ -2,21 +2,26 @@
     'placeholder' => 'form.selectDate',
     'icon' => 'calendar_month',
     'minDate' => null, // 'today'
+    'maxDate' => null, // 'today'
+    'isBirthdate' => false,
 ])
 
 <div
     x-data="datePicker({
         modelValue: @entangle($attributes->wire('model')),
-        minDate: '{{ $minDate }}'
+        minDate: '{{ $minDate }}',
+        maxDate: '{{ $maxDate ?? ($isBirthdate ? 'today' : '') }}',
+        isBirthdate: {{ $isBirthdate ? 'true' : 'false' }}
     })"
-    @click.outside="open = false"
-    @keydown.escape.window="open = false"
-    class="relative w-full"
+    @click.outside="open = false; viewMode = 'days'"
+    @keydown.escape.window="open = false; viewMode = 'days'"
+    :class="open ? 'relative w-full z-50' : 'relative w-full z-10'"
+    class="w-full"
 >
-    {{-- Trigger Input --}}
-    <div class="relative w-full cursor-pointer" @click="open = !open">
+    {{-- Input disparador con icono a la izquierda --}}
+    <div class="relative w-full cursor-pointer" @click="toggleCalendar()">
         @if($icon)
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none" style="color: var(--vc-text-muted);">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-zinc-400 dark:text-zinc-500">
                 <span class="material-symbols-outlined text-[18px]">{{ $icon }}</span>
             </div>
         @endif
@@ -31,78 +36,150 @@
             @else
                 x-bind:placeholder="placeholderText"
             @endif
-            style="padding-right: 1rem; padding-left: {{ $icon ? '3rem' : '1rem' }};"
+            style="padding-left: {{ $icon ? '2.5rem' : '0.875rem' }}; padding-right: 0.875rem;"
             {{ $attributes->whereDoesntStartWith('wire:model')->whereDoesntStartWith('x-bind:placeholder') }}
         />
     </div>
 
-    {{-- Calendar Dropdown --}}
+    {{-- Dropdown del calendario (Diseño Premium sin selects nativos y altura estable) --}}
     <div
         x-show="open"
         x-transition:enter="transition ease-out duration-150"
-        x-transition:enter-start="opacity-0 -translate-y-1"
-        x-transition:enter-end="opacity-100 translate-y-0"
+        x-transition:enter-start="opacity-0 -translate-y-1 scale-95"
+        x-transition:enter-end="opacity-100 translate-y-0 scale-100"
         x-transition:leave="transition ease-in duration-100"
-        x-transition:leave-start="opacity-100 translate-y-0"
-        x-transition:leave-end="opacity-0 -translate-y-1"
+        x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+        x-transition:leave-end="opacity-0 -translate-y-1 scale-95"
         x-cloak
-        class="absolute z-[9999] mt-1 w-72 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl shadow-2xl overflow-visible p-3"
-        style="z-index: 9999;"
+        class="absolute left-0 mt-1.5 w-72 sm:w-80 min-h-[310px] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700/80 rounded-2xl shadow-2xl p-3.5 z-[99999] isolate"
+        style="z-index: 99999; background-color: var(--color-vc-surface, #18181b);"
     >
-        {{-- Quick Actions --}}
-        <div class="flex items-center gap-2 mb-3 pb-2.5 border-b border-zinc-100 dark:border-zinc-700/60">
-            <button type="button" @click="selectToday()" class="flex-1 py-1.5 text-xs font-bold rounded-lg text-emerald-700 bg-emerald-50 hover:bg-emerald-100 dark:text-emerald-300 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 border border-emerald-200/50 dark:border-emerald-800/40 transition-colors text-center">
-                <span x-text="$store.i18n?.t('form.today') || 'Hoy'">Hoy</span>
-            </button>
-            <button type="button" @click="selectTomorrow()" class="flex-1 py-1.5 text-xs font-bold rounded-lg text-emerald-700 bg-emerald-50 hover:bg-emerald-100 dark:text-emerald-300 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 border border-emerald-200/50 dark:border-emerald-800/40 transition-colors text-center">
-                <span x-text="$store.i18n?.t('form.tomorrow') || 'Mañana'">Mañana</span>
-            </button>
-        </div>
+        {{-- Botones de acción rápida --}}
+        @if(!$isBirthdate)
+            <div class="flex items-center gap-2 mb-3 pb-2.5 border-b border-zinc-100 dark:border-zinc-800">
+                <button type="button" @click="selectToday()" class="flex-1 py-1.5 text-xs font-bold rounded-lg text-emerald-700 bg-emerald-50 hover:bg-emerald-100 dark:text-emerald-300 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 border border-emerald-200/50 dark:border-emerald-800/40 transition-all text-center">
+                    <span x-text="$store.i18n?.t('form.today') || 'Today'">Today</span>
+                </button>
+                <button type="button" @click="selectTomorrow()" class="flex-1 py-1.5 text-xs font-bold rounded-lg text-emerald-700 bg-emerald-50 hover:bg-emerald-100 dark:text-emerald-300 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 border border-emerald-200/50 dark:border-emerald-800/40 transition-all text-center">
+                    <span x-text="$store.i18n?.t('form.tomorrow') || 'Tomorrow'">Tomorrow</span>
+                </button>
+            </div>
+        @else
+            <div class="flex items-center justify-between mb-3 pb-2 border-b border-zinc-100 dark:border-zinc-800 text-xs font-bold text-zinc-600 dark:text-zinc-300">
+                <span class="flex items-center gap-1">
+                    <span class="material-symbols-outlined text-sm text-emerald-500">cake</span>
+                    <span x-text="$store.i18n?.t('form.birthDate') || 'Date of Birth'">Date of Birth</span>
+                </span>
+                <button type="button" @click="selectToday()" class="px-2 py-0.5 text-[11px] font-bold rounded text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30">
+                    <span x-text="$store.i18n?.t('form.today') || 'Today'">Today</span>
+                </button>
+            </div>
+        @endif
 
-        {{-- Calendar Header --}}
-        <div class="flex items-center justify-between mb-3 px-1">
-            <button type="button" @click="prevMonth()" class="w-8 h-8 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 flex items-center justify-center transition-colors" :disabled="isPrevMonthDisabled()" :class="{'opacity-30 cursor-not-allowed': isPrevMonthDisabled()}">
-                <span class="material-symbols-outlined text-[18px]">chevron_left</span>
-            </button>
-            
-            <div class="font-extrabold text-sm text-zinc-900 dark:text-white tracking-wide flex items-center gap-1.5">
-                <span x-text="monthNames[month] || 'Mes'"></span>
-                <span x-text="year"></span>
+        {{-- ═══ VISTA 1: DÍAS ═══ --}}
+        <div x-show="viewMode === 'days'">
+            {{-- Navegación del Calendario: Mes y Año Custom --}}
+            <div class="flex items-center justify-between gap-1 mb-3">
+                <button type="button" @click="prevMonth()" class="w-8 h-8 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 flex items-center justify-center transition-colors shrink-0" :disabled="isPrevMonthDisabled()" :class="{'opacity-30 cursor-not-allowed': isPrevMonthDisabled()}">
+                    <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+                </button>
+                
+                <div class="flex items-center gap-1.5">
+                    {{-- Botón custom selector de Mes --}}
+                    <button type="button" @click="viewMode = 'months'" class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-zinc-50 dark:bg-zinc-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-zinc-900 dark:text-white hover:text-emerald-600 dark:hover:text-emerald-400 text-xs font-bold transition-colors border border-zinc-200 dark:border-zinc-700">
+                        <span x-text="monthNames[month] || ''"></span>
+                        <span class="material-symbols-outlined text-[14px]">expand_more</span>
+                    </button>
+
+                    {{-- Botón custom selector de Año --}}
+                    <button type="button" @click="viewMode = 'years'" class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-zinc-50 dark:bg-zinc-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-zinc-900 dark:text-white hover:text-emerald-600 dark:hover:text-emerald-400 text-xs font-bold transition-colors border border-zinc-200 dark:border-zinc-700">
+                        <span x-text="year"></span>
+                        <span class="material-symbols-outlined text-[14px]">expand_more</span>
+                    </button>
+                </div>
+
+                <button type="button" @click="nextMonth()" class="w-8 h-8 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 flex items-center justify-center transition-colors shrink-0" :disabled="isNextMonthDisabled()" :class="{'opacity-30 cursor-not-allowed': isNextMonthDisabled()}">
+                    <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+                </button>
             </div>
 
-            <button type="button" @click="nextMonth()" class="w-8 h-8 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 flex items-center justify-center transition-colors">
-                <span class="material-symbols-outlined text-[18px]">chevron_right</span>
-            </button>
+            {{-- Días de la semana --}}
+            <div class="grid grid-cols-7 gap-1 mb-1.5">
+                <template x-for="day in daysOfWeek" :key="day">
+                    <div class="text-center text-[10px] font-extrabold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider py-1" x-text="day"></div>
+                </template>
+            </div>
+
+            {{-- Grilla de Días --}}
+            <div class="grid grid-cols-7 gap-1">
+                <template x-for="blank in blankDays" :key="'blank-' + blank">
+                    <div class="w-8 h-8"></div>
+                </template>
+
+                <template x-for="date in daysInMonth" :key="'date-' + date">
+                    <button
+                        type="button"
+                        @click="!isDisabled(date) && selectDate(date)"
+                        class="w-8 h-8 rounded-lg text-xs font-semibold flex items-center justify-center transition-all"
+                        :class="{
+                            'bg-emerald-600 text-white font-extrabold shadow-md shadow-emerald-500/20': isSelected(date),
+                            'text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-emerald-600 font-medium': !isSelected(date) && !isDisabled(date),
+                            'text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-700': isToday(date) && !isSelected(date),
+                            'text-zinc-300 dark:text-zinc-600 cursor-not-allowed opacity-30': isDisabled(date)
+                        }"
+                        :disabled="isDisabled(date)"
+                        x-text="date"
+                    ></button>
+                </template>
+            </div>
         </div>
 
-        {{-- Days of Week --}}
-        <div class="grid grid-cols-7 gap-1 mb-1">
-            <template x-for="day in daysOfWeek" :key="day">
-                <div class="text-center text-[10px] font-extrabold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider py-1" x-text="day"></div>
-            </template>
+        {{-- ═══ VISTA 2: SELECTOR DE MESES (12 Meses Custom) ═══ --}}
+        <div x-show="viewMode === 'months'" class="space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-zinc-100 dark:border-zinc-800">
+                <span class="text-xs font-bold text-zinc-700 dark:text-zinc-300 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[16px] text-emerald-500">calendar_month</span>
+                    <span x-text="$store.i18n?.locale === 'en' ? 'Select Month' : 'Seleccionar Mes'">Select Month</span>
+                </span>
+                <button type="button" @click="viewMode = 'days'" class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline">
+                    <span x-text="$store.i18n?.locale === 'en' ? 'Back' : 'Volver'">Back</span>
+                </button>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+                <template x-for="(mName, idx) in monthNames" :key="idx">
+                    <button
+                        type="button"
+                        @click="setMonth(idx)"
+                        class="py-2 px-1 text-xs font-semibold rounded-xl text-center transition-all"
+                        :class="month === idx ? 'bg-emerald-600 text-white font-bold shadow-md shadow-emerald-500/20' : 'bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-600'"
+                        x-text="mName.slice(0, 3)"
+                    ></button>
+                </template>
+            </div>
         </div>
 
-        {{-- Days Grid --}}
-        <div class="grid grid-cols-7 gap-1">
-            <template x-for="blank in blankDays" :key="'blank-' + blank">
-                <div class="w-8 h-8"></div>
-            </template>
-
-            <template x-for="date in daysInMonth" :key="'date-' + date">
-                <button
-                    type="button"
-                    @click="!isDisabled(date) && selectDate(date)"
-                    class="w-8 h-8 rounded-lg text-xs font-semibold flex items-center justify-center transition-all"
-                    :class="{
-                        'bg-emerald-600 text-white font-bold shadow-md shadow-emerald-500/20': isSelected(date),
-                        'text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700': !isSelected(date) && !isDisabled(date),
-                        'text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-300 dark:border-emerald-700': isToday(date) && !isSelected(date),
-                        'text-zinc-300 dark:text-zinc-600 cursor-not-allowed opacity-40': isDisabled(date)
-                    }"
-                    :disabled="isDisabled(date)"
-                    x-text="date"
-                ></button>
-            </template>
+        {{-- ═══ VISTA 3: SELECTOR DE AÑOS (Años Custom con Paginación) ═══ --}}
+        <div x-show="viewMode === 'years'" class="space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-zinc-100 dark:border-zinc-800">
+                <span class="text-xs font-bold text-zinc-700 dark:text-zinc-300 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[16px] text-emerald-500">event</span>
+                    <span x-text="$store.i18n?.locale === 'en' ? 'Select Year' : 'Seleccionar Año'">Select Year</span>
+                </span>
+                <button type="button" @click="viewMode = 'days'" class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline">
+                    <span x-text="$store.i18n?.locale === 'en' ? 'Back' : 'Volver'">Back</span>
+                </button>
+            </div>
+            <div class="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto pr-1">
+                <template x-for="y in availableYears" :key="y">
+                    <button
+                        type="button"
+                        @click="setYear(y)"
+                        class="py-2 text-xs font-semibold rounded-xl text-center transition-all"
+                        :class="year === y ? 'bg-emerald-600 text-white font-bold shadow-md shadow-emerald-500/20' : 'bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-600'"
+                        x-text="y"
+                    ></button>
+                </template>
+            </div>
         </div>
     </div>
 </div>
@@ -113,17 +190,21 @@
         Alpine.data('datePicker', (config) => ({
             value: config.modelValue,
             minDate: config.minDate,
+            maxDate: config.maxDate,
+            isBirthdate: config.isBirthdate || false,
             open: false,
+            viewMode: 'days', // 'days' | 'months' | 'years'
             month: new Date().getMonth(),
             year: new Date().getFullYear(),
-            daysOfWeek: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
-            monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+            daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+            monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
             blankDays: [],
             daysInMonth: [],
+            availableYears: [],
             
             get placeholderText() {
                 let key = '{{ addslashes($placeholder) }}';
-                return this.$store.i18n?.t(key) || 'Seleccionar fecha...';
+                return this.$store.i18n?.t(key) || 'Select date...';
             },
 
             get formattedValue() {
@@ -132,6 +213,7 @@
             },
 
             init() {
+                this.generateAvailableYears();
                 this.updateLocalization();
                 this.$watch('$store.i18n.locale', () => {
                     this.updateLocalization();
@@ -147,10 +229,31 @@
 
                 this.$watch('open', (isOpen) => {
                     if (isOpen) {
+                        this.viewMode = 'days';
                         this.syncFromValue(this.value);
                         this.calculateDays();
                     }
                 });
+            },
+
+            toggleCalendar() {
+                this.open = !this.open;
+                if (this.open) {
+                    this.viewMode = 'days';
+                    this.syncFromValue(this.value);
+                    this.calculateDays();
+                }
+            },
+
+            generateAvailableYears() {
+                const currentYear = new Date().getFullYear();
+                let startYear = this.isBirthdate ? currentYear - 25 : currentYear - 5;
+                let endYear = this.isBirthdate ? currentYear : currentYear + 5;
+                let years = [];
+                for (let y = endYear; y >= startYear; y--) {
+                    years.push(y);
+                }
+                this.availableYears = years;
             },
 
             syncFromValue(val) {
@@ -170,7 +273,7 @@
             },
 
             updateLocalization() {
-                const isEn = this.$store.i18n?.locale === 'en';
+                const isEn = (this.$store.i18n?.locale || localStorage.getItem('vc_locale')) === 'en';
                 if (isEn) {
                     this.daysOfWeek = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
                     this.monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -180,10 +283,22 @@
                 }
             },
 
+            setMonth(mIdx) {
+                this.month = mIdx;
+                this.calculateDays();
+                this.viewMode = 'days';
+            },
+
+            setYear(yVal) {
+                this.year = yVal;
+                this.calculateDays();
+                this.viewMode = 'days';
+            },
+
             calculateDays() {
                 const now = new Date();
-                const y = (!isNaN(this.year) && this.year > 1900) ? parseInt(this.year, 10) : now.getFullYear();
-                const m = (!isNaN(this.month) && this.month >= 0 && this.month <= 11) ? parseInt(this.month, 10) : now.getMonth();
+                let y = (!isNaN(this.year) && this.year > 1900) ? parseInt(this.year, 10) : now.getFullYear();
+                let m = (!isNaN(this.month) && this.month >= 0 && this.month <= 11) ? parseInt(this.month, 10) : now.getMonth();
                 
                 this.year = y;
                 this.month = m;
@@ -212,6 +327,7 @@
             selectDate(date) {
                 this.value = this.formatDate(this.year, this.month, date);
                 this.open = false;
+                this.viewMode = 'days';
             },
 
             selectToday() {
@@ -221,9 +337,11 @@
                 this.value = this.formatDate(this.year, this.month, today.getDate());
                 this.calculateDays();
                 this.open = false;
+                this.viewMode = 'days';
             },
 
             selectTomorrow() {
+                if (this.maxDate === 'today' || this.isBirthdate) return;
                 const tomorrow = new Date();
                 tomorrow.setDate(tomorrow.getDate() + 1);
                 this.year = tomorrow.getFullYear();
@@ -231,6 +349,7 @@
                 this.value = this.formatDate(this.year, this.month, tomorrow.getDate());
                 this.calculateDays();
                 this.open = false;
+                this.viewMode = 'days';
             },
 
             isToday(date) {
@@ -248,11 +367,16 @@
             },
 
             isDisabled(date) {
+                const current = new Date(this.year, this.month, date);
                 if (this.minDate === 'today') {
                     const today = new Date();
                     today.setHours(0,0,0,0);
-                    const current = new Date(this.year, this.month, date);
-                    return current < today;
+                    if (current < today) return true;
+                }
+                if (this.maxDate === 'today' || this.isBirthdate) {
+                    const today = new Date();
+                    today.setHours(23,59,59,999);
+                    if (current > today) return true;
                 }
                 return false;
             },
@@ -261,6 +385,14 @@
                 if (this.minDate === 'today') {
                     const today = new Date();
                     return this.year < today.getFullYear() || (this.year === today.getFullYear() && this.month <= today.getMonth());
+                }
+                return false;
+            },
+
+            isNextMonthDisabled() {
+                if (this.maxDate === 'today' || this.isBirthdate) {
+                    const today = new Date();
+                    return this.year > today.getFullYear() || (this.year === today.getFullYear() && this.month >= today.getMonth());
                 }
                 return false;
             },
@@ -278,6 +410,8 @@
             },
 
             nextMonth() {
+                if (this.isNextMonthDisabled()) return;
+
                 if (this.month == 11) {
                     this.year++;
                     this.month = 0;

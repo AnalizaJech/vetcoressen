@@ -29,15 +29,17 @@
                         <span class="material-symbols-outlined">calendar_clock</span>
                     </div>
                     <div>
-                        <h3 class="text-sm font-semibold text-indigo-900 dark:text-indigo-300">Citas pendientes detectadas</h3>
-                        <p class="text-xs text-indigo-700 dark:text-indigo-400">Esta mascota tiene {{ $citas->count() }} cita(s) programada(s). ¿Deseas autocompletar la información?</p>
+                        <h3 class="text-sm font-semibold text-indigo-900 dark:text-indigo-300" x-text="$store.i18n.t('form.pendingAptsDetected') || 'Citas pendientes detectadas'">Citas pendientes detectadas</h3>
+                        <p class="text-xs text-indigo-700 dark:text-indigo-400">
+                            <span x-text="($store.i18n.t('form.pendingAptsDescPrefix') || 'Esta mascota tiene') + ' ' + {{ $citas->count() }} + ' ' + ($store.i18n.t('form.pendingAptsDescSuffix') || 'cita(s) programada(s). ¿Deseas autocompletar la información?')">Esta mascota tiene {{ $citas->count() }} cita(s) programada(s). ¿Deseas autocompletar la información?</span>
+                        </p>
                     </div>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
                     @foreach($citas->take(1) as $citaPendiente)
                         <button type="button" class="btn-primary py-1.5 px-3 text-sm flex items-center gap-1 shadow-sm" wire:click="seleccionarCita({{ $citaPendiente->id }})">
                             <span class="material-symbols-outlined text-[16px]">bolt</span>
-                            Autocompletar con cita #{{ $citaPendiente->id }}
+                            <span x-text="($store.i18n.t('btn.autocompleteAppt') || 'Autocompletar con cita') + ' #' + {{ $citaPendiente->id }}">Autocompletar con cita #{{ $citaPendiente->id }}</span>
                         </button>
                     @endforeach
                 </div>
@@ -289,7 +291,7 @@
 
                 {{-- Nivel de Dolor --}}
                 <flux:field>
-                    <flux:label class="mb-2 font-medium">Nivel de Dolor</flux:label>
+                    <flux:label class="mb-2 font-medium" x-text="$store.i18n.t('form.painLevel') || 'Nivel de Dolor'"></flux:label>
                     <x-vc-dropdown
                         wire:model="nivel_dolor"
                         :options="[
@@ -336,7 +338,7 @@
                         >
                             <div class="flex items-center gap-3">
                                 <span class="material-symbols-outlined text-teal-500 text-lg">{{ $sistema['icon'] }}</span>
-                                <span class="text-sm font-semibold text-zinc-700 dark:text-zinc-300">{{ $sistema['label'] }}</span>
+                                <span class="text-sm font-semibold text-zinc-700 dark:text-zinc-300" x-text="$store.i18n.t('form.system_' + '{{ $sistema['key'] }}') || '{{ $sistema['label'] }}'">{{ $sistema['label'] }}</span>
                                 {{-- Indicador de que tiene contenido --}}
                                 @if($this->{$sistema['model']})
                                     <span class="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
@@ -397,7 +399,7 @@
                     </flux:field>
 
                     <flux:field>
-                        <flux:label class="mb-2 font-medium">Notas Aclaratorias Anexas (Posterior a 24h)</flux:label>
+                        <flux:label class="mb-2 font-medium" x-text="$store.i18n.t('form.clarificationNotes') || 'Notas Aclaratorias Anexas (Posterior a 24h)'"></flux:label>
                         <flux:textarea wire:model="notas_aclaratorias" rows="2" x-bind:placeholder="$store.i18n.t('form.notasPlaceholder')" class="resize-none" />
                     </flux:field>
                 </div>
@@ -428,7 +430,7 @@
                         <span x-text="$store.i18n.t('empty.noPrescriptions')"></span>
                     </flux:text>
                     <flux:button wire:click="agregarPrescripcion" class="bg-violet-600 hover:bg-violet-700 text-white font-medium rounded-xl shadow-sm">
-                        + Añadir prescripción
+                        <span x-text="$store.i18n.t('btn.addPrescription') || '+ Añadir prescripción'">+ Añadir prescripción</span>
                     </flux:button>
                 </div>
             @else
@@ -453,17 +455,16 @@
                                     @php
                                         $productosOpts = [];
                                         
-                                        // Recomendaciones comunes (mismas de Inventario)
                                         $recomendaciones = [
-                                            'Amoxicilina', 'Bravecto', 'NexGard', 'Simparica', 'Paracetamol', 
-                                            'Meloxicam', 'Tramadol', 'Doxiciclina', 'Cefalexina', 'Ivermectina', 
-                                            'Prednisona', 'Clindamicina'
+                                            'Amoxicillin 500mg x 100 tab', 'Cephalexin 250mg/5ml Suspension', 'Enrofloxacin 50mg x 10 tab',
+                                            'Doxycycline 100mg x 100 cap', 'Meloxicam 1.5mg/ml Drops 15ml', 'Carprofen 100mg x 14 tab',
+                                            'Praziquantel + Pyrantel x 4 tab', 'Fipronil Spot-On Dog 10-20kg'
                                         ];
                                         foreach ($recomendaciones as $rec) {
                                             $productosOpts[] = ['value' => $rec, 'label' => $rec];
                                         }
                                     @endphp
-                                    <div x-data="{ prodPh: 'Buscar o escribir medicina...' }">
+                                    <div x-data="{ prodPh: $store.i18n.t('form.searchOrTypeMedicine') || 'Buscar o escribir medicina...' }">
                                         {{-- Dropdown para seleccionar producto --}}
                                         <x-vc-dropdown
                                             wire:model.live="prescripciones.{{ $index }}.medicamento"
@@ -514,11 +515,11 @@
                                     <x-vc-dropdown
                                         wire:model="prescripciones.{{ $index }}.via_administracion"
                                         :options="[
-                                            ['value' => 'Oral', 'label' => 'Oral'],
-                                            ['value' => 'Intramuscular', 'label' => 'Intramuscular'],
-                                            ['value' => 'Intravenosa', 'label' => 'Intravenosa'],
-                                            ['value' => 'Subcutánea', 'label' => 'Subcutánea'],
-                                            ['value' => 'Tópica', 'label' => 'Tópica'],
+                                            ['value' => 'Oral', 'label' => 'form.routeOral'],
+                                            ['value' => 'Intramuscular', 'label' => 'form.routeIntramuscular'],
+                                            ['value' => 'Intravenosa', 'label' => 'form.routeIntravenous'],
+                                            ['value' => 'Subcutánea', 'label' => 'form.routeSubcutaneous'],
+                                            ['value' => 'Tópica', 'label' => 'form.routeTopical'],
                                         ]"
                                         :selected="$rx['via_administracion'] ?? 'Oral'"
                                         placeholder="form.select"
@@ -530,7 +531,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-5 pr-10 mt-5">
                                 {{-- Duracion en dias --}}
                                 <flux:field class="md:col-span-1">
-                                    <flux:label class="mb-2 font-medium"><span x-text="$store.i18n.t('form.duration')"></span> (Días)</flux:label>
+                                    <flux:label class="mb-2 font-medium"><span x-text="$store.i18n.t('form.duration')"></span> (<span x-text="$store.i18n.t('misc.days') || 'Días'"></span>)</flux:label>
                                     <flux:input
                                         wire:model="prescripciones.{{ $index }}.duracion_dias"
                                         type="number"
