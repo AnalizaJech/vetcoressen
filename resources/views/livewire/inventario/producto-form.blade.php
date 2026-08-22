@@ -57,75 +57,6 @@
                     <flux:error name="tipo" />
                 </div>
 
-
-                <flux:field>
-                    <flux:label><span x-text="$store.i18n.t('form.nameLabel')"></span></flux:label>
-                    @php
-                        $nameOptions = $nombresComunes->map(fn($n) => ['value' => $n, 'label' => $n])->toArray();
-                    @endphp
-                    <x-vc-dropdown
-                        wire:key="dropdown-nombre-{{ $tipo }}"
-                        wire:model.live="nombre"
-<div x-data>
-    <x-slot:title>{{ $productoId ? 'Edit Product' : 'New Product' }}</x-slot:title>
-
-    {{-- Cabecera --}}
-    <div class="flex items-center gap-3 mb-6">
-        <flux:button href="{{ route('inventario.index') }}" variant="ghost" size="sm" icon="arrow-left" />
-        <div>
-            <flux:heading size="xl" class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-emerald-500">inventory_2</span>
-                <span x-text="$store.i18n.t('{{ $productoId ? 'page.editProduct' : 'page.newProduct' }}')"></span>
-            </flux:heading>
-        </div>
-    </div>
-
-    <form x-on:submit.prevent="{{ $productoId ? 'Flux.modal(\'confirmar-actualizacion\').show()' : '$wire.guardar()' }}" class="space-y-6">
-        {{-- ═══ Información básica ═══ --}}
-        <div class="vc-panel">
-            <div class="vc-section-header">
-                <div class="vc-section-icon">
-                    <span class="material-symbols-outlined">inventory_2</span>
-                </div>
-                <span class="vc-section-title" x-text="$store.i18n.t('form.basicInfo')"></span>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="col-span-full">
-                    <flux:label class="mb-2"><span x-text="$store.i18n.t('form.typeLabel', 'Tipo de producto')"></span></flux:label>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        @foreach(['Medicamento', 'Alimento', 'Accesorio', 'Servicio'] as $t)
-                        @php
-                            $activeClass = match($t) {
-                                'Servicio' => 'border-violet-500 bg-violet-50 dark:bg-violet-500/10 text-violet-700 dark:text-violet-400',
-                                'Medicamento' => 'border-amber-500 bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400',
-                                'Alimento' => 'border-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400',
-                                'Accesorio' => 'border-rose-500 bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400',
-                                default => 'border-zinc-500 bg-zinc-50 dark:bg-zinc-500/10 text-zinc-700 dark:text-zinc-400'
-                            };
-                            $typeIcon = match($t) {
-                                'Servicio' => 'medical_services',
-                                'Medicamento' => 'medication',
-                                'Alimento' => 'pets',
-                                'Accesorio' => 'toys',
-                                default => 'inventory_2'
-                            };
-                        @endphp
-                        <button type="button"
-                                wire:click="$set('tipo', '{{ $t }}')"
-                                class="flex items-center justify-center gap-2 px-4 py-3 border rounded-xl text-sm font-medium transition-all duration-200"
-                                :class="$wire.tipo === '{{ $t }}' ? '{{ $activeClass }} shadow-sm' : 'border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-zinc-300 dark:hover:border-zinc-600'">
-                            <span class="material-symbols-outlined text-lg">
-                                {{ $typeIcon }}
-                            </span>
-                            <span x-text="$store.i18n.t('inventory.{{ strtolower($t) }}') || '{{ $t }}'"></span>
-                        </button>
-                        @endforeach
-                    </div>
-                    <flux:error name="tipo" />
-                </div>
-
-
                 <flux:field>
                     <flux:label><span x-text="$store.i18n.t('form.nameLabel')"></span></flux:label>
                     @php
@@ -161,6 +92,97 @@
                     <flux:label class="flex justify-between w-full">
                         <span x-text="$store.i18n.t('form.barcode')"></span>
                         <button type="button" wire:click="generarCodigoBarras" class="text-xs text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-medium flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">autorenew</span> <span x-text="$store.i18n.t('form.generateAutomatically') || 'Generate automatically'"></span></button>
+                    </flux:label>
+                    <flux:input wire:model="codigo_barras" x-bind:placeholder="$store.i18n.t('placeholder.barcodeOptional') || 'EAN/UPC (Optional)'">
+                        <x-slot:iconLeading>
+                            <span class="material-symbols-outlined text-[18px]">barcode</span>
+                        </x-slot:iconLeading>
+                    </flux:input>
+                </flux:field>
+
+                <!-- Toggle Requiere Receta -->
+                <div class="col-span-full" x-show="$wire.tipo === 'Medicamento'" x-transition x-cloak>
+                    <div 
+                        @click="$wire.set('requiere_receta', !$wire.requiere_receta)" 
+                        class="p-4 rounded-xl border border-blue-200/80 bg-blue-50/70 dark:border-blue-800/40 dark:bg-blue-950/20 flex items-center justify-between gap-4 cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all select-none group shadow-xs"
+                    >
+                        <div class="flex items-start gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
+                                <span class="material-symbols-outlined text-[20px]">prescriptions</span>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm text-blue-950 dark:text-blue-200" x-text="$store.i18n.t('product.controlledMedication') || 'Controlled Medication (Requires Prescription)'"></h4>
+                                <p class="text-xs text-blue-700/90 dark:text-blue-300/80 mt-0.5" x-text="$store.i18n.t('product.controlledMedicationDesc') || 'Enable this option if the product must be prescribed in clinical care before being sold.'"></p>
+                            </div>
+                        </div>
+                        
+                        {{-- Switch Custom Accesible con Estado Reactivo --}}
+                        <div class="relative shrink-0 flex items-center">
+                            <button 
+                                type="button"
+                                role="switch"
+                                :aria-checked="$wire.requiere_receta"
+                                @click.stop="$wire.set('requiere_receta', !$wire.requiere_receta)"
+                                class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
+                                :class="$wire.requiere_receta ? 'bg-blue-600' : 'bg-zinc-300 dark:bg-zinc-700'"
+                            >
+                                <span 
+                                    class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out"
+                                    :class="$wire.requiere_receta ? 'translate-x-5' : 'translate-x-0'"
+                                ></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medicamento: Principio Activo y Presentación -->
+                <div class="col-span-1" x-show="$wire.tipo === 'Medicamento'" x-transition x-cloak>
+                    <flux:field>
+                        <flux:label><span x-text="$store.i18n.t('form.activeIngredient', 'Principio Activo')"></span></flux:label>
+                        <flux:input wire:model="principio_activo" x-bind:placeholder="$store.i18n.t('placeholder.activeIngredient', 'Ej. Fluralaner, Meloxicam')">
+                            <x-slot:iconLeading>
+                                <span class="material-symbols-outlined text-[18px]">science</span>
+                            </x-slot:iconLeading>
+                        </flux:input>
+                    </flux:field>
+                </div>
+                <div class="col-span-1" x-show="$wire.tipo === 'Medicamento'" x-transition x-cloak>
+                    <flux:field>
+                        <flux:label><span x-text="$store.i18n.t('product.presentation') || 'Presentation'"></span></flux:label>
+                        @php
+                            $presentacionOptions = [
+                                ['value' => 'Caja', 'label' => 'product.box'],
+                                ['value' => 'Frasco', 'label' => 'product.bottle'],
+                                ['value' => 'Ampolla', 'label' => 'product.ampoule']
+                            ];
+                        @endphp
+                        <x-vc-dropdown
+                            wire:model="presentacion"
+                            :options="$presentacionOptions"
+                            selected="{{ $presentacion }}"
+                            placeholder="product.selectPresentation"
+                            :allow-custom="true"
+                        />
+                    </flux:field>
+                </div>
+
+                <!-- Alimento: Peso -->
+                <div class="col-span-full md:col-span-1" x-show="$wire.tipo === 'Alimento'" x-transition x-cloak>
+                    <flux:field>
+                        <flux:label><span x-text="$store.i18n.t('form.weight', 'Peso (kg/gr)')"></span></flux:label>
+                        <flux:input wire:model="peso" placeholder="Ej. 15 kg">
+                            <x-slot:iconLeading>
+                                <span class="material-symbols-outlined text-[18px]">scale</span>
+                            </x-slot:iconLeading>
+                        </flux:input>
+                    </flux:field>
+                </div>
+            </div>
+        </div>
+
+        {{-- ═══ Precios ═══ --}}
+        <div class="vc-panel">
+            <div class="vc-section-header flex justify-between items-center">
                 <div class="flex items-center gap-2">
                     <div class="vc-section-icon">
                         <span class="material-symbols-outlined">payments</span>

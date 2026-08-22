@@ -9,21 +9,21 @@
             </div>
             <div>
                 <h1 class="text-xl md:text-2xl font-extrabold text-zinc-900 dark:text-zinc-100 font-display">
-                    <span x-text="$store.i18n.t('sidebar.point_of_sale') || 'Punto de Venta'">Punto de Venta</span>
+                    <span x-text="$store.i18n.t('title.point_of_sale') || 'Point of Sale'">Point of Sale</span>
                 </h1>
-                <p class="text-xs text-zinc-500 dark:text-zinc-400" x-text="$store.i18n.t('page.posSub') || 'Registro rápido de ventas, emisión de boletas, facturas y cobros'">
-                    Registro rápido de ventas, emisión de boletas, facturas y cobros
+                <p class="text-xs text-zinc-500 dark:text-zinc-400" x-text="$store.i18n.t('page.posSub') || 'Quick sales registration, invoice issuance, receipts and checkout'">
+                    Quick sales registration, invoice issuance, receipts and checkout
                 </p>
             </div>
         </div>
         <div class="flex items-center gap-2.5">
             <a href="{{ route('caja.index') }}" wire:navigate class="btn-secondary text-xs px-3.5 py-2 flex items-center justify-center gap-1.5 shadow-sm">
                 <span class="material-symbols-outlined icon-sm">receipt_long</span>
-                <span x-text="$store.i18n.t('page.salesList') || 'Ver Ventas'">Ver Ventas</span>
+                <span x-text="$store.i18n.t('page.salesList') || 'Sales List'">Sales List</span>
             </a>
             <a href="{{ route('caja.arqueo') }}" wire:navigate class="btn-secondary text-xs px-3.5 py-2 flex items-center justify-center gap-1.5 shadow-sm">
                 <span class="material-symbols-outlined icon-sm">account_balance_wallet</span>
-                <span x-text="$store.i18n.t('cashier.title') || 'Arqueo de Caja'">Arqueo de Caja</span>
+                <span x-text="$store.i18n.t('page.cashShift') || 'Cash Count & Shift'">Cash Count & Shift</span>
             </a>
         </div>
     </div>
@@ -203,46 +203,49 @@
         <div class="lg:col-span-2 space-y-4">
             {{-- Carrito --}}
             <div class="vc-panel">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-lg font-bold font-display flex items-center gap-2" style="color: var(--vc-text);">
-                        <span class="material-symbols-outlined text-emerald-400">shopping_cart</span>
-                        <span x-text="$store.i18n.t('form.cart') || 'Carrito de Compras'">Carrito de Compras</span>
+                <div class="flex items-center justify-between mb-4 pb-3 border-b border-zinc-100 dark:border-zinc-800">
+                    <h2 class="text-base font-bold flex items-center gap-2 text-zinc-900 dark:text-zinc-100 font-display">
+                        <div class="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+                        </div>
+                        <span x-text="$store.i18n.t('form.cart') || 'Shopping Cart'">Shopping Cart</span>
                         @if(count($carrito) > 0)
-                            <span class="badge badge-emerald">{{ count($carrito) }}</span>
+                            <span class="px-2 py-0.5 text-xs font-black rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300">{{ count($carrito) }}</span>
                         @endif
                     </h2>
                     @if(count($carrito) > 0)
-                        <button type="button" x-on:click="Flux.modal('confirmar-vaciar').show()" class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full transition-all hover:bg-red-500 hover:text-white hover:border-transparent flex items-center gap-1 text-red-500 border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-500/10">
+                        <button type="button" x-on:click="Flux.modal('confirmar-vaciar').show()" class="text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg transition-all hover:bg-rose-500 hover:text-white flex items-center gap-1 text-rose-500 border border-rose-200 dark:border-rose-900/50 bg-rose-50/50 dark:bg-rose-500/10">
                             <span class="material-symbols-outlined text-[14px]">delete_sweep</span>
-                            <span x-text="$store.i18n.t('btn.clearAll') || 'Vaciar Todo'">Vaciar Todo</span>
+                            <span x-text="$store.i18n.t('btn.clearAll') || 'Clear All'">Clear All</span>
                         </button>
                     @endif
                 </div>
 
                 @if(empty($carrito))
-                    <div class="vc-empty-state py-6">
-                        <div class="vc-empty-icon">
-                            <span class="material-symbols-outlined">remove_shopping_cart</span>
+                    <div class="py-12 px-4 rounded-xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 flex flex-col items-center justify-center text-center bg-zinc-50/50 dark:bg-zinc-900/20">
+                        <div class="w-14 h-14 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 flex items-center justify-center mb-3">
+                            <span class="material-symbols-outlined text-2xl">remove_shopping_cart</span>
                         </div>
-                        <p class="vc-empty-title" x-text="$store.i18n.t('empty.emptyCart') || 'El carrito está vacío'"></p>
+                        <p class="text-sm font-bold text-zinc-700 dark:text-zinc-300" x-text="$store.i18n.t('empty.emptyCart') || 'Shopping Cart is Empty'">Shopping Cart is Empty</p>
+                        <p class="text-xs text-zinc-400 dark:text-zinc-500 mt-1 max-w-[200px]" x-text="$store.i18n.t('empty.emptyCartSub') || 'Click on any product to add it to the cart'">Click on any product to add it to the cart</p>
                     </div>
                 @else
-                    <div class="space-y-2 mb-4 max-h-64 overflow-y-auto">
+                    <div class="space-y-2 mb-4 max-h-72 overflow-y-auto pr-1">
                         @foreach($carrito as $index => $item)
-                            <div class="vc-cart-item">
+                            <div class="p-3 rounded-xl bg-zinc-50/80 dark:bg-zinc-800/40 border border-zinc-200/80 dark:border-zinc-700/60 flex items-center justify-between gap-3 transition-all hover:border-emerald-500/30">
                                 <div class="min-w-0 flex-1">
-                                    <p class="text-sm font-medium truncate" style="color: var(--vc-text);">{{ $item['name'] }}</p>
-                                    <p class="text-xs" style="color: var(--vc-emerald-light);">S/ {{ number_format($item['unit_price'], 2) }}</p>
+                                    <p class="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate">{{ $item['name'] }}</p>
+                                    <p class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5">S/ {{ number_format($item['unit_price'], 2) }}</p>
                                 </div>
-                                <div class="flex items-center gap-2 shrink-0">
-                                    <button wire:click="disminuirCantidad({{ $index }})" class="w-6 h-6 rounded-md flex items-center justify-center text-xs border transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800" style="border-color: var(--vc-border); color: var(--vc-text-muted);">
-                                        <span class="material-symbols-outlined text-sm">remove</span>
+                                <div class="flex items-center gap-1.5 shrink-0">
+                                    <button type="button" wire:click="disminuirCantidad({{ $index }})" class="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold bg-white dark:bg-zinc-700 border border-zinc-200 dark:border-zinc-600 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-600 transition-colors">
+                                        <span class="material-symbols-outlined text-[14px]">remove</span>
                                     </button>
-                                    <span class="text-sm font-semibold w-6 text-center" style="color: var(--vc-text);">{{ $item['quantity'] }}</span>
-                                    <button wire:click="aumentarCantidad({{ $index }})" class="w-6 h-6 rounded-md flex items-center justify-center text-xs border transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800" style="border-color: var(--vc-border); color: var(--vc-text-muted);">
-                                        <span class="material-symbols-outlined text-sm">add</span>
+                                    <span class="text-xs font-black w-6 text-center text-zinc-900 dark:text-zinc-100">{{ $item['quantity'] }}</span>
+                                    <button type="button" wire:click="aumentarCantidad({{ $index }})" class="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold bg-white dark:bg-zinc-700 border border-zinc-200 dark:border-zinc-600 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-600 transition-colors">
+                                        <span class="material-symbols-outlined text-[14px]">add</span>
                                     </button>
-                                    <button type="button" wire:click="eliminarDelCarrito({{ $index }})" class="w-7 h-7 rounded-full bg-red-50 dark:bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center ml-1">
+                                    <button type="button" wire:click="eliminarDelCarrito({{ $index }})" class="w-7 h-7 rounded-lg bg-rose-50 dark:bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white transition-all flex items-center justify-center ml-1 border border-rose-100 dark:border-rose-900/30">
                                         <span class="material-symbols-outlined text-[14px] font-bold">close</span>
                                     </button>
                                 </div>
@@ -251,18 +254,18 @@
                     </div>
 
                     {{-- Totales --}}
-                    <div class="space-y-2 pt-3" style="border-top: 1px solid var(--vc-border);">
-                        <div class="flex justify-between text-sm">
-                            <span style="color: var(--vc-text-muted);" x-text="$store.i18n.t('form.subtotal') || 'Subtotal'">Subtotal</span>
-                            <span style="color: var(--vc-text);">S/ {{ number_format($subtotal, 2) }}</span>
+                    <div class="space-y-2 pt-3 border-t border-zinc-200 dark:border-zinc-700/80">
+                        <div class="flex justify-between text-xs text-zinc-600 dark:text-zinc-400 font-medium">
+                            <span x-text="$store.i18n.t('form.subtotal') || 'Subtotal'">Subtotal</span>
+                            <span class="font-bold text-zinc-900 dark:text-zinc-100">S/ {{ number_format($subtotal, 2) }}</span>
                         </div>
-                        <div class="flex justify-between text-sm">
-                            <span style="color: var(--vc-text-muted);" x-text="$store.i18n.t('form.igv') || 'IGV (18%)'">IGV (18%)</span>
-                            <span style="color: var(--vc-text);">S/ {{ number_format($igv, 2) }}</span>
+                        <div class="flex justify-between text-xs text-zinc-600 dark:text-zinc-400 font-medium">
+                            <span x-text="$store.i18n.t('form.igv') || 'Tax / IGV (18%)'">Tax / IGV (18%)</span>
+                            <span class="font-bold text-zinc-900 dark:text-zinc-100">S/ {{ number_format($igv, 2) }}</span>
                         </div>
-                        <div class="flex justify-between text-base font-bold pt-2" style="border-top: 1px solid var(--vc-border);">
-                            <span style="color: var(--vc-text);" x-text="$store.i18n.t('form.total') || 'Total'">Total</span>
-                            <span style="color: var(--vc-emerald-light);">S/ {{ number_format($total, 2) }}</span>
+                        <div class="flex justify-between items-center text-sm font-extrabold pt-2 border-t border-dashed border-zinc-200 dark:border-zinc-700">
+                            <span class="text-zinc-900 dark:text-zinc-100" x-text="$store.i18n.t('form.total') || 'Total'">Total</span>
+                            <span class="text-lg font-black text-emerald-600 dark:text-emerald-400">S/ {{ number_format($total, 2) }}</span>
                         </div>
                     </div>
                 @endif
@@ -270,10 +273,12 @@
 
             {{-- Datos de pago --}}
             @if(count($carrito) > 0)
-                <div class="vc-panel animate-fade-in mt-4">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="material-symbols-outlined text-emerald-400">receipt_long</span>
-                        <h3 class="text-sm font-bold uppercase tracking-wider" style="color: var(--vc-text);" x-text="$store.i18n.t('form.paymentData') || 'Datos de Pago'">Datos de Pago</h3>
+                <div class="vc-panel animate-fade-in">
+                    <div class="flex items-center gap-2 mb-4 pb-3 border-b border-zinc-100 dark:border-zinc-800">
+                        <div class="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-[18px]">receipt_long</span>
+                        </div>
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100" x-text="$store.i18n.t('form.paymentInformation') || 'Payment Information'">Payment Information</h3>
                     </div>
 
                     <div class="space-y-4">

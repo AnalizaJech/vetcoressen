@@ -59,8 +59,11 @@
         },
         get displayLabel() {
             if (this.search !== '' && this.open) return this.search;
-            let newOpts = JSON.parse($el.dataset.options || '[]');
-            let currentVal = this.selectedValue || $el.dataset.selected || '{{ (string) $selected }}';
+            let newOpts = [];
+            try {
+                newOpts = JSON.parse(this.$el?.dataset?.options || '[]');
+            } catch(e) {}
+            let currentVal = this.selectedValue !== '' ? this.selectedValue : (this.$el?.dataset?.selected || '{{ (string) $selected }}');
             let selOpt = newOpts.find(o => String(o.value) === String(currentVal));
             if (selOpt) {
                 return this.translateKey(selOpt.label);
@@ -68,7 +71,10 @@
             return this.placeholderText;
         },
         get filteredOptions() {
-            let opts = JSON.parse($el.dataset.options || '[]');
+            let opts = [];
+            try {
+                opts = JSON.parse(this.$el?.dataset?.options || '[]');
+            } catch(e) {}
             if (this.search === '') return opts.slice(0, 50);
             
             const term = this.search.toString().toLowerCase();
@@ -79,8 +85,8 @@
             return result.slice(0, 50);
         },
         selectOption(val, lbl) {
-            this.selectedValue = val;
-            $el.dataset.selected = val;
+            this.selectedValue = String(val);
+            if (this.$el) this.$el.dataset.selected = String(val);
             this.search = '';
             this.open = false;
             
@@ -88,8 +94,8 @@
             $wire.set('{{ $attributes->wire('model')->value() }}', val);
             @endif
 
-            $dispatch('input', val);
-            $dispatch('change', val);
+            this.$dispatch('input', val);
+            this.$dispatch('change', val);
         }
     }"
     @click.outside="

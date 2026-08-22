@@ -691,88 +691,109 @@
     --fc-border-color: #e2e8f0;
     --fc-page-bg-color: #ffffff;
     --fc-neutral-bg-color: #f8fafc;
-    --fc-today-bg-color: rgba(16, 185, 129, 0.05);
+    --fc-today-bg-color: rgba(16, 185, 129, 0.04);
+    --fc-slot-border-color: #e2e8f0;
+    --fc-slot-minor-border-color: #f1f5f9;
 }
 
 html.dark, .dark {
-    --fc-border-color: rgba(63, 63, 70, 0.45);
+    --fc-border-color: rgba(63, 63, 70, 0.5);
     --fc-page-bg-color: #18181b;
     --fc-neutral-bg-color: #27272a;
-    --fc-today-bg-color: rgba(16, 185, 129, 0.08);
+    --fc-today-bg-color: rgba(16, 185, 129, 0.06);
+    --fc-slot-border-color: rgba(63, 63, 70, 0.4);
+    --fc-slot-minor-border-color: rgba(63, 63, 70, 0.2);
 }
 
 /* Grilla y Contenedores */
 .fc-theme-standard .fc-scrollgrid {
     border: 1px solid var(--fc-border-color) !important;
-    border-radius: 12px;
+    border-radius: 14px;
     overflow: hidden;
+    background-color: var(--fc-page-bg-color);
 }
 .fc-theme-standard td, .fc-theme-standard th {
     border-color: var(--fc-border-color) !important;
 }
 
 /* Encabezados de Columna (Días) */
-.fc-theme-standard .fc-col-header-cell {
-    background-color: #f8fafc !important;
-    border-bottom: 1px solid var(--fc-border-color) !important;
-    padding: 8px 0 !important;
+.fc-theme-standard .fc-col-header {
+    background-color: var(--fc-neutral-bg-color) !important;
 }
-.dark .fc-theme-standard .fc-col-header-cell {
-    background-color: #27272a !important;
-    border-bottom: 1px solid var(--fc-border-color) !important;
+.fc-theme-standard .fc-col-header-cell {
+    background-color: var(--fc-neutral-bg-color) !important;
+    border-bottom: 2px solid var(--fc-border-color) !important;
+    border-right: 1px solid var(--fc-border-color) !important;
+    padding: 10px 0 !important;
 }
 .fc-col-header-cell-cushion {
     font-family: 'Plus Jakarta Sans', sans-serif !important;
-    font-size: 12px !important;
-    font-weight: 700 !important;
-    color: #0f172a !important;
+    font-size: 11px !important;
+    font-weight: 800 !important;
+    color: #334155 !important;
     text-transform: uppercase !important;
-    letter-spacing: 0.04em !important;
+    letter-spacing: 0.06em !important;
     text-decoration: none !important;
     display: inline-block;
-    padding: 6px 4px !important;
+    padding: 4px 6px !important;
 }
 .dark .fc-col-header-cell-cushion {
-    color: #f4f4f5 !important;
+    color: #cbd5e1 !important;
 }
 
 /* Eje de Horas (TimeGrid) */
+.fc-theme-standard .fc-timegrid-axis {
+    background-color: var(--fc-neutral-bg-color) !important;
+    border-right: 1px solid var(--fc-border-color) !important;
+}
 .fc-theme-standard .fc-timegrid-axis-cushion,
 .fc-timegrid-slot-label-cushion {
     font-family: 'Plus Jakarta Sans', sans-serif !important;
     font-size: 11px !important;
-    font-weight: 600 !important;
+    font-weight: 700 !important;
     color: #64748b !important;
-    padding: 0 8px !important;
     text-decoration: none !important;
+    display: block;
+    text-align: right;
+    padding-right: 8px !important;
 }
 .dark .fc-theme-standard .fc-timegrid-axis-cushion,
 .dark .fc-timegrid-slot-label-cushion {
-    color: #a1a1aa !important;
+    color: #94a3b8 !important;
 }
 .fc-theme-standard .fc-timegrid-axis-frame,
 .fc-timegrid-slot-label-frame {
-    min-width: 60px !important;
-    width: 60px !important;
-    max-width: 60px !important;
+    min-width: 64px !important;
+    width: 64px !important;
+    max-width: 64px !important;
+}
+
+/* Slots de tiempo y cuadrícula */
+.fc-timegrid-slots table {
+    border-collapse: collapse;
 }
 .fc-timegrid-slot {
     height: 48px !important;
-}
-.fc-timegrid-slot-lane {
-    border-bottom: 1px solid var(--fc-border-color) !important;
+    border-bottom: 1px solid var(--fc-slot-border-color) !important;
 }
 .fc-timegrid-slot-minor {
-    border-bottom-style: dashed !important;
+    border-bottom: 1px dashed var(--fc-slot-minor-border-color) !important;
+}
+.fc-timegrid-cols .fc-timegrid-col {
+    border-right: 1px solid var(--fc-border-color) !important;
+}
+.fc-timegrid-col.fc-day-today {
+    background-color: var(--fc-today-bg-color) !important;
 }
 
 /* Eventos y Cards de Citas */
 .fc-timegrid-event {
     border-radius: 8px !important;
     border: none !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04) !important;
     overflow: hidden !important;
     background: transparent !important;
+    margin: 1px 3px !important;
 }
 .fc-timegrid-event .fc-event-main {
     padding: 0 !important;
@@ -780,10 +801,22 @@ html.dark, .dark {
 }
 .fc-daygrid-event {
     border-radius: 6px !important;
-    margin: 1px 2px !important;
+    margin: 2px 4px !important;
 }
 .fc-event-time {
     display: none !important;
+}
+
+/* Now Indicator */
+.fc .fc-timegrid-now-indicator-line {
+    border-color: #ef4444 !important;
+    border-width: 2px !important;
+    z-index: 15 !important;
+}
+.fc .fc-timegrid-now-indicator-arrow {
+    border-color: #ef4444 !important;
+    border-top-color: transparent !important;
+    border-bottom-color: transparent !important;
 }
 
 /* Vista Lista */

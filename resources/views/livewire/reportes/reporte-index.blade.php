@@ -362,6 +362,79 @@
                     this.initPagos(data);
                 },
 
+                formatChartLabel(l, isEn) {
+                    if (!l) return '';
+                    const str = String(l).trim();
+                    
+                    const dayMap = {
+                        'lun': isEn ? 'Mon' : 'Lun',
+                        'mar': isEn ? 'Tue' : 'Mar',
+                        'mié': isEn ? 'Wed' : 'Mié',
+                        'mie': isEn ? 'Wed' : 'Mié',
+                        'jue': isEn ? 'Thu' : 'Jue',
+                        'vie': isEn ? 'Fri' : 'Vie',
+                        'sáb': isEn ? 'Sat' : 'Sáb',
+                        'sab': isEn ? 'Sat' : 'Sáb',
+                        'dom': isEn ? 'Sun' : 'Dom',
+                        'mon': isEn ? 'Mon' : 'Lun',
+                        'tue': isEn ? 'Tue' : 'Mar',
+                        'wed': isEn ? 'Wed' : 'Mié',
+                        'thu': isEn ? 'Thu' : 'Jue',
+                        'fri': isEn ? 'Fri' : 'Vie',
+                        'sat': isEn ? 'Sat' : 'Sáb',
+                        'sun': isEn ? 'Sun' : 'Dom'
+                    };
+
+                    const monthMap = {
+                        'ene': isEn ? 'Jan' : 'Ene',
+                        'feb': isEn ? 'Feb' : 'Feb',
+                        'mar': isEn ? 'Mar' : 'Mar',
+                        'abr': isEn ? 'Apr' : 'Abr',
+                        'may': isEn ? 'May' : 'May',
+                        'jun': isEn ? 'Jun' : 'Jun',
+                        'jul': isEn ? 'Jul' : 'Jul',
+                        'ago': isEn ? 'Aug' : 'Ago',
+                        'sep': isEn ? 'Sep' : 'Sep',
+                        'set': isEn ? 'Sep' : 'Set',
+                        'oct': isEn ? 'Oct' : 'Oct',
+                        'nov': isEn ? 'Nov' : 'Nov',
+                        'dic': isEn ? 'Dec' : 'Dic',
+                        'jan': isEn ? 'Jan' : 'Ene',
+                        'apr': isEn ? 'Apr' : 'Abr',
+                        'aug': isEn ? 'Aug' : 'Ago',
+                        'dec': isEn ? 'Dec' : 'Dic'
+                    };
+
+                    // Si es formato tipo "Lun 18/08" o "Mon 18/08"
+                    const parts = str.split(' ');
+                    if (parts.length === 2 && parts[1].includes('/')) {
+                        const prefix = parts[0].toLowerCase().replace('.', '');
+                        if (dayMap[prefix]) {
+                            return `${dayMap[prefix]} ${parts[1]}`;
+                        }
+                    }
+
+                    // Si es solo mes tipo "Ene" o "Jan"
+                    const lower = str.toLowerCase().replace('.', '');
+                    if (monthMap[lower]) {
+                        return monthMap[lower];
+                    }
+                    
+                    // Si es tipo "Week 1 (18/08)" o "Semana 1 (18/08)"
+                    if (str.toLowerCase().startsWith('week ') || str.toLowerCase().startsWith('semana ')) {
+                        const num = str.match(/\d+/);
+                        const suffix = str.includes('(') ? ' ' + str.substring(str.indexOf('(')) : '';
+                        return (isEn ? 'Week ' : 'Semana ') + (num ? num[0] : '') + suffix;
+                    }
+
+                    if (str.includes('-')) {
+                        const p = str.split('-');
+                        if (p.length === 3) return p[2] + '/' + p[1];
+                    }
+
+                    return str;
+                },
+
                 initVentas(data) {
                     const canvas = document.getElementById('repVentasChart');
                     if (!canvas) return;
@@ -370,13 +443,7 @@
                     const ctx = canvas.getContext('2d');
                     const isEn = (Alpine.store('i18n')?.locale || localStorage.getItem('vc_locale')) === 'en';
                     const rawLabels = data.ventasLabels || [];
-                    const formattedLabels = rawLabels.map(l => {
-                        if (l.includes('-')) {
-                            const p = l.split('-');
-                            if (p.length === 3) return p[2] + '/' + p[1];
-                        }
-                        return l;
-                    });
+                    const formattedLabels = rawLabels.map(l => this.formatChartLabel(l, isEn));
 
                     const labelText = Alpine.store('i18n')?.t('report.revenue') || (isEn ? 'Revenue (S/)' : 'Ingresos (S/)');
 
