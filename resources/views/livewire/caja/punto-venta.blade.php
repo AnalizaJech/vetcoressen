@@ -427,10 +427,12 @@
                 <flux:modal.close>
                     <flux:button variant="ghost"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'">Cancelar</span></flux:button>
                 </flux:modal.close>
-                <button type="button" wire:click="$set('carrito', []); recalcularTotales(); Flux.modal('confirmar-vaciar').close();" class="btn-danger justify-center px-4 py-2 flex items-center gap-2">
-                    <span class="material-symbols-outlined icon-sm">delete</span>
-                    <span x-text="$store.i18n.t('btn.clearAll') || 'Sí, vaciar'">Sí, vaciar</span>
-                </button>
+                <flux:modal.close>
+                    <button type="button" wire:click="vaciarCarrito" class="btn-danger justify-center px-4 py-2 flex items-center gap-2 cursor-pointer">
+                        <span class="material-symbols-outlined icon-sm">delete</span>
+                        <span x-text="$store.i18n.t('btn.clearAll') || 'Sí, vaciar'">Sí, vaciar</span>
+                    </button>
+                </flux:modal.close>
             </div>
         </div>
     </flux:modal>

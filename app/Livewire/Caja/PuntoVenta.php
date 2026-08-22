@@ -190,7 +190,7 @@ class PuntoVenta extends Component
     }
 
     // Recalcular subtotal, IGV y total
-    private function recalcularTotales(): void
+    public function recalcularTotales(): void
     {
         $this->subtotal = 0;
         $this->igv = 0;

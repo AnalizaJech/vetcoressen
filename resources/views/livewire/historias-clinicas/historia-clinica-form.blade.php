@@ -81,7 +81,7 @@
                 {{-- Mascota --}}
                 <flux:field>
                     <flux:label class="mb-2 font-medium"><span x-text="$store.i18n.t('table.pet')"></span></flux:label>
-                    <div x-data="{ placeholderText: $store.i18n.t('form.select') }">
+                    <div wire:key="dropdown-pet-container-{{ $customer_id ?? 'none' }}" x-data="{ placeholderText: $store.i18n.t('form.select') }">
                         @php
                             $hcMascotaOpts = [];
                             if ($mascotas) {
@@ -91,6 +91,7 @@
                             }
                         @endphp
                         <x-vc-dropdown
+                            wire:key="dropdown-pet-{{ $customer_id ?? 'none' }}"
                             wire:model.live="pet_id"
                             :options="$hcMascotaOpts"
                             :selected="$pet_id"

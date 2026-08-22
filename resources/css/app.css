@@ -902,3 +902,35 @@ html.dark .vc-responsive-table-container td {
     border-top-color: #059669;
 }
 
+/* ── Global Elegant Focus Styling (Eliminates harsh black outlines) ── */
+input:focus,
+input:focus-visible,
+select:focus,
+select:focus-visible,
+textarea:focus,
+textarea:focus-visible,
+button:focus-visible,
+[data-flux-input]:focus-within,
+[data-flux-control]:focus-within,
+.flux-input:focus-within,
+.vc-dropdown-trigger:focus,
+.vc-dropdown-trigger:focus-visible {
+    outline: none !important;
+    border-color: #10b981 !important;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15) !important;
+}
+
+.dark input:focus,
+.dark input:focus-visible,
+.dark select:focus,
+.dark select:focus-visible,
+.dark textarea:focus,
+.dark textarea:focus-visible,
+.dark [data-flux-input]:focus-within,
+.dark [data-flux-control]:focus-within,
+.dark .vc-dropdown-trigger:focus,
+.dark .vc-dropdown-trigger:focus-visible {
+    border-color: #10b981 !important;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25) !important;
+}
+

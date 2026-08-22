@@ -35,14 +35,28 @@
 
             {{-- Acciones de Exportación Directa --}}
             <div class="flex items-center gap-2.5">
-                <a :href="'/reports/export/pdf?periodo=' + $wire.periodo + '&fecha_inicio=' + $wire.fecha_inicio + '&fecha_fin=' + $wire.fecha_fin" target="_blank" class="btn-primary bg-zinc-800 hover:bg-zinc-900 text-white border-zinc-800 text-xs px-3.5 py-2 flex items-center justify-center gap-1.5 shadow-sm">
-                    <span class="material-symbols-outlined icon-sm">picture_as_pdf</span>
+                <button 
+                    type="button"
+                    wire:click="exportarPdf" 
+                    wire:loading.attr="disabled"
+                    wire:target="exportarPdf"
+                    class="btn-primary bg-zinc-800 hover:bg-zinc-900 text-white border-zinc-800 text-xs px-3.5 py-2 flex items-center justify-center gap-1.5 shadow-sm disabled:opacity-50 cursor-pointer"
+                >
+                    <span wire:loading.remove wire:target="exportarPdf" class="material-symbols-outlined icon-sm">picture_as_pdf</span>
+                    <span wire:loading wire:target="exportarPdf" class="material-symbols-outlined icon-sm animate-spin">progress_activity</span>
                     <span x-text="$store.i18n.t('btn.downloadPDF') || 'Download PDF'">Download PDF</span>
-                </a>
-                <a :href="'/reports/export/excel?periodo=' + $wire.periodo + '&fecha_inicio=' + $wire.fecha_inicio + '&fecha_fin=' + $wire.fecha_fin" target="_blank" class="btn-primary bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 text-xs px-3.5 py-2 flex items-center justify-center gap-1.5 shadow-sm">
-                    <span class="material-symbols-outlined icon-sm">table_view</span>
+                </button>
+                <button 
+                    type="button"
+                    wire:click="exportarExcel" 
+                    wire:loading.attr="disabled"
+                    wire:target="exportarExcel"
+                    class="btn-primary bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 text-xs px-3.5 py-2 flex items-center justify-center gap-1.5 shadow-sm disabled:opacity-50 cursor-pointer"
+                >
+                    <span wire:loading.remove wire:target="exportarExcel" class="material-symbols-outlined icon-sm">table_view</span>
+                    <span wire:loading wire:target="exportarExcel" class="material-symbols-outlined icon-sm animate-spin">progress_activity</span>
                     <span x-text="$store.i18n.t('btn.downloadExcel') || 'Download Excel'">Download Excel</span>
-                </a>
+                </button>
             </div>
         </div>
 
@@ -382,7 +396,23 @@
                         'thu': isEn ? 'Thu' : 'Jue',
                         'fri': isEn ? 'Fri' : 'Vie',
                         'sat': isEn ? 'Sat' : 'Sáb',
-                        'sun': isEn ? 'Sun' : 'Dom'
+                        'sun': isEn ? 'Sun' : 'Dom',
+                        'lunes': isEn ? 'Monday' : 'Lunes',
+                        'martes': isEn ? 'Tuesday' : 'Martes',
+                        'miércoles': isEn ? 'Wednesday' : 'Miércoles',
+                        'miercoles': isEn ? 'Wednesday' : 'Miércoles',
+                        'jueves': isEn ? 'Thursday' : 'Jueves',
+                        'viernes': isEn ? 'Friday' : 'Viernes',
+                        'sábado': isEn ? 'Saturday' : 'Sábado',
+                        'sabado': isEn ? 'Saturday' : 'Sábado',
+                        'domingo': isEn ? 'Sunday' : 'Domingo',
+                        'monday': isEn ? 'Monday' : 'Lunes',
+                        'tuesday': isEn ? 'Tuesday' : 'Martes',
+                        'wednesday': isEn ? 'Wednesday' : 'Miércoles',
+                        'thursday': isEn ? 'Thursday' : 'Jueves',
+                        'friday': isEn ? 'Friday' : 'Viernes',
+                        'saturday': isEn ? 'Saturday' : 'Sábado',
+                        'sunday': isEn ? 'Sunday' : 'Domingo'
                     };
 
                     const monthMap = {
@@ -402,10 +432,34 @@
                         'jan': isEn ? 'Jan' : 'Ene',
                         'apr': isEn ? 'Apr' : 'Abr',
                         'aug': isEn ? 'Aug' : 'Ago',
-                        'dec': isEn ? 'Dec' : 'Dic'
+                        'dec': isEn ? 'Dec' : 'Dic',
+                        'enero': isEn ? 'January' : 'Enero',
+                        'febrero': isEn ? 'February' : 'Febrero',
+                        'marzo': isEn ? 'March' : 'Marzo',
+                        'abril': isEn ? 'April' : 'Abril',
+                        'mayo': isEn ? 'May' : 'Mayo',
+                        'junio': isEn ? 'June' : 'Junio',
+                        'julio': isEn ? 'July' : 'Julio',
+                        'agosto': isEn ? 'August' : 'Agosto',
+                        'septiembre': isEn ? 'September' : 'Septiembre',
+                        'setiembre': isEn ? 'September' : 'Setiembre',
+                        'octubre': isEn ? 'October' : 'Octubre',
+                        'noviembre': isEn ? 'November' : 'Noviembre',
+                        'diciembre': isEn ? 'December' : 'Diciembre',
+                        'january': isEn ? 'January' : 'Enero',
+                        'february': isEn ? 'February' : 'Febrero',
+                        'march': isEn ? 'March' : 'Marzo',
+                        'april': isEn ? 'April' : 'Abril',
+                        'june': isEn ? 'June' : 'Junio',
+                        'july': isEn ? 'July' : 'Julio',
+                        'august': isEn ? 'August' : 'Agosto',
+                        'september': isEn ? 'September' : 'Septiembre',
+                        'october': isEn ? 'October' : 'Octubre',
+                        'november': isEn ? 'November' : 'Noviembre',
+                        'december': isEn ? 'December' : 'Diciembre'
                     };
 
-                    // Si es formato tipo "Lun 18/08" o "Mon 18/08"
+                    // Si es formato tipo "Lun 18/08" o "Mon 18/08" o "Lunes 18/08"
                     const parts = str.split(' ');
                     if (parts.length === 2 && parts[1].includes('/')) {
                         const prefix = parts[0].toLowerCase().replace('.', '');
@@ -414,10 +468,13 @@
                         }
                     }
 
-                    // Si es solo mes tipo "Ene" o "Jan"
+                    // Si es solo mes tipo "Ene" o "Jan" o "Enero"
                     const lower = str.toLowerCase().replace('.', '');
                     if (monthMap[lower]) {
                         return monthMap[lower];
+                    }
+                    if (dayMap[lower]) {
+                        return dayMap[lower];
                     }
                     
                     // Si es tipo "Week 1 (18/08)" o "Semana 1 (18/08)"
@@ -490,6 +547,10 @@
                                     padding: 10,
                                     cornerRadius: 8,
                                     callbacks: {
+                                        title: function(items) {
+                                            if (!items || !items.length) return '';
+                                            return items[0].label || '';
+                                        },
                                         label: function(c) {
                                             const val = c.raw !== undefined ? c.raw : (c.parsed?.y !== undefined ? c.parsed.y : 0);
                                             return ' ' + labelText + ': S/ ' + Number(val).toFixed(2);

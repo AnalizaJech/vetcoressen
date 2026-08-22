@@ -58,6 +58,15 @@ window.initVetCalendar = function (el, wire) {
         allDaySlot: false,
         nowIndicator: true,
         navLinks: true,
+        navLinkDayClick: function(date, jsEvent) {
+            calendar.changeView('timeGridDay', date);
+            window.dispatchEvent(new CustomEvent('calendar-view-updated', {
+                detail: {
+                    title: calendar.view.title,
+                    type: 'timeGridDay'
+                }
+            }));
+        },
         height: 'auto',
         contentHeight: 680,
         dayMaxEvents: 4,
@@ -111,19 +120,22 @@ window.initVetCalendar = function (el, wire) {
             const isMonth = arg.view.type === 'dayGridMonth';
             const isList = arg.view.type.includes('list');
             const color = arg.event.backgroundColor || '#10b981';
-            const statusName = props.status || 'APPOINTMENT';
+            const rawStatus = (props.status || 'PENDIENTE').toLowerCase();
+            const statusName = window.Alpine?.store('i18n')?.t('status.' + rawStatus) || props.status || 'Appointment';
 
             if (isList) {
                 return {
                     html: `
-                        <div class="flex items-center justify-between w-full py-1.5 px-2">
+                        <div class="flex items-center justify-between w-full py-2.5 px-3 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 rounded-xl transition-all border-l-4" style="border-left-color: ${color};">
                             <div class="flex items-center gap-3">
-                                <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${color};"></span>
-                                <span class="font-extrabold text-sm text-zinc-950 dark:text-white">${props.mascota || 'Pet'}</span>
-                                <span class="text-xs text-zinc-600 dark:text-zinc-300 font-medium">(${props.cliente || '-'})</span>
-                                <span class="text-xs text-zinc-500 dark:text-zinc-400 italic truncate max-w-xs">${props.reason || ''}</span>
+                                <span class="material-symbols-outlined text-[18px] text-zinc-400">pets</span>
+                                <div>
+                                    <span class="font-extrabold text-xs text-zinc-900 dark:text-zinc-100">${props.mascota || 'Pet'}</span>
+                                    <span class="text-xs text-zinc-500 dark:text-zinc-400 font-medium ml-1">(${props.cliente || '-'})</span>
+                                </div>
+                                ${props.reason ? `<span class="text-xs text-zinc-400 dark:text-zinc-500 italic truncate max-w-xs">&bull; ${props.reason}</span>` : ''}
                             </div>
-                            <span class="text-[10px] px-2.5 py-1 font-extrabold rounded-full uppercase tracking-wider" style="background-color: ${color}20; color: ${color}; border: 1px solid ${color}40;">
+                            <span class="text-[10px] px-2.5 py-1 font-bold rounded-lg uppercase tracking-wider shadow-2xs" style="background-color: ${color}15; color: ${color}; border: 1px solid ${color}30;">
                                 ${statusName}
                             </span>
                         </div>
@@ -134,38 +146,40 @@ window.initVetCalendar = function (el, wire) {
             if (isMonth) {
                 return {
                     html: `
-                        <div class="px-2 py-1 rounded-md text-[11px] font-semibold truncate flex items-center gap-1.5 w-full bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 shadow-2xs hover:shadow-md transition-all cursor-pointer" style="border-left: 3.5px solid ${color};">
-                            <span class="font-extrabold text-zinc-500 dark:text-zinc-400 text-[10px]">${arg.timeText || ''}</span>
-                            <span class="font-black text-zinc-950 dark:text-white truncate">${props.mascota || ''}</span>
-                            <span class="text-[9px] uppercase font-bold ml-auto px-1 rounded" style="background-color: ${color}18; color: ${color};">
-                                ${statusName.substring(0, 3)}
+                        <div class="px-2 py-1 rounded-md text-[11px] font-semibold truncate flex items-center justify-between gap-1.5 w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xs hover:shadow-xs transition-all cursor-pointer" style="border-left: 3.5px solid ${color};">
+                            <div class="flex items-center gap-1 min-w-0 truncate">
+                                <span class="font-extrabold text-zinc-500 dark:text-zinc-400 text-[10px] shrink-0">${arg.timeText || ''}</span>
+                                <span class="font-bold text-zinc-900 dark:text-zinc-100 truncate text-[11px]">${props.mascota || ''}</span>
+                            </div>
+                            <span class="text-[9px] uppercase font-bold px-1.5 py-0.5 rounded shrink-0" style="background-color: ${color}15; color: ${color};">
+                                ${statusName}
                             </span>
                         </div>
                     `
                 };
             }
 
-            // Vista Semana y Día (timeGrid) - Diseño Card Premium de Alto Contraste
+            // Vista Semana y Día (timeGrid) - Diseño Card Premium y Limpio
             return {
                 html: `
-                    <div class="h-full w-full p-2 rounded-lg flex flex-col justify-between overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800/90 shadow-xs hover:shadow-md transition-all duration-150" style="border-left: 4px solid ${color};">
+                    <div class="h-full w-full p-2 rounded-xl flex flex-col justify-between overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xs hover:shadow-md transition-all duration-150" style="border-left: 3.5px solid ${color};">
                         <div class="min-w-0">
-                            <div class="flex items-center justify-between gap-1 mb-1">
-                                <span class="font-black text-[12px] truncate tracking-tight text-zinc-950 dark:text-white leading-tight">
+                            <div class="flex items-center justify-between gap-1 mb-0.5">
+                                <span class="font-black text-[11px] truncate tracking-tight text-zinc-900 dark:text-zinc-100 leading-tight">
                                     ${props.mascota || 'Pet'}
                                 </span>
-                                <span class="text-[9px] font-black uppercase px-1.5 py-0.5 rounded tracking-wide shrink-0" style="background-color: ${color}20; color: ${color}; border: 0.5px solid ${color}35;">
-                                    ${statusName.substring(0, 4)}
+                                <span class="text-[8.5px] font-bold uppercase px-1.5 py-0.5 rounded-md tracking-wider shrink-0" style="background-color: ${color}15; color: ${color}; border: 1px solid ${color}30;">
+                                    ${statusName}
                                 </span>
                             </div>
-                            <p class="text-[11px] text-zinc-700 dark:text-zinc-200 truncate font-semibold">
+                            <p class="text-[10px] text-zinc-600 dark:text-zinc-400 truncate font-semibold">
                                 ${props.cliente || ''}
                             </p>
-                            ${props.reason ? `<p class="text-[10px] text-zinc-500 dark:text-zinc-400 truncate italic mt-0.5">${props.reason}</p>` : ''}
+                            ${props.reason ? `<p class="text-[9.5px] text-zinc-400 dark:text-zinc-500 truncate italic mt-0.5">${props.reason}</p>` : ''}
                         </div>
-                        <div class="flex items-center justify-between text-[10px] font-bold text-zinc-500 dark:text-zinc-400 mt-1 pt-1 border-t border-zinc-100 dark:border-zinc-800/60">
+                        <div class="flex items-center justify-between text-[9.5px] font-bold text-zinc-500 dark:text-zinc-400 mt-1 pt-1 border-t border-zinc-100 dark:border-zinc-800/60">
                             <span>${arg.timeText || ''}</span>
-                            <span class="text-[9px] font-medium text-zinc-400">${props.veterinario ? props.veterinario.split(' ')[0] : ''}</span>
+                            <span class="text-[9px] font-medium text-zinc-400 truncate max-w-[80px]">${props.veterinario ? props.veterinario.split(' ')[0] : ''}</span>
                         </div>
                     </div>
                 `

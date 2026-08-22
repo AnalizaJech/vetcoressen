@@ -28,7 +28,7 @@
                 </a>
                 <a href="{{ route('caja.index') }}" wire:navigate class="btn-secondary text-xs px-3.5 py-2 flex items-center justify-center gap-1.5 shadow-sm">
                     <span class="material-symbols-outlined icon-sm">point_of_sale</span>
-                    <span x-text="$store.i18n.t('sidebar.point_of_sale') || 'Point of Sale'">Point of Sale</span>
+                    <span x-text="$store.i18n.t('title.point_of_sale') || 'Point of Sale'">Point of Sale</span>
                 </a>
             </div>
         </div>
@@ -132,7 +132,6 @@
             <div class="vc-panel flex flex-col justify-between"
                  x-data="atencionesChartComponent()"
                  x-init="initChart(@js($atencionesGrafico))"
-                 x-effect="updateData(@js($atencionesGrafico))"
             >
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                     <div>
@@ -224,7 +223,6 @@
             <div class="vc-panel flex flex-col justify-between"
                  x-data="ingresosChartComponent()"
                  x-init="initChart(@js($ingresosSemana))"
-                 x-effect="updateData(@js($ingresosSemana))"
             >
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                     <div>
@@ -492,8 +490,8 @@
         Chart.defaults.plugins.tooltip.enabled = true;
     }
 
-    function getDashboardDict(key) {
-        const store = Alpine.store('i18n');
+    window.getDashboardDict = function(key) {
+        const store = window.Alpine?.store('i18n');
         const isEn = (store?.locale || localStorage.getItem('vc_locale')) === 'en';
         const fallbackMap = {
             'dashboard.sun': isEn ? 'Sun' : 'Dom',
@@ -527,16 +525,16 @@
         const val = store?.t(key);
         if (val && val !== key) return val;
         return fallbackMap[key] || '';
-    }
+    };
 
-    function formatAtencionesLabelsList(raw) {
+    window.formatAtencionesLabelsList = function(raw) {
         if (!raw) return [];
         const keys = raw.keys || [];
         const labels = raw.labels || [];
         return labels.map((label, idx) => {
             const key = keys[idx];
             if (key) {
-                const translated = getDashboardDict(key);
+                const translated = window.getDashboardDict(key);
                 if (translated) {
                     const parts = String(label).split(' ');
                     if (parts.length > 1 && parts[1].includes('/')) {
@@ -547,13 +545,13 @@
             }
             return label;
         });
-    }
+    };
 
-    function formatIngresosLabelsList(raw) {
+    window.formatIngresosLabelsList = function(raw) {
         if (!raw || !Array.isArray(raw)) return [];
         return raw.map(item => {
             if (item.key) {
-                const translated = getDashboardDict(item.key);
+                const translated = window.getDashboardDict(item.key);
                 if (translated) {
                     const isMonth = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'].some(m => item.key.includes(m));
                     if (item.date && !isMonth) {
@@ -564,9 +562,9 @@
             }
             return item.dia || item.date || '';
         });
-    }
+    };
 
-    function atencionesChartComponent() {
+    window.atencionesChartComponent = function() {
         return {
             chart: null,
             cachedData: null,
@@ -590,6 +588,12 @@
                         }
                     });
                 });
+
+                window.addEventListener('dashboard-charts-updated', (e) => {
+                    if (e.detail?.atenciones) {
+                        this.updateData(e.detail.atenciones);
+                    }
+                });
             },
 
             updateData(data) {
@@ -602,9 +606,9 @@
                     return;
                 }
 
-                const labels = formatAtencionesLabelsList(data);
-                const compLabel = getDashboardDict('status.completed') || 'Realizadas';
-                const pendLabel = getDashboardDict('status.pending') || 'Por Realizar';
+                const labels = window.formatAtencionesLabelsList(data);
+                const compLabel = window.getDashboardDict('status.completed') || 'Realizadas';
+                const pendLabel = window.getDashboardDict('status.pending') || 'Por Realizar';
 
                 this.chart.data.labels = labels;
                 this.chart.data.datasets[0].data = data.realizadas || [];
@@ -623,9 +627,9 @@
                     this.chart = null;
                 }
                 const ctx = canvas.getContext('2d');
-                const labels = formatAtencionesLabelsList(data);
-                const compLabel = getDashboardDict('status.completed') || 'Realizadas';
-                const pendLabel = getDashboardDict('status.pending') || 'Por Realizar';
+                const labels = window.formatAtencionesLabelsList(data);
+                const compLabel = window.getDashboardDict('status.completed') || 'Realizadas';
+                const pendLabel = window.getDashboardDict('status.pending') || 'Por Realizar';
 
                 this.chart = new Chart(ctx, {
                     type: 'bar',
@@ -637,14 +641,14 @@
                                 data: data?.realizadas || [],
                                 backgroundColor: '#10b981',
                                 borderRadius: 6,
-                                maxBarThickness: 40,
+                                maxBarThickness: 36,
                             },
                             {
                                 label: pendLabel,
                                 data: data?.pendientes || [],
                                 backgroundColor: '#3b82f6',
                                 borderRadius: 6,
-                                maxBarThickness: 40,
+                                maxBarThickness: 36,
                             }
                         ]
                     },
@@ -655,7 +659,6 @@
                         interaction: {
                             mode: 'index',
                             intersect: false,
-                            axis: 'x'
                         },
                         hover: {
                             mode: 'index',
@@ -680,6 +683,10 @@
                                 titleFont: { family: 'Plus Jakarta Sans', weight: '700', size: 12 },
                                 bodyFont: { family: 'Plus Jakarta Sans', size: 11 },
                                 callbacks: {
+                                    title: function(items) {
+                                        if (!items || !items.length) return '';
+                                        return items[0].label || '';
+                                    },
                                     label: function(context) {
                                         const val = context.raw !== undefined ? context.raw : (context.parsed?.y !== undefined ? context.parsed.y : 0);
                                         return ' ' + (context.dataset.label || '') + ': ' + val;
@@ -695,9 +702,9 @@
                 });
             }
         };
-    }
+    };
 
-    function ingresosChartComponent() {
+    window.ingresosChartComponent = function() {
         return {
             chart: null,
             cachedData: null,
@@ -721,6 +728,12 @@
                         }
                     });
                 });
+
+                window.addEventListener('dashboard-charts-updated', (e) => {
+                    if (e.detail?.ingresos) {
+                        this.updateData(e.detail.ingresos);
+                    }
+                });
             },
 
             updateData(data) {
@@ -733,8 +746,8 @@
                     return;
                 }
 
-                const labels = formatIngresosLabelsList(data);
-                const incomeLabel = getDashboardDict('dashboard.incomeSoles') || 'Ingresos (S/)';
+                const labels = window.formatIngresosLabelsList(data);
+                const incomeLabel = window.getDashboardDict('dashboard.incomeSoles') || 'Ingresos (S/)';
 
                 this.chart.data.labels = labels;
                 this.chart.data.datasets[0].data = data.map(d => d.total) || [];
@@ -751,8 +764,8 @@
                     this.chart = null;
                 }
                 const ctx = canvas.getContext('2d');
-                const labels = formatIngresosLabelsList(data);
-                const incomeLabel = getDashboardDict('dashboard.incomeSoles') || 'Ingresos (S/)';
+                const labels = window.formatIngresosLabelsList(data);
+                const incomeLabel = window.getDashboardDict('dashboard.incomeSoles') || 'Ingresos (S/)';
 
                 this.chart = new Chart(ctx, {
                     type: 'line',
@@ -762,7 +775,7 @@
                             label: incomeLabel,
                             data: Array.isArray(data) ? data.map(d => d.total) : [],
                             borderColor: '#10b981',
-                            backgroundColor: 'rgba(16, 185, 129, 0.05)',
+                            backgroundColor: 'rgba(16, 185, 129, 0.06)',
                             borderWidth: 2.5,
                             fill: true,
                             tension: 0.35,
@@ -772,8 +785,8 @@
                             pointHoverBackgroundColor: '#10b981',
                             pointHoverBorderColor: '#ffffff',
                             pointHoverBorderWidth: 2,
-                            hitRadius: 30,
-                            pointHitRadius: 30,
+                            hitRadius: 25,
+                            pointHitRadius: 25,
                         }]
                     },
                     options: {
@@ -783,7 +796,6 @@
                         interaction: {
                             mode: 'index',
                             intersect: false,
-                            axis: 'x'
                         },
                         hover: {
                             mode: 'index',
@@ -805,9 +817,13 @@
                                 titleFont: { family: 'Plus Jakarta Sans', weight: '700', size: 12 },
                                 bodyFont: { family: 'Plus Jakarta Sans', size: 11 },
                                 callbacks: {
+                                    title: function(items) {
+                                        if (!items || !items.length) return '';
+                                        return items[0].label || '';
+                                    },
                                     label: function(context) {
                                         const val = context.raw !== undefined ? context.raw : (context.parsed?.y !== undefined ? context.parsed.y : 0);
-                                        return ' ' + (context.dataset.label || 'Ingresos') + ': S/ ' + Number(val).toFixed(2);
+                                        return ' ' + (context.dataset.label || 'Revenue') + ': S/ ' + Number(val).toFixed(2);
                                     }
                                 }
                             }
@@ -820,6 +836,11 @@
                 });
             }
         };
+    };
+
+    if (typeof Alpine !== 'undefined') {
+        Alpine.data('atencionesChartComponent', window.atencionesChartComponent);
+        Alpine.data('ingresosChartComponent', window.ingresosChartComponent);
     }
 </script>
 </div>

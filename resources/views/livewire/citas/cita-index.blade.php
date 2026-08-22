@@ -187,7 +187,7 @@
                 {{-- Selector de Períodos: Dropdown Custom en vez de botones --}}
                 <div class="flex items-center gap-2">
                     <span class="text-xs font-semibold text-zinc-400 dark:text-zinc-500 hidden sm:inline" x-text="$store.i18n.locale === 'en' ? 'Period:' : 'Período:'"></span>
-                    <div class="w-44">
+                    <div class="w-44" x-bind:key="currentView">
                         <x-vc-dropdown
                             :options="[
                                 ['value' => 'timeGridDay', 'label' => 'citas.dayView', 'icon' => 'calendar_view_day'],
@@ -195,7 +195,7 @@
                                 ['value' => 'dayGridMonth', 'label' => 'citas.monthView', 'icon' => 'calendar_view_month'],
                                 ['value' => 'listWeek', 'label' => 'citas.listView', 'icon' => 'list_alt'],
                             ]"
-                            selected="timeGridWeek"
+                            x-bind:selected="currentView"
                             placeholder="citas.weekView"
                             icon="calendar_month"
                             @input="changeView($event.detail)"
@@ -691,24 +691,24 @@
     --fc-border-color: #e2e8f0;
     --fc-page-bg-color: #ffffff;
     --fc-neutral-bg-color: #f8fafc;
-    --fc-today-bg-color: rgba(16, 185, 129, 0.04);
+    --fc-today-bg-color: rgba(16, 185, 129, 0.03);
     --fc-slot-border-color: #e2e8f0;
     --fc-slot-minor-border-color: #f1f5f9;
 }
 
 html.dark, .dark {
-    --fc-border-color: rgba(63, 63, 70, 0.5);
+    --fc-border-color: rgba(63, 63, 70, 0.4);
     --fc-page-bg-color: #18181b;
     --fc-neutral-bg-color: #27272a;
-    --fc-today-bg-color: rgba(16, 185, 129, 0.06);
-    --fc-slot-border-color: rgba(63, 63, 70, 0.4);
-    --fc-slot-minor-border-color: rgba(63, 63, 70, 0.2);
+    --fc-today-bg-color: rgba(16, 185, 129, 0.05);
+    --fc-slot-border-color: rgba(63, 63, 70, 0.35);
+    --fc-slot-minor-border-color: rgba(63, 63, 70, 0.18);
 }
 
 /* Grilla y Contenedores */
 .fc-theme-standard .fc-scrollgrid {
     border: 1px solid var(--fc-border-color) !important;
-    border-radius: 14px;
+    border-radius: 16px;
     overflow: hidden;
     background-color: var(--fc-page-bg-color);
 }
@@ -722,9 +722,13 @@ html.dark, .dark {
 }
 .fc-theme-standard .fc-col-header-cell {
     background-color: var(--fc-neutral-bg-color) !important;
-    border-bottom: 2px solid var(--fc-border-color) !important;
+    border-bottom: 1.5px solid var(--fc-border-color) !important;
     border-right: 1px solid var(--fc-border-color) !important;
-    padding: 10px 0 !important;
+    padding: 8px 0 !important;
+    transition: background-color 0.15s ease;
+}
+.fc-theme-standard .fc-col-header-cell:hover {
+    background-color: rgba(16, 185, 129, 0.05) !important;
 }
 .fc-col-header-cell-cushion {
     font-family: 'Plus Jakarta Sans', sans-serif !important;
@@ -732,10 +736,14 @@ html.dark, .dark {
     font-weight: 800 !important;
     color: #334155 !important;
     text-transform: uppercase !important;
-    letter-spacing: 0.06em !important;
+    letter-spacing: 0.05em !important;
     text-decoration: none !important;
-    display: inline-block;
-    padding: 4px 6px !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 8px !important;
+    border-radius: 6px;
+    cursor: pointer;
 }
 .dark .fc-col-header-cell-cushion {
     color: #cbd5e1 !important;
@@ -755,7 +763,7 @@ html.dark, .dark {
     text-decoration: none !important;
     display: block;
     text-align: right;
-    padding-right: 8px !important;
+    padding-right: 10px !important;
 }
 .dark .fc-theme-standard .fc-timegrid-axis-cushion,
 .dark .fc-timegrid-slot-label-cushion {
@@ -773,7 +781,7 @@ html.dark, .dark {
     border-collapse: collapse;
 }
 .fc-timegrid-slot {
-    height: 48px !important;
+    height: 44px !important;
     border-bottom: 1px solid var(--fc-slot-border-color) !important;
 }
 .fc-timegrid-slot-minor {
@@ -788,19 +796,19 @@ html.dark, .dark {
 
 /* Eventos y Cards de Citas */
 .fc-timegrid-event {
-    border-radius: 8px !important;
+    border-radius: 10px !important;
     border: none !important;
     box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04) !important;
     overflow: hidden !important;
     background: transparent !important;
-    margin: 1px 3px !important;
+    margin: 1.5px 3px !important;
 }
 .fc-timegrid-event .fc-event-main {
     padding: 0 !important;
     height: 100% !important;
 }
 .fc-daygrid-event {
-    border-radius: 6px !important;
+    border-radius: 8px !important;
     margin: 2px 4px !important;
 }
 .fc-event-time {
@@ -809,19 +817,19 @@ html.dark, .dark {
 
 /* Now Indicator */
 .fc .fc-timegrid-now-indicator-line {
-    border-color: #ef4444 !important;
+    border-color: #10b981 !important;
     border-width: 2px !important;
     z-index: 15 !important;
 }
 .fc .fc-timegrid-now-indicator-arrow {
-    border-color: #ef4444 !important;
+    border-color: #10b981 !important;
     border-top-color: transparent !important;
     border-bottom-color: transparent !important;
 }
 
 /* Vista Lista */
 .fc-theme-standard .fc-list {
-    border-radius: 12px;
+    border-radius: 14px;
     overflow: hidden;
     border: 1px solid var(--fc-border-color) !important;
 }

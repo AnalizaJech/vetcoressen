@@ -364,8 +364,10 @@ class ReporteIndex extends Component
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.reporte', $data);
         return response()->streamDownload(function () use ($pdf) {
-            echo $pdf->stream();
-        }, 'reporte_ejecutivo_' . $this->periodo . '_' . date('Ymd_His') . '.pdf');
+            echo $pdf->output();
+        }, 'reporte_ejecutivo_' . $this->periodo . '_' . date('Ymd_His') . '.pdf', [
+            'Content-Type' => 'application/pdf',
+        ]);
     }
 
     public function exportarExcel()
