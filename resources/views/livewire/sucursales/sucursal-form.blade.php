@@ -209,7 +209,7 @@
                     <label class="flex items-start gap-3 cursor-pointer select-none">
                         <div class="relative inline-flex items-center mt-0.5">
                             <input type="checkbox" wire:model="is_main" class="sr-only peer">
-                            <div class="w-11 h-6 bg-zinc-300 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-zinc-600 peer-checked:bg-emerald-500"></div>
+                            <div class="vc-switch w-11 h-6 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500 shadow-inner"></div>
                         </div>
                         <div class="flex flex-col">
                             <span class="text-sm font-semibold text-zinc-900 dark:text-zinc-100" x-text="$store.i18n.t('form.setMainBranch') || 'Establecer como sede principal'">Establecer como sede principal</span>
@@ -220,7 +220,7 @@
                     <label class="flex items-start gap-3 cursor-pointer select-none {{ $is_main ? 'opacity-50 cursor-not-allowed' : '' }}">
                         <div class="relative inline-flex items-center mt-0.5">
                             <input type="checkbox" wire:model="is_active" {{ $is_main ? 'disabled' : '' }} class="sr-only peer">
-                            <div class="w-11 h-6 bg-zinc-300 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-zinc-600 peer-checked:bg-emerald-500"></div>
+                            <div class="vc-switch w-11 h-6 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500 shadow-inner"></div>
                         </div>
                         <div class="flex flex-col">
                             <span class="text-sm font-semibold text-zinc-900 dark:text-zinc-100" x-text="$store.i18n.t('form.activeBranch') || 'Sede activa'">Sede activa</span>
@@ -232,9 +232,15 @@
 
             <div class="flex justify-end gap-3 pt-4">
                 <flux:button href="{{ route('sucursales.index') }}" wire:navigate variant="ghost"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'">Cancelar</span></flux:button>
-                <button type="submit" class="btn-primary">
-                    <span class="material-symbols-outlined icon-sm">save</span>
-                    <span x-text="$store.i18n.t('{{ $isEdit ? 'btn.update' : 'btn.register' }}') || '{{ $isEdit ? 'Actualizar' : 'Registrar' }}'">{{ $isEdit ? 'Actualizar' : 'Registrar' }}</span>
+                <button type="submit" class="w-full sm:w-auto {{ $isEdit ? 'btn-violet' : 'btn-primary' }} justify-center" wire:loading.attr="disabled">
+                    <span wire:loading.remove class="flex items-center gap-2">
+                        <span class="material-symbols-outlined icon-sm">{{ $isEdit ? 'edit' : 'save' }}</span>
+                        <span x-text="$store.i18n.t('{{ $isEdit ? 'btn.update' : 'btn.register' }}') || '{{ $isEdit ? 'Actualizar' : 'Registrar' }}'">{{ $isEdit ? 'Actualizar' : 'Registrar' }}</span>
+                    </span>
+                    <span wire:loading class="flex items-center gap-2">
+                        <span class="material-symbols-outlined icon-sm vc-spinner">progress_activity</span>
+                        <span x-text="$store.i18n.t('btn.saving') || 'Guardando...'">Guardando...</span>
+                    </span>
                 </button>
             </div>
         </form>

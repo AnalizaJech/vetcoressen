@@ -159,10 +159,12 @@
             <div class="flex flex-col-reverse sm:flex-row gap-3 w-full mt-6">
                 <flux:spacer class="hidden sm:block" />
                 <flux:modal.close class="w-full sm:w-auto">
-                    <flux:button variant="ghost" class="w-full font-medium px-4 py-2 md:px-5 md:py-2.5 lg:px-6 lg:py-3"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'"></span></span></flux:button>
+                    <button type="button" class="btn-secondary w-full sm:w-auto text-xs px-4 py-2 flex items-center justify-center gap-1.5">
+                        <span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'">Cancelar</span>
+                    </button>
                 </flux:modal.close>
-                <button type="button" class="w-full sm:w-auto btn-danger font-medium justify-center px-4 py-2 md:px-5 md:py-2.5 lg:px-6 lg:py-3" wire:click="eliminar" x-on:click="$dispatch('modal-close', { name: 'confirmar-eliminar' })">
-                    <span x-text="$store.i18n.t('btn.delete') || 'Eliminar'"><span x-text="$store.i18n.t('btn.delete') || 'Eliminar'"></span></span>
+                <button type="button" class="w-full sm:w-auto btn-danger text-xs px-4 py-2 flex items-center justify-center gap-1.5" wire:click="eliminar" x-on:click="$dispatch('modal-close', { name: 'confirmar-eliminar' })">
+                    <span x-text="$store.i18n.t('btn.delete') || 'Eliminar'">Eliminar</span>
                 </button>
             </div>
         </div>
@@ -285,9 +287,9 @@
             </div>
             @endif
 
-            <div class="flex justify-end mt-4 w-full">
+            <div class="flex justify-end mt-6 pt-4 border-t border-zinc-100 dark:border-zinc-800 w-full">
                 <flux:modal.close class="w-full sm:w-auto">
-                    <button type="button" class="bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300 border-none px-4 py-2 md:px-5 md:py-2.5 lg:px-6 lg:py-3 rounded-lg font-medium flex items-center justify-center gap-2 w-full transition-colors">
+                    <button type="button" class="btn-secondary text-xs px-4 py-2 flex items-center justify-center gap-1.5 w-full sm:w-auto">
                         <span x-text="$store.i18n.t('btn.close') || 'Cerrar'">Cerrar</span>
                     </button>
                 </flux:modal.close>

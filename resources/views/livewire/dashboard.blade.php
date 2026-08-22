@@ -24,11 +24,11 @@
             <div class="flex flex-wrap items-center gap-2.5">
                 <a href="{{ route('citas.crear') }}" wire:navigate class="btn-primary text-xs px-3.5 py-2 flex items-center justify-center gap-1.5 shadow-sm">
                     <span class="material-symbols-outlined icon-sm">add</span>
-                    <span x-text="$store.i18n.t('btn.newAppointment') || 'Nueva Cita'">Nueva Cita</span>
+                    <span x-text="$store.i18n.t('btn.newAppointment') || 'New Appointment'">New Appointment</span>
                 </a>
                 <a href="{{ route('caja.index') }}" wire:navigate class="btn-secondary text-xs px-3.5 py-2 flex items-center justify-center gap-1.5 shadow-sm">
                     <span class="material-symbols-outlined icon-sm">point_of_sale</span>
-                    <span x-text="$store.i18n.t('sidebar.point_of_sale') || 'Punto de Venta'">Punto de Venta</span>
+                    <span x-text="$store.i18n.t('sidebar.point_of_sale') || 'Point of Sale'">Point of Sale</span>
                 </a>
             </div>
         </div>
@@ -157,6 +157,7 @@
                             ]"
                             :selected="$filtroAtenciones"
                             placeholder="dashboard.filter"
+                            icon="calendar_month"
                         />
                     </div>
                 </div>
@@ -172,14 +173,14 @@
                     <div>
                         <h2 class="text-base font-extrabold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
                             <span class="material-symbols-outlined text-blue-500">calendar_month</span>
-                            <span x-text="$store.i18n.t('dashboard.scheduledAppointments') || 'Citas Programadas'">Citas Programadas</span>
+                            <span x-text="$store.i18n.t('dashboard.scheduledAppointments') || 'Scheduled Appointments'">Scheduled Appointments</span>
                         </h2>
-                        <p class="text-xs text-zinc-400 mt-0.5" x-text="$store.i18n.t('dashboard.scheduledSubtitle') || 'Agenda clínica del periodo'">
-                            Agenda clínica del periodo
+                        <p class="text-xs text-zinc-400 mt-0.5" x-text="$store.i18n.t('dashboard.scheduledSubtitle') || 'Clinical schedule for the period'">
+                            Clinical schedule for the period
                         </p>
                     </div>
                     <a href="{{ route('citas.index') }}" wire:navigate class="px-2.5 py-1 rounded-lg text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 dark:text-emerald-300 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 border border-emerald-200/50 dark:border-emerald-800/40 transition-all flex items-center gap-1">
-                        <span x-text="$store.i18n.t('btn.viewAll') || 'Ver todas'">Ver todas</span>
+                        <span x-text="$store.i18n.t('btn.viewAll') || 'View all'">View all</span>
                         <span class="material-symbols-outlined text-xs">arrow_forward</span>
                     </a>
                 </div>
@@ -194,8 +195,8 @@
                                 </div>
                                 <div class="min-w-0">
                                     <h4 class="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate">
-                                        {{ $cita->mascota->name ?? 'Mascota' }}
-                                        <span class="text-zinc-400 font-normal">({{ $cita->cliente->nombre_completo ?? 'Cliente' }})</span>
+                                        {{ $cita->mascota->name ?? 'Pet' }}
+                                        <span class="text-zinc-400 font-normal">({{ $cita->cliente->nombre_completo ?? 'Client' }})</span>
                                     </h4>
                                     <p class="text-[11px] text-zinc-500 dark:text-zinc-400 flex items-center gap-1 mt-0.5">
                                         <span class="material-symbols-outlined text-[13px]">schedule</span>
@@ -210,7 +211,7 @@
                     @empty
                         <div class="py-8 text-center text-zinc-400 text-xs">
                             <span class="material-symbols-outlined text-3xl mb-1 text-zinc-300 dark:text-zinc-600">event_available</span>
-                            <p x-text="$store.i18n.t('dashboard.noAppointmentsPeriod') || 'Sin citas programadas en este período'">Sin citas programadas en este período</p>
+                            <p x-text="$store.i18n.t('dashboard.noAppointmentsPeriod') || 'No scheduled appointments in this period'">No scheduled appointments in this period</p>
                         </div>
                     @endforelse
                 </div>
@@ -229,10 +230,10 @@
                     <div>
                         <h2 class="text-base font-extrabold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
                             <span class="material-symbols-outlined text-emerald-500">trending_up</span>
-                            <span x-text="$store.i18n.t('dashboard.monetaryIncome') || 'Ingresos Monetarios'">Ingresos Monetarios</span>
+                            <span x-text="$store.i18n.t('dashboard.monetaryIncome') || 'Monetary Income'">Monetary Income</span>
                         </h2>
-                        <p class="text-xs text-zinc-400 mt-0.5" x-text="$store.i18n.t('dashboard.incomeSubtitle') || 'Evolución de ingresos generados'">
-                            Evolución de ingresos generados
+                        <p class="text-xs text-zinc-400 mt-0.5" x-text="$store.i18n.t('dashboard.incomeSubtitle') || 'Evolution of generated income'">
+                            Evolution of generated income
                         </p>
                     </div>
 
@@ -248,6 +249,7 @@
                             ]"
                             :selected="$filtroTiempo"
                             placeholder="dashboard.filter"
+                            icon="calendar_month"
                         />
                     </div>
                 </div>
@@ -649,7 +651,13 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove'],
                         interaction: {
+                            mode: 'index',
+                            intersect: false,
+                            axis: 'x'
+                        },
+                        hover: {
                             mode: 'index',
                             intersect: false
                         },
@@ -673,7 +681,8 @@
                                 bodyFont: { family: 'Plus Jakarta Sans', size: 11 },
                                 callbacks: {
                                     label: function(context) {
-                                        return ' ' + context.dataset.label + ': ' + context.raw;
+                                        const val = context.raw !== undefined ? context.raw : (context.parsed?.y !== undefined ? context.parsed.y : 0);
+                                        return ' ' + (context.dataset.label || '') + ': ' + val;
                                     }
                                 }
                             }
@@ -770,7 +779,13 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove'],
                         interaction: {
+                            mode: 'index',
+                            intersect: false,
+                            axis: 'x'
+                        },
+                        hover: {
                             mode: 'index',
                             intersect: false
                         },
@@ -791,7 +806,8 @@
                                 bodyFont: { family: 'Plus Jakarta Sans', size: 11 },
                                 callbacks: {
                                     label: function(context) {
-                                        return ' ' + (context.dataset.label || 'Ingresos') + ': S/ ' + Number(context.raw).toFixed(2);
+                                        const val = context.raw !== undefined ? context.raw : (context.parsed?.y !== undefined ? context.parsed.y : 0);
+                                        return ' ' + (context.dataset.label || 'Ingresos') + ': S/ ' + Number(val).toFixed(2);
                                     }
                                 }
                             }
@@ -806,3 +822,4 @@
         };
     }
 </script>
+</div>

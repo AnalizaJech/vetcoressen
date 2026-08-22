@@ -4,7 +4,7 @@
 
 document.addEventListener("alpine:init", () => {
     Alpine.store("i18n", {
-        locale: localStorage.getItem("vc_locale") || "es",
+        locale: localStorage.getItem("vc_locale") || "en",
         dict: {},
         loaded: false,
 
@@ -58,7 +58,7 @@ document.addEventListener("alpine:init", () => {
                 if (result && typeof result === "object" && k in result) {
                     result = result[k];
                 } else {
-                    return fallback !== null ? fallback : '';
+                    return fallback !== null ? fallback : (key.includes('.') ? key.split('.').pop().replace(/([A-Z])/g, ' $1').trim() : key);
                 }
             }
             return result;

@@ -7,7 +7,7 @@
 ])
 
 <div
-    x-data="datePicker({
+    x-data="vcDatePicker({
         modelValue: @entangle($attributes->wire('model')),
         minDate: '{{ $minDate }}',
         maxDate: '{{ $maxDate ?? ($isBirthdate ? 'today' : '') }}',
@@ -52,20 +52,19 @@
         x-transition:leave-end="opacity-0 -translate-y-1 scale-95"
         x-cloak
         class="absolute left-0 mt-1.5 w-72 sm:w-80 min-h-[310px] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700/80 rounded-2xl shadow-2xl p-3.5 z-[99999] isolate"
-        style="z-index: 99999; background-color: var(--color-vc-surface, #18181b);"
     >
         {{-- Botones de acción rápida --}}
         @if(!$isBirthdate)
             <div class="flex items-center gap-2 mb-3 pb-2.5 border-b border-zinc-100 dark:border-zinc-800">
-                <button type="button" @click="selectToday()" class="flex-1 py-1.5 text-xs font-bold rounded-lg text-emerald-700 bg-emerald-50 hover:bg-emerald-100 dark:text-emerald-300 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 border border-emerald-200/50 dark:border-emerald-800/40 transition-all text-center">
+                <button type="button" @click="selectToday()" class="flex-1 py-1.5 text-xs font-bold rounded-lg text-emerald-700 bg-emerald-50 hover:bg-emerald-100 dark:text-emerald-300 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 border border-emerald-200/60 dark:border-emerald-800/40 transition-all text-center">
                     <span x-text="$store.i18n?.t('form.today') || 'Today'">Today</span>
                 </button>
-                <button type="button" @click="selectTomorrow()" class="flex-1 py-1.5 text-xs font-bold rounded-lg text-emerald-700 bg-emerald-50 hover:bg-emerald-100 dark:text-emerald-300 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 border border-emerald-200/50 dark:border-emerald-800/40 transition-all text-center">
+                <button type="button" @click="selectTomorrow()" class="flex-1 py-1.5 text-xs font-bold rounded-lg text-emerald-700 bg-emerald-50 hover:bg-emerald-100 dark:text-emerald-300 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 border border-emerald-200/60 dark:border-emerald-800/40 transition-all text-center">
                     <span x-text="$store.i18n?.t('form.tomorrow') || 'Tomorrow'">Tomorrow</span>
                 </button>
             </div>
         @else
-            <div class="flex items-center justify-between mb-3 pb-2 border-b border-zinc-100 dark:border-zinc-800 text-xs font-bold text-zinc-600 dark:text-zinc-300">
+            <div class="flex items-center justify-between mb-3 pb-2 border-b border-zinc-100 dark:border-zinc-800 text-xs font-bold text-zinc-700 dark:text-zinc-300">
                 <span class="flex items-center gap-1">
                     <span class="material-symbols-outlined text-sm text-emerald-500">cake</span>
                     <span x-text="$store.i18n?.t('form.birthDate') || 'Date of Birth'">Date of Birth</span>
@@ -86,13 +85,13 @@
                 
                 <div class="flex items-center gap-1.5">
                     {{-- Botón custom selector de Mes --}}
-                    <button type="button" @click="viewMode = 'months'" class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-zinc-50 dark:bg-zinc-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-zinc-900 dark:text-white hover:text-emerald-600 dark:hover:text-emerald-400 text-xs font-bold transition-colors border border-zinc-200 dark:border-zinc-700">
+                    <button type="button" @click="viewMode = 'months'" class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-zinc-900 dark:text-white hover:text-emerald-600 dark:hover:text-emerald-400 text-xs font-bold transition-colors border border-zinc-200 dark:border-zinc-700">
                         <span x-text="monthNames[month] || ''"></span>
                         <span class="material-symbols-outlined text-[14px]">expand_more</span>
                     </button>
 
                     {{-- Botón custom selector de Año --}}
-                    <button type="button" @click="viewMode = 'years'" class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-zinc-50 dark:bg-zinc-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-zinc-900 dark:text-white hover:text-emerald-600 dark:hover:text-emerald-400 text-xs font-bold transition-colors border border-zinc-200 dark:border-zinc-700">
+                    <button type="button" @click="viewMode = 'years'" class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-zinc-900 dark:text-white hover:text-emerald-600 dark:hover:text-emerald-400 text-xs font-bold transition-colors border border-zinc-200 dark:border-zinc-700">
                         <span x-text="year"></span>
                         <span class="material-symbols-outlined text-[14px]">expand_more</span>
                     </button>
@@ -137,7 +136,7 @@
         {{-- ═══ VISTA 2: SELECTOR DE MESES (12 Meses Custom) ═══ --}}
         <div x-show="viewMode === 'months'" class="space-y-3">
             <div class="flex items-center justify-between pb-2 border-b border-zinc-100 dark:border-zinc-800">
-                <span class="text-xs font-bold text-zinc-700 dark:text-zinc-300 flex items-center gap-1">
+                <span class="text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1">
                     <span class="material-symbols-outlined text-[16px] text-emerald-500">calendar_month</span>
                     <span x-text="$store.i18n?.locale === 'en' ? 'Select Month' : 'Seleccionar Mes'">Select Month</span>
                 </span>
@@ -151,7 +150,7 @@
                         type="button"
                         @click="setMonth(idx)"
                         class="py-2 px-1 text-xs font-semibold rounded-xl text-center transition-all"
-                        :class="month === idx ? 'bg-emerald-600 text-white font-bold shadow-md shadow-emerald-500/20' : 'bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-600'"
+                        :class="month === idx ? 'bg-emerald-600 text-white font-bold shadow-md shadow-emerald-500/20' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-600'"
                         x-text="mName.slice(0, 3)"
                     ></button>
                 </template>
@@ -161,7 +160,7 @@
         {{-- ═══ VISTA 3: SELECTOR DE AÑOS (Años Custom con Paginación) ═══ --}}
         <div x-show="viewMode === 'years'" class="space-y-3">
             <div class="flex items-center justify-between pb-2 border-b border-zinc-100 dark:border-zinc-800">
-                <span class="text-xs font-bold text-zinc-700 dark:text-zinc-300 flex items-center gap-1">
+                <span class="text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1">
                     <span class="material-symbols-outlined text-[16px] text-emerald-500">event</span>
                     <span x-text="$store.i18n?.locale === 'en' ? 'Select Year' : 'Seleccionar Año'">Select Year</span>
                 </span>
@@ -175,7 +174,7 @@
                         type="button"
                         @click="setYear(y)"
                         class="py-2 text-xs font-semibold rounded-xl text-center transition-all"
-                        :class="year === y ? 'bg-emerald-600 text-white font-bold shadow-md shadow-emerald-500/20' : 'bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-600'"
+                        :class="year === y ? 'bg-emerald-600 text-white font-bold shadow-md shadow-emerald-500/20' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-600'"
                         x-text="y"
                     ></button>
                 </template>
@@ -184,243 +183,256 @@
     </div>
 </div>
 
-@once
 <script>
-    document.addEventListener('alpine:init', () => {
-        Alpine.data('datePicker', (config) => ({
-            value: config.modelValue,
-            minDate: config.minDate,
-            maxDate: config.maxDate,
-            isBirthdate: config.isBirthdate || false,
-            open: false,
-            viewMode: 'days', // 'days' | 'months' | 'years'
-            month: new Date().getMonth(),
-            year: new Date().getFullYear(),
-            daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
-            monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-            blankDays: [],
-            daysInMonth: [],
-            availableYears: [],
-            
-            get placeholderText() {
-                let key = '{{ addslashes($placeholder) }}';
-                return this.$store.i18n?.t(key) || 'Select date...';
-            },
-
-            get formattedValue() {
-                if (!this.value || typeof this.value !== 'string') return '';
-                return this.value;
-            },
-
-            init() {
-                this.generateAvailableYears();
-                this.updateLocalization();
-                this.$watch('$store.i18n.locale', () => {
-                    this.updateLocalization();
-                });
-
-                this.syncFromValue(this.value);
-                this.calculateDays();
+    if (typeof window.vcDatePicker !== 'function') {
+        window.vcDatePicker = function(config) {
+            return {
+                value: config.modelValue,
+                minDate: config.minDate,
+                maxDate: config.maxDate,
+                isBirthdate: config.isBirthdate || false,
+                open: false,
+                viewMode: 'days', // 'days' | 'months' | 'years'
+                month: new Date().getMonth(),
+                year: new Date().getFullYear(),
+                daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+                monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                blankDays: [],
+                daysInMonth: [],
+                availableYears: [],
                 
-                this.$watch('value', (newVal) => {
-                    this.syncFromValue(newVal);
-                    this.calculateDays();
-                });
+                get placeholderText() {
+                    let key = '{{ addslashes($placeholder) }}';
+                    return this.$store?.i18n?.t(key) || 'Select date...';
+                },
 
-                this.$watch('open', (isOpen) => {
-                    if (isOpen) {
+                get formattedValue() {
+                    if (!this.value || typeof this.value !== 'string') return '';
+                    return this.value;
+                },
+
+                init() {
+                    this.generateAvailableYears();
+                    this.updateLocalization();
+                    
+                    if (this.$watch) {
+                        this.$watch('$store.i18n.locale', () => {
+                            this.updateLocalization();
+                        });
+
+                        this.$watch('value', (newVal) => {
+                            this.syncFromValue(newVal);
+                            this.calculateDays();
+                        });
+
+                        this.$watch('open', (isOpen) => {
+                            if (isOpen) {
+                                this.viewMode = 'days';
+                                this.syncFromValue(this.value);
+                                this.calculateDays();
+                            }
+                        });
+                    }
+
+                    this.syncFromValue(this.value);
+                    this.calculateDays();
+                },
+
+                toggleCalendar() {
+                    this.open = !this.open;
+                    if (this.open) {
                         this.viewMode = 'days';
                         this.syncFromValue(this.value);
                         this.calculateDays();
                     }
-                });
-            },
+                },
 
-            toggleCalendar() {
-                this.open = !this.open;
-                if (this.open) {
+                generateAvailableYears() {
+                    const currentYear = new Date().getFullYear();
+                    let startYear = this.isBirthdate ? currentYear - 25 : currentYear - 5;
+                    let endYear = this.isBirthdate ? currentYear : currentYear + 5;
+                    let years = [];
+                    for (let y = endYear; y >= startYear; y--) {
+                        years.push(y);
+                    }
+                    this.availableYears = years;
+                },
+
+                syncFromValue(val) {
+                    const now = new Date();
+                    if (val && typeof val === 'string' && val.includes('-')) {
+                        const parts = val.split('-');
+                        if (parts.length === 3) {
+                            const y = parseInt(parts[0], 10);
+                            const m = parseInt(parts[1], 10) - 1;
+                            if (!isNaN(y) && y > 1900) this.year = y;
+                            if (!isNaN(m) && m >= 0 && m <= 11) this.month = m;
+                            return;
+                        }
+                    }
+                    if (isNaN(this.year) || this.year < 1900) this.year = now.getFullYear();
+                    if (isNaN(this.month) || this.month < 0 || this.month > 11) this.month = now.getMonth();
+                },
+
+                updateLocalization() {
+                    const isEn = (this.$store?.i18n?.locale || localStorage.getItem('vc_locale')) === 'en';
+                    if (isEn) {
+                        this.daysOfWeek = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+                        this.monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                    } else {
+                        this.daysOfWeek = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'];
+                        this.monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+                    }
+                },
+
+                setMonth(mIdx) {
+                    this.month = mIdx;
+                    this.calculateDays();
                     this.viewMode = 'days';
-                    this.syncFromValue(this.value);
+                },
+
+                setYear(yVal) {
+                    this.year = yVal;
+                    this.calculateDays();
+                    this.viewMode = 'days';
+                },
+
+                calculateDays() {
+                    const now = new Date();
+                    let y = (!isNaN(this.year) && this.year > 1900) ? parseInt(this.year, 10) : now.getFullYear();
+                    let m = (!isNaN(this.month) && this.month >= 0 && this.month <= 11) ? parseInt(this.month, 10) : now.getMonth();
+                    
+                    this.year = y;
+                    this.month = m;
+
+                    const daysInMonthCount = new Date(y, m + 1, 0).getDate();
+                    const firstDayOfWeek = new Date(y, m, 1).getDay();
+                    
+                    let blanks = [];
+                    for (let i = 0; i < firstDayOfWeek; i++) {
+                        blanks.push(i);
+                    }
+                    
+                    let days = [];
+                    for (let i = 1; i <= daysInMonthCount; i++) {
+                        days.push(i);
+                    }
+                    
+                    this.blankDays = blanks;
+                    this.daysInMonth = days;
+                },
+
+                formatDate(year, month, day) {
+                    return year + '-' + ('0' + (month + 1)).slice(-2) + '-' + ('0' + day).slice(-2);
+                },
+
+                selectDate(date) {
+                    this.value = this.formatDate(this.year, this.month, date);
+                    this.open = false;
+                    this.viewMode = 'days';
+                },
+
+                selectToday() {
+                    const today = new Date();
+                    this.year = today.getFullYear();
+                    this.month = today.getMonth();
+                    this.value = this.formatDate(this.year, this.month, today.getDate());
+                    this.calculateDays();
+                    this.open = false;
+                    this.viewMode = 'days';
+                },
+
+                selectTomorrow() {
+                    if (this.maxDate === 'today' || this.isBirthdate) return;
+                    const tomorrow = new Date();
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    this.year = tomorrow.getFullYear();
+                    this.month = tomorrow.getMonth();
+                    this.value = this.formatDate(this.year, this.month, tomorrow.getDate());
+                    this.calculateDays();
+                    this.open = false;
+                    this.viewMode = 'days';
+                },
+
+                isToday(date) {
+                    const today = new Date();
+                    return today.getFullYear() === this.year && today.getMonth() === this.month && today.getDate() === date;
+                },
+
+                isSelected(date) {
+                    if (!this.value || typeof this.value !== 'string') return false;
+                    const parts = this.value.split('-');
+                    if (parts.length !== 3) return false;
+                    return parseInt(parts[0], 10) === this.year && 
+                           (parseInt(parts[1], 10) - 1) === this.month && 
+                           parseInt(parts[2], 10) === date;
+                },
+
+                isDisabled(date) {
+                    const current = new Date(this.year, this.month, date);
+                    if (this.minDate === 'today') {
+                        const today = new Date();
+                        today.setHours(0,0,0,0);
+                        if (current < today) return true;
+                    }
+                    if (this.maxDate === 'today' || this.isBirthdate) {
+                        const today = new Date();
+                        today.setHours(23,59,59,999);
+                        if (current > today) return true;
+                    }
+                    return false;
+                },
+
+                isPrevMonthDisabled() {
+                    if (this.minDate === 'today') {
+                        const today = new Date();
+                        return this.year < today.getFullYear() || (this.year === today.getFullYear() && this.month <= today.getMonth());
+                    }
+                    return false;
+                },
+
+                isNextMonthDisabled() {
+                    if (this.maxDate === 'today' || this.isBirthdate) {
+                        const today = new Date();
+                        return this.year > today.getFullYear() || (this.year === today.getFullYear() && this.month >= today.getMonth());
+                    }
+                    return false;
+                },
+
+                prevMonth() {
+                    if (this.isPrevMonthDisabled()) return;
+                    
+                    if (this.month == 0) {
+                        this.year--;
+                        this.month = 11;
+                    } else {
+                        this.month--;
+                    }
+                    this.calculateDays();
+                },
+
+                nextMonth() {
+                    if (this.isNextMonthDisabled()) return;
+
+                    if (this.month == 11) {
+                        this.year++;
+                        this.month = 0;
+                    } else {
+                        this.month++;
+                    }
                     this.calculateDays();
                 }
-            },
+            };
+        };
 
-            generateAvailableYears() {
-                const currentYear = new Date().getFullYear();
-                let startYear = this.isBirthdate ? currentYear - 25 : currentYear - 5;
-                let endYear = this.isBirthdate ? currentYear : currentYear + 5;
-                let years = [];
-                for (let y = endYear; y >= startYear; y--) {
-                    years.push(y);
-                }
-                this.availableYears = years;
-            },
-
-            syncFromValue(val) {
-                const now = new Date();
-                if (val && typeof val === 'string' && val.includes('-')) {
-                    const parts = val.split('-');
-                    if (parts.length === 3) {
-                        const y = parseInt(parts[0], 10);
-                        const m = parseInt(parts[1], 10) - 1;
-                        if (!isNaN(y) && y > 1900) this.year = y;
-                        if (!isNaN(m) && m >= 0 && m <= 11) this.month = m;
-                        return;
-                    }
-                }
-                if (isNaN(this.year) || this.year < 1900) this.year = now.getFullYear();
-                if (isNaN(this.month) || this.month < 0 || this.month > 11) this.month = now.getMonth();
-            },
-
-            updateLocalization() {
-                const isEn = (this.$store.i18n?.locale || localStorage.getItem('vc_locale')) === 'en';
-                if (isEn) {
-                    this.daysOfWeek = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-                    this.monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-                } else {
-                    this.daysOfWeek = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'];
-                    this.monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-                }
-            },
-
-            setMonth(mIdx) {
-                this.month = mIdx;
-                this.calculateDays();
-                this.viewMode = 'days';
-            },
-
-            setYear(yVal) {
-                this.year = yVal;
-                this.calculateDays();
-                this.viewMode = 'days';
-            },
-
-            calculateDays() {
-                const now = new Date();
-                let y = (!isNaN(this.year) && this.year > 1900) ? parseInt(this.year, 10) : now.getFullYear();
-                let m = (!isNaN(this.month) && this.month >= 0 && this.month <= 11) ? parseInt(this.month, 10) : now.getMonth();
-                
-                this.year = y;
-                this.month = m;
-
-                const daysInMonthCount = new Date(y, m + 1, 0).getDate();
-                const firstDayOfWeek = new Date(y, m, 1).getDay();
-                
-                let blanks = [];
-                for (let i = 0; i < firstDayOfWeek; i++) {
-                    blanks.push(i);
-                }
-                
-                let days = [];
-                for (let i = 1; i <= daysInMonthCount; i++) {
-                    days.push(i);
-                }
-                
-                this.blankDays = blanks;
-                this.daysInMonth = days;
-            },
-
-            formatDate(year, month, day) {
-                return year + '-' + ('0' + (month + 1)).slice(-2) + '-' + ('0' + day).slice(-2);
-            },
-
-            selectDate(date) {
-                this.value = this.formatDate(this.year, this.month, date);
-                this.open = false;
-                this.viewMode = 'days';
-            },
-
-            selectToday() {
-                const today = new Date();
-                this.year = today.getFullYear();
-                this.month = today.getMonth();
-                this.value = this.formatDate(this.year, this.month, today.getDate());
-                this.calculateDays();
-                this.open = false;
-                this.viewMode = 'days';
-            },
-
-            selectTomorrow() {
-                if (this.maxDate === 'today' || this.isBirthdate) return;
-                const tomorrow = new Date();
-                tomorrow.setDate(tomorrow.getDate() + 1);
-                this.year = tomorrow.getFullYear();
-                this.month = tomorrow.getMonth();
-                this.value = this.formatDate(this.year, this.month, tomorrow.getDate());
-                this.calculateDays();
-                this.open = false;
-                this.viewMode = 'days';
-            },
-
-            isToday(date) {
-                const today = new Date();
-                return today.getFullYear() === this.year && today.getMonth() === this.month && today.getDate() === date;
-            },
-
-            isSelected(date) {
-                if (!this.value || typeof this.value !== 'string') return false;
-                const parts = this.value.split('-');
-                if (parts.length !== 3) return false;
-                return parseInt(parts[0], 10) === this.year && 
-                       (parseInt(parts[1], 10) - 1) === this.month && 
-                       parseInt(parts[2], 10) === date;
-            },
-
-            isDisabled(date) {
-                const current = new Date(this.year, this.month, date);
-                if (this.minDate === 'today') {
-                    const today = new Date();
-                    today.setHours(0,0,0,0);
-                    if (current < today) return true;
-                }
-                if (this.maxDate === 'today' || this.isBirthdate) {
-                    const today = new Date();
-                    today.setHours(23,59,59,999);
-                    if (current > today) return true;
-                }
-                return false;
-            },
-
-            isPrevMonthDisabled() {
-                if (this.minDate === 'today') {
-                    const today = new Date();
-                    return this.year < today.getFullYear() || (this.year === today.getFullYear() && this.month <= today.getMonth());
-                }
-                return false;
-            },
-
-            isNextMonthDisabled() {
-                if (this.maxDate === 'today' || this.isBirthdate) {
-                    const today = new Date();
-                    return this.year > today.getFullYear() || (this.year === today.getFullYear() && this.month >= today.getMonth());
-                }
-                return false;
-            },
-
-            prevMonth() {
-                if (this.isPrevMonthDisabled()) return;
-                
-                if (this.month == 0) {
-                    this.year--;
-                    this.month = 11;
-                } else {
-                    this.month--;
-                }
-                this.calculateDays();
-            },
-
-            nextMonth() {
-                if (this.isNextMonthDisabled()) return;
-
-                if (this.month == 11) {
-                    this.year++;
-                    this.month = 0;
-                } else {
-                    this.month++;
-                }
-                this.calculateDays();
-            }
-        }));
-    });
+        if (window.Alpine) {
+            window.Alpine.data('datePicker', window.vcDatePicker);
+            window.Alpine.data('vcDatePicker', window.vcDatePicker);
+        } else {
+            document.addEventListener('alpine:init', () => {
+                window.Alpine.data('datePicker', window.vcDatePicker);
+                window.Alpine.data('vcDatePicker', window.vcDatePicker);
+            });
+        }
+    }
 </script>
-@endonce

@@ -20,62 +20,107 @@
     </style>
 
     @php
-        function numeroALetras($numero) {
-            $formatter = new class {
-                private $unidades = ['', 'UN', 'DOS', 'TRES', 'CUATRO', 'CINCO', 'SEIS', 'SIETE', 'OCHO', 'NUEVE'];
-                private $decenas = ['', 'DIEZ', 'VEINTE', 'TREINTA', 'CUARENTA', 'CINCUENTA', 'SESENTA', 'SETENTA', 'OCHENTA', 'NOVENTA'];
-                private $especiales = [
-                    11 => 'ONCE', 12 => 'DOCE', 13 => 'TRECE', 14 => 'CATORCE', 15 => 'QUINCE',
-                    16 => 'DIECISEIS', 17 => 'DIECISIETE', 18 => 'DIECIOCHO', 19 => 'DIECINUEVE',
-                    21 => 'VEINTIUNO', 22 => 'VEINTIDOS', 23 => 'VEINTITRES', 24 => 'VEINTICUATRO',
-                    25 => 'VEINTICINCO', 26 => 'VEINTISEIS', 27 => 'VEINTISIETE', 28 => 'VEINTIOCHO', 29 => 'VEINTINUEVE'
-                ];
-                private $centenas = ['', 'CIENTO', 'DOSCIENTOS', 'TRESCIENTOS', 'CUATROCIENTOS', 'QUINIENTOS', 'SEISCIENTOS', 'SETECIENTOS', 'OCHOCIENTOS', 'NOVECIENTOS'];
+        $cookieLocale = request()->cookie('vc_locale', 'en');
+        $isEn = $cookieLocale === 'en';
 
-                public function convertir($num) {
-                    if ($num == 0) return 'CERO';
-                    if ($num == 100) return 'CIEN';
-                    $letras = '';
-                    if ($num >= 1000) {
-                        $miles = floor($num / 1000);
-                        $num = $num % 1000;
-                        if ($miles == 1) $letras .= 'MIL ';
-                        else $letras .= $this->convertir($miles) . ' MIL ';
+        if (!function_exists('numeroALetras')) {
+            function numeroALetras($numero, $isEn = false) {
+                $num = (int) floor($numero);
+                if ($isEn) {
+                    if (class_exists('\NumberFormatter')) {
+                        try {
+                            $f = new \NumberFormatter("en", \NumberFormatter::SPELLOUT);
+                            return strtoupper($f->format($num));
+                        } catch (\Throwable $e) {}
                     }
-                    if ($num >= 100) {
-                        $centenas = floor($num / 100);
-                        $num = $num % 100;
-                        $letras .= $this->centenas[$centenas] . ' ';
-                    }
-                    if ($num >= 10 && $num <= 29) {
-                        if (isset($this->especiales[$num])) {
-                            $letras .= $this->especiales[$num] . ' ';
-                        } else {
-                            $letras .= $this->decenas[floor($num / 10)] . ' ';
+                    $ones = ['', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT', 'NINE', 'TEN', 'ELEVEN', 'TWELVE', 'THIRTEEN', 'FOURTEEN', 'FIFTEEN', 'SIXTEEN', 'SEVENTEEN', 'EIGHTEEN', 'NINETEEN'];
+                    $tens = ['', '', 'TWENTY', 'THIRTY', 'FORTY', 'FIFTY', 'SIXTY', 'SEVENTY', 'EIGHTY', 'NINETY'];
+                    if ($num === 0) return 'ZERO';
+                    $convertGroup = function($n) use ($ones, $tens, &$convertGroup) {
+                        $res = '';
+                        if ($n >= 100) {
+                            $res .= $ones[(int)($n / 100)] . ' HUNDRED ';
+                            $n %= 100;
                         }
-                        $num = 0;
-                    } elseif ($num >= 30) {
-                        $decena = floor($num / 10);
-                        $num = $num % 10;
-                        $letras .= $this->decenas[$decena];
-                        if ($num > 0) $letras .= ' Y ';
-                        else $letras .= ' ';
+                        if ($n >= 20) {
+                            $res .= $tens[(int)($n / 10)] . ' ';
+                            $n %= 10;
+                        }
+                        if ($n > 0) {
+                            $res .= $ones[$n] . ' ';
+                        }
+                        return trim($res);
+                    };
+                    $out = '';
+                    if ($num >= 1000000) {
+                        $out .= $convertGroup((int)($num / 1000000)) . ' MILLION ';
+                        $num %= 1000000;
+                    }
+                    if ($num >= 1000) {
+                        $out .= $convertGroup((int)($num / 1000)) . ' THOUSAND ';
+                        $num %= 1000;
                     }
                     if ($num > 0) {
-                        $letras .= $this->unidades[$num] . ' ';
+                        $out .= $convertGroup($num);
                     }
-                    return trim($letras);
+                    return trim($out);
                 }
-            };
-            return $formatter->convertir(floor($numero));
+                $formatter = new class {
+                    private $unidades = ['', 'UN', 'DOS', 'TRES', 'CUATRO', 'CINCO', 'SEIS', 'SIETE', 'OCHO', 'NUEVE'];
+                    private $decenas = ['', 'DIEZ', 'VEINTE', 'TREINTA', 'CUARENTA', 'CINCUENTA', 'SESENTA', 'SETENTA', 'OCHENTA', 'NOVENTA'];
+                    private $especiales = [
+                        11 => 'ONCE', 12 => 'DOCE', 13 => 'TRECE', 14 => 'CATORCE', 15 => 'QUINCE',
+                        16 => 'DIECISEIS', 17 => 'DIECISIETE', 18 => 'DIECIOCHO', 19 => 'DIECINUEVE',
+                        21 => 'VEINTIUNO', 22 => 'VEINTIDOS', 23 => 'VEINTITRES', 24 => 'VEINTICUATRO',
+                        25 => 'VEINTICINCO', 26 => 'VEINTISEIS', 27 => 'VEINTISIETE', 28 => 'VEINTIOCHO', 29 => 'VEINTINUEVE'
+                    ];
+                    private $centenas = ['', 'CIENTO', 'DOSCIENTOS', 'TRESCIENTOS', 'CUATROCIENTOS', 'QUINIENTOS', 'SEISCIENTOS', 'SETECIENTOS', 'OCHOCIENTOS', 'NOVECIENTOS'];
+
+                    public function convertir($num) {
+                        if ($num == 0) return 'CERO';
+                        if ($num == 100) return 'CIEN';
+                        $letras = '';
+                        if ($num >= 1000) {
+                            $miles = floor($num / 1000);
+                            $num = $num % 1000;
+                            if ($miles == 1) $letras .= 'MIL ';
+                            else $letras .= $this->convertir($miles) . ' MIL ';
+                        }
+                        if ($num >= 100) {
+                            $centenas = floor($num / 100);
+                            $num = $num % 100;
+                            $letras .= $this->centenas[$centenas] . ' ';
+                        }
+                        if ($num >= 10 && $num <= 29) {
+                            if (isset($this->especiales[$num])) {
+                                $letras .= $this->especiales[$num] . ' ';
+                            } else {
+                                $letras .= $this->decenas[floor($num / 10)] . ' ';
+                            }
+                            $num = 0;
+                        } elseif ($num >= 30) {
+                            $decena = floor($num / 10);
+                            $num = $num % 10;
+                            $letras .= $this->decenas[$decena];
+                            if ($num > 0) $letras .= ' Y ';
+                            else $letras .= ' ';
+                        }
+                        if ($num > 0) {
+                            $letras .= $this->unidades[$num] . ' ';
+                        }
+                        return trim($letras);
+                    }
+                };
+                return $formatter->convertir(floor($numero));
+            }
         }
 
         $tipoComp = strtoupper($venta->tipo_comprobante ?? 'BOLETA');
         $isFactura = $tipoComp === 'FACTURA';
         $tipoDoc = match($tipoComp) {
-            'FACTURA' => 'FACTURA ELECTRÓNICA',
-            'BOLETA' => 'BOLETA DE VENTA ELECTRÓNICA',
-            default => 'NOTA DE VENTA / COMPROBANTE',
+            'FACTURA' => $isEn ? 'ELECTRONIC INVOICE' : 'FACTURA ELECTRÓNICA',
+            'BOLETA' => $isEn ? 'ELECTRONIC SALES RECEIPT' : 'BOLETA DE VENTA ELECTRÓNICA',
+            default => $isEn ? 'SALES RECEIPT / VOUCHER' : 'NOTA DE VENTA / COMPROBANTE',
         };
         $serie = match($tipoComp) {
             'FACTURA' => 'F001',
@@ -99,13 +144,13 @@
                     <img src="{{ $logo }}" alt="Logo" class="h-16 w-auto object-contain">
                     <div>
                         <h1 class="font-extrabold text-2xl sm:text-3xl tracking-tight text-zinc-900 leading-none">{{ mb_strtoupper($clinica?->razon_social ?? config('app.name', 'VetCoressen') . ' S.A.C.') }}</h1>
-                        <p class="font-bold text-sm uppercase text-zinc-600 mt-1.5">{{ $clinica?->name ?? 'Clínica Veterinaria' }}</p>
+                        <p class="font-bold text-sm uppercase text-zinc-600 mt-1.5">{{ $clinica?->name ?? ($isEn ? 'Veterinary Clinic' : 'Clínica Veterinaria') }}</p>
                     </div>
                 </div>
                 <div class="text-[13px] text-zinc-700 space-y-1.5 pl-1">
-                    <p class="uppercase"><span class="font-bold text-zinc-900 mr-1">Dirección:</span> {{ $clinica?->address ?: 'Av. Principal 123' }}</p>
-                    <p class="uppercase"><span class="font-bold text-zinc-900 mr-1">Teléfono:</span> {{ $clinica?->phone ?: '01-555-0100' }}</p>
-                    <p class="uppercase"><span class="font-bold text-zinc-900 mr-1">Correo:</span> {{ $clinica?->email ?: 'contacto@vetcoressen.pe' }}</p>
+                    <p class="uppercase"><span class="font-bold text-zinc-900 mr-1">{{ $isEn ? 'Address:' : 'Dirección:' }}</span> {{ $clinica?->address ?: 'Av. Principal 123' }}</p>
+                    <p class="uppercase"><span class="font-bold text-zinc-900 mr-1">{{ $isEn ? 'Phone:' : 'Teléfono:' }}</span> {{ $clinica?->phone ?: '01-555-0100' }}</p>
+                    <p class="uppercase"><span class="font-bold text-zinc-900 mr-1">{{ $isEn ? 'Email:' : 'Correo:' }}</span> {{ $clinica?->email ?: 'contacto@vetcoressen.pe' }}</p>
                 </div>
             </div>
             
@@ -128,30 +173,30 @@
         <div class="bg-zinc-50/80 rounded-2xl p-6 mb-8 border border-zinc-200 shadow-sm">
             <div class="grid grid-cols-12 gap-y-4 gap-x-6 text-[13px]">
                 <div class="col-span-12 sm:col-span-6 grid grid-cols-12 gap-3">
-                    <div class="col-span-5 font-bold text-zinc-700">Fecha de Emisión:</div>
+                    <div class="col-span-5 font-bold text-zinc-700">{{ $isEn ? 'Issue Date:' : 'Fecha de Emisión:' }}</div>
                     <div class="col-span-7 uppercase text-zinc-900 font-semibold">{{ $venta->created_at->setTimezone('America/Lima')->format('d/m/Y') }}</div>
                     
-                    <div class="col-span-5 font-bold text-zinc-700">Señor(es):</div>
-                    <div class="col-span-7 uppercase text-zinc-900 font-semibold">{{ $cliente ? $cliente->nombre_completo : 'CLIENTE GENERAL / PUBLICO EN GENERAL' }}</div>
+                    <div class="col-span-5 font-bold text-zinc-700">{{ $isEn ? 'Customer:' : 'Señor(es):' }}</div>
+                    <div class="col-span-7 uppercase text-zinc-900 font-semibold">{{ $cliente ? $cliente->nombre_completo : ($isEn ? 'GENERAL CLIENT / WALK-IN' : 'CLIENTE GENERAL / PUBLICO EN GENERAL') }}</div>
                     
-                    <div class="col-span-5 font-bold text-zinc-700">Dirección:</div>
+                    <div class="col-span-5 font-bold text-zinc-700">{{ $isEn ? 'Address:' : 'Dirección:' }}</div>
                     <div class="col-span-7 uppercase text-zinc-900 font-semibold">{{ $cliente?->address ?: '-' }}</div>
                 </div>
                 
                 <div class="col-span-12 sm:col-span-6 grid grid-cols-12 gap-3">
-                    <div class="col-span-5 font-bold text-zinc-700">Forma de Pago:</div>
-                    <div class="col-span-7 uppercase text-zinc-900 font-semibold">CONTADO</div>
+                    <div class="col-span-5 font-bold text-zinc-700">{{ $isEn ? 'Payment Type:' : 'Forma de Pago:' }}</div>
+                    <div class="col-span-7 uppercase text-zinc-900 font-semibold">{{ $isEn ? 'CASH / IMMEDIATE' : 'CONTADO' }}</div>
                     
                     <div class="col-span-5 font-bold text-zinc-700">{{ $isFactura ? 'RUC' : ($cliente?->tipo_documento ?? 'DNI/CE') }}:</div>
                     <div class="col-span-7 uppercase text-zinc-900 font-semibold">{{ $cliente?->numero_documento ?: '00000000' }}</div>
                     
-                    <div class="col-span-5 font-bold text-zinc-700">Moneda:</div>
-                    <div class="col-span-7 uppercase text-zinc-900 font-semibold">SOLES</div>
+                    <div class="col-span-5 font-bold text-zinc-700">{{ $isEn ? 'Currency:' : 'Moneda:' }}</div>
+                    <div class="col-span-7 uppercase text-zinc-900 font-semibold">{{ $isEn ? 'PEN (SOLES)' : 'SOLES' }}</div>
                 </div>
 
                 <div class="col-span-12 grid grid-cols-12 gap-2 border-t border-zinc-200 pt-3 mt-1">
-                    <div class="col-span-12 sm:col-span-2 font-semibold text-zinc-600">Observación:</div>
-                    <div class="col-span-12 sm:col-span-10 uppercase text-zinc-900 font-medium">PAGO EN {{ str_replace('_', ' ', $venta->payment_method ?? 'EFECTIVO') }} - {{ $venta->cajero->name ?? 'CAJERO' }}</div>
+                    <div class="col-span-12 sm:col-span-2 font-semibold text-zinc-600">{{ $isEn ? 'Note / Ref:' : 'Observación:' }}</div>
+                    <div class="col-span-12 sm:col-span-10 uppercase text-zinc-900 font-medium">{{ $isEn ? 'PAID VIA' : 'PAGO EN' }} {{ str_replace('_', ' ', $venta->payment_method ?? 'CASH') }} - {{ $venta->cajero->name ?? ($isEn ? 'CASHIER' : 'CAJERO') }}</div>
                 </div>
             </div>
         </div>
@@ -161,19 +206,19 @@
             <table class="w-full text-[13px] text-left">
                 <thead class="text-white font-bold bg-zinc-800" style="-webkit-print-color-adjust: exact; background-color: #27272a !important; color: white !important;">
                     <tr>
-                        <th class="py-4 px-5 text-center w-24 border-r border-zinc-700" style="background-color: #27272a !important; border-color: #3f3f46 !important; color: #ffffff !important;">CANT.</th>
-                        <th class="py-4 px-5 text-center w-28 border-r border-zinc-700" style="background-color: #27272a !important; border-color: #3f3f46 !important; color: #ffffff !important;">U. MEDIDA</th>
-                        <th class="py-4 px-5 border-r border-zinc-700" style="background-color: #27272a !important; border-color: #3f3f46 !important; color: #ffffff !important;">DESCRIPCIÓN</th>
-                        <th class="py-4 px-5 text-right w-32 border-r border-zinc-700" style="background-color: #27272a !important; border-color: #3f3f46 !important; color: #ffffff !important;">V. UNIT.</th>
-                        <th class="py-4 px-5 text-right w-32" style="background-color: #27272a !important; color: #ffffff !important;">IMPORTE</th>
+                        <th class="py-4 px-5 text-center w-24 border-r border-zinc-700" style="background-color: #27272a !important; border-color: #3f3f46 !important; color: #ffffff !important;">{{ $isEn ? 'QTY' : 'CANT.' }}</th>
+                        <th class="py-4 px-5 text-center w-28 border-r border-zinc-700" style="background-color: #27272a !important; border-color: #3f3f46 !important; color: #ffffff !important;">{{ $isEn ? 'UNIT' : 'U. MEDIDA' }}</th>
+                        <th class="py-4 px-5 border-r border-zinc-700" style="background-color: #27272a !important; border-color: #3f3f46 !important; color: #ffffff !important;">{{ $isEn ? 'DESCRIPTION' : 'DESCRIPCIÓN' }}</th>
+                        <th class="py-4 px-5 text-right w-32 border-r border-zinc-700" style="background-color: #27272a !important; border-color: #3f3f46 !important; color: #ffffff !important;">{{ $isEn ? 'UNIT PRICE' : 'V. UNIT.' }}</th>
+                        <th class="py-4 px-5 text-right w-32" style="background-color: #27272a !important; color: #ffffff !important;">{{ $isEn ? 'TOTAL' : 'IMPORTE' }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-zinc-200">
                     @foreach($venta->detalles as $detalle)
                     <tr class="bg-white">
                         <td class="py-4 px-5 text-center font-bold text-zinc-800">{{ number_format($detalle->quantity, 0) }}</td>
-                        <td class="py-4 px-5 text-center text-zinc-600 font-medium">NIU/UNIDAD</td>
-                        <td class="py-4 px-5 uppercase text-zinc-900 font-bold">{{ $detalle->producto?->name ?? ($detalle->description ?? 'SERVICIO VETERINARIO') }}</td>
+                        <td class="py-4 px-5 text-center text-zinc-600 font-medium">{{ $isEn ? 'UNIT' : 'NIU/UNIDAD' }}</td>
+                        <td class="py-4 px-5 uppercase text-zinc-900 font-bold">{{ $detalle->producto?->name ?? ($detalle->description ?? ($isEn ? 'VETERINARY SERVICE' : 'SERVICIO VETERINARIO')) }}</td>
                         <td class="py-4 px-5 text-right text-zinc-700 font-medium">{{ number_format($detalle->precio_final_unitario, 2) }}</td>
                         <td class="py-4 px-5 text-right font-extrabold text-zinc-900">{{ number_format($detalle->subtotal, 2) }}</td>
                     </tr>
@@ -187,12 +232,12 @@
             <div class="w-full sm:w-7/12">
                 <div class="bg-zinc-50 p-4 rounded-xl border border-zinc-200 mb-4">
                     <p class="font-bold text-xs uppercase text-zinc-700 leading-relaxed">
-                        SON: {{ numeroALetras($venta->total) }} Y {{ explode('.', number_format($venta->total, 2, '.', ''))[1] }}/100 SOLES
+                        {{ $isEn ? 'TOTAL IN WORDS:' : 'SON:' }} {{ numeroALetras($venta->total, $isEn) }} {{ $isEn ? 'AND' : 'Y' }} {{ explode('.', number_format($venta->total, 2, '.', ''))[1] }}/100 {{ $isEn ? 'SOLES' : 'SOLES' }}
                     </p>
                 </div>
                 <div class="text-[10px] text-zinc-500">
-                    <p>Representación impresa de comprobante electrónico.</p>
-                    <p>Consulte su validez en www.sunat.gob.pe</p>
+                    <p>{{ $isEn ? 'Printed representation of electronic billing receipt.' : 'Representación impresa de comprobante electrónico.' }}</p>
+                    <p>{{ $isEn ? 'Check validity at www.sunat.gob.pe' : 'Consulte su validez en www.sunat.gob.pe' }}</p>
                 </div>
             </div>
             
@@ -204,19 +249,19 @@
                         $igv = $total - $subtotal;
                     @endphp
                     <div class="flex justify-between py-1.5">
-                        <div class="font-medium text-zinc-600">Sub Total Ventas:</div>
+                        <div class="font-medium text-zinc-600">{{ $isEn ? 'Subtotal:' : 'Sub Total Ventas:' }}</div>
                         <div class="font-semibold text-zinc-900 text-right">S/ {{ number_format($subtotal, 2) }}</div>
                     </div>
                     <div class="flex justify-between py-1.5">
-                        <div class="font-medium text-zinc-600">Descuentos:</div>
+                        <div class="font-medium text-zinc-600">{{ $isEn ? 'Discounts:' : 'Descuentos:' }}</div>
                         <div class="font-semibold text-zinc-900 text-right">S/ 0.00</div>
                     </div>
                     <div class="flex justify-between py-1.5 border-b border-zinc-200 mb-1.5 pb-2">
-                        <div class="font-medium text-zinc-600">IGV (18%):</div>
+                        <div class="font-medium text-zinc-600">{{ $isEn ? 'Tax / IGV (18%):' : 'IGV (18%):' }}</div>
                         <div class="font-semibold text-zinc-900 text-right">S/ {{ number_format($igv, 2) }}</div>
                     </div>
                     <div class="flex justify-between py-2 mt-1 bg-zinc-800 text-white rounded-lg px-3" style="-webkit-print-color-adjust: exact; background-color: #27272a !important; color: white !important;">
-                        <div class="font-bold uppercase tracking-wide" style="color: white !important;">Importe Total:</div>
+                        <div class="font-bold uppercase tracking-wide" style="color: white !important;">{{ $isEn ? 'Total Amount:' : 'Importe Total:' }}</div>
                         <div class="font-bold text-right" style="color: white !important;">S/ {{ number_format($total, 2) }}</div>
                     </div>
                 </div>
@@ -226,14 +271,14 @@
         {{-- Document Verification Text --}}
         <div class="flex justify-center items-center gap-4 text-center mt-10 pt-6 border-t border-zinc-200">
             <div class="text-center max-w-sm mx-auto">
-                <p class="text-[10px] text-zinc-500 leading-tight">Este comprobante puede ser verificado utilizando la clave SOL en el sistema de SUNAT.</p>
+                <p class="text-[10px] text-zinc-500 leading-tight">{{ $isEn ? 'This receipt can be verified in the SUNAT billing system.' : 'Este comprobante puede ser verificado utilizando la clave SOL en el sistema de SUNAT.' }}</p>
             </div>
         </div>
     </div>
     
     {{-- Botón Flotante de Impresión Original --}}
     <div class="fixed bottom-6 right-6 z-[100] print-btn-container" style="z-index: 9999;">
-        <button onclick="window.print()" class="w-14 h-14 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full shadow-2xl hover:shadow-emerald-500/50 flex items-center justify-center transition-all cursor-pointer">
+        <button onclick="window.print()" class="w-14 h-14 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full shadow-2xl hover:shadow-emerald-500/50 flex items-center justify-center transition-all cursor-pointer" title="{{ $isEn ? 'Print Voucher' : 'Imprimir Comprobante' }}">
             <span class="material-symbols-outlined text-[26px]">print</span>
         </button>
     </div>

@@ -99,6 +99,6 @@ class SystemFullTest extends TestCase
 
         $excelResponse = $this->get('/reports/export/excel?periodo=mes_actual');
         $excelResponse->assertStatus(200);
-        $this->assertTrue(str_contains($excelResponse->headers->get('content-type'), 'text/csv'));
+        $this->assertTrue(str_contains($excelResponse->headers->get('content-type'), 'application/vnd.ms-excel'));
     }
 }

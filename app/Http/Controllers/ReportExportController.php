@@ -101,59 +101,118 @@ class ReportExportController extends Controller
     public function excel(Request $request)
     {
         $data = $this->getReportData($request);
-        $csv = "REPORTE ANALITICO EJECUTIVO - VETCORESSEN\n";
-        $csv .= "Periodo: " . strtoupper(str_replace('_', ' ', $data['periodo'])) . "\n";
-        $csv .= "Rango: " . $data['startDate']->format('d/m/Y') . " al " . $data['endDate']->format('d/m/Y') . "\n\n";
+        $periodoNombre = strtoupper(str_replace('_', ' ', $data['periodo']));
+        $rangoFechas = $data['startDate']->format('d/m/Y') . ' al ' . $data['endDate']->format('d/m/Y');
 
-        // Resumen
-        $csv .= "--- RESUMEN DE METRICAS CLAVE ---\n";
-        $csv .= "Metrica,Valor\n";
-        $csv .= "Ingresos Totales (S/)," . number_format($data['ventasPeriodo'], 2, '.', '') . "\n";
-        $csv .= "Ticket Promedio (S/)," . number_format($data['ticketPromedio'], 2, '.', '') . "\n";
-        $csv .= "Ventas Concretadas," . $data['totalVentasCount'] . "\n";
-        $csv .= "Citas Atendidas," . $data['citasCompletadas'] . "\n";
-        $csv .= "Citas Canceladas," . $data['citasCanceladas'] . "\n";
-        $csv .= "Citas Pendientes," . $data['citasPendientes'] . "\n";
-        $csv .= "Productos Stock Bajo," . $data['productosStockBajo'] . "\n";
-        $csv .= "Lotes Proximos Vencer," . $data['lotesProximosVencerCount'] . "\n";
-        $csv .= "Valorizacion Inventario (S/)," . number_format($data['valorizacionInventario'], 2, '.', '') . "\n\n";
+        $html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">';
+        $html .= '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
+        $html .= '<style>
+            body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; color: #1e293b; }
+            .title { font-size: 16pt; font-weight: bold; color: #065f46; }
+            .subtitle { font-size: 11pt; color: #64748b; margin-bottom: 12px; }
+            .section-header { background-color: #059669; color: #ffffff; font-weight: bold; font-size: 12pt; text-align: left; padding: 6px; }
+            .th-header { background-color: #f1f5f9; color: #0f172a; font-weight: bold; border: 1px solid #cbd5e1; padding: 6px; }
+            .td-cell { border: 1px solid #e2e8f0; padding: 5px; }
+            .td-num { border: 1px solid #e2e8f0; padding: 5px; text-align: right; }
+            .td-center { border: 1px solid #e2e8f0; padding: 5px; text-align: center; }
+            .kpi-title { font-weight: bold; background-color: #ecfdf5; border: 1px solid #a7f3d0; padding: 6px; }
+            .kpi-val { font-weight: bold; color: #047857; text-align: right; background-color: #ecfdf5; border: 1px solid #a7f3d0; padding: 6px; }
+        </style></head><body>';
 
-        // Detalle de Ventas
-        $csv .= "--- DETALLE DE VENTAS ---\n";
-        $csv .= "ID Venta,Fecha,Cliente,Documento,Comprobante,Metodo Pago,Subtotal,IGV,Total (S/)\n";
+        $html .= '<table>';
+        $html .= '<tr><td colspan="6" class="title">VETCORESSEN - REPORTE ESTADÍSTICO EJECUTIVO</td></tr>';
+        $html .= "<tr><td colspan=\"6\" class=\"subtitle\">Período: <strong>{$periodoNombre}</strong> | Rango: <strong>{$rangoFechas}</strong></td></tr>";
+        $html .= '<tr><td colspan="6"></td></tr>';
+
+        // 1. Resumen de Métricas Clave
+        $html .= '<tr><td colspan="6" class="section-header">1. RESUMEN DE MÉTRICAS CLAVE</td></tr>';
+        $html .= '<tr><td colspan="4" class="kpi-title">Ingresos Totales del Período</td><td colspan="2" class="kpi-val">S/ ' . number_format($data['ventasPeriodo'], 2) . '</td></tr>';
+        $html .= '<tr><td colspan="4" class="kpi-title">Ticket Promedio por Venta</td><td colspan="2" class="kpi-val">S/ ' . number_format($data['ticketPromedio'], 2) . '</td></tr>';
+        $html .= '<tr><td colspan="4" class="kpi-title">Total de Ventas Concretadas</td><td colspan="2" class="kpi-val">' . $data['totalVentasCount'] . '</td></tr>';
+        $html .= '<tr><td colspan="4" class="kpi-title">Citas Médicas Atendidas / Completadas</td><td colspan="2" class="kpi-val">' . $data['citasCompletadas'] . '</td></tr>';
+        $html .= '<tr><td colspan="4" class="kpi-title">Citas Pendientes / En Progreso</td><td colspan="2" class="kpi-val">' . $data['citasPendientes'] . '</td></tr>';
+        $html .= '<tr><td colspan="4" class="kpi-title">Citas Canceladas</td><td colspan="2" class="kpi-val">' . $data['citasCanceladas'] . '</td></tr>';
+        $html .= '<tr><td colspan="4" class="kpi-title">Productos con Stock Bajo</td><td colspan="2" class="kpi-val">' . $data['productosStockBajo'] . '</td></tr>';
+        $html .= '<tr><td colspan="4" class="kpi-title">Lotes Próximos a Vencer (< 90 días)</td><td colspan="2" class="kpi-val">' . $data['lotesProximosVencerCount'] . '</td></tr>';
+        $html .= '<tr><td colspan="4" class="kpi-title">Valorización de Inventario Activo</td><td colspan="2" class="kpi-val">S/ ' . number_format($data['valorizacionInventario'], 2) . '</td></tr>';
+        $html .= '<tr><td colspan="6"></td></tr>';
+
+        // 2. Detalle de Ventas
+        $html .= '<tr><td colspan="6" class="section-header">2. DETALLE DE VENTAS DEL PERÍODO</td></tr>';
+        $html .= '<tr>
+            <th class="th-header">ID Venta</th>
+            <th class="th-header">Fecha y Hora</th>
+            <th class="th-header">Cliente</th>
+            <th class="th-header">Comprobante</th>
+            <th class="th-header">Método Pago</th>
+            <th class="th-header" style="text-align: right;">Total (S/)</th>
+        </tr>';
         foreach ($data['sales'] as $sale) {
-            $clienteNombre = $sale->cliente ? str_replace(',', ' ', $sale->cliente->nombre_completo) : 'Cliente General';
-            $clienteDoc = $sale->cliente ? $sale->cliente->numero_documento : '-';
-            $fecha = $sale->created_at->format('Y-m-d H:i');
-            $csv .= "{$sale->id},{$fecha},{$clienteNombre},{$clienteDoc},{$sale->tipo_comprobante},{$sale->payment_method},{$sale->subtotal},{$sale->igv},{$sale->total}\n";
+            $clienteNombre = htmlspecialchars($sale->cliente ? $sale->cliente->nombre_completo : 'Cliente General');
+            $fecha = $sale->created_at->format('d/m/Y H:i');
+            $totalFormateado = number_format($sale->total, 2);
+            $html .= "<tr>
+                <td class=\"td-center\">#{$sale->id}</td>
+                <td class=\"td-center\">{$fecha}</td>
+                <td class=\"td-cell\">{$clienteNombre}</td>
+                <td class=\"td-center\">{$sale->tipo_comprobante}</td>
+                <td class=\"td-center\">{$sale->payment_method}</td>
+                <td class=\"td-num\">S/ {$totalFormateado}</td>
+            </tr>";
         }
-        $csv .= "\n";
+        $html .= '<tr><td colspan="6"></td></tr>';
 
-        // Detalle de Citas
-        $csv .= "--- DETALLE DE CITAS MEDICAS ---\n";
-        $csv .= "ID Cita,Fecha Programada,Cliente,Mascota,Motivo,Estado,Veterinario\n";
+        // 3. Detalle de Citas Médicas
+        $html .= '<tr><td colspan="6" class="section-header">3. DETALLE DE CITAS MÉDICAS</td></tr>';
+        $html .= '<tr>
+            <th class="th-header">ID Cita</th>
+            <th class="th-header">Fecha Programada</th>
+            <th class="th-header">Cliente</th>
+            <th class="th-header">Mascota</th>
+            <th class="th-header">Motivo</th>
+            <th class="th-header">Estado</th>
+        </tr>';
         foreach ($data['appointments'] as $appt) {
-            $clienteNombre = $appt->cliente ? str_replace(',', ' ', $appt->cliente->nombre_completo) : '-';
-            $mascotaNombre = $appt->mascota ? str_replace(',', ' ', $appt->mascota->name) : '-';
-            $fecha = $appt->fecha_hora ? $appt->fecha_hora->format('Y-m-d H:i') : '-';
-            $motivo = str_replace(',', ' ', $appt->reason ?? '-');
-            $veterinario = $appt->veterinario ? str_replace(',', ' ', $appt->veterinario->name) : '-';
-            $csv .= "{$appt->id},{$fecha},{$clienteNombre},{$mascotaNombre},{$motivo},{$appt->status},{$veterinario}\n";
+            $clienteNombre = htmlspecialchars($appt->cliente ? $appt->cliente->nombre_completo : '-');
+            $mascotaNombre = htmlspecialchars($appt->mascota ? $appt->mascota->name : '-');
+            $fecha = $appt->fecha_hora ? $appt->fecha_hora->format('d/m/Y H:i') : '-';
+            $motivo = htmlspecialchars($appt->reason ?? '-');
+            $html .= "<tr>
+                <td class=\"td-center\">#{$appt->id}</td>
+                <td class=\"td-center\">{$fecha}</td>
+                <td class=\"td-cell\">{$clienteNombre}</td>
+                <td class=\"td-cell\">{$mascotaNombre}</td>
+                <td class=\"td-cell\">{$motivo}</td>
+                <td class=\"td-center\">{$appt->status}</td>
+            </tr>";
         }
-        $csv .= "\n";
+        $html .= '<tr><td colspan="6"></td></tr>';
 
-        // Top Productos
-        $csv .= "--- TOP PRODUCTOS VENDIDOS ---\n";
-        $csv .= "Producto / Servicio,Cantidad Vendida,Total Facturado (S/)\n";
-        foreach ($data['topDetalles'] as $top) {
-            $itemNombre = str_replace(',', ' ', $top->description);
-            $csv .= "{$itemNombre},{$top->total_qty},{$top->total_revenue}\n";
+        // 4. Top Productos
+        if (count($data['topDetalles']) > 0) {
+            $html .= '<tr><td colspan="6" class="section-header">4. TOP PRODUCTOS Y SERVICIOS MÁS VENDIDOS</td></tr>';
+            $html .= '<tr>
+                <th class="th-header" colspan="3">Producto / Servicio</th>
+                <th class="th-header" colspan="1" style="text-align: center;">Cantidad Vendida</th>
+                <th class="th-header" colspan="2" style="text-align: right;">Total Facturado (S/)</th>
+            </tr>';
+            foreach ($data['topDetalles'] as $top) {
+                $itemDesc = htmlspecialchars($top->description);
+                $revFormateado = number_format($top->total_revenue, 2);
+                $html .= "<tr>
+                    <td class=\"td-cell\" colspan=\"3\">{$itemDesc}</td>
+                    <td class=\"td-center\" colspan=\"1\">{$top->total_qty}</td>
+                    <td class=\"td-num\" colspan=\"2\">S/ {$revFormateado}</td>
+                </tr>";
+            }
         }
 
-        $filename = 'reporte_ejecutivo_' . $data['periodo'] . '_' . date('Ymd_His') . '.csv';
+        $html .= '</table></body></html>';
 
-        return response("\xEF\xBB\xBF" . $csv, 200, [
-            'Content-Type' => 'text/csv; charset=UTF-8',
+        $filename = 'reporte_ejecutivo_' . $data['periodo'] . '_' . date('Ymd_His') . '.xls';
+
+        return response("\xEF\xBB\xBF" . $html, 200, [
+            'Content-Type' => 'application/vnd.ms-excel; charset=UTF-8',
             'Content-Disposition' => "attachment; filename=\"{$filename}\"",
             'Pragma' => 'no-cache',
             'Expires' => '0',

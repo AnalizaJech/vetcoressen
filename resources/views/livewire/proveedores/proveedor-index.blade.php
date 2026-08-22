@@ -98,10 +98,10 @@
                                 wire:click="ver({{ $proveedor->id }})">
                                 <span class="material-symbols-outlined text-lg">visibility</span>
                             </button>
-                            <a href="{{ route('proveedores.editar', $proveedor) }}" class="vc-btn-action vc-btn-edit" x-bind:>
+                            <a href="{{ route('proveedores.editar', $proveedor) }}" class="vc-btn-action vc-btn-edit" x-bind:title="$store.i18n.t('btn.edit') || 'Editar'">
                                 <span class="material-symbols-outlined text-lg">edit</span>
                             </a>
-                            <button type="button" class="vc-btn-action vc-btn-delete" x-bind:
+                            <button type="button" class="vc-btn-action vc-btn-delete" x-bind:title="$store.i18n.t('btn.delete') || 'Eliminar'"
                                 @click="$wire.confirmDeletion({{ $proveedor->id }}).then(() => Flux.modal('confirmar-eliminacion').show())">
                                 <span class="material-symbols-outlined text-lg">delete</span>
                             </button>
@@ -131,10 +131,12 @@
             <div class="flex flex-col-reverse sm:flex-row gap-3 w-full mt-6">
                 <flux:spacer class="hidden sm:block" />
                 <flux:modal.close class="w-full sm:w-auto">
-                    <flux:button variant="ghost" class="w-full font-medium px-4 py-2 md:px-5 md:py-2.5 lg:px-6 lg:py-3"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'"><span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'"></span></span></flux:button>
+                    <button type="button" class="btn-secondary w-full sm:w-auto text-xs px-4 py-2 flex items-center justify-center gap-1.5">
+                        <span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'">Cancelar</span>
+                    </button>
                 </flux:modal.close>
-                <button type="button" class="w-full sm:w-auto btn-danger font-medium justify-center px-4 py-2 md:px-5 md:py-2.5 lg:px-6 lg:py-3" wire:click="eliminar" x-on:click="$dispatch('modal-close', { name: 'confirmar-eliminacion' })">
-                    <span x-text="$store.i18n.t('btn.delete') || 'Eliminar'"><span x-text="$store.i18n.t('btn.delete') || 'Eliminar'"></span></span>
+                <button type="button" class="w-full sm:w-auto btn-danger text-xs px-4 py-2 flex items-center justify-center gap-1.5" wire:click="eliminar" x-on:click="$dispatch('modal-close', { name: 'confirmar-eliminacion' })">
+                    <span x-text="$store.i18n.t('btn.delete') || 'Eliminar'">Eliminar</span>
                 </button>
             </div>
         </div>
@@ -199,8 +201,8 @@
             </div>
 
             <div class="pt-4 border-t border-zinc-100 dark:border-zinc-700/50 flex justify-end">
-                <flux:modal.close class="overflow-y-auto max-h-[85vh]">
-                    <button type="button" class="bg-zinc-100 hover:bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300 border-none px-4 py-2 md:px-5 md:py-2.5 lg:px-6 lg:py-3 rounded-lg font-medium flex items-center justify-center gap-2 w-full sm:w-auto transition-colors">
+                <flux:modal.close>
+                    <button type="button" class="btn-secondary text-xs px-4 py-2 flex items-center justify-center gap-1.5 w-full sm:w-auto">
                         <span x-text="$store.i18n.t('btn.close') || 'Cerrar'">Cerrar</span>
                     </button>
                 </flux:modal.close>

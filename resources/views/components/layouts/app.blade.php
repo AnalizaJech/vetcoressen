@@ -117,41 +117,59 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="{{ asset('js/i18n.js') }}"></script>
     <script>
-        // Pre-render theme check to prevent flickering
-        (function() {
-            const saved = localStorage.getItem('vc_theme');
-            const isDark = saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        // Sincronización robusta de tema (VC Theme & Flux Appearance)
+        function applyAppTheme(isDark) {
+            const themeStr = isDark ? 'dark' : 'light';
             if (isDark) {
                 document.documentElement.classList.add('dark');
                 document.documentElement.classList.remove('light');
+                document.documentElement.setAttribute('data-theme', 'dark');
             } else {
                 document.documentElement.classList.remove('dark');
                 document.documentElement.classList.add('light');
+                document.documentElement.setAttribute('data-theme', 'light');
             }
+            try {
+                localStorage.setItem('vc_theme', themeStr);
+                localStorage.setItem('flux.appearance', themeStr);
+                document.cookie = "vc_theme=" + themeStr + "; path=/; max-age=31536000; SameSite=Lax";
+                document.cookie = "flux_appearance=" + themeStr + "; path=/; max-age=31536000; SameSite=Lax";
+            } catch(e) {}
+        }
+
+        // Pre-render theme check to prevent flickering
+        (function() {
+            const saved = localStorage.getItem('vc_theme') || localStorage.getItem('flux.appearance');
+            const isDark = saved ? (saved === 'dark') : false; // Default to light if not explicitly set to dark
+            applyAppTheme(isDark);
         })();
 
         document.addEventListener('alpine:init', () => {
             Alpine.store('theme', {
-                isDark: localStorage.getItem('vc_theme') === 'dark' || (!('vc_theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
+                isDark: (localStorage.getItem('vc_theme') || localStorage.getItem('flux.appearance')) === 'dark',
                 init() {
                     this.apply();
                 },
                 toggle() {
                     this.isDark = !this.isDark;
-                    localStorage.setItem('vc_theme', this.isDark ? 'dark' : 'light');
+                    applyAppTheme(this.isDark);
                     this.apply();
                 },
                 apply() {
-                    if (this.isDark) {
-                        document.documentElement.classList.add('dark');
-                        document.documentElement.classList.remove('light');
-                    } else {
-                        document.documentElement.classList.remove('dark');
-                        document.documentElement.classList.add('light');
-                    }
+                    applyAppTheme(this.isDark);
                     window.dispatchEvent(new CustomEvent('theme-changed', { detail: { isDark: this.isDark } }));
                 }
             });
+        });
+
+        // Asegurar persistencia durante navegación Livewire SPA
+        document.addEventListener('livewire:navigated', () => {
+            const saved = localStorage.getItem('vc_theme') || localStorage.getItem('flux.appearance');
+            const isDark = saved === 'dark';
+            applyAppTheme(isDark);
+            if (window.Alpine && Alpine.store('theme')) {
+                Alpine.store('theme').isDark = isDark;
+            }
         });
     </script>
     @fluxAppearance
@@ -204,19 +222,19 @@
                 <div x-data="{ open: {{ request()->routeIs('dashboard') || request()->routeIs('reportes.*') ? 'true' : 'false' }} }">
                     <button @click="open = !open" class="w-full flex items-center justify-between sidebar-section-title outline-none focus:outline-none focus:ring-0">
                         <div class="flex items-center gap-2">
-                            <span class="material-symbols-outlined text-[18px]">home</span>
-                            <span x-text="$store.i18n.t('sidebar.main')"></span>
+                            <span class="material-symbols-outlined text-[15px]">home</span>
+                            <span x-text="$store.i18n.t('sidebar.main') || 'Main'">Main</span>
                         </div>
-                        <span class="material-symbols-outlined text-[16px] transition-transform duration-200" :class="open ? 'rotate-180' : ''">expand_more</span>
+                        <span class="material-symbols-outlined text-[13px] transition-transform duration-200" :class="open ? 'rotate-180' : ''">expand_more</span>
                     </button>
-                    <div x-show="open" x-collapse class="flex flex-col space-y-1 mt-2">
+                    <div x-show="open" x-collapse class="flex flex-col space-y-1 mt-1.5">
                         <a href="{{ route('dashboard') }}" class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                             <span class="material-symbols-outlined sidebar-icon">dashboard</span>
-                            <span x-text="$store.i18n.t('sidebar.dashboard')"></span>
+                            <span x-text="$store.i18n.t('sidebar.dashboard') || 'Dashboard'">Dashboard</span>
                         </a>
                         <a href="{{ route('reportes.index') }}" class="sidebar-link {{ request()->routeIs('reportes.*') ? 'active' : '' }}">
                             <span class="material-symbols-outlined sidebar-icon">analytics</span>
-                            <span x-text="$store.i18n.t('sidebar.reports') || 'Reportes'"></span>
+                            <span x-text="$store.i18n.t('sidebar.reports') || 'Reports & Statistics'">Reports & Statistics</span>
                         </a>
                     </div>
                 </div>
@@ -225,23 +243,23 @@
                 <div x-data="{ open: {{ request()->routeIs('clientes.*', 'mascotas.*', 'citas.*') ? 'true' : 'false' }} }">
                     <button @click="open = !open" class="w-full flex items-center justify-between sidebar-section-title outline-none focus:outline-none focus:ring-0">
                         <div class="flex items-center gap-2">
-                            <span class="material-symbols-outlined text-[18px]">medical_services</span>
-                            <span x-text="$store.i18n.t('sidebar.medical')"></span>
+                            <span class="material-symbols-outlined text-[15px]">medical_services</span>
+                            <span x-text="$store.i18n.t('sidebar.medical') || 'Medical Management'">Medical Management</span>
                         </div>
-                        <span class="material-symbols-outlined text-[16px] transition-transform duration-200" :class="open ? 'rotate-180' : ''">expand_more</span>
+                        <span class="material-symbols-outlined text-[13px] transition-transform duration-200" :class="open ? 'rotate-180' : ''">expand_more</span>
                     </button>
-                    <div x-show="open" x-collapse class="flex flex-col space-y-1 mt-2">
+                    <div x-show="open" x-collapse class="flex flex-col space-y-1 mt-1.5">
                         <a href="{{ route('clientes.index') }}" class="sidebar-link {{ request()->routeIs('clientes.*') ? 'active' : '' }}">
                             <span class="material-symbols-outlined sidebar-icon">group</span>
-                            <span x-text="$store.i18n.t('sidebar.clients')"></span>
+                            <span x-text="$store.i18n.t('sidebar.clients') || 'Clients'">Clients</span>
                         </a>
                         <a href="{{ route('mascotas.index') }}" class="sidebar-link {{ request()->routeIs('mascotas.*') ? 'active' : '' }}">
                             <span class="material-symbols-outlined sidebar-icon">pets</span>
-                            <span x-text="$store.i18n.t('sidebar.pets')"></span>
+                            <span x-text="$store.i18n.t('sidebar.pets') || 'Pets'">Pets</span>
                         </a>
                         <a href="{{ route('citas.index') }}" class="sidebar-link {{ request()->routeIs('citas.*') ? 'active' : '' }}">
                             <span class="material-symbols-outlined sidebar-icon">calendar_month</span>
-                            <span x-text="$store.i18n.t('sidebar.appointments')"></span>
+                            <span x-text="$store.i18n.t('sidebar.appointments') || 'Appointments'">Appointments</span>
                         </a>
                     </div>
                 </div>
@@ -250,15 +268,15 @@
                 <div x-data="{ open: {{ request()->routeIs('historias.*') ? 'true' : 'false' }} }">
                     <button @click="open = !open" class="w-full flex items-center justify-between sidebar-section-title outline-none focus:outline-none focus:ring-0">
                         <div class="flex items-center gap-2">
-                            <span class="material-symbols-outlined text-[18px]">stethoscope</span>
-                            <span x-text="$store.i18n.t('sidebar.clinical')"></span>
+                            <span class="material-symbols-outlined text-[15px]">stethoscope</span>
+                            <span x-text="$store.i18n.t('sidebar.clinical') || 'Clinical Care'">Clinical Care</span>
                         </div>
-                        <span class="material-symbols-outlined text-[16px] transition-transform duration-200" :class="open ? 'rotate-180' : ''">expand_more</span>
+                        <span class="material-symbols-outlined text-[13px] transition-transform duration-200" :class="open ? 'rotate-180' : ''">expand_more</span>
                     </button>
-                    <div x-show="open" x-collapse class="flex flex-col space-y-1 mt-2">
+                    <div x-show="open" x-collapse class="flex flex-col space-y-1 mt-1.5">
                         <a href="{{ route('historias.index') }}" class="sidebar-link {{ request()->routeIs('historias.*') ? 'active' : '' }}">
                             <span class="material-symbols-outlined sidebar-icon">clinical_notes</span>
-                            <span x-text="$store.i18n.t('sidebar.records')"></span>
+                            <span x-text="$store.i18n.t('sidebar.records') || 'Medical Records'">Medical Records</span>
                         </a>
                     </div>
                 </div>
@@ -267,23 +285,23 @@
                 <div x-data="{ open: {{ request()->routeIs('inventario.*', 'caja.*', 'proveedores.*') ? 'true' : 'false' }} }">
                     <button @click="open = !open" class="w-full flex items-center justify-between sidebar-section-title outline-none focus:outline-none focus:ring-0">
                         <div class="flex items-center gap-2">
-                            <span class="material-symbols-outlined text-[18px]">storefront</span>
-                            <span x-text="$store.i18n.t('sidebar.operations')"></span>
+                            <span class="material-symbols-outlined text-[15px]">storefront</span>
+                            <span x-text="$store.i18n.t('sidebar.operations') || 'Operations'">Operations</span>
                         </div>
-                        <span class="material-symbols-outlined text-[16px] transition-transform duration-200" :class="open ? 'rotate-180' : ''">expand_more</span>
+                        <span class="material-symbols-outlined text-[13px] transition-transform duration-200" :class="open ? 'rotate-180' : ''">expand_more</span>
                     </button>
-                    <div x-show="open" x-collapse class="flex flex-col space-y-1 mt-2">
+                    <div x-show="open" x-collapse class="flex flex-col space-y-1 mt-1.5">
                         <a href="{{ route('inventario.index') }}" class="sidebar-link {{ request()->routeIs('inventario.*') ? 'active' : '' }}">
                             <span class="material-symbols-outlined sidebar-icon">inventory_2</span>
-                            <span x-text="$store.i18n.t('sidebar.inventory')"></span>
+                            <span x-text="$store.i18n.t('sidebar.inventory') || 'Inventory & Stock'">Inventory & Stock</span>
                         </a>
                         <a href="{{ route('caja.index') }}" class="sidebar-link {{ request()->routeIs('caja.*') ? 'active' : '' }}">
                             <span class="material-symbols-outlined sidebar-icon">point_of_sale</span>
-                            <span x-text="$store.i18n.t('sidebar.cashier')"></span>
+                            <span x-text="$store.i18n.t('sidebar.cashier') || 'Cash Register / POS'">Cash Register / POS</span>
                         </a>
                         <a href="{{ route('proveedores.index') }}" class="sidebar-link {{ request()->routeIs('proveedores.*') ? 'active' : '' }}">
                             <span class="material-symbols-outlined sidebar-icon">local_shipping</span>
-                            <span x-text="$store.i18n.t('sidebar.suppliers') || 'Proveedores'"></span>
+                            <span x-text="$store.i18n.t('sidebar.suppliers') || 'Suppliers'">Suppliers</span>
                         </a>
                     </div>
                 </div>
@@ -293,23 +311,23 @@
                 <div x-data="{ open: {{ request()->routeIs('usuarios.*') || request()->routeIs('roles.*') || request()->routeIs('sucursales.*') ? 'true' : 'false' }} }">
                     <button @click="open = !open" class="w-full flex items-center justify-between sidebar-section-title outline-none focus:outline-none focus:ring-0">
                         <div class="flex items-center gap-2">
-                            <span class="material-symbols-outlined text-[18px]">admin_panel_settings</span>
-                            <span x-text="$store.i18n.t('sidebar.administration')"></span>
+                            <span class="material-symbols-outlined text-[15px]">admin_panel_settings</span>
+                            <span x-text="$store.i18n.t('sidebar.administration') || 'Administration'">Administration</span>
                         </div>
-                        <span class="material-symbols-outlined text-[16px] transition-transform duration-200" :class="open ? 'rotate-180' : ''">expand_more</span>
+                        <span class="material-symbols-outlined text-[13px] transition-transform duration-200" :class="open ? 'rotate-180' : ''">expand_more</span>
                     </button>
-                    <div x-show="open" x-collapse class="flex flex-col space-y-1 mt-2">
+                    <div x-show="open" x-collapse class="flex flex-col space-y-1 mt-1.5">
                         <a href="{{ route('usuarios.index') }}" class="sidebar-link {{ request()->routeIs('usuarios.*') ? 'active' : '' }}">
                             <span class="material-symbols-outlined sidebar-icon">group</span>
-                            <span x-text="$store.i18n.t('sidebar.users')"></span>
+                            <span x-text="$store.i18n.t('sidebar.users') || 'Users'">Users</span>
                         </a>
                         <a href="{{ route('roles.index') }}" class="sidebar-link {{ request()->routeIs('roles.*') ? 'active' : '' }}">
                             <span class="material-symbols-outlined sidebar-icon">shield_person</span>
-                            <span x-text="$store.i18n.t('sidebar.roles')"></span>
+                            <span x-text="$store.i18n.t('sidebar.roles') || 'Roles & Permissions'">Roles & Permissions</span>
                         </a>
                         <a href="{{ route('sucursales.index') }}" class="sidebar-link {{ request()->routeIs('sucursales.*') ? 'active' : '' }}">
                             <span class="material-symbols-outlined sidebar-icon">storefront</span>
-                            <span x-text="$store.i18n.t('sidebar.branches') || 'Sucursales'"></span>
+                            <span x-text="$store.i18n.t('sidebar.branches') || 'Branches'">Branches</span>
                         </a>
                     </div>
                 </div>
@@ -319,7 +337,7 @@
                 <div>
                     <a href="{{ route('configuracion.index') }}" class="sidebar-link {{ request()->routeIs('configuracion.*') ? 'active' : '' }}">
                         <span class="material-symbols-outlined sidebar-icon">settings</span>
-                        <span x-text="$store.i18n.t('sidebar.settings')"></span>
+                        <span x-text="$store.i18n.t('sidebar.settings') || 'Settings'">Settings</span>
                     </a>
                 </div>
 

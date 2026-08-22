@@ -32,13 +32,27 @@
 
             const isEs = (this.$store.i18n?.locale || localStorage.getItem('vc_locale')) === 'es';
             const fallbacks = {
+                'filter.allClients': isEs ? 'Todos los Clientes' : 'All Clients',
+                'filter.allPets': isEs ? 'Todas las Mascotas' : 'All Pets',
+                'filter.allSpecies': isEs ? 'Todas las Especies' : 'All Species',
+                'filter.allBranches': isEs ? 'Todas las Sucursales' : 'All Branches',
+                'filter.allCategories': isEs ? 'Todas las Categorías' : 'All Categories',
+                'filter.allRoles': isEs ? 'Todos los Roles' : 'All Roles',
+                'filter.allSuppliers': isEs ? 'Todos los Proveedores' : 'All Suppliers',
+                'filter.allVeterinarians': isEs ? 'Todos los Veterinarios' : 'All Veterinarians',
+                'filter.allStatuses': isEs ? 'Todos los Estados' : 'All Statuses',
                 'citas.dayView': isEs ? 'Vista Día' : 'Day View',
                 'citas.weekView': isEs ? 'Vista Semana' : 'Week View',
                 'citas.monthView': isEs ? 'Vista Mes' : 'Month View',
                 'citas.listView': isEs ? 'Lista Agenda' : 'Agenda List',
                 'form.select': isEs ? 'Seleccionar...' : 'Select...',
             };
-            return fallbacks[key] || key;
+            if (fallbacks[key]) return fallbacks[key];
+            if (key.includes('.')) {
+                let part = key.split('.').pop().replace(/([A-Z])/g, ' $1').trim();
+                return part.charAt(0).toUpperCase() + part.slice(1);
+            }
+            return key;
         },
         get placeholderText() {
             return this.translateKey('{{ addslashes($placeholder) }}');

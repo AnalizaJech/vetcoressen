@@ -142,73 +142,6 @@
 
     {{-- ════ VISTA CALENDARIO ════ --}}
     <div x-show="$wire.vistaActiva === 'calendario'" class="animate-fade-in" x-cloak>
-        <style>
-            /* Eje de Horas y Celdas de Tiempo */
-            .fc-theme-standard .fc-timegrid-axis-cushion,
-            .fc-timegrid-slot-label-cushion {
-                font-family: 'Plus Jakarta Sans', sans-serif !important;
-                font-size: 11px !important;
-                font-weight: 600 !important;
-                color: #71717a !important;
-                padding: 0 6px !important;
-            }
-            .dark .fc-theme-standard .fc-timegrid-axis-cushion,
-            .dark .fc-timegrid-slot-label-cushion {
-                color: #a1a1aa !important;
-            }
-            .fc-theme-standard .fc-timegrid-axis-frame,
-            .fc-timegrid-slot-label-frame {
-                min-width: 55px !important;
-                width: 55px !important;
-            }
-            
-            /* Encabezados de Columna (Días) */
-            .fc-col-header-cell-cushion, .fc-daygrid-day-number { 
-                color: #18181b; 
-                font-weight: 700; 
-                font-size: 12px;
-                text-decoration: none !important;
-            }
-            .dark .fc-col-header-cell-cushion, .dark .fc-daygrid-day-number { 
-                color: #f4f4f5; 
-            }
-            .dark .fc-theme-standard th, 
-            .dark .fc-theme-standard td, 
-            .dark .fc-theme-standard .fc-scrollgrid { 
-                border-color: rgba(63, 63, 70, 0.5) !important; 
-            }
-            .dark .fc-day-today { 
-                background-color: rgba(16, 185, 129, 0.04) !important; 
-            }
-            .fc-day-today { 
-                background-color: rgba(16, 185, 129, 0.03) !important; 
-            }
-            .dark .fc-timegrid-slot-lane { 
-                border-color: rgba(63, 63, 70, 0.3) !important; 
-            }
-            
-            /* Eventos y Cards en Calendario */
-            .fc-timegrid-event {
-                border-radius: 8px !important;
-                border: none !important;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
-                overflow: hidden !important;
-                transition: transform 0.15s ease, box-shadow 0.15s ease !important;
-            }
-            .fc-timegrid-event:hover {
-                transform: scale(1.02);
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
-                z-index: 50 !important;
-            }
-            .fc-timegrid-event .fc-event-main {
-                padding: 4px 6px !important;
-                height: 100% !important;
-            }
-            .fc-daygrid-event {
-                border-radius: 6px !important;
-                margin: 1px 2px !important;
-            }
-        </style>
         <div 
             wire:ignore 
             x-data="vcCalendar()" 
@@ -753,348 +686,147 @@
 @endscript
 
 <style>
-/* FullCalendar Custom Premium Styling */
+/* ═══ ESTILOS PREMIUM FULLCALENDAR ═══ */
 :root {
-    --fc-border-color: #d4d4d8;
-    --fc-button-bg-color: #ffffff;
-    --fc-button-text-color: #18181b;
-    --fc-button-border-color: #a1a1aa;
-    --fc-button-hover-bg-color: #f4f4f5;
-    --fc-button-hover-border-color: #71717a;
-    --fc-button-active-bg-color: #10b981; /* emerald-500 */
-    --fc-button-active-border-color: #059669; /* emerald-600 */
-    --fc-event-border-color: transparent;
+    --fc-border-color: #e2e8f0;
     --fc-page-bg-color: #ffffff;
-    --fc-neutral-bg-color: #f4f4f5;
-    --fc-list-event-hover-bg-color: rgba(16, 185, 129, 0.1);
+    --fc-neutral-bg-color: #f8fafc;
     --fc-today-bg-color: rgba(16, 185, 129, 0.05);
 }
 
-html.dark {
-    --fc-border-color: #3f3f46;
-    --fc-button-bg-color: #27272a;
-    --fc-button-text-color: #f4f4f5;
-    --fc-button-border-color: #52525b;
-    --fc-button-hover-bg-color: #3f3f46;
-    --fc-button-hover-border-color: #71717a;
-    --fc-page-bg-color: transparent;
-    --fc-neutral-bg-color: rgba(255, 255, 255, 0.05);
+html.dark, .dark {
+    --fc-border-color: rgba(63, 63, 70, 0.45);
+    --fc-page-bg-color: #18181b;
+    --fc-neutral-bg-color: #27272a;
+    --fc-today-bg-color: rgba(16, 185, 129, 0.08);
 }
 
-.fc-theme-standard td, .fc-theme-standard th {
-    border-color: var(--fc-border-color);
-}
-.fc .fc-toolbar-title {
-    font-family: 'Outfit', 'Inter', sans-serif;
-    font-weight: 700;
-    font-size: 1.5rem;
-    color: #18181b;
-}
-html.dark .fc .fc-toolbar-title { color: #f4f4f5; }
-.fc .fc-button {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 600;
-    text-transform: capitalize;
-    border-radius: 0.5rem;
-    padding: 0.4rem 0.8rem;
-    transition: all 0.2s ease;
-    color: var(--fc-button-text-color) !important;
-}
-.fc .fc-button-primary:not(:disabled).fc-button-active, 
-.fc .fc-button-primary:not(:disabled):active {
-    background-color: var(--fc-button-active-bg-color);
-    border-color: var(--fc-button-active-border-color);
-    color: #ffffff;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
-}
-.fc .fc-col-header-cell-cushion {
-    padding: 4px;
-    font-weight: 700;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--vc-text-muted, #52525b);
-}
-.fc .fc-button-primary:focus, 
-.fc .fc-button-primary:not(:disabled).fc-button-active:focus {
-    box-shadow: none !important;
-    outline: none !important;
-}
-.fc-direction-ltr .fc-timegrid-slot-label-frame {
-    text-align: right;
-    font-size: 0.75rem;
-    color: var(--vc-text-muted, #52525b);
-    padding-right: 8px;
-}
-.fc .fc-list-empty {
-    background-color: var(--fc-neutral-bg-color) !important;
-    border-radius: 0.75rem;
-    margin: 2rem;
-}
-.fc .fc-list-empty-cushion {
-    padding: 3rem;
-    font-family: 'Inter', sans-serif;
-    color: var(--vc-text-muted, #52525b);
-    font-weight: 500;
-}
-.fc-timegrid-event, .fc-daygrid-event {
-    border-radius: 6px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    overflow: hidden;
-}
-.fc-event-main {
-    padding: 2px 4px;
-    font-size: 0.75rem;
-    font-weight: 500;
-}
-html.dark .fc .fc-list-day-cushion {
-    background-color: #27272a; /* zinc-800 */
-    color: #f4f4f5;
-    font-weight: 700;
-    padding: 6px 16px !important;
-}
-.fc-theme-standard .fc-list-day-cushion {
-    background-color: #f4f4f5; 
-    font-weight: 700;
-    padding: 6px 16px !important;
-}
-
-/* Quitar padding raro y puntos en la vista Lista */
-.fc-list-event-graphic {
-    display: none !important;
-}
-.fc-list-event-time {
-    display: none !important;
-}
-.fc .fc-list-event-title {
-    padding: 0 !important;
-}
-
-/* Responsive Fixes */
-@media (max-width: 768px) {
-    .fc-header-toolbar {
-        flex-direction: column;
-        gap: 1rem;
-    }
-    .fc-toolbar-chunk {
-        display: flex;
-        justify-content: center;
-        width: 100%;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-    }
-    .fc .fc-toolbar-title {
-        font-size: 1.25rem !important;
-        text-align: center;
-    }
-    .fc-view-harness {
-        overflow-x: auto !important;
-    }
-    .fc-view {
-        min-width: 700px; /* Permitir scroll horizontal en móviles para que no se apachurre */
-    }
-}
-
-/* Quitar outline de los botones y redondear el encabezado principal */
-.fc .fc-button:focus,
-.fc .fc-button:active,
-.fc .fc-button-primary:not(:disabled):active, 
-.fc .fc-button-primary:not(:disabled).fc-button-active {
-    outline: none !important;
-    box-shadow: none !important;
-    border-color: transparent !important;
-}
-.fc-theme-standard th {
-    border: none !important;
-    background-color: var(--fc-neutral-bg-color);
-}
+/* Grilla y Contenedores */
 .fc-theme-standard .fc-scrollgrid {
-    border: 1px solid var(--fc-border-color);
-    border-radius: 0.5rem;
+    border: 1px solid var(--fc-border-color) !important;
+    border-radius: 12px;
     overflow: hidden;
 }
-.fc-col-header {
-    border-radius: 0.5rem 0.5rem 0 0;
-    overflow: hidden;
+.fc-theme-standard td, .fc-theme-standard th {
+    border-color: var(--fc-border-color) !important;
 }
 
-/* Ajustes de diseño solicitados */
-.fc-scrollgrid-sync-inner {
-    padding: 0 !important;
+/* Encabezados de Columna (Días) */
+.fc-theme-standard .fc-col-header-cell {
+    background-color: #f8fafc !important;
+    border-bottom: 1px solid var(--fc-border-color) !important;
+    padding: 8px 0 !important;
 }
-.fc-theme-standard .fc-scrollgrid-section-header > th {
-    background-color: var(--vc-emerald) !important; /* Tema claro: Emerald */
-    padding: 0 !important;
+.dark .fc-theme-standard .fc-col-header-cell {
+    background-color: #27272a !important;
+    border-bottom: 1px solid var(--fc-border-color) !important;
 }
-.fc .fc-col-header-cell-cushion {
-    padding: 12px 0 !important;
-    display: inline-block;
-    width: 100%;
-    text-align: center;
-    font-weight: 700;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    color: #ffffff !important; /* White text for contrast on gris oscuro */
-    transition: background-color 0.2s, color 0.2s;
-}
-html.dark .fc-theme-standard .fc-scrollgrid-section-header > th {
-    background-color: #27272a !important; /* Even darker for dark mode */
-}
-html.dark .fc .fc-col-header-cell-cushion {
-    color: #ffffff !important;
-}
-.fc .fc-col-header-cell-cushion:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: #ffffff !important;
-}
-
-/* Quitar rectangulo negro del scrollbar (gutter) */
-.fc-scrollgrid-sync-table {
-    width: 100% !important;
-}
-.fc-scroller-liquid-absolute {
-    background: transparent !important;
-}
-.fc-theme-standard th {
-    border: none !important;
-    background-color: transparent !important;
-    padding: 0 !important; /* Quitar padding interno para que cuadre exacto */
-}
-
-/* Estilo para la vista de Lista */
-.fc-list-event:hover td {
-    background-color: rgba(16, 185, 129, 0.05) !important;
-    cursor: pointer;
-}
-
-/* Agregar título a la columna de horas - Oculto por solicitud */
-.fc-timegrid-slot {
-    height: 5em !important; /* Aumentar altura de las celdas para las cards */
-}
-
-/* Ocultar el punto en los eventos de mes para que luzca como bloque */
-.fc-daygrid-event-dot {
-    display: none !important;
-}
-.fc-daygrid-dot-event .fc-event-title {
-    font-weight: 400 !important;
-    padding: 0 !important;
-}
-/* Ocultar texto nativo de la hora del evento para insertarlo customizado */
-.fc-event-time {
-    display: none !important;
-}
-/* Énfasis en las cards de citas al pasar el mouse */
-.fc-timegrid-event, .fc-daygrid-event {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.fc-timegrid-event:hover, .fc-daygrid-event:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.2) !important;
-    z-index: 50 !important;
-}
-/* Cursor pointer para las vistas de lista */
-.fc-list-event {
-    cursor: pointer;
-}
-
-/* -------------------------------------
-   MEJORAS VISUALES EN LA VISTA LISTA 
-   ------------------------------------- */
-.fc-theme-standard .fc-list {
-    border-radius: 0.5rem;
-    overflow: hidden;
-}
-.fc-theme-standard .fc-list-day-cushion {
-    background-color: var(--fc-neutral-bg-color) !important;
-    padding: 12px 16px !important;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.fc-list-day-text, .fc-list-day-side-text {
-    font-size: 14px !important;
-    font-weight: 700 !important;
-    color: #18181b !important;
-    text-transform: capitalize;
-    text-decoration: none !important; /* Asegurar que no parezca link */
-}
-.dark .fc-list-day-text, .dark .fc-list-day-side-text {
-    color: #e4e4e7 !important; /* zinc-200 */
-}
-.fc-list-day-side-text {
-    background: #10b98115; /* emerald-500 con opacidad */
-    color: #059669 !important; /* emerald-600 */
-    padding: 4px 10px;
-    border-radius: 9999px;
+.fc-col-header-cell-cushion {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
     font-size: 12px !important;
+    font-weight: 700 !important;
+    color: #0f172a !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.04em !important;
+    text-decoration: none !important;
+    display: inline-block;
+    padding: 6px 4px !important;
 }
-.dark .fc-list-day-side-text {
-    color: #34d399 !important; /* emerald-400 */
+.dark .fc-col-header-cell-cushion {
+    color: #f4f4f5 !important;
 }
 
-/* -------------------------------------
-   ARREGLO DE HORAS CORTADAS EN CALENDARIO
-   ------------------------------------- */
-.fc-theme-standard .fc-timegrid-axis-cushion {
-    max-width: none !important;
-    padding: 0 8px !important;
-    font-size: 11px !important;
-    color: var(--vc-text-muted) !important;
-}
+/* Eje de Horas (TimeGrid) */
+.fc-theme-standard .fc-timegrid-axis-cushion,
 .fc-timegrid-slot-label-cushion {
-    padding-right: 8px !important;
-    white-space: nowrap !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
     font-size: 11px !important;
-    color: var(--vc-text-muted) !important;
+    font-weight: 600 !important;
+    color: #64748b !important;
+    padding: 0 8px !important;
+    text-decoration: none !important;
 }
-/* Forzar un ancho mínimo para la columna de horas */
+.dark .fc-theme-standard .fc-timegrid-axis-cushion,
+.dark .fc-timegrid-slot-label-cushion {
+    color: #a1a1aa !important;
+}
 .fc-theme-standard .fc-timegrid-axis-frame,
 .fc-timegrid-slot-label-frame {
     min-width: 60px !important;
     width: 60px !important;
     max-width: 60px !important;
 }
+.fc-timegrid-slot {
+    height: 48px !important;
+}
+.fc-timegrid-slot-lane {
+    border-bottom: 1px solid var(--fc-border-color) !important;
+}
+.fc-timegrid-slot-minor {
+    border-bottom-style: dashed !important;
+}
 
-/* Premium Styling for FullCalendar Popovers (+X more) */
+/* Eventos y Cards de Citas */
+.fc-timegrid-event {
+    border-radius: 8px !important;
+    border: none !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+    overflow: hidden !important;
+    background: transparent !important;
+}
+.fc-timegrid-event .fc-event-main {
+    padding: 0 !important;
+    height: 100% !important;
+}
+.fc-daygrid-event {
+    border-radius: 6px !important;
+    margin: 1px 2px !important;
+}
+.fc-event-time {
+    display: none !important;
+}
+
+/* Vista Lista */
+.fc-theme-standard .fc-list {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--fc-border-color) !important;
+}
+.fc-theme-standard .fc-list-day-cushion {
+    background-color: #f8fafc !important;
+    padding: 10px 16px !important;
+}
+.dark .fc-theme-standard .fc-list-day-cushion {
+    background-color: #27272a !important;
+}
+.fc-list-day-text {
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    color: #0f172a !important;
+    text-decoration: none !important;
+}
+.dark .fc-list-day-text {
+    color: #f4f4f5 !important;
+}
+.fc-list-event:hover td {
+    background-color: rgba(16, 185, 129, 0.05) !important;
+    cursor: pointer;
+}
+
+/* Popover More Events */
 .fc-popover {
-    background-color: var(--vc-surface) !important;
-    border: 1px solid var(--vc-border) !important;
+    background-color: var(--fc-page-bg-color) !important;
+    border: 1px solid var(--fc-border-color) !important;
     border-radius: 12px !important;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
     overflow: hidden;
     z-index: 50 !important;
 }
-.dark .fc-popover {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.5) !important;
-}
 .fc-popover-header {
-    background-color: var(--vc-surface-alt) !important;
-    color: var(--vc-text) !important;
+    background-color: var(--fc-neutral-bg-color) !important;
+    color: inherit !important;
     padding: 10px 12px !important;
     font-weight: bold !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-}
-.fc-popover-title {
-    font-size: 14px !important;
-}
-.fc-popover-close {
-    opacity: 0.7 !important;
-    cursor: pointer !important;
-    transition: opacity 0.2s !important;
-}
-.fc-popover-close:hover {
-    opacity: 1 !important;
-}
-.fc-popover-body {
-    padding: 8px !important;
-}
-.fc-more-popover .fc-event {
-    margin-bottom: 4px !important;
-    border-radius: 6px !important;
 }
 </style>
     </div>
