@@ -91,9 +91,46 @@ class ReportExportController extends Controller
         );
     }
 
+    private function getTranslations(Request $request)
+    {
+        $lang = $request->query('lang') 
+            ?? $request->cookie('vc_locale') 
+            ?? session('locale') 
+            ?? 'es';
+            
+        if (!in_array($lang, ['es', 'en'])) {
+            $lang = 'es';
+        }
+        
+        $jsonPath = public_path("locales/{$lang}.json");
+        $translations = [];
+        if (file_exists($jsonPath)) {
+            $translations = json_decode(file_get_contents($jsonPath), true);
+        }
+
+        $t = function ($key, $default = null) use ($translations) {
+            $keys = explode('.', $key);
+            $value = $translations;
+            foreach ($keys as $k) {
+                if (isset($value[$k])) {
+                    $value = $value[$k];
+                } else {
+                    return $default !== null ? $default : $key;
+                }
+            }
+            return is_string($value) ? $value : ($default !== null ? $default : $key);
+        };
+
+        return [$t, $lang];
+    }
+
     public function pdf(Request $request)
     {
         $data = $this->getReportData($request);
+        [$t, $lang] = $this->getTranslations($request);
+        $data['t'] = $t;
+        $data['lang'] = $lang;
+
         $pdf = Pdf::loadView('pdf.reporte', $data);
         return $pdf->download('reporte_ejecutivo_' . $data['periodo'] . '_' . date('Ymd_His') . '.pdf');
     }
@@ -101,8 +138,18 @@ class ReportExportController extends Controller
     public function excel(Request $request)
     {
         $data = $this->getReportData($request);
-        $periodoNombre = strtoupper(str_replace('_', ' ', $data['periodo']));
-        $rangoFechas = $data['startDate']->format('d/m/Y') . ' al ' . $data['endDate']->format('d/m/Y');
+        [$t, $lang] = $this->getTranslations($request);
+
+        $periodoKey = match($data['periodo']) {
+            'hoy' => 'report.today',
+            'semana_actual' => 'report.thisWeek',
+            'mes_actual' => 'report.thisMonth',
+            'anio_actual' => 'report.thisYear',
+            'personalizado' => 'report.custom',
+            default => 'report.thisMonth',
+        };
+        $periodoNombre = strtoupper($t($periodoKey, str_replace('_', ' ', $data['periodo'])));
+        $rangoFechas = $data['startDate']->format('d/m/Y') . ' ' . $t('report.to', 'al') . ' ' . $data['endDate']->format('d/m/Y');
 
         $html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">';
         $html .= '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
@@ -120,35 +167,35 @@ class ReportExportController extends Controller
         </style></head><body>';
 
         $html .= '<table>';
-        $html .= '<tr><td colspan="6" class="title">VETCORESSEN - REPORTE ESTADÍSTICO EJECUTIVO</td></tr>';
-        $html .= "<tr><td colspan=\"6\" class=\"subtitle\">Período: <strong>{$periodoNombre}</strong> | Rango: <strong>{$rangoFechas}</strong></td></tr>";
+        $html .= '<tr><td colspan="6" class="title">VETCORESSEN - ' . strtoupper($t('report.executiveReport', 'REPORTE ESTADÍSTICO EJECUTIVO')) . '</td></tr>';
+        $html .= "<tr><td colspan=\"6\" class=\"subtitle\">" . $t('report.period', 'Período') . ": <strong>{$periodoNombre}</strong> | " . $t('report.range', 'Rango') . ": <strong>{$rangoFechas}</strong></td></tr>";
         $html .= '<tr><td colspan="6"></td></tr>';
 
         // 1. Resumen de Métricas Clave
-        $html .= '<tr><td colspan="6" class="section-header">1. RESUMEN DE MÉTRICAS CLAVE</td></tr>';
-        $html .= '<tr><td colspan="4" class="kpi-title">Ingresos Totales del Período</td><td colspan="2" class="kpi-val">S/ ' . number_format($data['ventasPeriodo'], 2) . '</td></tr>';
-        $html .= '<tr><td colspan="4" class="kpi-title">Ticket Promedio por Venta</td><td colspan="2" class="kpi-val">S/ ' . number_format($data['ticketPromedio'], 2) . '</td></tr>';
-        $html .= '<tr><td colspan="4" class="kpi-title">Total de Ventas Concretadas</td><td colspan="2" class="kpi-val">' . $data['totalVentasCount'] . '</td></tr>';
-        $html .= '<tr><td colspan="4" class="kpi-title">Citas Médicas Atendidas / Completadas</td><td colspan="2" class="kpi-val">' . $data['citasCompletadas'] . '</td></tr>';
-        $html .= '<tr><td colspan="4" class="kpi-title">Citas Pendientes / En Progreso</td><td colspan="2" class="kpi-val">' . $data['citasPendientes'] . '</td></tr>';
-        $html .= '<tr><td colspan="4" class="kpi-title">Citas Canceladas</td><td colspan="2" class="kpi-val">' . $data['citasCanceladas'] . '</td></tr>';
-        $html .= '<tr><td colspan="4" class="kpi-title">Productos con Stock Bajo</td><td colspan="2" class="kpi-val">' . $data['productosStockBajo'] . '</td></tr>';
-        $html .= '<tr><td colspan="4" class="kpi-title">Lotes Próximos a Vencer (< 90 días)</td><td colspan="2" class="kpi-val">' . $data['lotesProximosVencerCount'] . '</td></tr>';
-        $html .= '<tr><td colspan="4" class="kpi-title">Valorización de Inventario Activo</td><td colspan="2" class="kpi-val">S/ ' . number_format($data['valorizacionInventario'], 2) . '</td></tr>';
+        $html .= '<tr><td colspan="6" class="section-header">' . $t('report.excelKeyMetrics', '1. RESUMEN DE MÉTRICAS CLAVE') . '</td></tr>';
+        $html .= '<tr><td colspan="4" class="kpi-title">' . $t('report.totalRevenue', 'Ingresos Totales del Período') . '</td><td colspan="2" class="kpi-val">S/ ' . number_format($data['ventasPeriodo'], 2) . '</td></tr>';
+        $html .= '<tr><td colspan="4" class="kpi-title">' . $t('report.averageTicket', 'Ticket Promedio por Venta') . '</td><td colspan="2" class="kpi-val">S/ ' . number_format($data['ticketPromedio'], 2) . '</td></tr>';
+        $html .= '<tr><td colspan="4" class="kpi-title">' . $t('report.totalRevenue', 'Total de Ventas Concretadas') . '</td><td colspan="2" class="kpi-val">' . $data['totalVentasCount'] . '</td></tr>';
+        $html .= '<tr><td colspan="4" class="kpi-title">' . $t('report.completedAppointments', 'Citas Médicas Atendidas / Completadas') . '</td><td colspan="2" class="kpi-val">' . $data['citasCompletadas'] . '</td></tr>';
+        $html .= '<tr><td colspan="4" class="kpi-title">' . $t('report.pendingAppointments', 'Citas Pendientes / En Progreso') . '</td><td colspan="2" class="kpi-val">' . $data['citasPendientes'] . '</td></tr>';
+        $html .= '<tr><td colspan="4" class="kpi-title">' . $t('report.cancelledAppointments', 'Citas Canceladas') . '</td><td colspan="2" class="kpi-val">' . $data['citasCanceladas'] . '</td></tr>';
+        $html .= '<tr><td colspan="4" class="kpi-title">' . $t('report.lowStockProducts', 'Productos con Stock Bajo') . '</td><td colspan="2" class="kpi-val">' . $data['productosStockBajo'] . '</td></tr>';
+        $html .= '<tr><td colspan="4" class="kpi-title">' . $t('dashboard.expiringBatches', 'Lotes Próximos a Vencer (< 90 días)') . '</td><td colspan="2" class="kpi-val">' . $data['lotesProximosVencerCount'] . '</td></tr>';
+        $html .= '<tr><td colspan="4" class="kpi-title">' . $t('report.financialSummary', 'Valorización de Inventario Activo') . '</td><td colspan="2" class="kpi-val">S/ ' . number_format($data['valorizacionInventario'], 2) . '</td></tr>';
         $html .= '<tr><td colspan="6"></td></tr>';
 
         // 2. Detalle de Ventas
-        $html .= '<tr><td colspan="6" class="section-header">2. DETALLE DE VENTAS DEL PERÍODO</td></tr>';
+        $html .= '<tr><td colspan="6" class="section-header">' . $t('report.excelSalesDetail', '2. DETALLE DE VENTAS DEL PERÍODO') . '</td></tr>';
         $html .= '<tr>
-            <th class="th-header">ID Venta</th>
-            <th class="th-header">Fecha y Hora</th>
-            <th class="th-header">Cliente</th>
-            <th class="th-header">Comprobante</th>
-            <th class="th-header">Método Pago</th>
-            <th class="th-header" style="text-align: right;">Total (S/)</th>
+            <th class="th-header">' . $t('report.receiptNo', 'ID Venta') . '</th>
+            <th class="th-header">' . $t('report.dateTime', 'Fecha y Hora') . '</th>
+            <th class="th-header">' . $t('report.client', 'Cliente') . '</th>
+            <th class="th-header">' . $t('form.receiptType', 'Comprobante') . '</th>
+            <th class="th-header">' . $t('report.paymentMethod', 'Método Pago') . '</th>
+            <th class="th-header" style="text-align: right;">' . $t('report.total', 'Total (S/)') . '</th>
         </tr>';
         foreach ($data['sales'] as $sale) {
-            $clienteNombre = htmlspecialchars($sale->cliente ? $sale->cliente->nombre_completo : 'Cliente General');
+            $clienteNombre = htmlspecialchars($sale->cliente ? $sale->cliente->nombre_completo : $t('report.walkInCustomer', 'Cliente General'));
             $fecha = $sale->created_at->format('d/m/Y H:i');
             $totalFormateado = number_format($sale->total, 2);
             $html .= "<tr>
@@ -163,38 +210,39 @@ class ReportExportController extends Controller
         $html .= '<tr><td colspan="6"></td></tr>';
 
         // 3. Detalle de Citas Médicas
-        $html .= '<tr><td colspan="6" class="section-header">3. DETALLE DE CITAS MÉDICAS</td></tr>';
+        $html .= '<tr><td colspan="6" class="section-header">' . $t('report.excelApptDetail', '3. DETALLE DE CITAS MÉDICAS') . '</td></tr>';
         $html .= '<tr>
-            <th class="th-header">ID Cita</th>
-            <th class="th-header">Fecha Programada</th>
-            <th class="th-header">Cliente</th>
-            <th class="th-header">Mascota</th>
-            <th class="th-header">Motivo</th>
-            <th class="th-header">Estado</th>
+            <th class="th-header">' . $t('appointment.apptNumber', 'ID Cita') . '</th>
+            <th class="th-header">' . $t('appointment.scheduledDate', 'Fecha Programada') . '</th>
+            <th class="th-header">' . $t('table.owner', 'Cliente') . '</th>
+            <th class="th-header">' . $t('form.pet', 'Mascota') . '</th>
+            <th class="th-header">' . $t('table.reason', 'Motivo') . '</th>
+            <th class="th-header">' . $t('report.status', 'Estado') . '</th>
         </tr>';
         foreach ($data['appointments'] as $appt) {
             $clienteNombre = htmlspecialchars($appt->cliente ? $appt->cliente->nombre_completo : '-');
             $mascotaNombre = htmlspecialchars($appt->mascota ? $appt->mascota->name : '-');
             $fecha = $appt->fecha_hora ? $appt->fecha_hora->format('d/m/Y H:i') : '-';
             $motivo = htmlspecialchars($appt->reason ?? '-');
+            $statusTraducido = $t('status.' . strtolower($appt->status), $appt->status);
             $html .= "<tr>
                 <td class=\"td-center\">#{$appt->id}</td>
                 <td class=\"td-center\">{$fecha}</td>
                 <td class=\"td-cell\">{$clienteNombre}</td>
                 <td class=\"td-cell\">{$mascotaNombre}</td>
                 <td class=\"td-cell\">{$motivo}</td>
-                <td class=\"td-center\">{$appt->status}</td>
+                <td class=\"td-center\">{$statusTraducido}</td>
             </tr>";
         }
         $html .= '<tr><td colspan="6"></td></tr>';
 
         // 4. Top Productos
         if (count($data['topDetalles']) > 0) {
-            $html .= '<tr><td colspan="6" class="section-header">4. TOP PRODUCTOS Y SERVICIOS MÁS VENDIDOS</td></tr>';
+            $html .= '<tr><td colspan="6" class="section-header">' . $t('report.excelTopProducts', '4. TOP PRODUCTOS Y SERVICIOS MÁS VENDIDOS') . '</td></tr>';
             $html .= '<tr>
-                <th class="th-header" colspan="3">Producto / Servicio</th>
-                <th class="th-header" colspan="1" style="text-align: center;">Cantidad Vendida</th>
-                <th class="th-header" colspan="2" style="text-align: right;">Total Facturado (S/)</th>
+                <th class="th-header" colspan="3">' . $t('form.product', 'Producto / Servicio') . '</th>
+                <th class="th-header" colspan="1" style="text-align: center;">' . $t('report.qtySold', 'Cantidad Vendida') . '</th>
+                <th class="th-header" colspan="2" style="text-align: right;">' . $t('report.totalInvoiced', 'Total Facturado (S/)') . '</th>
             </tr>';
             foreach ($data['topDetalles'] as $top) {
                 $itemDesc = htmlspecialchars($top->description);

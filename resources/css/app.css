@@ -842,35 +842,84 @@ html.dark .vc-responsive-table-container td {
     box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
 }
 
-/* Encabezados de columna */
+/* Encabezados de columna del calendario */
 #vc-fullcalendar .fc-col-header-cell {
-    padding: 0.5rem 0 !important;
+    padding: 0.625rem 0.25rem !important;
     font-size: 0.75rem !important;
-    font-weight: 700 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.05em !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.025em !important;
+    background-color: #f8fafc !important;
+    border-bottom: 2px solid #e2e8f0 !important;
+    color: #334155 !important;
+}
+.dark #vc-fullcalendar .fc-col-header-cell, 
+html.dark #vc-fullcalendar .fc-col-header-cell {
+    background-color: rgba(39, 39, 42, 0.4) !important;
+    border-bottom: 2px solid #27272a !important;
+    color: #e4e4e7 !important;
 }
 
-/* Celdas de tiempo */
+#vc-fullcalendar .fc-col-header-cell-cushion {
+    padding: 2px 4px !important;
+    text-decoration: none !important;
+    color: inherit !important;
+}
+
+/* Celdas de tiempo y grilla */
+#vc-fullcalendar .fc-timegrid-slot {
+    height: 48px !important;
+}
+
 #vc-fullcalendar .fc-timegrid-slot-label {
     font-size: 0.75rem !important;
     color: #64748b !important;
+    font-weight: 600 !important;
+    vertical-align: top !important;
+    padding-top: 4px !important;
 }
-.dark #vc-fullcalendar .fc-timegrid-slot-label, html.dark #vc-fullcalendar .fc-timegrid-slot-label {
+.dark #vc-fullcalendar .fc-timegrid-slot-label, 
+html.dark #vc-fullcalendar .fc-timegrid-slot-label {
     color: #a1a1aa !important;
 }
 
-/* Eventos */
+#vc-fullcalendar .fc-timegrid-slot-lane,
+#vc-fullcalendar .fc-timegrid-slot-label,
+#vc-fullcalendar td,
+#vc-fullcalendar th {
+    border-color: #f1f5f9 !important;
+}
+.dark #vc-fullcalendar .fc-timegrid-slot-lane,
+.dark #vc-fullcalendar .fc-timegrid-slot-label,
+.dark #vc-fullcalendar td,
+.dark #vc-fullcalendar th,
+html.dark #vc-fullcalendar .fc-timegrid-slot-lane,
+html.dark #vc-fullcalendar .fc-timegrid-slot-label,
+html.dark #vc-fullcalendar td,
+html.dark #vc-fullcalendar th {
+    border-color: #27272a !important;
+}
+
+#vc-fullcalendar .fc-scrollgrid {
+    border-radius: 1rem !important;
+    overflow: hidden !important;
+    border: 1px solid #e2e8f0 !important;
+}
+.dark #vc-fullcalendar .fc-scrollgrid,
+html.dark #vc-fullcalendar .fc-scrollgrid {
+    border: 1px solid #27272a !important;
+}
+
+/* Eventos Estables (Sin saltos de tamaño) */
 #vc-fullcalendar .fc-event {
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
     cursor: pointer;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    transition: none !important;
 }
 
 #vc-fullcalendar .fc-timegrid-event-harness {
-    padding: 1px !important;
+    padding: 1px 2px !important;
 }
 
 #vc-fullcalendar .fc-timegrid-event,
@@ -887,19 +936,21 @@ html.dark .vc-responsive-table-container td {
     width: 100% !important;
 }
 
-#vc-fullcalendar .fc-event:hover {
-    transform: translateY(-2px);
-    z-index: 50 !important;
+#vc-fullcalendar .fc-event:hover,
+#vc-fullcalendar .fc-event:active,
+#vc-fullcalendar .fc-event:focus {
+    transform: none !important;
+    z-index: 40 !important;
 }
 
 /* Indicador de hora actual */
 #vc-fullcalendar .fc-timegrid-now-indicator-line {
-    border-color: #059669;
+    border-color: #10b981;
     border-width: 2px;
 }
 
 #vc-fullcalendar .fc-timegrid-now-indicator-arrow {
-    border-top-color: #059669;
+    border-top-color: #10b981;
 }
 
 /* ── Global Elegant Focus Styling (Eliminates harsh black outlines) ── */

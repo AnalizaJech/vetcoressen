@@ -51,14 +51,16 @@ class ReporteIndex extends Component
 
     public function updatedFechaInicio(): void
     {
-        $this->periodo = 'personalizado';
-        $this->dispatchChartsUpdate();
+        if ($this->periodo === 'personalizado') {
+            $this->dispatchChartsUpdate();
+        }
     }
 
     public function updatedFechaFin(): void
     {
-        $this->periodo = 'personalizado';
-        $this->dispatchChartsUpdate();
+        if ($this->periodo === 'personalizado') {
+            $this->dispatchChartsUpdate();
+        }
     }
 
     public function updatedSucursalId(): void
@@ -340,6 +342,7 @@ class ReporteIndex extends Component
 
         $ventasDetalle = $sales->take(5);
         $citasDetalle = $appointments->take(5);
+        $simboloMoneda = \App\Models\Clinic::first()?->simbolo_moneda ?? 'S/';
 
         return compact(
             'startDate', 'endDate',
@@ -353,7 +356,7 @@ class ReporteIndex extends Component
             'citasChartLabels', 'citasChartData',
             'topProductosLabels', 'topProductosData', 'topDetalles',
             'pagosChartLabels', 'pagosChartData',
-            'topDiagnosticos', 'sucursales'
+            'topDiagnosticos', 'sucursales', 'simboloMoneda'
         );
     }
 

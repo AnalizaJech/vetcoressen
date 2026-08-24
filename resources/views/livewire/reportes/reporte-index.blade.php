@@ -1,3 +1,437 @@
+<script>
+    if (typeof Chart !== 'undefined') {
+        Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
+        Chart.defaults.interaction.mode = 'index';
+        Chart.defaults.interaction.intersect = false;
+        Chart.defaults.plugins.tooltip.enabled = true;
+    }
+
+    window.vetReportCharts = window.vetReportCharts || {
+        c1: null,
+        c2: null,
+        c3: null,
+        c4: null
+    };
+
+    window.formatReportChartLabel = function(l, isEn) {
+        if (!l) return '';
+        const str = String(l).trim();
+        
+        const dayMap = {
+            'lun': isEn ? 'Mon' : 'Lun',
+            'mar': isEn ? 'Tue' : 'Mar',
+            'mié': isEn ? 'Wed' : 'Mié',
+            'mie': isEn ? 'Wed' : 'Mié',
+            'jue': isEn ? 'Thu' : 'Jue',
+            'vie': isEn ? 'Fri' : 'Vie',
+            'sáb': isEn ? 'Sat' : 'Sáb',
+            'sab': isEn ? 'Sat' : 'Sáb',
+            'dom': isEn ? 'Sun' : 'Dom',
+            'mon': isEn ? 'Mon' : 'Lun',
+            'tue': isEn ? 'Tue' : 'Mar',
+            'wed': isEn ? 'Wed' : 'Mié',
+            'thu': isEn ? 'Thu' : 'Jue',
+            'fri': isEn ? 'Fri' : 'Vie',
+            'sat': isEn ? 'Sat' : 'Sáb',
+            'sun': isEn ? 'Sun' : 'Dom',
+            'lunes': isEn ? 'Monday' : 'Lunes',
+            'martes': isEn ? 'Tuesday' : 'Martes',
+            'miércoles': isEn ? 'Wednesday' : 'Miércoles',
+            'miercoles': isEn ? 'Wednesday' : 'Miércoles',
+            'jueves': isEn ? 'Thursday' : 'Jueves',
+            'viernes': isEn ? 'Friday' : 'Viernes',
+            'sábado': isEn ? 'Saturday' : 'Sábado',
+            'sabado': isEn ? 'Saturday' : 'Sábado',
+            'domingo': isEn ? 'Sunday' : 'Domingo',
+            'monday': isEn ? 'Monday' : 'Lunes',
+            'tuesday': isEn ? 'Tuesday' : 'Martes',
+            'wednesday': isEn ? 'Wednesday' : 'Miércoles',
+            'thursday': isEn ? 'Thursday' : 'Jueves',
+            'friday': isEn ? 'Friday' : 'Viernes',
+            'saturday': isEn ? 'Saturday' : 'Sábado',
+            'sunday': isEn ? 'Sunday' : 'Domingo'
+        };
+
+        const monthMap = {
+            'ene': isEn ? 'Jan' : 'Ene',
+            'feb': isEn ? 'Feb' : 'Feb',
+            'mar': isEn ? 'Mar' : 'Mar',
+            'abr': isEn ? 'Apr' : 'Abr',
+            'may': isEn ? 'May' : 'May',
+            'jun': isEn ? 'Jun' : 'Jun',
+            'jul': isEn ? 'Jul' : 'Jul',
+            'ago': isEn ? 'Aug' : 'Ago',
+            'sep': isEn ? 'Sep' : 'Sep',
+            'set': isEn ? 'Sep' : 'Set',
+            'oct': isEn ? 'Oct' : 'Oct',
+            'nov': isEn ? 'Nov' : 'Nov',
+            'dic': isEn ? 'Dec' : 'Dic',
+            'jan': isEn ? 'Jan' : 'Ene',
+            'apr': isEn ? 'Apr' : 'Abr',
+            'aug': isEn ? 'Aug' : 'Ago',
+            'dec': isEn ? 'Dec' : 'Dic',
+            'enero': isEn ? 'January' : 'Enero',
+            'febrero': isEn ? 'February' : 'Febrero',
+            'marzo': isEn ? 'March' : 'Marzo',
+            'abril': isEn ? 'April' : 'Abril',
+            'mayo': isEn ? 'May' : 'Mayo',
+            'junio': isEn ? 'June' : 'Junio',
+            'julio': isEn ? 'July' : 'Julio',
+            'agosto': isEn ? 'August' : 'Agosto',
+            'septiembre': isEn ? 'September' : 'Septiembre',
+            'setiembre': isEn ? 'September' : 'Setiembre',
+            'octubre': isEn ? 'October' : 'Octubre',
+            'noviembre': isEn ? 'November' : 'Noviembre',
+            'diciembre': isEn ? 'December' : 'Diciembre',
+            'january': isEn ? 'January' : 'Enero',
+            'february': isEn ? 'February' : 'Febrero',
+            'march': isEn ? 'March' : 'Marzo',
+            'april': isEn ? 'April' : 'Abril',
+            'june': isEn ? 'June' : 'Junio',
+            'july': isEn ? 'July' : 'Julio',
+            'august': isEn ? 'August' : 'Agosto',
+            'september': isEn ? 'September' : 'Septiembre',
+            'october': isEn ? 'October' : 'Octubre',
+            'november': isEn ? 'November' : 'Noviembre',
+            'december': isEn ? 'December' : 'Diciembre'
+        };
+
+        const parts = str.split(' ');
+        if (parts.length === 2 && parts[1].includes('/')) {
+            const prefix = parts[0].toLowerCase().replace('.', '');
+            if (dayMap[prefix]) {
+                return `${dayMap[prefix]} ${parts[1]}`;
+            }
+        }
+
+        const lower = str.toLowerCase().replace('.', '');
+        if (monthMap[lower]) return monthMap[lower];
+        if (dayMap[lower]) return dayMap[lower];
+        
+        if (str.toLowerCase().startsWith('week ') || str.toLowerCase().startsWith('semana ')) {
+            const num = str.match(/\d+/);
+            const suffix = str.includes('(') ? ' ' + str.substring(str.indexOf('(')) : '';
+            return (isEn ? 'Week ' : 'Semana ') + (num ? num[0] : '') + suffix;
+        }
+
+        if (str.includes('-')) {
+            const p = str.split('-');
+            if (p.length === 3) return p[2] + '/' + p[1];
+        }
+
+        return str;
+    };
+
+    window.renderAllReportCharts = function(data) {
+        if (typeof Chart === 'undefined' || !data) return;
+        const isEn = (window.Alpine?.store('i18n')?.locale || localStorage.getItem('vc_locale')) === 'en';
+
+        // 1. Ventas
+        const canvas1 = document.getElementById('repVentasChart');
+        if (canvas1) {
+            if (window.vetReportCharts.c1) {
+                try { window.vetReportCharts.c1.destroy(); } catch(e) {}
+                window.vetReportCharts.c1 = null;
+            }
+            const existing1 = Chart.getChart(canvas1);
+            if (existing1) existing1.destroy();
+
+            const ctx1 = canvas1.getContext('2d');
+            const rawLabels = data.ventasLabels || [];
+            const formattedLabels = rawLabels.map(l => window.formatReportChartLabel(l, isEn));
+            const labelText = window.Alpine?.store('i18n')?.t('report.revenue') || (isEn ? 'Revenue (S/)' : 'Ingresos (S/)');
+
+            window.vetReportCharts.c1 = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: formattedLabels,
+                    datasets: [{
+                        label: labelText,
+                        data: data.ventasData || [],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.08)',
+                        borderWidth: 2.5,
+                        fill: true,
+                        tension: 0.35,
+                        pointRadius: 4,
+                        pointHoverRadius: 7,
+                        pointBackgroundColor: '#10b981',
+                        pointHoverBackgroundColor: '#10b981',
+                        pointHoverBorderColor: '#ffffff',
+                        pointHoverBorderWidth: 2,
+                        hitRadius: 25,
+                        pointHitRadius: 25,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    hover: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            enabled: true,
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(24, 24, 27, 0.95)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#e4e4e7',
+                            borderColor: 'rgba(255, 255, 255, 0.1)',
+                            borderWidth: 1,
+                            padding: 10,
+                            cornerRadius: 8,
+                            callbacks: {
+                                title: function(items) {
+                                    if (!items || !items.length) return '';
+                                    return items[0].label || '';
+                                },
+                                label: function(c) {
+                                    const val = c.raw !== undefined ? c.raw : (c.parsed?.y !== undefined ? c.parsed.y : 0);
+                                    return ' ' + labelText + ': S/ ' + Number(val).toFixed(2);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { font: { family: 'Plus Jakarta Sans', size: 10 }, color: '#71717a' } },
+                        y: { beginAtZero: true, grid: { color: 'rgba(113, 113, 122, 0.08)' }, ticks: { font: { family: 'Plus Jakarta Sans', size: 10 }, color: '#71717a' } }
+                    }
+                }
+            });
+        }
+
+        // 2. Citas
+        const canvas2 = document.getElementById('repCitasChart');
+        if (canvas2) {
+            if (window.vetReportCharts.c2) {
+                try { window.vetReportCharts.c2.destroy(); } catch(e) {}
+                window.vetReportCharts.c2 = null;
+            }
+            const existing2 = Chart.getChart(canvas2);
+            if (existing2) existing2.destroy();
+
+            const ctx2 = canvas2.getContext('2d');
+            window.vetReportCharts.c2 = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: [
+                        window.Alpine?.store('i18n')?.t('status.completed') || (isEn ? 'Completed' : 'Completadas'),
+                        window.Alpine?.store('i18n')?.t('status.cancelled') || (isEn ? 'Cancelled' : 'Canceladas'),
+                        window.Alpine?.store('i18n')?.t('status.pending') || (isEn ? 'Pending' : 'Pendientes')
+                    ],
+                    datasets: [{
+                        data: data.citasData || [0, 0, 0],
+                        backgroundColor: ['#10b981', '#ef4444', '#8b5cf6'],
+                        borderWidth: 2,
+                        borderColor: 'transparent'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { 
+                            position: 'bottom',
+                            labels: { font: { family: 'Plus Jakarta Sans', weight: '600', size: 11 }, color: '#71717a' }
+                        },
+                        tooltip: {
+                            enabled: true,
+                            backgroundColor: 'rgba(24, 24, 27, 0.95)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#e4e4e7',
+                            borderColor: 'rgba(255, 255, 255, 0.1)',
+                            borderWidth: 1,
+                            padding: 10,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(c) {
+                                    const val = c.raw !== undefined ? c.raw : (c.parsed !== undefined ? c.parsed : 0);
+                                    const apptText = window.Alpine?.store('i18n')?.t('sidebar.appointments') || (isEn ? 'appointments' : 'citas');
+                                    return ' ' + (c.label || '') + ': ' + val + ' ' + apptText;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+        }
+
+        // 3. Top Productos
+        const canvas3 = document.getElementById('repTopProdChart');
+        if (canvas3) {
+            if (window.vetReportCharts.c3) {
+                try { window.vetReportCharts.c3.destroy(); } catch(e) {}
+                window.vetReportCharts.c3 = null;
+            }
+            const existing3 = Chart.getChart(canvas3);
+            if (existing3) existing3.destroy();
+
+            const ctx3 = canvas3.getContext('2d');
+            window.vetReportCharts.c3 = new Chart(ctx3, {
+                type: 'bar',
+                data: {
+                    labels: (data.topProductosLabels || []).map(l => l.length > 22 ? l.substring(0, 22) + '...' : l),
+                    datasets: [{
+                        label: window.Alpine?.store('i18n')?.t('report.revenue') || (isEn ? 'Revenue (S/)' : 'Total (S/)'),
+                        data: data.topProductosData || [],
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 6,
+                        maxBarThickness: 36
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            enabled: true,
+                            backgroundColor: 'rgba(24, 24, 27, 0.95)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#e4e4e7',
+                            borderColor: 'rgba(255, 255, 255, 0.1)',
+                            borderWidth: 1,
+                            padding: 10,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(c) {
+                                    const val = c.raw !== undefined ? c.raw : (c.parsed?.y !== undefined ? c.parsed.y : 0);
+                                    const totalText = window.Alpine?.store('i18n')?.t('report.revenue') || (isEn ? 'Revenue' : 'Total');
+                                    return ' ' + totalText + ': S/ ' + Number(val).toFixed(2);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { font: { family: 'Plus Jakarta Sans', size: 10 }, color: '#71717a' } },
+                        y: { beginAtZero: true, grid: { color: 'rgba(113, 113, 122, 0.08)' }, ticks: { font: { family: 'Plus Jakarta Sans', size: 10 }, color: '#71717a' } }
+                    }
+                }
+            });
+        }
+
+        // 4. Métodos de Pago
+        const canvas4 = document.getElementById('repPagosChart');
+        if (canvas4) {
+            if (window.vetReportCharts.c4) {
+                try { window.vetReportCharts.c4.destroy(); } catch(e) {}
+                window.vetReportCharts.c4 = null;
+            }
+            const existing4 = Chart.getChart(canvas4);
+            if (existing4) existing4.destroy();
+
+            const ctx4 = canvas4.getContext('2d');
+            const paymentLabels = isEn 
+                ? ['Cash', 'Card', 'Yape / Plin', 'Bank Transfer']
+                : ['Efectivo', 'Tarjeta', 'Yape / Plin', 'Transferencia'];
+
+            window.vetReportCharts.c4 = new Chart(ctx4, {
+                type: 'doughnut',
+                data: {
+                    labels: paymentLabels,
+                    datasets: [{
+                        data: data.pagosData || [0, 0, 0, 0],
+                        backgroundColor: ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b'],
+                        borderWidth: 2,
+                        borderColor: 'transparent'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { 
+                            position: 'bottom',
+                            labels: { font: { family: 'Plus Jakarta Sans', weight: '600', size: 11 }, color: '#71717a' }
+                        },
+                        tooltip: {
+                            enabled: true,
+                            backgroundColor: 'rgba(24, 24, 27, 0.95)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#e4e4e7',
+                            borderColor: 'rgba(255, 255, 255, 0.1)',
+                            borderWidth: 1,
+                            padding: 10,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(c) {
+                                    const val = c.raw !== undefined ? c.raw : (c.parsed !== undefined ? c.parsed : 0);
+                                    return ' ' + (c.label || '') + ': S/ ' + Number(val).toFixed(2);
+                                }
+                            }
+                        }
+                    },
+                    cutout: '65%'
+                }
+            });
+        }
+    };
+
+    window.advancedReportCharts = function(initialData) {
+        return {
+            cachedData: initialData || {},
+
+            init() {
+                const checkAndRender = () => {
+                    if (typeof Chart !== 'undefined') {
+                        window.renderAllReportCharts(this.cachedData);
+                    } else {
+                        setTimeout(checkAndRender, 50);
+                    }
+                };
+                this.$nextTick(checkAndRender);
+
+                window.addEventListener('language-changed', () => {
+                    requestAnimationFrame(() => {
+                        if (this.cachedData) window.renderAllReportCharts(this.cachedData);
+                    });
+                });
+
+                window.addEventListener('report-charts-updated', (e) => {
+                    const detail = Array.isArray(e.detail) ? e.detail[0] : (e.detail || {});
+                    if (detail) {
+                        this.updateCharts(detail);
+                    }
+                });
+
+                window.addEventListener('charts-updated', (e) => {
+                    const detail = Array.isArray(e.detail) ? e.detail[0] : (e.detail || {});
+                    if (detail) {
+                        this.updateCharts(detail);
+                    }
+                });
+            },
+
+            downloadReport(type) {
+                // Acceder a propiedades Livewire directamente (no usar .get() que es async)
+                const p = this.$wire.periodo || 'mes_actual';
+                const fi = this.$wire.fecha_inicio || '';
+                const ff = this.$wire.fecha_fin || '';
+                const lang = Alpine.store('i18n')?.locale || localStorage.getItem('vc_locale') || 'en';
+                const q = new URLSearchParams({
+                    periodo: p,
+                    fecha_inicio: fi,
+                    fecha_fin: ff,
+                    lang: lang
+                }).toString();
+                window.open(`/reports/export/${type}?${q}`, '_blank');
+            },
+
+            updateCharts(data) {
+                if (!data) return;
+                this.cachedData = data;
+                window.renderAllReportCharts(data);
+            }
+        };
+    };
+
+    if (window.Alpine) {
+        window.Alpine.data('advancedReportCharts', window.advancedReportCharts);
+    }
+</script>
+
 <div>
     <x-slot:title>Reportes y Estadísticas</x-slot:title>
 
@@ -12,8 +446,8 @@
              pagosData: {{ json_encode($pagosChartData ?? []) }}
          })"
          x-init="init()"
-         @report-charts-updated.window="updateCharts($event.detail)"
-         @charts-updated.window="updateCharts($event.detail)"
+         @report-charts-updated.window="const d = Array.isArray($event.detail) ? $event.detail[0] : ($event.detail || {}); if (d) updateCharts(d)"
+         @charts-updated.window="const d = Array.isArray($event.detail) ? $event.detail[0] : ($event.detail || {}); if (d) updateCharts(d)"
     >
         {{-- ═══ Header de Reportes y Estadísticas ═══ --}}
         <div class="vc-panel flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -37,24 +471,18 @@
             <div class="flex items-center gap-2.5">
                 <button 
                     type="button"
-                    wire:click="exportarPdf" 
-                    wire:loading.attr="disabled"
-                    wire:target="exportarPdf"
-                    class="btn-primary bg-zinc-800 hover:bg-zinc-900 text-white border-zinc-800 text-xs px-3.5 py-2 flex items-center justify-center gap-1.5 shadow-sm disabled:opacity-50 cursor-pointer"
+                    @click="downloadReport('pdf')" 
+                    class="btn-primary bg-zinc-800 hover:bg-zinc-900 text-white border-zinc-800 text-xs px-3.5 py-2 flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
                 >
-                    <span wire:loading.remove wire:target="exportarPdf" class="material-symbols-outlined icon-sm">picture_as_pdf</span>
-                    <span wire:loading wire:target="exportarPdf" class="material-symbols-outlined icon-sm animate-spin">progress_activity</span>
+                    <span class="material-symbols-outlined icon-sm">picture_as_pdf</span>
                     <span x-text="$store.i18n.t('btn.downloadPDF') || 'Download PDF'">Download PDF</span>
                 </button>
                 <button 
                     type="button"
-                    wire:click="exportarExcel" 
-                    wire:loading.attr="disabled"
-                    wire:target="exportarExcel"
-                    class="btn-primary bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 text-xs px-3.5 py-2 flex items-center justify-center gap-1.5 shadow-sm disabled:opacity-50 cursor-pointer"
+                    @click="downloadReport('excel')" 
+                    class="btn-primary bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 text-xs px-3.5 py-2 flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
                 >
-                    <span wire:loading.remove wire:target="exportarExcel" class="material-symbols-outlined icon-sm">table_view</span>
-                    <span wire:loading wire:target="exportarExcel" class="material-symbols-outlined icon-sm animate-spin">progress_activity</span>
+                    <span class="material-symbols-outlined icon-sm">table_view</span>
                     <span x-text="$store.i18n.t('btn.downloadExcel') || 'Download Excel'">Download Excel</span>
                 </button>
             </div>
@@ -114,7 +542,7 @@
                     </div>
                 </div>
                 <h3 class="text-2xl md:text-3xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight font-display mb-1">
-                    S/ {{ number_format($ventasPeriodo, 2) }}
+                    {{ $simboloMoneda }} {{ number_format($ventasPeriodo, 2) }}
                 </h3>
                 <div class="flex items-center gap-2 mt-2">
                     <span class="badge badge-emerald text-[10px]">
@@ -135,7 +563,7 @@
                     </div>
                 </div>
                 <h3 class="text-2xl md:text-3xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight font-display mb-1">
-                    S/ {{ number_format($ticketPromedio, 2) }}
+                    {{ $simboloMoneda }} {{ number_format($ticketPromedio, 2) }}
                 </h3>
                 <p class="text-[11px] text-zinc-400 mt-2">
                     <span x-text="$store.i18n.t('report.perTransaction') || 'Per transaction'">Per transaction</span>
@@ -266,7 +694,7 @@
                             </div>
                             <div class="text-right shrink-0">
                                 <span class="text-xs font-extrabold text-zinc-900 dark:text-zinc-100">
-                                    S/ {{ number_format($venta->total, 2) }}
+                                    {{ $simboloMoneda }} {{ number_format($venta->total, 2) }}
                                 </span>
                                 <p class="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
                                     {{ $venta->payment_method }}
@@ -334,404 +762,3 @@
         </div>
     </div>
 </div>
-
-<script>
-    if (typeof window.advancedReportCharts !== 'function') {
-        window.advancedReportCharts = function(initialData) {
-            return {
-                c1: null,
-                c2: null,
-                c3: null,
-                c4: null,
-                cachedData: initialData || {},
-
-                init() {
-                    const waitForChart = () => {
-                        if (typeof Chart !== 'undefined') {
-                            this.renderAll(this.cachedData);
-                        } else {
-                            setTimeout(waitForChart, 50);
-                        }
-                    };
-                    this.$nextTick(waitForChart);
-
-                    window.addEventListener('language-changed', () => {
-                        requestAnimationFrame(() => {
-                            if (this.cachedData) this.renderAll(this.cachedData);
-                        });
-                    });
-                },
-
-                updateCharts(data) {
-                    if (!data) return;
-                    this.cachedData = data;
-                    this.renderAll(data);
-                },
-
-                renderAll(data) {
-                    if (typeof Chart === 'undefined' || !data) return;
-                    this.initVentas(data);
-                    this.initCitas(data);
-                    this.initTopProductos(data);
-                    this.initPagos(data);
-                },
-
-                formatChartLabel(l, isEn) {
-                    if (!l) return '';
-                    const str = String(l).trim();
-                    
-                    const dayMap = {
-                        'lun': isEn ? 'Mon' : 'Lun',
-                        'mar': isEn ? 'Tue' : 'Mar',
-                        'mié': isEn ? 'Wed' : 'Mié',
-                        'mie': isEn ? 'Wed' : 'Mié',
-                        'jue': isEn ? 'Thu' : 'Jue',
-                        'vie': isEn ? 'Fri' : 'Vie',
-                        'sáb': isEn ? 'Sat' : 'Sáb',
-                        'sab': isEn ? 'Sat' : 'Sáb',
-                        'dom': isEn ? 'Sun' : 'Dom',
-                        'mon': isEn ? 'Mon' : 'Lun',
-                        'tue': isEn ? 'Tue' : 'Mar',
-                        'wed': isEn ? 'Wed' : 'Mié',
-                        'thu': isEn ? 'Thu' : 'Jue',
-                        'fri': isEn ? 'Fri' : 'Vie',
-                        'sat': isEn ? 'Sat' : 'Sáb',
-                        'sun': isEn ? 'Sun' : 'Dom',
-                        'lunes': isEn ? 'Monday' : 'Lunes',
-                        'martes': isEn ? 'Tuesday' : 'Martes',
-                        'miércoles': isEn ? 'Wednesday' : 'Miércoles',
-                        'miercoles': isEn ? 'Wednesday' : 'Miércoles',
-                        'jueves': isEn ? 'Thursday' : 'Jueves',
-                        'viernes': isEn ? 'Friday' : 'Viernes',
-                        'sábado': isEn ? 'Saturday' : 'Sábado',
-                        'sabado': isEn ? 'Saturday' : 'Sábado',
-                        'domingo': isEn ? 'Sunday' : 'Domingo',
-                        'monday': isEn ? 'Monday' : 'Lunes',
-                        'tuesday': isEn ? 'Tuesday' : 'Martes',
-                        'wednesday': isEn ? 'Wednesday' : 'Miércoles',
-                        'thursday': isEn ? 'Thursday' : 'Jueves',
-                        'friday': isEn ? 'Friday' : 'Viernes',
-                        'saturday': isEn ? 'Saturday' : 'Sábado',
-                        'sunday': isEn ? 'Sunday' : 'Domingo'
-                    };
-
-                    const monthMap = {
-                        'ene': isEn ? 'Jan' : 'Ene',
-                        'feb': isEn ? 'Feb' : 'Feb',
-                        'mar': isEn ? 'Mar' : 'Mar',
-                        'abr': isEn ? 'Apr' : 'Abr',
-                        'may': isEn ? 'May' : 'May',
-                        'jun': isEn ? 'Jun' : 'Jun',
-                        'jul': isEn ? 'Jul' : 'Jul',
-                        'ago': isEn ? 'Aug' : 'Ago',
-                        'sep': isEn ? 'Sep' : 'Sep',
-                        'set': isEn ? 'Sep' : 'Set',
-                        'oct': isEn ? 'Oct' : 'Oct',
-                        'nov': isEn ? 'Nov' : 'Nov',
-                        'dic': isEn ? 'Dec' : 'Dic',
-                        'jan': isEn ? 'Jan' : 'Ene',
-                        'apr': isEn ? 'Apr' : 'Abr',
-                        'aug': isEn ? 'Aug' : 'Ago',
-                        'dec': isEn ? 'Dec' : 'Dic',
-                        'enero': isEn ? 'January' : 'Enero',
-                        'febrero': isEn ? 'February' : 'Febrero',
-                        'marzo': isEn ? 'March' : 'Marzo',
-                        'abril': isEn ? 'April' : 'Abril',
-                        'mayo': isEn ? 'May' : 'Mayo',
-                        'junio': isEn ? 'June' : 'Junio',
-                        'julio': isEn ? 'July' : 'Julio',
-                        'agosto': isEn ? 'August' : 'Agosto',
-                        'septiembre': isEn ? 'September' : 'Septiembre',
-                        'setiembre': isEn ? 'September' : 'Setiembre',
-                        'octubre': isEn ? 'October' : 'Octubre',
-                        'noviembre': isEn ? 'November' : 'Noviembre',
-                        'diciembre': isEn ? 'December' : 'Diciembre',
-                        'january': isEn ? 'January' : 'Enero',
-                        'february': isEn ? 'February' : 'Febrero',
-                        'march': isEn ? 'March' : 'Marzo',
-                        'april': isEn ? 'April' : 'Abril',
-                        'june': isEn ? 'June' : 'Junio',
-                        'july': isEn ? 'July' : 'Julio',
-                        'august': isEn ? 'August' : 'Agosto',
-                        'september': isEn ? 'September' : 'Septiembre',
-                        'october': isEn ? 'October' : 'Octubre',
-                        'november': isEn ? 'November' : 'Noviembre',
-                        'december': isEn ? 'December' : 'Diciembre'
-                    };
-
-                    // Si es formato tipo "Lun 18/08" o "Mon 18/08" o "Lunes 18/08"
-                    const parts = str.split(' ');
-                    if (parts.length === 2 && parts[1].includes('/')) {
-                        const prefix = parts[0].toLowerCase().replace('.', '');
-                        if (dayMap[prefix]) {
-                            return `${dayMap[prefix]} ${parts[1]}`;
-                        }
-                    }
-
-                    // Si es solo mes tipo "Ene" o "Jan" o "Enero"
-                    const lower = str.toLowerCase().replace('.', '');
-                    if (monthMap[lower]) {
-                        return monthMap[lower];
-                    }
-                    if (dayMap[lower]) {
-                        return dayMap[lower];
-                    }
-                    
-                    // Si es tipo "Week 1 (18/08)" o "Semana 1 (18/08)"
-                    if (str.toLowerCase().startsWith('week ') || str.toLowerCase().startsWith('semana ')) {
-                        const num = str.match(/\d+/);
-                        const suffix = str.includes('(') ? ' ' + str.substring(str.indexOf('(')) : '';
-                        return (isEn ? 'Week ' : 'Semana ') + (num ? num[0] : '') + suffix;
-                    }
-
-                    if (str.includes('-')) {
-                        const p = str.split('-');
-                        if (p.length === 3) return p[2] + '/' + p[1];
-                    }
-
-                    return str;
-                },
-
-                initVentas(data) {
-                    const canvas = document.getElementById('repVentasChart');
-                    if (!canvas) return;
-                    const existing = Chart.getChart(canvas);
-                    if (existing) existing.destroy();
-                    const ctx = canvas.getContext('2d');
-                    const isEn = (Alpine.store('i18n')?.locale || localStorage.getItem('vc_locale')) === 'en';
-                    const rawLabels = data.ventasLabels || [];
-                    const formattedLabels = rawLabels.map(l => this.formatChartLabel(l, isEn));
-
-                    const labelText = Alpine.store('i18n')?.t('report.revenue') || (isEn ? 'Revenue (S/)' : 'Ingresos (S/)');
-
-                    this.c1 = new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: formattedLabels,
-                            datasets: [{
-                                label: labelText,
-                                data: data.ventasData || [],
-                                borderColor: '#10b981',
-                                backgroundColor: 'rgba(16, 185, 129, 0.08)',
-                                borderWidth: 2.5,
-                                fill: true,
-                                tension: 0.35,
-                                pointRadius: 4,
-                                pointHoverRadius: 7,
-                                pointBackgroundColor: '#10b981',
-                                pointHoverBackgroundColor: '#10b981',
-                                pointHoverBorderColor: '#ffffff',
-                                pointHoverBorderWidth: 2,
-                                hitRadius: 20,
-                                pointHitRadius: 20,
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            interaction: {
-                                mode: 'index',
-                                intersect: false
-                            },
-                            plugins: {
-                                legend: { display: false },
-                                tooltip: {
-                                    enabled: true,
-                                    mode: 'index',
-                                    intersect: false,
-                                    backgroundColor: 'rgba(24, 24, 27, 0.95)',
-                                    titleColor: '#ffffff',
-                                    bodyColor: '#e4e4e7',
-                                    borderColor: 'rgba(255, 255, 255, 0.1)',
-                                    borderWidth: 1,
-                                    padding: 10,
-                                    cornerRadius: 8,
-                                    callbacks: {
-                                        title: function(items) {
-                                            if (!items || !items.length) return '';
-                                            return items[0].label || '';
-                                        },
-                                        label: function(c) {
-                                            const val = c.raw !== undefined ? c.raw : (c.parsed?.y !== undefined ? c.parsed.y : 0);
-                                            return ' ' + labelText + ': S/ ' + Number(val).toFixed(2);
-                                        }
-                                    }
-                                }
-                            },
-                            scales: {
-                                x: { grid: { display: false }, ticks: { font: { family: 'Plus Jakarta Sans', size: 10 }, color: '#71717a' } },
-                                y: { beginAtZero: true, grid: { color: 'rgba(113, 113, 122, 0.08)' }, ticks: { font: { family: 'Plus Jakarta Sans', size: 10 }, color: '#71717a' } }
-                            }
-                        }
-                    });
-                },
-
-                initCitas(data) {
-                    const canvas = document.getElementById('repCitasChart');
-                    if (!canvas) return;
-                    const existing = Chart.getChart(canvas);
-                    if (existing) existing.destroy();
-                    const ctx = canvas.getContext('2d');
-                    const isEn = (Alpine.store('i18n')?.locale || localStorage.getItem('vc_locale')) === 'en';
-
-                    this.c2 = new Chart(ctx, {
-                        type: 'doughnut',
-                        data: {
-                            labels: [
-                                Alpine.store('i18n')?.t('status.completed') || (isEn ? 'Completed' : 'Completadas'),
-                                Alpine.store('i18n')?.t('status.cancelled') || (isEn ? 'Cancelled' : 'Canceladas'),
-                                Alpine.store('i18n')?.t('status.pending') || (isEn ? 'Pending' : 'Pendientes')
-                            ],
-                            datasets: [{
-                                data: data.citasData || [0, 0, 0],
-                                backgroundColor: ['#10b981', '#ef4444', '#8b5cf6'],
-                                borderWidth: 2,
-                                borderColor: 'transparent'
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: { 
-                                    position: 'bottom',
-                                    labels: { font: { family: 'Plus Jakarta Sans', weight: '600', size: 11 }, color: '#71717a' }
-                                },
-                                tooltip: {
-                                    enabled: true,
-                                    backgroundColor: 'rgba(24, 24, 27, 0.95)',
-                                    titleColor: '#ffffff',
-                                    bodyColor: '#e4e4e7',
-                                    borderColor: 'rgba(255, 255, 255, 0.1)',
-                                    borderWidth: 1,
-                                    padding: 10,
-                                    cornerRadius: 8,
-                                    callbacks: {
-                                        label: function(c) {
-                                            const val = c.raw !== undefined ? c.raw : (c.parsed !== undefined ? c.parsed : 0);
-                                            const apptText = Alpine.store('i18n')?.t('sidebar.appointments') || (isEn ? 'appointments' : 'citas');
-                                            return ' ' + (c.label || '') + ': ' + val + ' ' + apptText;
-                                        }
-                                    }
-                                }
-                            },
-                            cutout: '70%'
-                        }
-                    });
-                },
-
-                initTopProductos(data) {
-                    const canvas = document.getElementById('repTopProdChart');
-                    if (!canvas) return;
-                    const existing = Chart.getChart(canvas);
-                    if (existing) existing.destroy();
-                    const ctx = canvas.getContext('2d');
-                    const isEn = (Alpine.store('i18n')?.locale || localStorage.getItem('vc_locale')) === 'en';
-
-                    this.c3 = new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: (data.topProductosLabels || []).map(l => l.length > 22 ? l.substring(0, 22) + '...' : l),
-                            datasets: [{
-                                label: Alpine.store('i18n')?.t('report.revenue') || (isEn ? 'Revenue (S/)' : 'Total (S/)'),
-                                data: data.topProductosData || [],
-                                backgroundColor: '#3b82f6',
-                                borderRadius: 6,
-                                maxBarThickness: 36
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: { display: false },
-                                tooltip: {
-                                    enabled: true,
-                                    backgroundColor: 'rgba(24, 24, 27, 0.95)',
-                                    titleColor: '#ffffff',
-                                    bodyColor: '#e4e4e7',
-                                    borderColor: 'rgba(255, 255, 255, 0.1)',
-                                    borderWidth: 1,
-                                    padding: 10,
-                                    cornerRadius: 8,
-                                    callbacks: {
-                                        label: function(c) {
-                                            const val = c.raw !== undefined ? c.raw : (c.parsed?.y !== undefined ? c.parsed.y : 0);
-                                            const totalText = Alpine.store('i18n')?.t('report.revenue') || (isEn ? 'Revenue' : 'Total');
-                                            return ' ' + totalText + ': S/ ' + Number(val).toFixed(2);
-                                        }
-                                    }
-                                }
-                            },
-                            scales: {
-                                x: { grid: { display: false }, ticks: { font: { family: 'Plus Jakarta Sans', size: 10 }, color: '#71717a' } },
-                                y: { beginAtZero: true, grid: { color: 'rgba(113, 113, 122, 0.08)' }, ticks: { font: { family: 'Plus Jakarta Sans', size: 10 }, color: '#71717a' } }
-                            }
-                        }
-                    });
-                },
-
-                initPagos(data) {
-                    const canvas = document.getElementById('repPagosChart');
-                    if (!canvas) return;
-                    const existing = Chart.getChart(canvas);
-                    if (existing) existing.destroy();
-                    const ctx = canvas.getContext('2d');
-                    const isEn = (Alpine.store('i18n')?.locale || localStorage.getItem('vc_locale')) === 'en';
-                    
-                    const labels = isEn 
-                        ? ['Cash', 'Card', 'Yape / Plin', 'Bank Transfer']
-                        : ['Efectivo', 'Tarjeta', 'Yape / Plin', 'Transferencia'];
-
-                    this.c4 = new Chart(ctx, {
-                        type: 'doughnut',
-                        data: {
-                            labels: labels,
-                            datasets: [{
-                                data: data.pagosData || [0, 0, 0, 0],
-                                backgroundColor: ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b'],
-                                borderWidth: 2,
-                                borderColor: 'transparent'
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: { 
-                                    position: 'bottom',
-                                    labels: { font: { family: 'Plus Jakarta Sans', weight: '600', size: 11 }, color: '#71717a' }
-                                },
-                                tooltip: {
-                                    enabled: true,
-                                    backgroundColor: 'rgba(24, 24, 27, 0.95)',
-                                    titleColor: '#ffffff',
-                                    bodyColor: '#e4e4e7',
-                                    borderColor: 'rgba(255, 255, 255, 0.1)',
-                                    borderWidth: 1,
-                                    padding: 10,
-                                    cornerRadius: 8,
-                                    callbacks: {
-                                        label: function(c) {
-                                            const val = c.raw !== undefined ? c.raw : (c.parsed !== undefined ? c.parsed : 0);
-                                            return ' ' + (c.label || '') + ': S/ ' + Number(val).toFixed(2);
-                                        }
-                                    }
-                                }
-                            },
-                            cutout: '65%'
-                        }
-                    });
-                }
-            };
-        };
-
-        if (window.Alpine) {
-            window.Alpine.data('advancedReportCharts', window.advancedReportCharts);
-        } else {
-            document.addEventListener('alpine:init', () => {
-                window.Alpine.data('advancedReportCharts', window.advancedReportCharts);
-            });
-        }
-    }
-</script>

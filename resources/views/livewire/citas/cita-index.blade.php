@@ -184,10 +184,10 @@
                     <h2 class="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-100 ml-2 tracking-tight capitalize" x-text="currentTitle"></h2>
                 </div>
 
-                {{-- Selector de Períodos: Dropdown Custom en vez de botones --}}
+                {{-- Selector de Períodos: Dropdown Custom sincronizado con FullCalendar --}}
                 <div class="flex items-center gap-2">
                     <span class="text-xs font-semibold text-zinc-400 dark:text-zinc-500 hidden sm:inline" x-text="$store.i18n.locale === 'en' ? 'Period:' : 'Período:'"></span>
-                    <div class="w-44" x-bind:key="currentView">
+                    <div class="w-44">
                         <x-vc-dropdown
                             :options="[
                                 ['value' => 'timeGridDay', 'label' => 'citas.dayView', 'icon' => 'calendar_view_day'],
@@ -195,11 +195,11 @@
                                 ['value' => 'dayGridMonth', 'label' => 'citas.monthView', 'icon' => 'calendar_view_month'],
                                 ['value' => 'listWeek', 'label' => 'citas.listView', 'icon' => 'list_alt'],
                             ]"
-                            x-bind:selected="currentView"
+                            x-bind:data-selected="currentView"
                             placeholder="citas.weekView"
                             icon="calendar_month"
-                            @input="changeView($event.detail)"
-                            @change="changeView($event.detail)"
+                            @input="changeView($event.detail || $event.target?.value || $event)"
+                            @change="changeView($event.detail || $event.target?.value || $event)"
                         />
                     </div>
                 </div>

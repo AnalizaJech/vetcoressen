@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="{{ $lang ?? request()->query('lang', 'es') }}">
 <head>
 @php
     $clinic = \App\Models\Clinic::first();
@@ -13,10 +13,38 @@
             $logoSrc = 'data:' . $logoMime . ';base64,' . $logoData;
         }
     }
+
+    if (!isset($t) || !is_callable($t)) {
+        $langCode = $lang ?? request()->query('lang', 'es');
+        $jsonPath = public_path("locales/{$langCode}.json");
+        $translations = file_exists($jsonPath) ? json_decode(file_get_contents($jsonPath), true) : [];
+        $t = function ($key, $default = null) use ($translations) {
+            $keys = explode('.', $key);
+            $val = $translations;
+            foreach ($keys as $k) {
+                if (isset($val[$k])) {
+                    $val = $val[$k];
+                } else {
+                    return $default !== null ? $default : $key;
+                }
+            }
+            return is_string($val) ? $val : ($default !== null ? $default : $key);
+        };
+    }
+
+    $periodoKey = match($periodo ?? 'mes_actual') {
+        'hoy' => 'report.today',
+        'semana_actual' => 'report.thisWeek',
+        'mes_actual' => 'report.thisMonth',
+        'anio_actual' => 'report.thisYear',
+        'personalizado' => 'report.custom',
+        default => 'report.thisMonth',
+    };
+    $periodoLabel = strtoupper($t($periodoKey, str_replace('_', ' ', $periodo ?? '')));
 @endphp
 
     <meta charset="utf-8">
-    <title>Reporte Estadístico - {{ strtoupper(str_replace('_', ' ', $periodo)) }}</title>
+    <title>{{ $t('report.executiveReport', 'Reporte Estadístico') }} - {{ $periodoLabel }}</title>
     <style>
         @page {
             margin: 15mm 14mm 15mm 14mm;
@@ -85,7 +113,7 @@
             text-align: right;
         }
         .record-number {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
             color: #065f46;
             margin: 0;
@@ -243,7 +271,7 @@
                         <img src="{{ $logoSrc }}" alt="Logo" style="max-height: 38px; margin-bottom: 3px;">
                     @endif
                     <h1 class="clinic-name">{{ $clinic->name ?? config('app.name', 'VETCORESSEN') }}</h1>
-                    <p class="doc-type">Reporte Estadístico Ejecutivo</p>
+                    <p class="doc-type">{{ $t('report.executiveReport', 'Reporte Estadístico Ejecutivo') }}</p>
                     <div class="clinic-details">
                         @if($clinic && $clinic->address) {{ $clinic->address }} &bull; @endif
                         @if($clinic && $clinic->phone) Tel: {{ $clinic->phone }} &bull; @endif
@@ -252,46 +280,46 @@
                 </td>
                 <td class="header-right">
                     <div class="record-badge">
-                        <p class="record-number">{{ strtoupper(str_replace('_', ' ', $periodo)) }}</p>
-                        <p class="record-date">Rango: <strong>{{ $startDate->format('d/m/Y') }} al {{ $endDate->format('d/m/Y') }}</strong></p>
+                        <p class="record-number">{{ $periodoLabel }}</p>
+                        <p class="record-date">{{ $t('report.range', 'Rango') }}: <strong>{{ $startDate->format('d/m/Y') }} {{ $t('report.to', 'al') }} {{ $endDate->format('d/m/Y') }}</strong></p>
                     </div>
                 </td>
             </tr>
         </table>
 
         {{-- Resumen Financiero --}}
-        <div class="section-title">Resumen Financiero y Operativo</div>
+        <div class="section-title">{{ $t('report.financialSummary', 'Resumen Financiero y Operativo') }}</div>
         <table class="kpi-table">
             <tr>
                 <td class="kpi-col-left">
                     <div class="kpi-card">
                         <div class="kpi-value">S/ {{ number_format($ventasPeriodo, 2) }}</div>
-                        <div class="kpi-label">Ingresos Totales ({{ $totalVentasCount }} Ventas)</div>
+                        <div class="kpi-label">{{ $t('report.totalRevenue', 'Ingresos Totales') }} ({{ $totalVentasCount }} {{ $t('report.sales', 'Ventas') }})</div>
                     </div>
                 </td>
                 <td class="kpi-col-right">
                     <div class="kpi-card blue">
                         <div class="kpi-value">S/ {{ number_format($ticketPromedio, 2) }}</div>
-                        <div class="kpi-label">Ticket Promedio por Venta</div>
+                        <div class="kpi-label">{{ $t('report.averageTicket', 'Ticket Promedio por Venta') }}</div>
                     </div>
                 </td>
             </tr>
         </table>
 
         {{-- Rendimiento de Citas --}}
-        <div class="section-title">Rendimiento de Gestión Médica</div>
+        <div class="section-title">{{ $t('report.medicalSummary', 'Rendimiento de Gestión Médica') }}</div>
         <table class="kpi-table">
             <tr>
                 <td class="kpi-col-left">
                     <div class="kpi-card blue">
                         <div class="kpi-value">{{ $totalCitas }}</div>
-                        <div class="kpi-label">Total Citas Registradas</div>
+                        <div class="kpi-label">{{ $t('report.totalAppointments', 'Total Citas Registradas') }}</div>
                     </div>
                 </td>
                 <td class="kpi-col-right">
                     <div class="kpi-card">
                         <div class="kpi-value">{{ $citasCompletadas }}</div>
-                        <div class="kpi-label">Citas Atendidas / Completadas</div>
+                        <div class="kpi-label">{{ $t('report.attendedAppointments', 'Citas Atendidas / Completadas') }}</div>
                     </div>
                 </td>
             </tr>
@@ -299,13 +327,13 @@
                 <td class="kpi-col-left">
                     <div class="kpi-card purple">
                         <div class="kpi-value">{{ $citasPendientes }}</div>
-                        <div class="kpi-label">Citas Pendientes / En Progreso</div>
+                        <div class="kpi-label">{{ $t('report.pendingAppointments', 'Citas Pendientes / En Progreso') }}</div>
                     </div>
                 </td>
                 <td class="kpi-col-right">
                     <div class="kpi-card red">
                         <div class="kpi-value">{{ $citasCanceladas }}</div>
-                        <div class="kpi-label">Citas Canceladas</div>
+                        <div class="kpi-label">{{ $t('report.cancelledAppointments', 'Citas Canceladas') }}</div>
                     </div>
                 </td>
             </tr>
@@ -313,14 +341,14 @@
 
         {{-- Top Productos --}}
         @if(count($topDetalles) > 0)
-        <div class="section-title">Top Productos y Servicios Más Vendidos</div>
+        <div class="section-title">{{ $t('report.topProductsTitle', 'Top Productos y Servicios Más Vendidos') }}</div>
         <table class="data-table">
             <thead>
                 <tr>
                     <th style="width: 30px; text-align: center;">#</th>
-                    <th>Producto / Servicio</th>
-                    <th style="text-align: center; width: 80px;">Cant. Vendida</th>
-                    <th style="text-align: right; width: 100px;">Total Facturado</th>
+                    <th>{{ $t('form.product', 'Producto / Servicio') }}</th>
+                    <th style="text-align: center; width: 80px;">{{ $t('report.qtySold', 'Cant. Vendida') }}</th>
+                    <th style="text-align: right; width: 100px;">{{ $t('report.totalInvoiced', 'Total Facturado') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -337,44 +365,45 @@
         @endif
 
         {{-- Detalle de Ventas --}}
-        <div class="section-title">Registro de Ventas del Periodo</div>
+        <div class="section-title">{{ $t('report.salesRegister', 'Registro de Ventas del Periodo') }}</div>
         @if(count($sales) > 0)
         <table class="data-table">
             <thead>
                 <tr>
-                    <th style="width: 60px;">N° Recibo</th>
-                    <th style="width: 90px;">Fecha y Hora</th>
-                    <th>Cliente</th>
-                    <th style="width: 90px;">Método Pago</th>
-                    <th style="width: 70px; text-align: right;">Total</th>
-                    <th style="width: 65px; text-align: center;">Estado</th>
+                    <th style="width: 60px;">{{ $t('report.receiptNo', 'N° Recibo') }}</th>
+                    <th style="width: 90px;">{{ $t('report.dateTime', 'Fecha y Hora') }}</th>
+                    <th>{{ $t('report.client', 'Cliente') }}</th>
+                    <th style="width: 90px;">{{ $t('report.paymentMethod', 'Método Pago') }}</th>
+                    <th style="width: 70px; text-align: right;">{{ $t('report.total', 'Total') }}</th>
+                    <th style="width: 65px; text-align: center;">{{ $t('report.status', 'Estado') }}</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($sales->take(20) as $sale)
                 @php
                     $statusClass = $sale->status === 'PAGADO' ? 'badge-success' : ($sale->status === 'PENDIENTE' ? 'badge-warning' : 'badge-danger');
+                    $statusName = $t('payment.' . strtolower($sale->status), $sale->status);
                 @endphp
                 <tr>
                     <td><strong>#{{ str_pad($sale->id, 6, '0', STR_PAD_LEFT) }}</strong></td>
                     <td>{{ $sale->created_at->format('d/m/Y H:i') }}</td>
-                    <td>{{ $sale->cliente?->nombre_completo ?? 'Cliente General' }}</td>
-                    <td>{{ str_replace('_', ' ', $sale->payment_method) }}</td>
+                    <td>{{ $sale->cliente?->nombre_completo ?? $t('report.walkInCustomer', 'Cliente General') }}</td>
+                    <td>{{ $t('payment.' . strtolower($sale->payment_method), str_replace('_', ' ', $sale->payment_method)) }}</td>
                     <td style="text-align: right;"><strong>S/ {{ number_format($sale->total, 2) }}</strong></td>
-                    <td style="text-align: center;"><span class="badge {{ $statusClass }}">{{ $sale->status }}</span></td>
+                    <td style="text-align: center;"><span class="badge {{ $statusClass }}">{{ $statusName }}</span></td>
                 </tr>
                 @endforeach
             </tbody>
         </table>
         @if(count($sales) > 20)
-            <p style="font-size: 8px; color: #64748b; text-align: center; margin: 2px 0 6px 0;">(Mostrando las primeras 20 ventas. Use la exportación CSV para el archivo completo)</p>
+            <p style="font-size: 8px; color: #64748b; text-align: center; margin: 2px 0 6px 0;">{{ $t('report.showingFirst20', '(Mostrando las primeras 20 ventas. Use la exportación Excel para el archivo completo)') }}</p>
         @endif
         @else
-        <div class="empty-state">No se registraron ventas en el periodo seleccionado.</div>
+        <div class="empty-state">{{ $t('report.noSalesPeriod', 'No se registraron ventas en el periodo seleccionado.') }}</div>
         @endif
 
         <div class="footer-disclaimer">
-            Documento generado automáticamente por {{ config('app.name', 'VETCORESSEN') }} el {{ now()->format('d/m/Y H:i') }}. &bull; Reporte Confidencial
+            {{ $t('report.generatedBy', 'Documento generado automáticamente por') }} {{ config('app.name', 'VETCORESSEN') }} {{ $t('misc.on_date', 'el') }} {{ now()->format('d/m/Y H:i') }}. &bull; {{ $t('report.confidentialReport', 'Reporte Confidencial') }}
         </div>
     </div>
 </body>

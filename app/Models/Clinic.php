@@ -21,6 +21,11 @@ class Clinic extends Model
         return ['is_active' => 'boolean'];
     }
 
+    public function getSimboloMonedaAttribute(): string
+    {
+        return ($this->moneda_principal ?? 'PEN') === 'USD' ? '$' : 'S/';
+    }
+
     public function sucursales(): HasMany
     {
         return $this->hasMany(Branch::class);

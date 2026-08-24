@@ -18,7 +18,7 @@
         open: false,
         search: '',
         rawOptions: {{ json_encode($options) }},
-        selectedValue: '{{ (string) $selected }}',
+        selectedValue: @if($attributes->wire('model')->value()) @entangle($attributes->wire('model')) @else '{{ (string) $selected }}' @endif,
         localeTrigger: 0,
         init() {
             window.addEventListener('language-changed', () => {
@@ -53,7 +53,7 @@
                 'citas.listView': isEs ? 'Lista Agenda' : 'Agenda List',
                 'form.select': isEs ? 'Seleccionar...' : 'Select...',
                 'dashboard.filter': isEs ? 'Período' : 'Period',
-                'dashboard.lastWeek': isEs ? 'Última Semana' : 'Last Week',
+                'dashboard.lastWeek': isEs ? 'Esta Semana' : 'This Week',
                 'report.today': isEs ? 'Hoy' : 'Today',
                 'report.thisWeek': isEs ? 'Esta Semana' : 'This Week',
                 'report.thisMonth': isEs ? 'Este Mes' : 'This Month',
@@ -87,7 +87,7 @@
         },
         get displayLabel() {
             let opts = this.optionsList;
-            let currentVal = this.selectedValue !== '' ? this.selectedValue : (this.$el?.dataset?.selected || '{{ (string) $selected }}');
+            let currentVal = (this.selectedValue !== null && this.selectedValue !== undefined) ? String(this.selectedValue) : (this.$el?.dataset?.selected || '{{ (string) $selected }}');
             let selOpt = opts.find(o => String(o.value) === String(currentVal));
             if (selOpt) {
                 return this.translateKey(selOpt.label);
@@ -96,7 +96,7 @@
         },
         get isPlaceholder() {
             let opts = this.optionsList;
-            let currentVal = this.selectedValue !== '' ? this.selectedValue : (this.$el?.dataset?.selected || '{{ (string) $selected }}');
+            let currentVal = (this.selectedValue !== null && this.selectedValue !== undefined) ? String(this.selectedValue) : (this.$el?.dataset?.selected || '{{ (string) $selected }}');
             return !opts.some(o => String(o.value) === String(currentVal));
         },
         get filteredOptions() {
@@ -110,17 +110,28 @@
             });
         },
         selectOption(val, lbl) {
-            this.selectedValue = String(val);
+            this.selectedValue = val;
             if (this.$el) this.$el.dataset.selected = String(val);
             this.search = '';
             this.open = false;
             
             @if($attributes->wire('model')->value())
-            $wire.set('{{ $attributes->wire('model')->value() }}', val);
+            try {
+                const wireTarget = (typeof this.$wire !== 'undefined' && this.$wire) ? this.$wire : ((typeof $wire !== 'undefined' && $wire) ? $wire : null);
+                if (wireTarget) {
+                    wireTarget.set('{{ $attributes->wire('model')->value() }}', val, {{ $attributes->wire('model')->hasModifier('live') ? 'true' : 'false' }});
+                }
+            } catch(e) {
+                console.error('Error updating wire model:', e);
+            }
             @endif
 
             this.$dispatch('input', val);
             this.$dispatch('change', val);
+            if (this.$el) {
+                this.$el.dispatchEvent(new CustomEvent('input', { detail: val, bubbles: true }));
+                this.$el.dispatchEvent(new CustomEvent('change', { detail: val, bubbles: true }));
+            }
         }
     }"
     @click.outside="open = false; search = ''"

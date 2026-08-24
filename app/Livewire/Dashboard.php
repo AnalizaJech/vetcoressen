@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Appointment;
+use App\Models\Clinic;
 use App\Models\Customer;
 use App\Models\Pet;
 use App\Models\Product;
@@ -18,9 +19,8 @@ use Livewire\Component;
 #[Title('Dashboard')]
 class Dashboard extends Component
 {
-    public ?string $filtroTiempo = 'semana'; // 'hoy', 'semana', 'mes', 'anio' (Ingresos)
-    public ?string $filtroTiempoCitas = 'hoy'; // 'hoy', 'semana', 'mes', 'anio' (Lista de citas)
-    public ?string $filtroAtenciones = 'semana'; // 'hoy', 'semana', 'mes', 'anio' (Gráfico de atenciones)
+    // Filtro global de periodo - Aplica a TODAS las secciones del dashboard
+    public ?string $filtroTiempo = 'semana'; // 'hoy', 'semana', 'mes', 'anio'
 
     public array $atencionesGrafico = [];
     public array $ingresosSemana = [];
@@ -38,6 +38,7 @@ class Dashboard extends Component
         $this->atencionesGrafico = $this->obtenerAtencionesGrafico();
     }
 
+    // Al cambiar el filtro global, se recalculan TODOS los datos y gráficos
     public function updatedFiltroTiempo(): void
     {
         $fechaInicio = match ($this->filtroTiempo) {
@@ -47,35 +48,13 @@ class Dashboard extends Component
             'anio' => Carbon::today()->startOfYear(),
             default => Carbon::today()->subDays(6),
         };
-        $ingresosGrafico = $this->obtenerIngresosGrafico($fechaInicio, Carbon::today());
-        $this->ingresosSemana = $ingresosGrafico->toArray();
-        $this->dispatch('dashboard-charts-updated', [
-            'atenciones' => $this->obtenerAtencionesGrafico(),
-            'ingresos' => $this->ingresosSemana,
-        ]);
-    }
-
-    public function updatedFiltroAtenciones(): void
-    {
         $this->atencionesGrafico = $this->obtenerAtencionesGrafico();
-        $fechaInicio = match ($this->filtroTiempo) {
-            'hoy' => Carbon::today(),
-            'semana' => Carbon::today()->startOfWeek(),
-            'mes' => Carbon::today()->startOfMonth(),
-            'anio' => Carbon::today()->startOfYear(),
-            default => Carbon::today()->subDays(6),
-        };
         $ingresosGrafico = $this->obtenerIngresosGrafico($fechaInicio, Carbon::today());
         $this->ingresosSemana = $ingresosGrafico->toArray();
         $this->dispatch('dashboard-charts-updated', [
             'atenciones' => $this->atencionesGrafico,
             'ingresos' => $this->ingresosSemana,
         ]);
-    }
-
-    public function updatedFiltroTiempoCitas(): void
-    {
-        // Se recalcula automáticamente en render()
     }
 
     public function render()
@@ -85,7 +64,7 @@ class Dashboard extends Component
         $ahora = Carbon::now();
         $enDosHoras = Carbon::now()->addHours(2);
 
-        // 1. KPI: Ingresos (según filtro)
+        // 1. KPI: Ingresos del periodo seleccionado
         $fechaInicio = match ($this->filtroTiempo) {
             'hoy' => Carbon::today(),
             'semana' => Carbon::today()->startOfWeek(),
@@ -94,15 +73,36 @@ class Dashboard extends Component
             default => Carbon::today()->subDays(6),
         };
 
-        $ingresosDia = Sale::where('created_at', '>=', $fechaInicio)
+        $ventasPeriodo = Sale::where('created_at', '>=', $fechaInicio)
             ->where('created_at', '<=', $hoy->copy()->endOfDay())
             ->where('status', 'PAGADO')
             ->sum('total');
 
-        // 2. KPI: Citas pendientes de hoy
-        $citasPendientes = Appointment::whereDate('fecha_hora', $hoy)
-            ->whereIn('status', ['PENDIENTE', 'CONFIRMADA'])
+        $totalVentasPeriodo = Sale::where('created_at', '>=', $fechaInicio)
+            ->where('created_at', '<=', $hoy->copy()->endOfDay())
+            ->where('status', 'PAGADO')
             ->count();
+
+        // 2. KPI: Citas según periodo
+        $fechaInicioCitas = match ($this->filtroTiempo) {
+            'hoy' => Carbon::today(),
+            'semana' => Carbon::today()->startOfWeek(),
+            'mes' => Carbon::today()->startOfMonth(),
+            'anio' => Carbon::today()->startOfYear(),
+            default => Carbon::today(),
+        };
+
+        $fechaFinCitas = match ($this->filtroTiempo) {
+            'hoy' => Carbon::today()->endOfDay(),
+            'semana' => Carbon::today()->endOfWeek(),
+            'mes' => Carbon::today()->endOfMonth(),
+            'anio' => Carbon::today()->endOfYear(),
+            default => Carbon::today()->endOfDay(),
+        };
+
+        $citasPeriodoCount = Appointment::whereBetween('fecha_hora', [$fechaInicioCitas, $fechaFinCitas])->count();
+        $citasCompletadasPeriodo = Appointment::whereBetween('fecha_hora', [$fechaInicioCitas, $fechaFinCitas])->where('status', 'COMPLETADA')->count();
+        $citasPendientesPeriodo = Appointment::whereBetween('fecha_hora', [$fechaInicioCitas, $fechaFinCitas])->whereIn('status', ['PENDIENTE', 'CONFIRMADA'])->count();
 
         // 3. KPI: Alertas de inventario (stock actual <= stock mínimo)
         $productosEnAlerta = Product::where('clinic_id', $clinicId)
@@ -129,23 +129,7 @@ class Dashboard extends Component
             ->whereDate('fecha_hora', '<=', $hoy)
             ->count();
 
-        // 6. Citas programadas
-        $fechaInicioCitas = match ($this->filtroTiempoCitas) {
-            'hoy' => Carbon::today(),
-            'semana' => Carbon::today()->startOfWeek(),
-            'mes' => Carbon::today()->startOfMonth(),
-            'anio' => Carbon::today()->startOfYear(),
-            default => Carbon::today(),
-        };
-
-        $fechaFinCitas = match ($this->filtroTiempoCitas) {
-            'hoy' => Carbon::today()->endOfDay(),
-            'semana' => Carbon::today()->endOfWeek(),
-            'mes' => Carbon::today()->endOfMonth(),
-            'anio' => Carbon::today()->endOfYear(),
-            default => Carbon::today()->endOfDay(),
-        };
-
+        // 6. Citas programadas en el periodo
         $citasHoy = Appointment::with(['mascota', 'veterinario'])
             ->whereBetween('fecha_hora', [$fechaInicioCitas, $fechaFinCitas])
             ->whereIn('status', ['PENDIENTE', 'CONFIRMADA', 'EN_PROGRESO'])
@@ -160,7 +144,7 @@ class Dashboard extends Component
             ->orderBy('fecha_hora')
             ->get();
 
-        // Últimas 5 ventas
+        // Últimas 5 ventas del periodo
         $ultimasVentas = Sale::with(['cliente', 'cajero'])
             ->where('created_at', '>=', $fechaInicio)
             ->where('created_at', '<=', $hoy->copy()->endOfDay())
@@ -185,20 +169,18 @@ class Dashboard extends Component
         $totalClientes = Customer::where('is_active', true)->count();
         $totalMascotas = Pet::where('fallecido', false)->count();
         $tipoCambio = app(\App\Services\CurrencyService::class)->getExchangeRate('PEN', 'USD') ?? 3.75;
-        $ventasHoy = Sale::whereDate('created_at', $hoy)->where('status', 'PAGADO')->sum('total');
-        $totalVentasHoy = Sale::whereDate('created_at', $hoy)->where('status', 'PAGADO')->count();
-        $citasHoyCount = Appointment::whereDate('fecha_hora', $hoy)->count();
-        $citasCompletadasHoy = Appointment::whereDate('fecha_hora', $hoy)->where('status', 'COMPLETADA')->count();
         $cajaAbierta = \App\Models\CashRegister::where('status', 'ABIERTA')->first();
+        $clinic = Clinic::first();
+        $simboloMoneda = $clinic?->simbolo_moneda ?? 'S/';
 
         return view('livewire.dashboard', [
-            'ingresosDia'         => $ingresosDia,
-            'ventasHoy'           => $ventasHoy,
-            'totalVentasHoy'      => $totalVentasHoy,
-            'citasHoyCount'       => $citasHoyCount,
-            'citasCompletadasHoy' => $citasCompletadasHoy,
+            'ingresosDia'         => $ventasPeriodo,
+            'ventasHoy'           => $ventasPeriodo,
+            'totalVentasHoy'      => $totalVentasPeriodo,
+            'citasHoyCount'       => $citasPeriodoCount,
+            'citasCompletadasHoy' => $citasCompletadasPeriodo,
             'cajaAbierta'         => $cajaAbierta,
-            'citasPendientes'     => $citasPendientes,
+            'citasPendientes'     => $citasPendientesPeriodo,
             'alertasInventario'   => $alertasInventario,
             'productosEnAlerta'   => $productosEnAlerta,
             'lotesProximosVencer' => $lotesProximosVencer,
@@ -214,6 +196,7 @@ class Dashboard extends Component
             'atencionesGrafico'   => $this->atencionesGrafico,
             'enfermedadesTop'     => $enfermedadesTop,
             'sintomasTop'         => $sintomasTop,
+            'simboloMoneda'       => $simboloMoneda,
         ]);
     }
 
@@ -224,7 +207,7 @@ class Dashboard extends Component
         $labels = [];
         $keys = [];
 
-        if ($this->filtroAtenciones === 'hoy') {
+        if ($this->filtroTiempo === 'hoy') {
             // Agrupar por bloques de horas de hoy
             $horas = ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00'];
             foreach ($horas as $hora) {
@@ -242,7 +225,7 @@ class Dashboard extends Component
                     ->whereBetween('fecha_hora', [$start, $end])
                     ->count();
             }
-        } elseif ($this->filtroAtenciones === 'mes') {
+        } elseif ($this->filtroTiempo === 'mes') {
             // Agrupar por semanas de este mes (S1 a S5)
             $semanas = [
                 ['key' => 'dashboard.week1', 'fallback' => 'Semana 1'],
@@ -270,7 +253,7 @@ class Dashboard extends Component
                     ->whereBetween('fecha_hora', [$start, $end])
                     ->count();
             }
-        } elseif ($this->filtroAtenciones === 'anio') {
+        } elseif ($this->filtroTiempo === 'anio') {
             $meses = [
                 ['key' => 'dashboard.jan', 'fallback' => 'Ene'],
                 ['key' => 'dashboard.feb', 'fallback' => 'Feb'],

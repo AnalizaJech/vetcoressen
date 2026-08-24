@@ -69,12 +69,21 @@
 
             {{-- Solo Stock Bajo --}}
             <div>
-                <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5" x-text="$store.i18n.t('filter.stockStatus') || 'Estado de Stock'">
-                    Estado de Stock
+                <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5" x-text="$store.i18n.t('filter.stockStatus') || 'Stock Status'">
+                    Stock Status
                 </label>
-                <label class="flex items-center gap-2 px-3 bg-white dark:bg-vc-surface-alt rounded-xl border border-zinc-200 dark:border-zinc-700 h-10 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors" style="user-select: none;">
-                    <input type="checkbox" wire:model.live="soloStockBajo" class="rounded border-zinc-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer" />
-                    <span class="text-xs font-medium whitespace-nowrap pointer-events-none text-zinc-700 dark:text-zinc-300" x-text="$store.i18n.t('misc.lowStockOnly') || 'Solo stock bajo'">Solo stock bajo</span>
+                <label class="flex items-center gap-3 px-3 bg-white dark:bg-vc-surface-alt rounded-xl border border-zinc-200 dark:border-zinc-700 h-10 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors select-none"
+                       x-data="{ active: @entangle('soloStockBajo') }">
+                    {{-- Toggle switch premium --}}
+                    <button type="button" role="switch" 
+                            :aria-checked="active ? 'true' : 'false'"
+                            @click="active = !active"
+                            class="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:ring-offset-2 dark:focus:ring-offset-zinc-900"
+                            :class="active ? 'bg-emerald-500' : 'bg-zinc-300 dark:bg-zinc-600'">
+                        <span class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out"
+                              :class="active ? 'translate-x-4' : 'translate-x-0'"></span>
+                    </button>
+                    <span class="text-xs font-medium whitespace-nowrap pointer-events-none text-zinc-700 dark:text-zinc-300" x-text="$store.i18n.t('misc.lowStockOnly') || 'Low Stock Only'">Low Stock Only</span>
                 </label>
             </div>
         </div>

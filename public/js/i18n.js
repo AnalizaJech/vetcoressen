@@ -49,19 +49,33 @@ document.addEventListener("alpine:init", () => {
 
         t(key, fallback = null) {
             this.locale; // Ensure Alpine tracks this dependency for reactivity
-            if (!this.loaded || !this.dict) return fallback !== null ? fallback : '';
             if (!key) return fallback !== null ? fallback : '';
             
-            const keys = key.split(".");
-            let result = this.dict;
-            for (const k of keys) {
-                if (result && typeof result === "object" && k in result) {
-                    result = result[k];
-                } else {
-                    return fallback !== null ? fallback : (key.includes('.') ? key.split('.').pop().replace(/([A-Z])/g, ' $1').trim() : key);
+            if (this.loaded && this.dict) {
+                const keys = key.split(".");
+                let result = this.dict;
+                let found = true;
+                for (const k of keys) {
+                    if (result && typeof result === "object" && k in result) {
+                        result = result[k];
+                    } else {
+                        found = false;
+                        break;
+                    }
+                }
+                if (found && result !== undefined && result !== null && result !== '') {
+                    return result;
                 }
             }
-            return result;
+
+            if (fallback !== null && fallback !== undefined) {
+                return fallback;
+            }
+
+            // Auto-formatear clave camelCase a texto con mayúscula inicial
+            const lastKey = key.includes('.') ? key.split('.').pop() : key;
+            const formatted = lastKey.replace(/([A-Z])/g, ' $1').trim();
+            return formatted.charAt(0).toUpperCase() + formatted.slice(1);
         }
     });
 });
