@@ -126,7 +126,7 @@ class MascotaForm extends Component
                   ->orWhere('numero_documento', 'like', "%{$this->busquedaCliente}%")
             )
             ->orderBy('first_name')
-            ->limit(20)
+            ->orderBy('last_name')
             ->get();
 
         $especies = \App\Models\Species::orderBy('name')->get();

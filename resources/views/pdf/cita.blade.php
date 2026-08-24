@@ -256,7 +256,7 @@
                 <td class="header-right">
                     <div class="record-badge">
                         <p class="record-number">{{ $t('appointment.apptNumber', 'Nº de Cita') }}: #{{ str_pad($cita->id, 6, '0', STR_PAD_LEFT) }}</p>
-                        <p class="record-date">{{ $t('appointment.scheduledDate', 'Fecha Programada') }}: <strong>{{ $cita->fecha_hora ? $cita->fecha_hora->format('d/m/Y H:i') : $t('misc.notSpecified', 'No especificada') }}</strong></p>
+                        <p class="record-date">{{ $t('appointment.scheduledDate', 'Fecha Programada') }}: <strong>{{ $cita->fecha_hora ? $cita->fecha_hora->format('M d, Y h:i A') : $t('misc.notSpecified', 'No especificada') }}</strong></p>
                     </div>
                 </td>
             </tr>
@@ -363,7 +363,7 @@
             </div>
             
             <div class="footer-disclaimer">
-                {{ $t('report.generatedBy', 'Documento generado automáticamente por') }} {{ config('app.name', 'VETCORESSEN') }} {{ $t('misc.on_date', 'el') }} {{ now()->format('d/m/Y H:i') }}.<br>
+                {{ $t('report.generatedBy', 'Documento generado automáticamente por') }} {{ config('app.name', 'VETCORESSEN') }} {{ $t('misc.on_date', 'el') }} {{ now()->format('M d, Y h:i A') }}.<br>
                 {{ $t('report.confidentiality', 'Este comprobante es para control de citas y seguimiento clínico.') }}
             </div>
         </div>

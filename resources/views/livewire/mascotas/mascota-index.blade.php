@@ -96,12 +96,12 @@
                                 @if(in_array($mascota->gender, ['M', 'Macho']))
                                     <div class="flex items-center gap-1 text-blue-600 mt-0.5">
                                         <span class="material-symbols-outlined icon-sm">male</span>
-                                        <span class="text-sm font-medium">Macho</span>
+                                        <span class="text-sm font-medium" x-text="$store.i18n.t('form.male') || 'Male'">Male</span>
                                     </div>
                                 @elseif(in_array($mascota->gender, ['H', 'Hembra']))
                                     <div class="flex items-center gap-1 text-pink-500 mt-0.5">
                                         <span class="material-symbols-outlined icon-sm">female</span>
-                                        <span class="text-sm font-medium">Hembra</span>
+                                        <span class="text-sm font-medium" x-text="$store.i18n.t('form.female') || 'Female'">Female</span>
                                     </div>
                                 @else
                                     <span class="text-sm text-zinc-500">-</span>
@@ -119,8 +119,8 @@
 
                     {{-- Acciones --}}
                     <div class="pt-4 border-t border-zinc-100 dark:border-zinc-800 flex justify-end gap-1.5 items-center">
-                        <a href="{{ route('historias.index', ['clienteSeleccionadoId' => $mascota->customer_id, 'filtroMascota' => $mascota->name]) }}" wire:navigate class="vc-btn-action p-1.5 rounded-lg flex items-center gap-1 transition-colors hover:bg-purple-50 dark:hover:bg-purple-500/10 text-purple-600" x-bind:title="$store.i18n.t('records.title') || 'Historias Clínicas'">
-                            <span class="material-symbols-outlined text-[18px]">clinical_notes</span>
+                        <a href="{{ route('historias.index', ['mascota_id' => $mascota->id]) }}" wire:navigate class="vc-btn-action vc-btn-history" x-bind:title="$store.i18n.t('records.title') || 'Historias Clínicas'">
+                            <span class="material-symbols-outlined text-lg">clinical_notes</span>
                         </a>
                         <button type="button" class="vc-btn-action vc-btn-view" x-bind:title="$store.i18n.t('btn.view') || 'Ver'"
                             wire:click="ver({{ $mascota->id }})">
@@ -243,7 +243,7 @@
                         <span class="material-symbols-outlined text-sm">transgender</span>
                         <p class="text-xs uppercase tracking-wider font-semibold" x-text="$store.i18n.t('table.sex') || 'Sexo'">Sexo</p>
                     </div>
-                    <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100 pl-6">{{ $mascotaVer->gender === 'M' || $mascotaVer->gender === 'Macho' ? 'Macho' : 'Hembra' }}</p>
+                    <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100 pl-6" x-text="{{ in_array($mascotaVer->gender, ['M', 'Macho']) ? 'true' : 'false' }} ? ($store.i18n.t('form.male') || 'Male') : ($store.i18n.t('form.female') || 'Female')"></p>
                 </div>
                 <div>
                     <div class="flex items-center gap-2 text-zinc-500 mb-1">
@@ -255,9 +255,9 @@
                 <div>
                     <div class="flex items-center gap-2 text-zinc-500 mb-1">
                         <span class="material-symbols-outlined text-sm">cake</span>
-                        <p class="text-xs uppercase tracking-wider font-semibold" x-text="$store.i18n.t('form.birthDate') || 'F. Nacimiento'">F. Nacimiento</p>
+                        <p class="text-xs uppercase tracking-wider font-semibold" x-text="$store.i18n.t('form.birthDate') || 'Date of Birth'">Date of Birth</p>
                     </div>
-                    <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100 pl-6">{{ $mascotaVer->birth_date ? $mascotaVer->birth_date->format('d/m/Y') : '-' }}</p>
+                    <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100 pl-6">{{ $mascotaVer->birth_date ? $mascotaVer->birth_date->format('M d, Y') : '-' }}</p>
                 </div>
                 <div>
                     <div class="flex items-center gap-2 text-zinc-500 mb-1">
@@ -269,9 +269,9 @@
                 <div>
                     <div class="flex items-center gap-2 text-zinc-500 mb-1">
                         <span class="material-symbols-outlined text-sm">content_cut</span>
-                        <p class="text-xs uppercase tracking-wider font-semibold" x-text="$store.i18n.t('form.sterilized') || 'Esterilizado'">Esterilizado</p>
+                        <p class="text-xs uppercase tracking-wider font-semibold" x-text="$store.i18n.t('form.sterilized') || 'Sterilized'">Sterilized</p>
                     </div>
-                    <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100 pl-6">{{ $mascotaVer->esterilizado ? 'Sí' : 'No' }}</p>
+                    <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100 pl-6" x-text="{{ $mascotaVer->esterilizado ? 'true' : 'false' }} ? ($store.i18n.t('form.yes') || 'Yes') : ($store.i18n.t('form.no') || 'No')"></p>
                 </div>
             </div>
             

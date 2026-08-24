@@ -120,8 +120,60 @@ window.initVetCalendar = function (el, wire) {
             const isMonth = arg.view.type === 'dayGridMonth';
             const isList = arg.view.type.includes('list');
             const color = arg.event.backgroundColor || '#10b981';
-            const rawStatus = (props.status || 'PENDIENTE').toLowerCase();
-            const statusName = window.Alpine?.store('i18n')?.t('status.' + rawStatus) || props.status || 'Appointment';
+            const isEn = (window.Alpine?.store('i18n')?.locale || localStorage.getItem('vc_locale')) === 'en';
+            
+            const rawStatus = String(props.status || 'PENDIENTE').trim();
+            const statusKey = rawStatus.toLowerCase();
+            const statusMapEn = {
+                'pendiente': 'Pending',
+                'confirmada': 'Confirmed',
+                'en_progreso': 'In Progress',
+                'completada': 'Completed',
+                'cancelada': 'Cancelled',
+                'emergencia': 'Emergency',
+                'excedido': 'Overdue',
+                'overdue': 'Overdue',
+                'atendido': 'Attended',
+                'atendida': 'Attended'
+            };
+            const statusMapEs = {
+                'pendiente': 'Pendiente',
+                'confirmada': 'Confirmada',
+                'en_progreso': 'En Progreso',
+                'completada': 'Completada',
+                'cancelada': 'Cancelada',
+                'emergencia': 'Emergencia',
+                'excedido': 'Excedido',
+                'overdue': 'Excedido',
+                'atendido': 'Atendido',
+                'atendida': 'Atendida'
+            };
+            
+            let statusName = window.Alpine?.store('i18n')?.t('status.' + statusKey);
+            if (!statusName || statusName === 'status.' + statusKey || statusName === statusKey) {
+                statusName = (isEn ? statusMapEn[statusKey] : statusMapEs[statusKey]) || rawStatus;
+            }
+
+            let reasonText = props.reason || '';
+            if (isEn && reasonText) {
+                const reasonMap = {
+                    'consulta': 'Consultation',
+                    'consulta general': 'General Consultation',
+                    'vacunación': 'Vaccination',
+                    'vacunacion': 'Vaccination',
+                    'desparasitación': 'Deworming',
+                    'desparasitacion': 'Deworming',
+                    'cirugía': 'Surgery',
+                    'cirugia': 'Surgery',
+                    'control': 'Checkup',
+                    'urgencia': 'Urgency',
+                    'emergencia': 'Emergency'
+                };
+                const lowerR = reasonText.toLowerCase().trim();
+                if (reasonMap[lowerR]) {
+                    reasonText = reasonMap[lowerR];
+                }
+            }
 
             if (isList) {
                 return {
@@ -133,7 +185,7 @@ window.initVetCalendar = function (el, wire) {
                                     <span class="font-extrabold text-xs text-zinc-900 dark:text-zinc-100">${props.mascota || 'Pet'}</span>
                                     <span class="text-xs text-zinc-500 dark:text-zinc-400 font-medium ml-1">(${props.cliente || '-'})</span>
                                 </div>
-                                ${props.reason ? `<span class="text-xs text-zinc-400 dark:text-zinc-500 italic truncate max-w-xs">&bull; ${props.reason}</span>` : ''}
+                                ${reasonText ? `<span class="text-xs text-zinc-400 dark:text-zinc-500 italic truncate max-w-xs">&bull; ${reasonText}</span>` : ''}
                             </div>
                             <span class="text-[10px] px-2.5 py-1 font-bold rounded-lg uppercase tracking-wider shadow-2xs" style="background-color: ${color}15; color: ${color}; border: 1px solid ${color}30;">
                                 ${statusName}

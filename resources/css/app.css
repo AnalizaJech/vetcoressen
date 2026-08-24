@@ -291,6 +291,27 @@ select,
     border-color: rgba(239, 68, 68, 0.5);
 }
 
+.vc-btn-history {
+    background-color: rgba(147, 51, 234, 0.08);
+    color: #9333ea;
+    border-color: rgba(147, 51, 234, 0.2);
+}
+.dark .vc-btn-history, html.dark .vc-btn-history {
+    background-color: rgba(147, 51, 234, 0.12);
+    color: #c084fc;
+    border-color: rgba(147, 51, 234, 0.25);
+}
+.vc-btn-history:hover {
+    background-color: rgba(147, 51, 234, 0.2);
+    color: #7e22ce;
+    border-color: rgba(147, 51, 234, 0.4);
+}
+.dark .vc-btn-history:hover, html.dark .vc-btn-history:hover {
+    background-color: rgba(147, 51, 234, 0.25);
+    color: #e9d5ff;
+    border-color: rgba(147, 51, 234, 0.5);
+}
+
 /* ── Spinner Animado ── */
 .vc-spinner {
     animation: vc-spin 1s linear infinite;

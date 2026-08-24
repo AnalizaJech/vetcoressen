@@ -305,7 +305,7 @@
                 <td class="header-right">
                     <div class="record-badge">
                         <p class="record-number">{{ $t('report.recordNumber', 'Nº de Registro') }}: #{{ str_pad($historia->id, 6, '0', STR_PAD_LEFT) }}</p>
-                        <p class="record-date">{{ $t('report.consultDate', 'Fecha de Consulta') }}: <strong>{{ $historia->created_at->format('d/m/Y H:i') }}</strong></p>
+                        <p class="record-date">{{ $t('report.consultDate', 'Fecha de Consulta') }}: <strong>{{ $historia->created_at->format('M d, Y h:i A') }}</strong></p>
                     </div>
                 </td>
             </tr>
@@ -488,7 +488,7 @@
                             <div style="font-size: 9.5px; color: #334155; margin-bottom: 3px;">{{ $historia->notas_aclaratorias }}</div>
                         @endif
                         @if($historia->proxima_cita_recomendada)
-                            <div style="font-size: 9.5px; color: #0f172a;"><strong>{{ $t('form.recommendedNextAppt', 'Próxima Cita Recomendada') }}:</strong> {{ \Carbon\Carbon::parse($historia->proxima_cita_recomendada)->format('d/m/Y') }}</div>
+                            <div style="font-size: 9.5px; color: #0f172a;"><strong>{{ $t('form.recommendedNextAppt', 'Próxima Cita Recomendada') }}:</strong> {{ \Carbon\Carbon::parse($historia->proxima_cita_recomendada)->format('M d, Y') }}</div>
                         @endif
                     </div>
                 </td>
@@ -508,7 +508,7 @@
             </div>
             
             <div class="footer-disclaimer">
-                {{ $t('report.generatedBy', 'Documento generado automáticamente por') }} {{ config('app.name', 'VETCORESSEN') }} {{ $t('misc.on_date', 'el') }} {{ now()->format('d/m/Y H:i') }}.<br>
+                {{ $t('report.generatedBy', 'Documento generado automáticamente por') }} {{ config('app.name', 'VETCORESSEN') }} {{ $t('misc.on_date', 'el') }} {{ now()->format('M d, Y h:i A') }}.<br>
                 {{ $t('report.confidentiality', 'Este reporte es de uso exclusivamente clínico y confidencial.') }}
             </div>
         </div>

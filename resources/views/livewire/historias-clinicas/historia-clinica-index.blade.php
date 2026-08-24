@@ -291,7 +291,7 @@
                                                     <div>
                                                         <div class="flex items-center gap-2">
                                                             <span class="text-xs font-extrabold text-zinc-900 dark:text-zinc-100">
-                                                                {{ \Carbon\Carbon::parse($historia->date)->format('d/m/Y') }}
+                                                                {{ \Carbon\Carbon::parse($historia->date)->format('M d, Y') }}
                                                             </span>
                                                             <span class="badge badge-blue text-[10px]">
                                                                 {{ $historia->veterinario->name ?? 'Veterinario' }}

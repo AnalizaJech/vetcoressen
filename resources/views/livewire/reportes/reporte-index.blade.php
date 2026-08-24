@@ -525,6 +525,7 @@
                     <x-vc-date-picker 
                         wire:model.live="fecha_fin" 
                         :disabled="$periodo !== 'personalizado'"
+                        align="right"
                         placeholder="filter.endDate"
                     />
                 </div>

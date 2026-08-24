@@ -538,7 +538,7 @@
                         <div class="p-3 rounded-xl border border-zinc-100 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-800/30 flex items-center justify-between gap-3 hover:border-emerald-500/30 transition-all">
                             <div class="flex items-center gap-3 min-w-0">
                                 <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 border border-blue-200/50 dark:border-blue-500/20 flex flex-col items-center justify-center text-blue-600 dark:text-blue-400 shrink-0 font-bold">
-                                    <span class="text-[10px] leading-tight uppercase">{{ \Carbon\Carbon::parse($cita->fecha_hora)->translatedFormat('M') }}</span>
+                                    <span class="text-[10px] leading-tight uppercase" x-text="(new Date('{{ \Carbon\Carbon::parse($cita->fecha_hora)->toIso8601String() }}')).toLocaleDateString($store.i18n?.locale === 'es' ? 'es-ES' : 'en-US', { month: 'short' })">{{ \Carbon\Carbon::parse($cita->fecha_hora)->format('M') }}</span>
                                     <span class="text-xs leading-none font-extrabold">{{ \Carbon\Carbon::parse($cita->fecha_hora)->format('d') }}</span>
                                 </div>
                                 <div class="min-w-0">
@@ -548,7 +548,8 @@
                                     </h4>
                                     <p class="text-[11px] text-zinc-500 dark:text-zinc-400 flex items-center gap-1 mt-0.5">
                                         <span class="material-symbols-outlined text-[13px]">schedule</span>
-                                        {{ \Carbon\Carbon::parse($cita->fecha_hora)->format('H:i') }} - {{ $cita->motivo ?? 'Consulta' }}
+                                        {{ \Carbon\Carbon::parse($cita->fecha_hora)->format('h:i A') }} - 
+                                        <span x-text="$store.i18n.t('reason.' + '{{ strtolower(str_replace([' ', 'ó', 'í', 'á', 'é', 'ú'], ['_', 'o', 'i', 'a', 'e', 'u'], $cita->motivo ?? 'consulta')) }}') || '{{ $cita->motivo ?? 'Consultation' }}'">{{ $cita->motivo ?? 'Consultation' }}</span>
                                     </p>
                                 </div>
                             </div>
@@ -597,14 +598,14 @@
                     <div>
                         <h2 class="text-base font-extrabold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
                             <span class="material-symbols-outlined text-emerald-500">receipt_long</span>
-                            <span x-text="$store.i18n.t('dashboard.recentSales') || 'Últimas Ventas'">Últimas Ventas</span>
+                            <span x-text="$store.i18n.t('dashboard.recentSales') || 'Recent Sales'">Recent Sales</span>
                         </h2>
-                        <p class="text-xs text-zinc-400 mt-0.5" x-text="$store.i18n.t('dashboard.recentSalesSubtitle') || 'Transacciones recientes en caja'">
-                            Transacciones recientes en caja
+                        <p class="text-xs text-zinc-400 mt-0.5" x-text="$store.i18n.t('dashboard.recentSalesSubtitle') || 'Recent cash register transactions'">
+                            Recent cash register transactions
                         </p>
                     </div>
                     <a href="{{ route('caja.index') }}" wire:navigate class="px-2.5 py-1 rounded-lg text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 dark:text-emerald-300 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 border border-emerald-200/50 dark:border-emerald-800/40 transition-all flex items-center gap-1">
-                        <span x-text="$store.i18n.t('btn.viewAll') || 'Ver todas'">Ver todas</span>
+                        <span x-text="$store.i18n.t('btn.viewAll') || 'View all'">View all</span>
                         <span class="material-symbols-outlined text-xs">arrow_forward</span>
                     </a>
                 </div>
@@ -618,10 +619,10 @@
                                 </div>
                                 <div class="min-w-0">
                                     <h4 class="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate">
-                                        {{ $venta->cliente->nombre_completo ?? 'Cliente General' }}
+                                        {{ $venta->cliente->nombre_completo ?? 'General Customer' }}
                                     </h4>
                                     <p class="text-[11px] text-zinc-400">
-                                        {{ $venta->created_at->format('d/m/Y H:i') }} • {{ $venta->numero_comprobante ?? ('V-' . $venta->id) }}
+                                        {{ $venta->created_at->format('M d, Y h:i A') }} • {{ $venta->numero_comprobante ?? ('V-' . $venta->id) }}
                                     </p>
                                 </div>
                             </div>
@@ -634,7 +635,7 @@
                     @empty
                         <div class="py-12 text-center text-zinc-400 text-xs">
                             <span class="material-symbols-outlined text-3xl mb-1 text-zinc-300 dark:text-zinc-600">receipt</span>
-                            <p x-text="$store.i18n.t('dashboard.noSalesPeriod') || 'Sin ventas registradas en este período'">Sin ventas registradas en este período</p>
+                            <p x-text="$store.i18n.t('dashboard.noSalesPeriod') || 'No sales recorded in this period'">No sales recorded in this period</p>
                         </div>
                     @endforelse
                 </div>

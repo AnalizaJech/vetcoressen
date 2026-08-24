@@ -290,7 +290,7 @@
                 <td class="header-right">
                     <div class="record-badge">
                         <p class="record-number">{{ $mascota->name }} ({{ $mascota->especie->name ?? 'Mascota' }})</p>
-                        <p class="record-date">{{ $t('report.totalRecords', 'Total registros') }}: <strong>{{ $mascota->historiasClinicas->count() }}</strong> &bull; {{ now()->format('d/m/Y H:i') }}</p>
+                        <p class="record-date">{{ $t('report.totalRecords', 'Total registros') }}: <strong>{{ $mascota->historiasClinicas->count() }}</strong> &bull; {{ now()->format('M d, Y h:i A') }}</p>
                     </div>
                 </td>
             </tr>
@@ -336,7 +336,7 @@
                         <table style="width: 100%; border-collapse: collapse;">
                             <tr>
                                 <td style="width: 50%; font-weight: bold; color: #065f46; font-size: 10.5px;">
-                                    {{ $t('form.date', 'Fecha') }}: {{ $historia->date ? $historia->date->format('d/m/Y h:i A') : $historia->created_at->format('d/m/Y H:i') }}
+                                    {{ $t('form.date', 'Fecha') }}: {{ $historia->date ? $historia->date->format('M d, Y h:i A') : $historia->created_at->format('M d, Y h:i A') }}
                                 </td>
                                 <td style="width: 50%; text-align: right; color: #475569; font-size: 9px;">
                                     {{ $t('report.attendedBy', 'Atendido por') }}: <strong>{{ $historia->veterinario->name ?? 'N/A' }} {{ $historia->veterinario->last_name ?? '' }}</strong>
@@ -465,7 +465,7 @@
         {{-- Pie de Página --}}
         <div class="footer-section">
             <div class="footer-disclaimer">
-                {{ $t('report.generatedBy', 'Documento generado automáticamente por') }} {{ config('app.name', 'VETCORESSEN') }} {{ $t('misc.on_date', 'el') }} {{ now()->format('d/m/Y H:i') }}.<br>
+                {{ $t('report.generatedBy', 'Documento generado automáticamente por') }} {{ config('app.name', 'VETCORESSEN') }} {{ $t('misc.on_date', 'el') }} {{ now()->format('M d, Y h:i A') }}.<br>
                 {{ $t('report.confidentiality', 'Este historial clínico es de uso exclusivamente profesional y confidencial.') }}
             </div>
         </div>

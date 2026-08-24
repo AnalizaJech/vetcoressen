@@ -4,6 +4,8 @@
     'minDate' => null, // 'today'
     'maxDate' => null, // 'today'
     'isBirthdate' => false,
+    'disabled' => false,
+    'align' => 'left',
 ])
 
 <div
@@ -11,7 +13,9 @@
         modelValue: @entangle($attributes->wire('model')),
         minDate: '{{ $minDate }}',
         maxDate: '{{ $maxDate ?? ($isBirthdate ? 'today' : '') }}',
-        isBirthdate: {{ $isBirthdate ? 'true' : 'false' }}
+        isBirthdate: {{ $isBirthdate ? 'true' : 'false' }},
+        disabled: {{ $disabled ? 'true' : 'false' }},
+        align: '{{ $align }}'
     })"
     @click.outside="open = false; viewMode = 'days'"
     @keydown.escape.window="open = false; viewMode = 'days'"
@@ -19,7 +23,11 @@
     class="w-full"
 >
     {{-- Input disparador con icono a la izquierda --}}
-    <div class="relative w-full cursor-pointer" @click="toggleCalendar()">
+    <div 
+        class="relative w-full transition-opacity duration-150" 
+        :class="isDisabled ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'cursor-pointer'"
+        @click="if (!isDisabled) toggleCalendar()"
+    >
         @if($icon)
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-zinc-400 dark:text-zinc-500">
                 <span class="material-symbols-outlined text-[18px]">{{ $icon }}</span>
@@ -30,14 +38,16 @@
             type="text"
             readonly
             :value="formattedValue"
-            class="vc-dropdown-trigger w-full focus-visible:outline-none cursor-pointer"
+            :disabled="isDisabled"
+            class="vc-dropdown-trigger w-full focus-visible:outline-none"
+            :class="isDisabled ? 'bg-zinc-100/70 dark:bg-zinc-800/40 cursor-not-allowed' : 'cursor-pointer'"
             @if($attributes->has('x-bind:placeholder'))
                 x-bind:placeholder="{{ $attributes->get('x-bind:placeholder') }}"
             @else
                 x-bind:placeholder="placeholderText"
             @endif
             style="padding-left: {{ $icon ? '2.5rem' : '0.875rem' }}; padding-right: 0.875rem;"
-            {{ $attributes->whereDoesntStartWith('wire:model')->whereDoesntStartWith('x-bind:placeholder') }}
+            {{ $attributes->whereDoesntStartWith('wire:model')->whereDoesntStartWith('x-bind:placeholder')->whereDoesntStartWith('disabled') }}
         />
     </div>
 
@@ -51,7 +61,8 @@
         x-transition:leave-start="opacity-100 translate-y-0 scale-100"
         x-transition:leave-end="opacity-0 -translate-y-1 scale-95"
         x-cloak
-        class="absolute left-0 mt-1.5 w-72 sm:w-80 min-h-[310px] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700/80 rounded-2xl shadow-2xl p-3.5 z-[99999] isolate"
+        :class="align === 'right' ? 'right-0 left-auto' : 'left-0'"
+        class="absolute mt-1.5 w-72 sm:w-80 min-h-[310px] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700/80 rounded-2xl shadow-2xl p-3.5 z-[99999] isolate"
     >
         {{-- Botones de acción rápida --}}
         @if(!$isBirthdate)
@@ -191,6 +202,8 @@
                 minDate: config.minDate,
                 maxDate: config.maxDate,
                 isBirthdate: config.isBirthdate || false,
+                isDisabled: config.disabled || false,
+                align: config.align || 'left',
                 open: false,
                 viewMode: 'days', // 'days' | 'months' | 'years'
                 month: new Date().getMonth(),
@@ -208,6 +221,20 @@
 
                 get formattedValue() {
                     if (!this.value || typeof this.value !== 'string') return '';
+                    const parts = this.value.split('-');
+                    if (parts.length === 3) {
+                        const y = parseInt(parts[0], 10);
+                        const m = parseInt(parts[1], 10) - 1;
+                        const d = parseInt(parts[2], 10);
+                        if (!isNaN(y) && !isNaN(m) && !isNaN(d)) {
+                            const isEn = (this.$store?.i18n?.locale || localStorage.getItem('vc_locale')) === 'en';
+                            const monthsShortEn = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                            const monthsShortEs = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+                            const mStr = isEn ? monthsShortEn[m] : monthsShortEs[m];
+                            const dStr = d < 10 ? '0' + d : d;
+                            return isEn ? `${mStr} ${dStr}, ${y}` : `${dStr} ${mStr} ${y}`;
+                        }
+                    }
                     return this.value;
                 },
 
@@ -215,6 +242,16 @@
                     this.generateAvailableYears();
                     this.updateLocalization();
                     
+                    if (this.$el) {
+                        const obs = new MutationObserver(() => {
+                            const d = this.$el.hasAttribute('disabled') || this.$el.getAttribute('aria-disabled') === 'true';
+                            if (d !== this.isDisabled) {
+                                this.isDisabled = d;
+                            }
+                        });
+                        obs.observe(this.$el, { attributes: true });
+                    }
+
                     if (this.$watch) {
                         this.$watch('$store.i18n.locale', () => {
                             this.updateLocalization();

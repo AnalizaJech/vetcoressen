@@ -132,7 +132,14 @@ class ReportExportController extends Controller
         $data['lang'] = $lang;
 
         $pdf = Pdf::loadView('pdf.reporte', $data);
-        return $pdf->download('reporte_ejecutivo_' . $data['periodo'] . '_' . date('Ymd_His') . '.pdf');
+        $pdf->setPaper('a4', 'portrait');
+        $filename = 'reporte_ejecutivo_' . $data['periodo'] . '_' . date('Ymd_His') . '.pdf';
+
+        if ($request->has('download') && $request->download) {
+            return $pdf->download($filename);
+        }
+
+        return $pdf->stream($filename);
     }
 
     public function excel(Request $request)

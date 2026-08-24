@@ -1,4 +1,37 @@
 {
+    "status": {
+        "pendiente": "Pendiente",
+        "confirmada": "Confirmada",
+        "en_progreso": "En Progreso",
+        "completada": "Completada",
+        "cancelada": "Cancelada",
+        "emergencia": "Emergencia",
+        "excedido": "Excedido",
+        "overdue": "Excedido",
+        "atendido": "Atendido",
+        "atendida": "Atendida",
+        "pagado": "Pagado",
+        "anulado": "Anulado",
+        "activo": "Activo",
+        "inactivo": "Inactivo"
+    },
+    "reason": {
+        "consulta": "Consulta General",
+        "consulta_general": "Consulta General",
+        "vacunacion": "Vacunación",
+        "vacunación": "Vacunación",
+        "desparasitacion": "Desparasitación",
+        "desparasitación": "Desparasitación",
+        "cirugia": "Cirugía",
+        "cirugía": "Cirugía",
+        "control": "Control",
+        "urgencia": "Urgencia",
+        "emergencia": "Emergencia",
+        "bano_corte": "Baño y Corte",
+        "bano": "Baño",
+        "corte": "Corte",
+        "limpieza_dental": "Limpieza Dental"
+    },
     "report": {
         "title": "Reportes y Estadísticas",
         "subtitle": "Visualiza el rendimiento clínico y métricas clave",

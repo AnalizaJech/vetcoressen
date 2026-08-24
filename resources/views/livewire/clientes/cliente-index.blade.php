@@ -128,8 +128,8 @@
 
                     {{-- Acciones --}}
                     <div class="pt-4 border-t border-zinc-100 dark:border-zinc-800 flex justify-end gap-1.5 items-center">
-                        <a href="{{ route('historias.index', ['clienteSeleccionadoId' => $cliente->id]) }}" wire:navigate class="vc-btn-action p-1.5 rounded-lg flex items-center gap-1 transition-colors hover:bg-purple-50 dark:hover:bg-purple-500/10 text-purple-600" x-bind:title="$store.i18n.t('records.title') || 'Historias Clínicas'">
-                            <span class="material-symbols-outlined text-[18px]">clinical_notes</span>
+                        <a href="{{ route('historias.index', ['clienteSeleccionadoId' => $cliente->id]) }}" wire:navigate class="vc-btn-action vc-btn-history" x-bind:title="$store.i18n.t('records.title') || 'Historias Clínicas'">
+                            <span class="material-symbols-outlined text-lg">clinical_notes</span>
                         </a>
                         <button type="button" class="vc-btn-action vc-btn-view" x-bind:title="$store.i18n.t('btn.view') || 'Ver'"
                             wire:click="ver({{ $cliente->id }})">

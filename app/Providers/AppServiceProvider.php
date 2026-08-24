@@ -19,8 +19,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        \Carbon\Carbon::setLocale('es');
-        setlocale(LC_TIME, 'es_ES.utf8', 'es_ES', 'esp');
+        $locale = request()?->cookie('vc_locale') ?? request()?->query('lang') ?? 'en';
+        if ($locale === 'es') {
+            \Carbon\Carbon::setLocale('es');
+            setlocale(LC_TIME, 'es_ES.utf8', 'es_ES', 'esp');
+        } else {
+            \Carbon\Carbon::setLocale('en');
+            setlocale(LC_TIME, 'en_US.utf8', 'en_US', 'eng');
+        }
         \Illuminate\Pagination\Paginator::defaultView('vendor.pagination.tailwind');
         \Illuminate\Pagination\Paginator::defaultSimpleView('vendor.pagination.simple-tailwind');
     }

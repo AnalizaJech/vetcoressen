@@ -25,8 +25,23 @@
                 this.localeTrigger++;
             });
             this.$watch('selectedValue', (val) => {
-                if (this.$el) this.$el.dataset.selected = String(val || '');
+                if (this.$el && this.$el.dataset.selected !== String(val || '')) {
+                    this.$el.dataset.selected = String(val || '');
+                }
             });
+            if (this.$el) {
+                const ds = this.$el.getAttribute('data-selected');
+                if (ds !== null && ds !== undefined && ds !== '' && this.selectedValue !== ds) {
+                    this.selectedValue = ds;
+                }
+                const obs = new MutationObserver(() => {
+                    const newDs = this.$el.getAttribute('data-selected');
+                    if (newDs !== null && newDs !== undefined && newDs !== '' && newDs !== this.selectedValue) {
+                        this.selectedValue = newDs;
+                    }
+                });
+                obs.observe(this.$el, { attributes: true, attributeFilter: ['data-selected'] });
+            }
         },
         translateKey(key) {
             if (!key) return '';

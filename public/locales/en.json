@@ -1,4 +1,37 @@
 {
+    "status": {
+        "pendiente": "Pending",
+        "confirmada": "Confirmed",
+        "en_progreso": "In Progress",
+        "completada": "Completed",
+        "cancelada": "Cancelled",
+        "emergencia": "Emergency",
+        "excedido": "Overdue",
+        "overdue": "Overdue",
+        "atendido": "Attended",
+        "atendida": "Attended",
+        "pagado": "Paid",
+        "anulado": "Voided",
+        "activo": "Active",
+        "inactivo": "Inactive"
+    },
+    "reason": {
+        "consulta": "General Consultation",
+        "consulta_general": "General Consultation",
+        "vacunacion": "Vaccination",
+        "vacunación": "Vaccination",
+        "desparasitacion": "Deworming",
+        "desparasitación": "Deworming",
+        "cirugia": "Surgery",
+        "cirugía": "Surgery",
+        "control": "Checkup",
+        "urgencia": "Urgency",
+        "emergencia": "Emergency",
+        "bano_corte": "Grooming & Bath",
+        "bano": "Bath",
+        "corte": "Grooming",
+        "limpieza_dental": "Dental Cleaning"
+    },
     "report": {
         "title": "Reports & Statistics",
         "subtitle": "View clinical performance and key metrics",

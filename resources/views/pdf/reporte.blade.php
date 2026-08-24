@@ -281,7 +281,7 @@
                 <td class="header-right">
                     <div class="record-badge">
                         <p class="record-number">{{ $periodoLabel }}</p>
-                        <p class="record-date">{{ $t('report.range', 'Rango') }}: <strong>{{ $startDate->format('d/m/Y') }} {{ $t('report.to', 'al') }} {{ $endDate->format('d/m/Y') }}</strong></p>
+                        <p class="record-date">{{ $t('report.range', 'Rango') }}: <strong>{{ $startDate->format('M d, Y') }} - {{ $endDate->format('M d, Y') }}</strong></p>
                     </div>
                 </td>
             </tr>
@@ -386,7 +386,7 @@
                 @endphp
                 <tr>
                     <td><strong>#{{ str_pad($sale->id, 6, '0', STR_PAD_LEFT) }}</strong></td>
-                    <td>{{ $sale->created_at->format('d/m/Y H:i') }}</td>
+                    <td>{{ $sale->created_at->format('M d, Y h:i A') }}</td>
                     <td>{{ $sale->cliente?->nombre_completo ?? $t('report.walkInCustomer', 'Cliente General') }}</td>
                     <td>{{ $t('payment.' . strtolower($sale->payment_method), str_replace('_', ' ', $sale->payment_method)) }}</td>
                     <td style="text-align: right;"><strong>S/ {{ number_format($sale->total, 2) }}</strong></td>
@@ -403,7 +403,7 @@
         @endif
 
         <div class="footer-disclaimer">
-            {{ $t('report.generatedBy', 'Documento generado automáticamente por') }} {{ config('app.name', 'VETCORESSEN') }} {{ $t('misc.on_date', 'el') }} {{ now()->format('d/m/Y H:i') }}. &bull; {{ $t('report.confidentialReport', 'Reporte Confidencial') }}
+            {{ $t('report.generatedBy', 'Documento generado automáticamente por') }} {{ config('app.name', 'VETCORESSEN') }} {{ $t('misc.on_date', 'el') }} {{ now()->format('M d, Y h:i A') }}. &bull; {{ $t('report.confidentialReport', 'Reporte Confidencial') }}
         </div>
     </div>
 </body>
