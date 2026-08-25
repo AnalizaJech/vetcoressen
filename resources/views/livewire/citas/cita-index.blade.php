@@ -531,36 +531,36 @@
             
             <div class="flex flex-col sm:flex-row flex-wrap justify-between items-center gap-3 pt-6 border-t border-zinc-200 dark:border-zinc-700">
                 <flux:modal.close class="w-full sm:w-auto">
-                    <button type="button" class="btn-secondary text-xs px-4 py-2 flex items-center justify-center gap-1.5 w-full sm:w-auto">
+                    <button type="button" class="w-full sm:w-auto px-4 py-2.5 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 border border-zinc-300 dark:border-zinc-700 rounded-xl shadow-sm hover:shadow text-xs font-bold flex items-center justify-center gap-1.5 transition-all">
                         <span x-text="$store.i18n.t('btn.close') || 'Close'">Close</span>
                     </button>
                 </flux:modal.close>
 
                 <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
                     @if($citaVer->status === 'PENDIENTE')
-                        <button type="button" wire:click="cambiarEstado({{ $citaVer->id }}, 'CONFIRMADA')" class="w-full sm:w-auto px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl shadow-sm hover:shadow text-xs font-semibold flex items-center justify-center gap-1.5 transition-all">
+                        <button type="button" wire:click="cambiarEstado({{ $citaVer->id }}, 'CONFIRMADA')" class="w-full sm:w-auto px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl shadow-sm hover:shadow text-xs font-bold flex items-center justify-center gap-1.5 transition-all">
                             <span class="material-symbols-outlined icon-sm">check_circle</span>
                             <span x-text="$store.i18n.t('btn.confirm') || 'Confirm'">Confirm</span>
                         </button>
                     @endif
 
                     @if($citaVer->historiaClinica)
-                        <a href="{{ route('historias.ver', $citaVer->historiaClinica->id) }}" class="w-full sm:w-auto px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl shadow-sm hover:shadow text-xs font-semibold flex items-center justify-center gap-1.5 transition-all">
+                        <a href="{{ route('historias.ver', $citaVer->historiaClinica->id) }}" class="w-full sm:w-auto px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl shadow-sm hover:shadow text-xs font-bold flex items-center justify-center gap-1.5 transition-all">
                             <span class="material-symbols-outlined icon-sm">description</span>
                             <span x-text="$store.i18n.t('btn.viewHC') || 'View HC'">View HC</span>
                         </a>
                     @elseif(in_array($citaVer->status, ['CONFIRMADA', 'EN_PROGRESO']) && $citaVer->fecha_hora?->isToday())
-                        <button type="button" wire:click="iniciarAtencion({{ $citaVer->id }})" class="w-full sm:w-auto px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl shadow-sm hover:shadow text-xs font-semibold flex items-center justify-center gap-1.5 transition-all">
+                        <button type="button" wire:click="iniciarAtencion({{ $citaVer->id }})" class="w-full sm:w-auto px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl shadow-sm hover:shadow text-xs font-bold flex items-center justify-center gap-1.5 transition-all">
                             <span class="material-symbols-outlined icon-sm">clinical_notes</span>
                             <span x-text="$store.i18n.t('btn.startAttention') || 'Start Attention'">Start Attention</span>
                         </button>
                     @endif
 
-                    <a href="{{ route('citas.editar', $citaVer->id) }}" class="w-full sm:w-auto px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl shadow-sm hover:shadow text-xs font-semibold flex items-center justify-center transition-all" x-bind:aria-label="$store.i18n.t('btn.edit') || 'Edit'" x-bind:title="$store.i18n.t('btn.edit') || 'Edit'">
+                    <a href="{{ route('citas.editar', $citaVer->id) }}" class="w-full sm:w-auto px-3.5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl shadow-sm hover:shadow text-xs font-bold flex items-center justify-center transition-all" x-bind:aria-label="$store.i18n.t('btn.edit') || 'Edit'" x-bind:title="$store.i18n.t('btn.edit') || 'Edit'">
                         <span class="material-symbols-outlined icon-sm">edit</span>
                     </a>
                     
-                    <button type="button" @click="$wire.citaEliminarId = {{ $citaVer->id }}; Flux.modal('ver-cita').close(); Flux.modal('confirmar-eliminar').show()" class="btn-danger w-full sm:w-auto text-xs px-3 py-2 justify-center">
+                    <button type="button" @click="$wire.citaEliminarId = {{ $citaVer->id }}; Flux.modal('ver-cita').close(); Flux.modal('confirmar-eliminar').show()" class="w-full sm:w-auto px-3.5 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl shadow-sm hover:shadow text-xs font-bold flex items-center justify-center transition-all">
                         <span class="material-symbols-outlined icon-sm">delete</span>
                     </button>
                 </div>

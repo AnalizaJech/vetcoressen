@@ -15,8 +15,11 @@
     }
 
     if (!isset($t) || !is_callable($t)) {
-        $langCode = $lang ?? request()->query('lang', 'es');
+        $langCode = $lang ?? request()->query('lang', 'en');
         $jsonPath = public_path("locales/{$langCode}.json");
+        if (!file_exists($jsonPath)) {
+            $jsonPath = base_path("public/locales/{$langCode}.json");
+        }
         $translations = file_exists($jsonPath) ? json_decode(file_get_contents($jsonPath), true) : [];
         $t = function ($key, $default = null) use ($translations) {
             $keys = explode('.', $key);
@@ -382,13 +385,16 @@
                 @foreach($sales->take(20) as $sale)
                 @php
                     $statusClass = $sale->status === 'PAGADO' ? 'badge-success' : ($sale->status === 'PENDIENTE' ? 'badge-warning' : 'badge-danger');
-                    $statusName = $t('payment.' . strtolower($sale->status), $sale->status);
+                    $statusName = $t('status.' . strtolower($sale->status), $t('payment.' . strtolower($sale->status), $sale->status));
+                    $payRaw = $sale->payment_method ?? '';
+                    $payKey = 'payment.' . strtolower(str_replace([' ', '/', '-'], '_', $payRaw));
+                    $payDisplay = $t($payKey, str_replace('_', ' ', $payRaw ?: '-'));
                 @endphp
                 <tr>
                     <td><strong>#{{ str_pad($sale->id, 6, '0', STR_PAD_LEFT) }}</strong></td>
                     <td>{{ $sale->created_at->format('M d, Y h:i A') }}</td>
-                    <td>{{ $sale->cliente?->nombre_completo ?? $t('report.walkInCustomer', 'Cliente General') }}</td>
-                    <td>{{ $t('payment.' . strtolower($sale->payment_method), str_replace('_', ' ', $sale->payment_method)) }}</td>
+                    <td>{{ $sale->cliente?->nombre_completo ?? $t('report.walkInCustomer', 'Walk-in Customer') }}</td>
+                    <td>{{ $payDisplay }}</td>
                     <td style="text-align: right;"><strong>S/ {{ number_format($sale->total, 2) }}</strong></td>
                     <td style="text-align: center;"><span class="badge {{ $statusClass }}">{{ $statusName }}</span></td>
                 </tr>

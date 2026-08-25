@@ -344,7 +344,17 @@
 
         <div class="content-card">
             <h4>{{ $t('table.reason', 'Motivo de Consulta') }}</h4>
-            <p>{{ $cita->reason ?? $t('misc.notSpecified', 'No especificado') }}</p>
+            @php
+                $rawReason = $cita->reason ?? $cita->motivo ?? '';
+                $cleanReason = trim(strtolower($rawReason));
+                if (empty($cleanReason) || in_array($cleanReason, ['sin motivo especificado', 'no especificado', 'no especificada', 'not specified', 'sin motivo'])) {
+                    $reasonDisplay = $t('misc.notSpecified', 'Not specified');
+                } else {
+                    $reasonKey = 'reason.' . strtolower(str_replace([' ', 'ó', 'í', 'á', 'é', 'ú'], ['_', 'o', 'i', 'a', 'e', 'u'], $cleanReason));
+                    $reasonDisplay = $t($reasonKey, $rawReason);
+                }
+            @endphp
+            <p>{{ $reasonDisplay }}</p>
         </div>
 
         @if($cita->notes)
@@ -358,7 +368,7 @@
         <div class="footer-section">
             <div class="signature-box">
                 <div class="signature-line"></div>
-                <div class="vet-name">{{ $cita->veterinario->name ?? 'Médico Veterinario' }}</div>
+                <div class="vet-name">{{ $cita->veterinario->name ?? $t('misc.veterinarian', 'Médico Veterinario') }}</div>
                 <div class="vet-role">{{ $t('misc.veterinarian', 'Médico Veterinario') }}</div>
             </div>
             

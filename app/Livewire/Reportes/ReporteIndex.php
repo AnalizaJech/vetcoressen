@@ -27,7 +27,7 @@ class ReporteIndex extends Component
     public function mount(): void
     {
         $this->fecha_inicio = Carbon::today()->startOfMonth()->format('Y-m-d');
-        $this->fecha_fin = Carbon::today()->format('Y-m-d');
+        $this->fecha_fin = Carbon::today()->endOfMonth()->format('Y-m-d');
     }
 
     public function updatedPeriodo(): void
@@ -40,10 +40,10 @@ class ReporteIndex extends Component
             $this->fecha_fin = Carbon::today()->endOfWeek()->format('Y-m-d');
         } elseif ($this->periodo === 'mes_actual') {
             $this->fecha_inicio = Carbon::today()->startOfMonth()->format('Y-m-d');
-            $this->fecha_fin = Carbon::today()->format('Y-m-d');
+            $this->fecha_fin = Carbon::today()->endOfMonth()->format('Y-m-d');
         } elseif ($this->periodo === 'anio_actual') {
             $this->fecha_inicio = Carbon::today()->startOfYear()->format('Y-m-d');
-            $this->fecha_fin = Carbon::today()->format('Y-m-d');
+            $this->fecha_fin = Carbon::today()->endOfYear()->format('Y-m-d');
         }
 
         $this->dispatchChartsUpdate();
@@ -82,7 +82,7 @@ class ReporteIndex extends Component
     {
         $this->periodo = 'mes_actual';
         $this->fecha_inicio = Carbon::today()->startOfMonth()->format('Y-m-d');
-        $this->fecha_fin = Carbon::today()->format('Y-m-d');
+        $this->fecha_fin = Carbon::today()->endOfMonth()->format('Y-m-d');
         $this->sucursal_id = '';
         $this->categoria = '';
         $this->dispatchChartsUpdate();

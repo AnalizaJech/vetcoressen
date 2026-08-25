@@ -32,6 +32,16 @@
         "corte": "Grooming",
         "limpieza_dental": "Dental Cleaning"
     },
+    "misc": {
+        "notSpecified": "Not specified",
+        "generalInformation": "General Information",
+        "veterinarian": "Veterinarian",
+        "years": "years",
+        "months": "months",
+        "days": "days",
+        "on_date": "on",
+        "unspecifiedMedication": "Unspecified Medication"
+    },
     "report": {
         "title": "Reports & Statistics",
         "subtitle": "View clinical performance and key metrics",
@@ -131,17 +141,28 @@
     },
     "payment": {
         "method": "Payment Method",
+        "pagado": "Paid",
+        "paid": "Paid",
+        "pendiente": "Pending",
+        "pending": "Pending",
+        "anulado": "Voided",
+        "voided": "Voided",
+        "cancelado": "Cancelled",
+        "cancelled": "Cancelled",
         "cash": "Cash",
         "card": "Card",
         "yapePlin": "Yape / Plin",
         "transfer": "Bank Transfer",
         "efectivo": "Cash",
         "tarjeta": "Card",
-        "yape_plin": "Yape / Plin",
+        "tarjeta_debito": "Debit Card",
+        "tarjeta_credito": "Credit Card",
         "transferencia": "Bank Transfer",
-        "paid": "Paid",
-        "pending": "Pending",
-        "cancelled": "Cancelled"
+        "bank_transfer": "Bank Transfer",
+        "yape": "Yape",
+        "plin": "Plin",
+        "yape / plin": "Yape / Plin",
+        "yape_plin": "Yape / Plin"
     },
     "roles": {
         "super_admin": "Super Admin",

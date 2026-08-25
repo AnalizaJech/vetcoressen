@@ -32,6 +32,16 @@
         "corte": "Corte",
         "limpieza_dental": "Limpieza Dental"
     },
+    "misc": {
+        "notSpecified": "No especificado",
+        "generalInformation": "Información General",
+        "veterinarian": "Médico Veterinario",
+        "years": "años",
+        "months": "meses",
+        "days": "días",
+        "on_date": "el",
+        "unspecifiedMedication": "Medicamento no especificado"
+    },
     "report": {
         "title": "Reportes y Estadísticas",
         "subtitle": "Visualiza el rendimiento clínico y métricas clave",
@@ -131,17 +141,28 @@
     },
     "payment": {
         "method": "Método de Pago",
+        "pagado": "Pagado",
+        "paid": "Pagado",
+        "pendiente": "Pendiente",
+        "pending": "Pendiente",
+        "anulado": "Anulado",
+        "voided": "Anulado",
+        "cancelado": "Anulado",
+        "cancelled": "Anulado",
         "cash": "Efectivo",
         "card": "Tarjeta",
         "yapePlin": "Yape / Plin",
-        "transfer": "Transferencia",
+        "transfer": "Transferencia Bancaria",
         "efectivo": "Efectivo",
         "tarjeta": "Tarjeta",
-        "yape_plin": "Yape / Plin",
-        "transferencia": "Transferencia",
-        "paid": "Pagado",
-        "pending": "Pendiente",
-        "cancelled": "Anulado"
+        "tarjeta_debito": "Tarjeta de Débito",
+        "tarjeta_credito": "Tarjeta de Crédito",
+        "transferencia": "Transferencia Bancaria",
+        "bank_transfer": "Transferencia Bancaria",
+        "yape": "Yape",
+        "plin": "Plin",
+        "yape / plin": "Yape / Plin",
+        "yape_plin": "Yape / Plin"
     },
     "roles": {
         "super_admin": "Super Admin",

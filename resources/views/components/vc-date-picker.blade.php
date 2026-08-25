@@ -25,8 +25,8 @@
     {{-- Input disparador con icono a la izquierda --}}
     <div 
         class="relative w-full transition-opacity duration-150" 
-        :class="isDisabled ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'cursor-pointer'"
-        @click="if (!isDisabled) toggleCalendar()"
+        :class="isComponentDisabled ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'cursor-pointer'"
+        @click="if (!isComponentDisabled) toggleCalendar()"
     >
         @if($icon)
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-zinc-400 dark:text-zinc-500">
@@ -38,9 +38,9 @@
             type="text"
             readonly
             :value="formattedValue"
-            :disabled="isDisabled"
+            :disabled="isComponentDisabled"
             class="vc-dropdown-trigger w-full focus-visible:outline-none"
-            :class="isDisabled ? 'bg-zinc-100/70 dark:bg-zinc-800/40 cursor-not-allowed' : 'cursor-pointer'"
+            :class="isComponentDisabled ? 'bg-zinc-100/70 dark:bg-zinc-800/40 cursor-not-allowed' : 'cursor-pointer'"
             @if($attributes->has('x-bind:placeholder'))
                 x-bind:placeholder="{{ $attributes->get('x-bind:placeholder') }}"
             @else
@@ -201,8 +201,7 @@
                 value: config.modelValue,
                 minDate: config.minDate,
                 maxDate: config.maxDate,
-                isBirthdate: config.isBirthdate || false,
-                isDisabled: config.disabled || false,
+                isComponentDisabled: config.disabled || false,
                 align: config.align || 'left',
                 open: false,
                 viewMode: 'days', // 'days' | 'months' | 'years'
@@ -245,8 +244,8 @@
                     if (this.$el) {
                         const obs = new MutationObserver(() => {
                             const d = this.$el.hasAttribute('disabled') || this.$el.getAttribute('aria-disabled') === 'true';
-                            if (d !== this.isDisabled) {
-                                this.isDisabled = d;
+                            if (d !== this.isComponentDisabled) {
+                                this.isComponentDisabled = d;
                             }
                         });
                         obs.observe(this.$el, { attributes: true });
@@ -365,6 +364,10 @@
 
                 selectDate(date) {
                     this.value = this.formatDate(this.year, this.month, date);
+                    if (this.$el) {
+                        this.$el.dispatchEvent(new CustomEvent('input', { bubbles: true, detail: this.value }));
+                        this.$el.dispatchEvent(new CustomEvent('change', { bubbles: true, detail: this.value }));
+                    }
                     this.open = false;
                     this.viewMode = 'days';
                 },
@@ -375,6 +378,10 @@
                     this.month = today.getMonth();
                     this.value = this.formatDate(this.year, this.month, today.getDate());
                     this.calculateDays();
+                    if (this.$el) {
+                        this.$el.dispatchEvent(new CustomEvent('input', { bubbles: true, detail: this.value }));
+                        this.$el.dispatchEvent(new CustomEvent('change', { bubbles: true, detail: this.value }));
+                    }
                     this.open = false;
                     this.viewMode = 'days';
                 },
@@ -387,6 +394,10 @@
                     this.month = tomorrow.getMonth();
                     this.value = this.formatDate(this.year, this.month, tomorrow.getDate());
                     this.calculateDays();
+                    if (this.$el) {
+                        this.$el.dispatchEvent(new CustomEvent('input', { bubbles: true, detail: this.value }));
+                        this.$el.dispatchEvent(new CustomEvent('change', { bubbles: true, detail: this.value }));
+                    }
                     this.open = false;
                     this.viewMode = 'days';
                 },

@@ -211,20 +211,35 @@
             const existing2 = Chart.getChart(canvas2);
             if (existing2) existing2.destroy();
 
+            const rawCitas = data.citasData || [0, 0, 0];
+            const totalCitas = (Number(rawCitas[0]) || 0) + (Number(rawCitas[1]) || 0) + (Number(rawCitas[2]) || 0);
+            const isDark = document.documentElement.classList.contains('dark');
+
+            let chartLabels, chartData, chartColors;
+            if (totalCitas === 0) {
+                chartLabels = [isEn ? 'No Appointments' : 'Sin Citas'];
+                chartData = [1];
+                chartColors = [isDark ? '#3f3f46' : '#e2e8f0'];
+            } else {
+                chartLabels = [
+                    window.Alpine?.store('i18n')?.t('status.completed') || (isEn ? 'Completed' : 'Completadas'),
+                    window.Alpine?.store('i18n')?.t('status.cancelled') || (isEn ? 'Cancelled' : 'Canceladas'),
+                    window.Alpine?.store('i18n')?.t('status.pending') || (isEn ? 'Pending' : 'Pendientes')
+                ];
+                chartData = [Number(rawCitas[0]) || 0, Number(rawCitas[1]) || 0, Number(rawCitas[2]) || 0];
+                chartColors = ['#10b981', '#ef4444', '#8b5cf6'];
+            }
+
             const ctx2 = canvas2.getContext('2d');
             window.vetReportCharts.c2 = new Chart(ctx2, {
                 type: 'doughnut',
                 data: {
-                    labels: [
-                        window.Alpine?.store('i18n')?.t('status.completed') || (isEn ? 'Completed' : 'Completadas'),
-                        window.Alpine?.store('i18n')?.t('status.cancelled') || (isEn ? 'Cancelled' : 'Canceladas'),
-                        window.Alpine?.store('i18n')?.t('status.pending') || (isEn ? 'Pending' : 'Pendientes')
-                    ],
+                    labels: chartLabels,
                     datasets: [{
-                        data: data.citasData || [0, 0, 0],
-                        backgroundColor: ['#10b981', '#ef4444', '#8b5cf6'],
+                        data: chartData,
+                        backgroundColor: chartColors,
                         borderWidth: 2,
-                        borderColor: 'transparent'
+                        borderColor: isDark ? '#18181b' : '#ffffff'
                     }]
                 },
                 options: {
@@ -233,7 +248,7 @@
                     plugins: {
                         legend: { 
                             position: 'bottom',
-                            labels: { font: { family: 'Plus Jakarta Sans', weight: '600', size: 11 }, color: '#71717a' }
+                            labels: { font: { family: 'Plus Jakarta Sans', weight: '600', size: 11 }, color: isDark ? '#a1a1aa' : '#71717a' }
                         },
                         tooltip: {
                             enabled: true,
@@ -244,11 +259,23 @@
                             borderWidth: 1,
                             padding: 10,
                             cornerRadius: 8,
+                            filter: function(tooltipItem) {
+                                if (totalCitas === 0) return true;
+                                return tooltipItem.raw > 0;
+                            },
                             callbacks: {
+                                title: function(context) {
+                                    if (totalCitas === 0) return isEn ? 'No Appointments' : 'Sin Citas';
+                                    return context[0]?.label || '';
+                                },
                                 label: function(c) {
-                                    const val = c.raw !== undefined ? c.raw : (c.parsed !== undefined ? c.parsed : 0);
+                                    if (totalCitas === 0) {
+                                        return ' ' + (isEn ? '0 appointments in period' : '0 citas en el período');
+                                    }
+                                    const val = c.raw !== undefined ? c.raw : 0;
+                                    const pct = totalCitas > 0 ? ((val / totalCitas) * 100).toFixed(1) : 0;
                                     const apptText = window.Alpine?.store('i18n')?.t('sidebar.appointments') || (isEn ? 'appointments' : 'citas');
-                                    return ' ' + (c.label || '') + ': ' + val + ' ' + apptText;
+                                    return ` ${c.label}: ${val} ${apptText} (${pct}%)`;
                                 }
                             }
                         }
@@ -405,18 +432,48 @@
             },
 
             downloadReport(type) {
-                // Acceder a propiedades Livewire directamente (no usar .get() que es async)
-                const p = this.$wire.periodo || 'mes_actual';
-                const fi = this.$wire.fecha_inicio || '';
-                const ff = this.$wire.fecha_fin || '';
+                let p = this.$wire.periodo;
+                if (typeof p === 'function') {
+                    try { p = p(); } catch (e) { p = 'mes_actual'; }
+                }
+                if (typeof p !== 'string' || !p) p = 'mes_actual';
+
+                let fi = this.$wire.fecha_inicio;
+                if (typeof fi === 'function') {
+                    try { fi = fi(); } catch (e) { fi = ''; }
+                }
+                if (typeof fi !== 'string') fi = '';
+
+                let ff = this.$wire.fecha_fin;
+                if (typeof ff === 'function') {
+                    try { ff = ff(); } catch (e) { ff = ''; }
+                }
+                if (typeof ff !== 'string') ff = '';
+
+                // Clean string values
+                p = String(p).replace(/[\r\n\t]/g, '').trim();
+                fi = String(fi).replace(/[\r\n\t]/g, '').trim();
+                ff = String(ff).replace(/[\r\n\t]/g, '').trim();
+
                 const lang = Alpine.store('i18n')?.locale || localStorage.getItem('vc_locale') || 'en';
                 const q = new URLSearchParams({
-                    periodo: p,
+                    periodo: p || 'mes_actual',
                     fecha_inicio: fi,
                     fecha_fin: ff,
                     lang: lang
                 }).toString();
-                window.open(`/reports/export/${type}?${q}`, '_blank');
+
+                const url = `/reports/export/${type}?${q}`;
+                if (type === 'pdf') {
+                    window.open(url, '_blank');
+                } else {
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', '');
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
             },
 
             updateCharts(data) {
@@ -467,33 +524,25 @@
                 </div>
             </div>
 
-            {{-- Acciones de Exportación Directa --}}
-            <div class="flex items-center gap-2.5">
-                <button 
-                    type="button"
-                    @click="downloadReport('pdf')" 
-                    class="btn-primary bg-zinc-800 hover:bg-zinc-900 text-white border-zinc-800 text-xs px-3.5 py-2 flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
-                >
-                    <span class="material-symbols-outlined icon-sm">picture_as_pdf</span>
-                    <span x-text="$store.i18n.t('btn.downloadPDF') || 'Download PDF'">Download PDF</span>
+            {{-- Botones de Exportación --}}
+            <div class="flex items-center gap-2">
+                <button type="button" @click="downloadReport('excel')" class="btn-secondary text-xs px-3.5 py-2 flex items-center gap-1.5 shadow-sm hover:shadow transition-all">
+                    <span class="material-symbols-outlined icon-sm text-emerald-600 dark:text-emerald-400">table_view</span>
+                    <span x-text="$store.i18n.locale === 'en' ? 'Download Excel' : 'Descargar Excel'">Download Excel</span>
                 </button>
-                <button 
-                    type="button"
-                    @click="downloadReport('excel')" 
-                    class="btn-primary bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 text-xs px-3.5 py-2 flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
-                >
-                    <span class="material-symbols-outlined icon-sm">table_view</span>
-                    <span x-text="$store.i18n.t('btn.downloadExcel') || 'Download Excel'">Download Excel</span>
+                <button type="button" @click="downloadReport('pdf')" class="btn-primary text-xs px-3.5 py-2 flex items-center gap-1.5 shadow-sm hover:shadow transition-all">
+                    <span class="material-symbols-outlined icon-sm">picture_as_pdf</span>
+                    <span x-text="$store.i18n.locale === 'en' ? 'Download PDF' : 'Descargar PDF'">Download PDF</span>
                 </button>
             </div>
         </div>
 
-        {{-- ═══ Barra de Filtros Dinámicos Interactivos ═══ --}}
-        <div class="vc-panel relative z-30">
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
-                {{-- Selector de Periodo --}}
+        {{-- ═══ Barra de Filtros Interactiva ═══ --}}
+        <div class="vc-panel">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {{-- Selector de Período --}}
                 <div>
-                    <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5" x-text="$store.i18n.t('filter.period') || 'Period'">Period</label>
+                    <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5" x-text="$store.i18n.t('dashboard.filter') || 'Period'">Period</label>
                     <x-vc-dropdown 
                         wire:model.live="periodo"
                         :options="[
@@ -533,9 +582,9 @@
         </div>
 
         {{-- ═══ 4 KPI Cards Ejecutivos ═══ --}}
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div wire:key="kpi-cards-grid-{{ $periodo }}-{{ $fecha_inicio }}-{{ $fecha_fin }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {{-- Ventas del Periodo --}}
-            <div class="kpi-card kpi-card--emerald shadow-sm">
+            <div wire:key="kpi-card-ventas-{{ $periodo }}-{{ $fecha_inicio }}-{{ $fecha_fin }}" class="kpi-card kpi-card--emerald shadow-sm">
                 <div class="flex justify-between items-start mb-3">
                     <span class="text-xs font-semibold text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('report.totalRevenue') || 'Total Revenue'">Total Revenue</span>
                     <div class="kpi-icon kpi-icon--emerald">
@@ -550,13 +599,13 @@
                         {{ $totalVentasCount }} <span x-text="$store.i18n.t('report.sales') || 'sales'">sales</span>
                     </span>
                     <span class="text-[11px] text-zinc-400">
-                        {{ $startDate->format('d/m') }} - {{ $endDate->format('d/m/Y') }}
+                        {{ $startDate->format('M d') }} - {{ $endDate->format('M d, Y') }}
                     </span>
                 </div>
             </div>
 
             {{-- Ticket Promedio --}}
-            <div class="kpi-card kpi-card--blue shadow-sm">
+            <div wire:key="kpi-card-ticket-{{ $periodo }}-{{ $fecha_inicio }}-{{ $fecha_fin }}" class="kpi-card kpi-card--blue shadow-sm">
                 <div class="flex justify-between items-start mb-3">
                     <span class="text-xs font-semibold text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('report.averageTicket') || 'Average Ticket'">Average Ticket</span>
                     <div class="kpi-icon kpi-icon--blue">
@@ -572,7 +621,7 @@
             </div>
 
             {{-- Citas Completadas --}}
-            <div class="kpi-card kpi-card--purple shadow-sm">
+            <div wire:key="kpi-card-citas-{{ $periodo }}-{{ $fecha_inicio }}-{{ $fecha_fin }}" class="kpi-card kpi-card--purple shadow-sm">
                 <div class="flex justify-between items-start mb-3">
                     <span class="text-xs font-semibold text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('report.completedAppointments') || 'Completed Appointments'">Completed Appointments</span>
                     <div class="kpi-icon kpi-icon--purple">
@@ -588,7 +637,7 @@
             </div>
 
             {{-- Valorización del Inventario --}}
-            <div class="kpi-card kpi-card--amber shadow-sm">
+            <div wire:key="kpi-card-stock-{{ $periodo }}-{{ $fecha_inicio }}-{{ $fecha_fin }}" class="kpi-card kpi-card--amber shadow-sm">
                 <div class="flex justify-between items-start mb-3">
                     <span class="text-xs font-semibold text-zinc-500 uppercase tracking-wider" x-text="$store.i18n.t('report.lowStockProducts') || 'Low Stock Products'">Low Stock Products</span>
                     <div class="kpi-icon kpi-icon--amber">
@@ -686,10 +735,10 @@
                                 </div>
                                 <div class="min-w-0">
                                     <p class="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate">
-                                        {{ $venta->cliente?->nombre_completo ?? 'Cliente General' }}
+                                        {{ $venta->cliente?->nombre_completo ?? 'Walk-in Customer' }}
                                     </p>
                                     <p class="text-[10px] text-zinc-400">
-                                        {{ $venta->created_at->format('d/m/Y H:i') }} &bull; {{ $venta->tipo_comprobante }}
+                                        {{ $venta->created_at->format('M d, Y h:i A') }} &bull; {{ $venta->tipo_comprobante }}
                                     </p>
                                 </div>
                             </div>
@@ -698,7 +747,7 @@
                                     {{ $simboloMoneda }} {{ number_format($venta->total, 2) }}
                                 </span>
                                 <p class="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
-                                    {{ $venta->payment_method }}
+                                    <span x-text="$store.i18n.t('payment.' + '{{ strtolower(str_replace([' ', '/', '-'], '_', $venta->payment_method ?? '')) }}') || '{{ $venta->payment_method }}'">{{ $venta->payment_method }}</span>
                                 </p>
                             </div>
                         </div>
@@ -731,6 +780,8 @@
                                 'EN_PROGRESO' => 'bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400',
                                 default => 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400',
                             };
+                            $rawReason = $cita->reason ?? 'Consulta General';
+                            $cleanReasonKey = 'reason.' . strtolower(str_replace([' ', 'ó', 'í', 'á', 'é', 'ú'], ['_', 'o', 'i', 'a', 'e', 'u'], $rawReason));
                         @endphp
                         <div class="flex items-center justify-between p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-100 dark:border-zinc-700/50 hover:bg-zinc-100/80 dark:hover:bg-zinc-800 transition-colors">
                             <div class="flex items-center gap-3 min-w-0">
@@ -742,7 +793,7 @@
                                         {{ $cita->mascota?->name ?? 'Mascota' }} &bull; <span class="font-normal text-zinc-500">{{ $cita->cliente?->nombre_completo }}</span>
                                     </p>
                                     <p class="text-[10px] text-zinc-400 truncate">
-                                        {{ $cita->fecha_hora?->format('d/m/Y H:i') }} &bull; {{ $cita->reason ?? 'Consulta General' }}
+                                        {{ $cita->fecha_hora?->format('M d, Y h:i A') }} &bull; <span x-text="$store.i18n.t('{{ $cleanReasonKey }}') || '{{ $rawReason }}'">{{ $rawReason }}</span>
                                     </p>
                                 </div>
                             </div>
