@@ -454,26 +454,129 @@
                                 <flux:field>
                                     <flux:label class="mb-2 font-medium"><span x-text="$store.i18n.t('form.medication')"></span></flux:label>
                                     @php
-                                        $productosOpts = [];
-                                        
+                                        $dbMedicamentos = \App\Models\Product::where('type', 'MEDICAMENTO')
+                                            ->select('name')->distinct()->orderBy('name')->pluck('name')->toArray();
+
                                         $recomendaciones = [
-                                            'Amoxicillin 500mg x 100 tab', 'Cephalexin 250mg/5ml Suspension', 'Enrofloxacin 50mg x 10 tab',
-                                            'Doxycycline 100mg x 100 cap', 'Meloxicam 1.5mg/ml Drops 15ml', 'Carprofen 100mg x 14 tab',
-                                            'Praziquantel + Pyrantel x 4 tab', 'Fipronil Spot-On Dog 10-20kg'
+                                            'Amoxicillin + Clavulanate 250mg x 10 tab',
+                                            'Amoxicillin + Clavulanate 500mg x 10 tab',
+                                            'Amoxicillin 500mg x 100 tab',
+                                            'Ampicillin 1g Injectable',
+                                            'Apoquel (Oclacitinib) 3.6mg x 20 tab',
+                                            'Apoquel (Oclacitinib) 5.4mg x 20 tab',
+                                            'Apoquel (Oclacitinib) 16mg x 20 tab',
+                                            'Azithromycin 200mg/5ml Suspension 30ml',
+                                            'Benazepril 5mg x 28 tab',
+                                            'Bravecto Chewable Dog 2-4.5kg',
+                                            'Bravecto Chewable Dog 4.5-10kg',
+                                            'Bravecto Chewable Dog 10-20kg',
+                                            'Bravecto Chewable Dog 20-40kg',
+                                            'Bravecto Chewable Dog 40-56kg',
+                                            'Bravecto Plus Spot-On Cat 1.2-2.8kg',
+                                            'Bravecto Plus Spot-On Cat 2.8-6.25kg',
+                                            'Buprenorphine 0.3mg/ml Injectable 1ml',
+                                            'Carprofen (Rimadyl) 25mg x 14 tab',
+                                            'Carprofen (Rimadyl) 75mg x 14 tab',
+                                            'Carprofen (Rimadyl) 100mg x 14 tab',
+                                            'Cefalexin 250mg/5ml Suspension 60ml',
+                                            'Cefalexin 500mg x 100 tab',
+                                            'Cefovecin (Convenia) 80mg/ml 10ml',
+                                            'Cerenia (Maropitant) 10mg/ml Injectable 20ml',
+                                            'Cerenia (Maropitant) 16mg x 4 tab',
+                                            'Cerenia (Maropitant) 24mg x 4 tab',
+                                            'Cerenia (Maropitant) 60mg x 4 tab',
+                                            'Chlorhexidine 4% Medicated Shampoo 250ml',
+                                            'Clindamycin 150mg x 16 cap',
+                                            'Clindamycin Oral Drops 25mg/ml 20ml',
+                                            'Credelio (Lotilaner) 112mg Dog 2.5-5.5kg',
+                                            'Credelio (Lotilaner) 450mg Dog 11-22kg',
+                                            'Cytopoint (Lokivetmab) 10mg Injectable',
+                                            'Cytopoint (Lokivetmab) 20mg Injectable',
+                                            'Cytopoint (Lokivetmab) 30mg Injectable',
+                                            'Denamarin SAMe Medium Dog 30 tab',
+                                            'Dexamethasone 2mg/ml Injectable 50ml',
+                                            'Doxycycline 100mg x 100 cap',
+                                            'Drontal Plus Dog x 4 tab',
+                                            'Drontal Cat x 2 tab',
+                                            'Enalapril 5mg x 30 tab',
+                                            'Enrofloxacin 50mg x 10 tab',
+                                            'Enrofloxacin 150mg x 10 tab',
+                                            'Enrofloxacin 5% Injectable 100ml',
+                                            'Fenbendazole (Panacur) 500mg x 10 tab',
+                                            'Fipronil Spot-On Dog 10-20kg',
+                                            'Firocoxib (Previcox) 57mg x 10 tab',
+                                            'Firocoxib (Previcox) 227mg x 10 tab',
+                                            'Fluoxetine 10mg x 30 cap',
+                                            'Frontline Plus Dog 10-20kg Pipette',
+                                            'Furosemide 20mg x 20 tab',
+                                            'Furosemide 40mg x 20 tab',
+                                            'Gabapentin 100mg x 30 cap',
+                                            'Gabapentin 300mg x 30 cap',
+                                            'Ivermectin 1% Injectable 50ml',
+                                            'Ketoprofen 10mg x 10 tab',
+                                            'Levetiracetam (Keppra) 250mg x 30 tab',
+                                            'Marbofloxacin 20mg x 10 tab',
+                                            'Meloxicam 0.5mg/ml Oral Suspension 15ml',
+                                            'Meloxicam 1.5mg/ml Oral Suspension 15ml',
+                                            'Meloxicam 5mg/ml Injectable 20ml',
+                                            'Metoclopramide 5mg/ml Injectable 10ml',
+                                            'Metronidazole 250mg x 20 tab',
+                                            'Metronidazole 500mg x 20 tab',
+                                            'Milbemax Dog 5-25kg x 2 tab',
+                                            'Milbemax Cat 2-8kg x 2 tab',
+                                            'NexGard Spectra Dog 3.5-7.5kg',
+                                            'NexGard Spectra Dog 7.5-15kg',
+                                            'NexGard Spectra Dog 15-30kg',
+                                            'NexGard Spectra Dog 30-60kg',
+                                            'Nutri-Plus Gel High Energy 120g',
+                                            'Omeprazole 10mg x 14 cap',
+                                            'Omeprazole 20mg x 14 cap',
+                                            'Ondansetron 4mg x 10 tab',
+                                            'Optimmune (Cyclosporine 0.2%) Eye Ointment 3.5g',
+                                            'Otomax Ear Ointment 15g',
+                                            'Pet-Tinic Vitamin & Iron Supplement 118ml',
+                                            'Phenobarbital 30mg x 30 tab',
+                                            'Pimobendan (Vetmedin) 1.25mg x 50 tab',
+                                            'Pimobendan (Vetmedin) 2.5mg x 50 tab',
+                                            'Pimobendan (Vetmedin) 5mg x 50 tab',
+                                            'Posatex Otic Drops 17.5g',
+                                            'Praziquantel + Pyrantel Dewormer x 4 tab',
+                                            'Prednisone 5mg x 20 tab',
+                                            'Prednisolone 20mg x 20 tab',
+                                            'Revolution Plus Cat 2.5-5kg Pipette',
+                                            'Robenacoxib (Onsior) 6mg Cat x 6 tab',
+                                            'Robenacoxib (Onsior) 20mg Dog x 7 tab',
+                                            'Simparica Trio Dog 2.5-5kg',
+                                            'Simparica Trio Dog 5-10kg',
+                                            'Simparica Trio Dog 10-20kg',
+                                            'Simparica Trio Dog 20-40kg',
+                                            'Spironolactone 25mg x 30 tab',
+                                            'Sucralfate 1g Oral Suspension 100ml',
+                                            'Surolan Otic Suspension 15ml',
+                                            'Tobramycin 0.3% Eye Drops 5ml',
+                                            'Tramadol 50mg x 20 tab',
+                                            'Trazodone 50mg x 30 tab',
+                                            'Vetericyn Plus Wound & Skin Hydrogel 120ml'
                                         ];
-                                        foreach ($recomendaciones as $rec) {
-                                            $productosOpts[] = ['value' => $rec, 'label' => $rec];
+
+                                        $allMeds = array_unique(array_merge($dbMedicamentos, $recomendaciones));
+                                        sort($allMeds);
+
+                                        $productosOpts = [];
+                                        foreach ($allMeds as $med) {
+                                            $productosOpts[] = ['value' => $med, 'label' => $med];
                                         }
                                     @endphp
                                     <div x-data="{ prodPh: $store.i18n.t('form.searchOrTypeMedicine') || 'Buscar o escribir medicina...' }">
-                                        {{-- Dropdown para seleccionar producto --}}
+                                        {{-- Dropdown para seleccionar o escribir medicamento --}}
                                         <x-vc-dropdown
+                                            wire:key="rx-med-{{ $index }}"
                                             wire:model.live="prescripciones.{{ $index }}.medicamento"
                                             :options="$productosOpts"
                                             :selected="$rx['medicamento'] ?? ''"
                                             x-bind:placeholder="prodPh"
-                                            searchable="true"
-                                            allowCustom="true"
+                                            :searchable="true"
+                                            :allow-custom="true"
                                             icon="vaccines"
                                         />
                                     </div>

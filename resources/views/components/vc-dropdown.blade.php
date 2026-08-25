@@ -13,6 +13,10 @@
     'searchable' => false,
 ])
 
+@php
+    $isSearchable = $searchable || $allowCustom;
+@endphp
+
 <div
     x-data="{
         open: false,
@@ -20,6 +24,7 @@
         rawOptions: {{ json_encode($options) }},
         selectedValue: @if($attributes->wire('model')->value()) @entangle($attributes->wire('model')) @else '{{ (string) $selected }}' @endif,
         localeTrigger: 0,
+        allowCustom: {{ $allowCustom ? 'true' : 'false' }},
         init() {
             window.addEventListener('language-changed', () => {
                 this.localeTrigger++;
@@ -103,15 +108,18 @@
         get displayLabel() {
             let opts = this.optionsList;
             let currentVal = (this.selectedValue !== null && this.selectedValue !== undefined) ? String(this.selectedValue) : (this.$el?.dataset?.selected || '{{ (string) $selected }}');
+            if (currentVal === '' || currentVal === null || currentVal === undefined) return this.placeholderText;
             let selOpt = opts.find(o => String(o.value) === String(currentVal));
             if (selOpt) {
                 return this.translateKey(selOpt.label);
             }
-            return this.placeholderText;
+            return currentVal;
         },
         get isPlaceholder() {
             let opts = this.optionsList;
             let currentVal = (this.selectedValue !== null && this.selectedValue !== undefined) ? String(this.selectedValue) : (this.$el?.dataset?.selected || '{{ (string) $selected }}');
+            if (currentVal === '' || currentVal === null || currentVal === undefined) return true;
+            if (this.allowCustom && currentVal.trim() !== '') return false;
             return !opts.some(o => String(o.value) === String(currentVal));
         },
         get filteredOptions() {
@@ -121,8 +129,15 @@
             const term = this.search.toString().toLowerCase().trim();
             return opts.filter(opt => {
                 let labelStr = String(this.translateKey(opt.label));
-                return labelStr.toLowerCase().includes(term);
+                return labelStr.toLowerCase().includes(term) || String(opt.value).toLowerCase().includes(term);
             });
+        },
+        handleEnter() {
+            if (this.filteredOptions.length > 0) {
+                this.selectOption(this.filteredOptions[0].value, this.filteredOptions[0].label);
+            } else if (this.allowCustom && this.search.trim() !== '') {
+                this.selectOption(this.search.trim(), this.search.trim());
+            }
         },
         selectOption(val, lbl) {
             this.selectedValue = val;
@@ -160,7 +175,7 @@
     {{-- Trigger sin flecha a la derecha, solo icono a la izquierda --}}
     <button
         type="button"
-        @if(!$disabled) @click="open = !open; if(open && {{ $searchable ? 'true' : 'false' }}) $nextTick(() => $refs.searchInput?.focus())" @endif
+        @if(!$disabled) @click="open = !open; if(open && {{ $isSearchable ? 'true' : 'false' }}) $nextTick(() => $refs.searchInput?.focus())" @endif
         class="vc-dropdown-trigger w-full flex items-center gap-2.5 text-left cursor-pointer transition-all duration-150 {{ $disabled ? 'opacity-60 cursor-not-allowed' : '' }}"
         :class="{ 'ring-2 ring-emerald-500/20 border-emerald-500': open }"
         @if($disabled) disabled @endif
@@ -187,7 +202,7 @@
         x-cloak
         class="vc-dropdown-list absolute left-0 right-0 top-full mt-1.5 z-50 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl max-h-60 overflow-y-auto p-1.5"
     >
-        @if($searchable)
+        @if($isSearchable)
             <div class="p-1 mb-1 border-b border-zinc-100 dark:border-zinc-800 sticky top-0 bg-white dark:bg-zinc-900 z-10">
                 <div class="relative flex items-center">
                     <span class="material-symbols-outlined absolute left-2.5 text-[16px] text-zinc-400">search</span>
@@ -196,11 +211,30 @@
                         x-ref="searchInput"
                         x-model="search" 
                         @click.stop
+                        @keydown.enter.prevent.stop="handleEnter()"
                         class="w-full pl-8 pr-3 py-1.5 text-xs bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-emerald-500"
-                        :placeholder="translateKey('form.search') || 'Buscar...'"
+                        :placeholder="allowCustom ? ($store.i18n.t('form.searchOrType') || 'Buscar o escribir...') : (translateKey('form.search') || 'Buscar...')"
                     />
                 </div>
             </div>
+        @endif
+
+        {{-- Opción Personalizada cuando allowCustom es true y se escribe algo no exacto --}}
+        @if($allowCustom)
+            <template x-if="search.trim() !== '' && !optionsList.some(o => String(o.value).toLowerCase() === search.trim().toLowerCase())">
+                <button
+                    type="button"
+                    class="vc-dropdown-item w-full flex items-center justify-between px-3 py-2 text-xs font-semibold rounded-lg text-emerald-700 dark:text-emerald-300 bg-emerald-50/70 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 transition-colors border border-dashed border-emerald-300 dark:border-emerald-700 mb-1"
+                    @click="selectOption(search.trim(), search.trim())"
+                >
+                    <div class="flex items-center gap-2 truncate">
+                        <span class="material-symbols-outlined text-[16px] text-emerald-600 dark:text-emerald-400">add_circle</span>
+                        <span class="truncate">
+                            <span x-text="$store.i18n.t('misc.useCustom') || 'Usar:'"></span> "<strong x-text="search.trim()"></strong>"
+                        </span>
+                    </div>
+                </button>
+            </template>
         @endif
 
         {{-- Opciones --}}
@@ -221,8 +255,8 @@
             </button>
         </template>
 
-        {{-- Sin resultados --}}
-        <template x-if="filteredOptions.length === 0">
+        {{-- Sin resultados (si no permite custom) --}}
+        <template x-if="filteredOptions.length === 0 && (!allowCustom || search.trim() === '')">
             <div class="px-3 py-3 text-center text-xs text-zinc-400 dark:text-zinc-500">
                 <span x-text="translateKey('form.noResults') || 'No results found'"></span>
             </div>

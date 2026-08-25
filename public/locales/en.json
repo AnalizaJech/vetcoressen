@@ -34,13 +34,16 @@
     },
     "misc": {
         "notSpecified": "Not specified",
+        "none": "None",
+        "useCustom": "Use custom:",
         "generalInformation": "General Information",
         "veterinarian": "Veterinarian",
         "years": "years",
         "months": "months",
         "days": "days",
         "on_date": "on",
-        "unspecifiedMedication": "Unspecified Medication"
+        "unspecifiedMedication": "Unspecified Medication",
+        "noPhone": "No phone"
     },
     "report": {
         "title": "Reports & Statistics",
@@ -123,7 +126,9 @@
         "excelTopProducts": "4. TOP BEST-SELLING PRODUCTS & SERVICES",
         "walkInCustomer": "Walk-in Customer",
         "period": "Period",
-        "to": "to"
+        "to": "to",
+        "downloadPDF": "Download PDF",
+        "downloadHistoryPDF": "Download History (PDF)"
     },
     "alert": {
         "success": "Success",

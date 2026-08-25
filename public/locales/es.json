@@ -34,13 +34,16 @@
     },
     "misc": {
         "notSpecified": "No especificado",
+        "none": "Ninguno",
+        "useCustom": "Usar:",
         "generalInformation": "Información General",
         "veterinarian": "Médico Veterinario",
         "years": "años",
         "months": "meses",
         "days": "días",
         "on_date": "el",
-        "unspecifiedMedication": "Medicamento no especificado"
+        "unspecifiedMedication": "Medicamento no especificado",
+        "noPhone": "Sin teléfono"
     },
     "report": {
         "title": "Reportes y Estadísticas",
@@ -123,7 +126,9 @@
         "excelTopProducts": "4. TOP PRODUCTOS Y SERVICIOS MÁS VENDIDOS",
         "walkInCustomer": "Cliente General",
         "period": "Período",
-        "to": "al"
+        "to": "al",
+        "downloadPDF": "Descargar PDF",
+        "downloadHistoryPDF": "Descargar Historial (PDF)"
     },
     "alert": {
         "success": "Éxito",

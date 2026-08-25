@@ -19,7 +19,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $locale = request()?->cookie('vc_locale') ?? request()?->query('lang') ?? 'en';
+        $locale = request()?->cookie('vc_locale') ?? request()?->query('lang') ?? session('locale') ?? 'en';
+        if (!in_array($locale, ['es', 'en'])) {
+            $locale = 'en';
+        }
+        app()->setLocale($locale);
         if ($locale === 'es') {
             \Carbon\Carbon::setLocale('es');
             setlocale(LC_TIME, 'es_ES.utf8', 'es_ES', 'esp');

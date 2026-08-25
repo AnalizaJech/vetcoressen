@@ -118,6 +118,76 @@ class HistoriaClinicaForm extends Component
         return $rules;
     }
 
+    protected function messages(): array
+    {
+        $isEn = app()->getLocale() === 'en' || (request()?->cookie('vc_locale') === 'en');
+        if ($isEn) {
+            return [
+                'customer_id.required'                   => 'The owner/client is required.',
+                'pet_id.required'                        => 'The pet is required.',
+                'veterinarian_id.required'               => 'The veterinarian is required.',
+                'fecha_consulta.required'                => 'The consultation date is required.',
+                'reason.required'                        => 'The consultation reason is required.',
+                'weight.required'                        => 'The weight is required.',
+                'weight.numeric'                         => 'The weight must be a valid number.',
+                'temperatura.required'                   => 'The temperature is required.',
+                'temperatura.numeric'                    => 'The temperature must be a valid number.',
+                'temperatura.min'                        => 'The temperature must be at least :min °C.',
+                'temperatura.max'                        => 'The temperature cannot exceed :max °C.',
+                'prescripciones.*.dosage.required'        => 'The dosage is required.',
+                'prescripciones.*.frequency.required'     => 'The frequency is required.',
+                'prescripciones.*.duracion_dias.required' => 'The duration in days is required.',
+            ];
+        }
+
+        return [
+            'customer_id.required'                   => 'El propietario/cliente es obligatorio.',
+            'pet_id.required'                        => 'La mascota es obligatoria.',
+            'veterinarian_id.required'               => 'El médico veterinario es obligatorio.',
+            'fecha_consulta.required'                => 'La fecha de consulta es obligatoria.',
+            'reason.required'                        => 'El motivo de consulta es obligatorio.',
+            'weight.required'                        => 'El peso es obligatorio.',
+            'weight.numeric'                         => 'El peso debe ser un número válido.',
+            'temperatura.required'                   => 'La temperatura es obligatoria.',
+            'temperatura.numeric'                    => 'La temperatura debe ser un número válido.',
+            'temperatura.min'                        => 'La temperatura mínima es :min °C.',
+            'temperatura.max'                        => 'La temperatura máxima es :max °C.',
+            'prescripciones.*.dosage.required'        => 'La dosis es obligatoria.',
+            'prescripciones.*.frequency.required'     => 'La frecuencia es obligatoria.',
+            'prescripciones.*.duracion_dias.required' => 'La duración en días es obligatoria.',
+        ];
+    }
+
+    protected function validationAttributes(): array
+    {
+        $isEn = app()->getLocale() === 'en' || (request()?->cookie('vc_locale') === 'en');
+        if ($isEn) {
+            return [
+                'customer_id'            => 'client',
+                'pet_id'                 => 'pet',
+                'veterinarian_id'        => 'veterinarian',
+                'fecha_consulta'         => 'consultation date',
+                'reason'                 => 'consultation reason',
+                'weight'                 => 'weight',
+                'temperatura'            => 'temperature',
+                'frecuencia_cardiaca'    => 'heart rate',
+                'frecuencia_respiratoria'=> 'respiratory rate',
+            ];
+        }
+
+        return [
+            'customer_id'            => 'cliente',
+            'pet_id'                 => 'mascota',
+            'veterinarian_id'        => 'veterinario',
+            'fecha_consulta'         => 'fecha de consulta',
+            'reason'                 => 'motivo de consulta',
+            'weight'                 => 'peso',
+            'temperatura'            => 'temperatura',
+            'frecuencia_cardiaca'    => 'frecuencia cardíaca',
+            'frecuencia_respiratoria'=> 'frecuencia respiratoria',
+        ];
+    }
+
     // Cargar datos si es edición
     public function mount(?int $id = null): void
     {

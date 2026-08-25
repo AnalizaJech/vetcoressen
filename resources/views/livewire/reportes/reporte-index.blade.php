@@ -524,12 +524,8 @@
                 </div>
             </div>
 
-            {{-- Botones de Exportación --}}
+            {{-- Botón de Exportación PDF --}}
             <div class="flex items-center gap-2">
-                <button type="button" @click="downloadReport('excel')" class="btn-secondary text-xs px-3.5 py-2 flex items-center gap-1.5 shadow-sm hover:shadow transition-all">
-                    <span class="material-symbols-outlined icon-sm text-emerald-600 dark:text-emerald-400">table_view</span>
-                    <span x-text="$store.i18n.locale === 'en' ? 'Download Excel' : 'Descargar Excel'">Download Excel</span>
-                </button>
                 <button type="button" @click="downloadReport('pdf')" class="btn-primary text-xs px-3.5 py-2 flex items-center gap-1.5 shadow-sm hover:shadow transition-all">
                     <span class="material-symbols-outlined icon-sm">picture_as_pdf</span>
                     <span x-text="$store.i18n.locale === 'en' ? 'Download PDF' : 'Descargar PDF'">Download PDF</span>

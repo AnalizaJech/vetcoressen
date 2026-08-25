@@ -91,11 +91,23 @@
                     <div class="flex-1 flex flex-col gap-5">
                         <div>
                             <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2" x-text="$store.i18n.t('report.reasonForVisit') || 'Reason for Visit'">Reason for Visit</h4>
-                            <p class="text-sm whitespace-pre-wrap text-zinc-700 leading-relaxed">{{ $historia->reason ?? 'No especificado' }}</p>
+                            <p class="text-sm whitespace-pre-wrap text-zinc-700 leading-relaxed">
+                                @if($historia->reason)
+                                    {{ $historia->reason }}
+                                @else
+                                    <span class="italic text-zinc-400" x-text="$store.i18n.t('misc.notSpecified') || 'Not specified'">Not specified</span>
+                                @endif
+                            </p>
                         </div>
                         <div>
                             <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2" x-text="$store.i18n.t('report.anamnesisSigns') || 'Anamnesis / Clinical Signs'">Anamnesis / Clinical Signs</h4>
-                            <p class="text-sm whitespace-pre-wrap text-zinc-700 leading-relaxed">{{ $historia->anamnesis ?? 'No especificados' }}</p>
+                            <p class="text-sm whitespace-pre-wrap text-zinc-700 leading-relaxed">
+                                @if($historia->anamnesis)
+                                    {{ $historia->anamnesis }}
+                                @else
+                                    <span class="italic text-zinc-400" x-text="$store.i18n.t('misc.notSpecified') || 'Not specified'">Not specified</span>
+                                @endif
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -190,7 +202,13 @@
                         <span x-text="$store.i18n.t('report.diagnosis') || 'Diagnosis'">Diagnosis</span>
                     </h3>
                     <div class="flex-1 bg-white rounded-xl p-4 border border-emerald-500/5 shadow-sm">
-                        <p class="text-sm whitespace-pre-wrap font-medium text-emerald-900">{{ $historia->diagnostico_presuntivo ?? 'No especificado' }}</p>
+                        <p class="text-sm whitespace-pre-wrap font-medium text-emerald-900">
+                            @if($historia->diagnostico_presuntivo)
+                                {{ $historia->diagnostico_presuntivo }}
+                            @else
+                                <span class="italic text-zinc-400 font-normal" x-text="$store.i18n.t('misc.notSpecified') || 'Not specified'">Not specified</span>
+                            @endif
+                        </p>
                     </div>
                 </div>
 
@@ -203,7 +221,13 @@
                         <span x-text="$store.i18n.t('report.treatmentIndications') || 'Treatment & Indications'">Treatment & Indications</span>
                     </h3>
                     <div class="flex-1 bg-white rounded-xl p-4 border border-blue-500/5 shadow-sm">
-                        <p class="text-sm whitespace-pre-wrap text-blue-900">{{ $historia->tratamiento_indicaciones ?? 'Ninguno' }}</p>
+                        <p class="text-sm whitespace-pre-wrap text-blue-900">
+                            @if($historia->tratamiento_indicaciones)
+                                {{ $historia->tratamiento_indicaciones }}
+                            @else
+                                <span class="italic text-zinc-400" x-text="$store.i18n.t('misc.none') || 'None'">None</span>
+                            @endif
+                        </p>
                     </div>
                 </div>
             </div>

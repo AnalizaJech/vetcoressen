@@ -63,7 +63,7 @@ class ProductoIndex extends Component
             ->when($this->filtroProducto, fn ($q) =>
                 $q->where('id', $this->filtroProducto)
             )
-            ->when($this->filtroTipo, fn ($q, $filtro) => $q->where('type', $filtro))
+            ->when($this->filtroTipo, fn ($q, $filtro) => $q->where('type', strtoupper($filtro)))
             ->when($this->soloStockBajo, fn ($q) =>
                 $q->whereColumn('current_stock', '<=', 'minimum_stock')
             )

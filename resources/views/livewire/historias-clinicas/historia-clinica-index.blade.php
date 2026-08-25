@@ -224,7 +224,7 @@
 
                 <div class="flex items-center gap-2">
                     <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/40">
-                        {{ $clienteSeleccionado->mascotas->count() }} {{ $clienteSeleccionado->mascotas->count() === 1 ? 'Mascota' : 'Mascotas' }}
+                        <span x-text="{{ $clienteSeleccionado->mascotas->count() }} + ' ' + ({{ $clienteSeleccionado->mascotas->count() }} === 1 ? ($store.i18n.locale === 'en' ? 'Pet' : 'Mascota') : ($store.i18n.locale === 'en' ? 'Pets' : 'Mascotas'))">{{ $clienteSeleccionado->mascotas->count() }} Mascotas</span>
                     </span>
                 </div>
             </div>
@@ -262,9 +262,9 @@
                             </div>
 
                             <div class="flex items-center gap-2">
-                                <a x-bind:href="'{{ route('mascotas.historial.pdf', $mascota->id) }}?lang=' + ($store.i18n?.locale || localStorage.getItem('vc_locale') || 'es')" target="_blank" class="px-3 py-1.5 rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 dark:text-emerald-300 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 border border-emerald-200/50 dark:border-emerald-800/40 transition-all flex items-center gap-1.5 shadow-xs" title="Descargar Historial Clínico Completo">
+                                <a x-bind:href="'{{ route('mascotas.historial.pdf', $mascota->id) }}?lang=' + ($store.i18n?.locale || localStorage.getItem('vc_locale') || 'es')" target="_blank" class="px-3 py-1.5 rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 dark:text-emerald-300 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 border border-emerald-200/50 dark:border-emerald-800/40 transition-all flex items-center gap-1.5 shadow-xs" x-bind:title="$store.i18n.t('report.downloadHistoryPDF') || 'Descargar Historial (PDF)'">
                                     <span class="material-symbols-outlined text-[16px]">picture_as_pdf</span>
-                                    <span x-text="$store.i18n.t('report.downloadHistoryPDF') || 'Historial Completo (PDF)'">Historial Completo (PDF)</span>
+                                    <span x-text="$store.i18n.t('report.downloadHistoryPDF') || 'Download History (PDF)'">Download History (PDF)</span>
                                 </a>
                             </div>
                         </div>
