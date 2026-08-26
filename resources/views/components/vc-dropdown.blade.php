@@ -10,7 +10,7 @@
     'disabled' => false,
     'icon' => null,
     'allowCustom' => false,
-    'searchable' => false,
+    'searchable' => true,
 ])
 
 @php
@@ -50,9 +50,12 @@
         },
         translateKey(key) {
             if (!key) return '';
+            if (typeof key !== 'string') return String(key);
             this.localeTrigger;
             this.$store.i18n?.locale;
             
+            const isDottedKey = /^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/.test(key);
+
             let trans = this.$store.i18n?.t(key);
             if (trans && trans !== key && trans !== '') return trans;
 
@@ -67,6 +70,8 @@
                 'filter.allSuppliers': isEs ? 'Todos los Proveedores' : 'All Suppliers',
                 'filter.allVeterinarians': isEs ? 'Todos los Veterinarios' : 'All Veterinarians',
                 'filter.allStatuses': isEs ? 'Todos los Estados' : 'All Statuses',
+                'filter.allProducts': isEs ? 'Todos los Productos' : 'All Products',
+                'filter.allTypes': isEs ? 'Todos los Tipos' : 'All Types',
                 'citas.dayView': isEs ? 'Vista Día' : 'Day View',
                 'citas.weekView': isEs ? 'Vista Semana' : 'Week View',
                 'citas.monthView': isEs ? 'Vista Mes' : 'Month View',
@@ -86,7 +91,7 @@
                 'table.allVets': isEs ? 'Todos los Veterinarios' : 'All Veterinarians',
             };
             if (fallbacks[key]) return typeof fallbacks[key] === 'function' ? fallbacks[key]() : fallbacks[key];
-            if (key.includes('.')) {
+            if (isDottedKey) {
                 let part = key.split('.').pop().replace(/([A-Z])/g, ' $1').trim();
                 return part.charAt(0).toUpperCase() + part.slice(1);
             }

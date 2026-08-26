@@ -45,26 +45,137 @@ class ReportExportController extends Controller
             $endDate = Carbon::today()->endOfMonth()->endOfDay();
         }
 
+        $diffInDays = $startDate->diffInDays($endDate) + 1;
+        $prevStartDate = $startDate->copy()->subDays($diffInDays);
+        $prevEndDate = $startDate->copy()->subSecond();
+
         $sales = Sale::with(['cliente', 'detalles.producto'])
             ->where('status', 'PAGADO')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->orderByDesc('created_at')
             ->get();
 
+        $prevSales = Sale::where('status', 'PAGADO')
+            ->whereBetween('created_at', [$prevStartDate, $prevEndDate])
+            ->get();
+
         $ventasPeriodo = (float) $sales->sum('total');
+        $prevVentasPeriodo = (float) $prevSales->sum('total');
+        $porcentajeVentas = $prevVentasPeriodo > 0 ? (($ventasPeriodo - $prevVentasPeriodo) / $prevVentasPeriodo) * 100 : ($ventasPeriodo > 0 ? 100 : 0);
+
         $totalVentasCount = $sales->count();
         $ticketPromedio = $totalVentasCount > 0 ? $ventasPeriodo / $totalVentasCount : 0;
+        $prevTicketPromedio = $prevSales->count() > 0 ? $prevVentasPeriodo / $prevSales->count() : 0;
+        $porcentajeTicket = $prevTicketPromedio > 0 ? (($ticketPromedio - $prevTicketPromedio) / $prevTicketPromedio) * 100 : ($ticketPromedio > 0 ? 100 : 0);
 
+        // 1. Evolución de Ventas (Chart Data)
+        $ventasChartLabels = [];
+        $ventasChartData = [];
+        if ($periodo === 'hoy') {
+            for ($h = 7; $h <= 21; $h++) {
+                $ventasChartLabels[] = sprintf('%02d:00', $h);
+                $ventasChartData[$h] = 0;
+            }
+            foreach ($sales as $s) {
+                $hour = (int) $s->created_at->format('H');
+                if (isset($ventasChartData[$hour])) {
+                    $ventasChartData[$hour] += (float) $s->total;
+                }
+            }
+            $ventasChartData = array_values($ventasChartData);
+        } elseif ($periodo === 'anio_actual') {
+            $months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+            foreach ($months as $idx => $m) {
+                $ventasChartLabels[] = $m;
+                $ventasChartData[sprintf('%02d', $idx + 1)] = 0;
+            }
+            foreach ($sales as $s) {
+                $month = $s->created_at->format('m');
+                if (isset($ventasChartData[$month])) {
+                    $ventasChartData[$month] += (float) $s->total;
+                }
+            }
+            $ventasChartData = array_values($ventasChartData);
+        } elseif ($periodo === 'semana_actual') {
+            $start = clone $startDate;
+            for ($i = 0; $i < 7; $i++) {
+                $date = $start->copy()->addDays($i);
+                $ventasChartLabels[] = $date->translatedFormat('D d/m');
+                $ventasChartData[$date->format('Y-m-d')] = 0;
+            }
+            foreach ($sales as $s) {
+                $date = $s->created_at->format('Y-m-d');
+                if (isset($ventasChartData[$date])) {
+                    $ventasChartData[$date] += (float) $s->total;
+                }
+            }
+            $ventasChartData = array_values($ventasChartData);
+        } else {
+            $days = $startDate->diffInDays($endDate) + 1;
+            if ($days <= 31) {
+                for ($i = 0; $i < $days; $i++) {
+                    $date = $startDate->copy()->addDays($i);
+                    $ventasChartLabels[] = $date->format('d/m');
+                    $ventasChartData[$date->format('Y-m-d')] = 0;
+                }
+                foreach ($sales as $s) {
+                    $date = $s->created_at->format('Y-m-d');
+                    if (isset($ventasChartData[$date])) {
+                        $ventasChartData[$date] += (float) $s->total;
+                    }
+                }
+                $ventasChartData = array_values($ventasChartData);
+            } else {
+                $weeks = ceil($days / 7);
+                for ($i = 0; $i < $weeks; $i++) {
+                    $wStart = $startDate->copy()->addWeeks($i);
+                    $wEnd = $wStart->copy()->endOfWeek();
+                    $ventasChartLabels[] = 'Week ' . ($i + 1) . ' (' . $wStart->format('d/m') . ')';
+                    $ventasChartData[$i] = 0;
+
+                    foreach ($sales as $s) {
+                        if ($s->created_at >= $wStart && $s->created_at <= $wEnd) {
+                            $ventasChartData[$i] += (float) $s->total;
+                        }
+                    }
+                }
+                $ventasChartData = array_values($ventasChartData);
+            }
+        }
+
+        // 2. Métodos de Pago
+        $pagosMap = [
+            'EFECTIVO'       => 'Cash',
+            'TARJETA'        => 'Card',
+            'YAPE_PLIN'      => 'Yape / Plin',
+            'TRANSFERENCIA'  => 'Bank Transfer',
+        ];
+        $pagosTotales = [];
+        foreach ($pagosMap as $key => $label) {
+            $pagosTotales[$label] = (float) $sales->where('payment_method', $key)->sum('total');
+        }
+        $pagosChartLabels = array_keys($pagosTotales);
+        $pagosChartData = array_values($pagosTotales);
+
+        // 3. Citas Médicas
         $appointments = Appointment::with(['cliente', 'mascota.especie', 'veterinario'])
             ->whereBetween('fecha_hora', [$startDate, $endDate])
             ->orderBy('fecha_hora')
             ->get();
 
+        $prevAppointments = Appointment::whereBetween('fecha_hora', [$prevStartDate, $prevEndDate])->get();
+
         $totalCitas = $appointments->count();
         $citasCompletadas = $appointments->where('status', 'COMPLETADA')->count();
+        $prevCitasCompletadas = $prevAppointments->where('status', 'COMPLETADA')->count();
+        $porcentajeCitas = $prevCitasCompletadas > 0 ? (($citasCompletadas - $prevCitasCompletadas) / $prevCitasCompletadas) * 100 : ($citasCompletadas > 0 ? 100 : 0);
+
         $citasCanceladas = $appointments->where('status', 'CANCELADA')->count();
         $citasPendientes = $appointments->whereIn('status', ['PENDIENTE', 'CONFIRMADA', 'EN_PROGRESO'])->count();
+        $citasChartLabels = ['Completed', 'Cancelled', 'Pending'];
+        $citasChartData = [$citasCompletadas, $citasCanceladas, $citasPendientes];
 
+        // 4. Top Productos
         $topDetalles = DB::table('sale_details')
             ->join('sales', 'sale_details.sale_id', '=', 'sales.id')
             ->select('sale_details.description', DB::raw('SUM(sale_details.quantity) as total_qty'), DB::raw('SUM(sale_details.subtotal) as total_revenue'))
@@ -75,6 +186,10 @@ class ReportExportController extends Controller
             ->limit(10)
             ->get();
 
+        $topProductosLabels = $topDetalles->pluck('description')->toArray();
+        $topProductosData = $topDetalles->pluck('total_revenue')->map(fn($v) => (float)$v)->toArray();
+
+        // 5. Inventario
         $productosStockBajo = Product::where('type', '!=', 'SERVICIO')
             ->whereColumn('current_stock', '<=', 'minimum_stock')
             ->count();
@@ -89,12 +204,31 @@ class ReportExportController extends Controller
             ->selectRaw('SUM(current_stock * precio_final) as valor')
             ->value('valor') ?? 0;
 
+        // 6. Diagnósticos
+        $topDiagnosticos = DB::table('medical_records')
+            ->select('diagnostico_presuntivo', DB::raw('count(*) as total'))
+            ->whereNotNull('diagnostico_presuntivo')
+            ->where('diagnostico_presuntivo', '!=', '')
+            ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
+            ->groupBy('diagnostico_presuntivo')
+            ->orderByDesc('total')
+            ->limit(5)
+            ->get();
+
+        $simboloMoneda = \App\Models\Clinic::first()?->simbolo_moneda ?? 'S/';
+
         return compact(
             'periodo', 'startDate', 'endDate',
-            'ventasPeriodo', 'totalVentasCount', 'ticketPromedio',
+            'ventasPeriodo', 'porcentajeVentas',
+            'ticketPromedio', 'porcentajeTicket', 'totalVentasCount',
             'sales', 'appointments',
-            'totalCitas', 'citasCompletadas', 'citasCanceladas', 'citasPendientes',
-            'topDetalles', 'productosStockBajo', 'lotesProximosVencerCount', 'valorizacionInventario'
+            'totalCitas', 'citasCompletadas', 'porcentajeCitas', 'citasCanceladas', 'citasPendientes',
+            'topDetalles', 'topProductosLabels', 'topProductosData',
+            'productosStockBajo', 'lotesProximosVencerCount', 'valorizacionInventario',
+            'ventasChartLabels', 'ventasChartData',
+            'pagosChartLabels', 'pagosChartData',
+            'citasChartLabels', 'citasChartData',
+            'topDiagnosticos', 'simboloMoneda'
         );
     }
 

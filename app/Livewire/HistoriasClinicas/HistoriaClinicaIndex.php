@@ -32,22 +32,36 @@ class HistoriaClinicaIndex extends Component
 
     #[Url]
     public ?int $clienteSeleccionadoId = null;
+    #[Url]
+    public ?int $mascota_id = null;
+    #[Url]
+    public ?int $mascotaSeleccionadaId = null;
     public ?int $historiaEliminarId = null;
 
     public function mount(): void
     {
-        if (request()->has('clienteSeleccionadoId') && request('clienteSeleccionadoId')) {
+        if (request()->has('mascota_id') && request('mascota_id')) {
+            $this->mascota_id = (int) request('mascota_id');
+            $this->mascotaSeleccionadaId = (int) request('mascota_id');
+            $pet = \App\Models\Pet::find($this->mascota_id);
+            if ($pet) {
+                $this->clienteSeleccionadoId = (int) $pet->customer_id;
+                $this->filtroMascota = $pet->name;
+            }
+        } elseif (request()->has('mascotaSeleccionadaId') && request('mascotaSeleccionadaId')) {
+            $this->mascotaSeleccionadaId = (int) request('mascotaSeleccionadaId');
+            $this->mascota_id = (int) request('mascotaSeleccionadaId');
+            $pet = \App\Models\Pet::find($this->mascotaSeleccionadaId);
+            if ($pet) {
+                $this->clienteSeleccionadoId = (int) $pet->customer_id;
+                $this->filtroMascota = $pet->name;
+            }
+        } elseif (request()->has('clienteSeleccionadoId') && request('clienteSeleccionadoId')) {
             $this->clienteSeleccionadoId = (int) request('clienteSeleccionadoId');
         } elseif (request()->has('cliente_id') && request('cliente_id')) {
             $this->clienteSeleccionadoId = (int) request('cliente_id');
         } elseif (request()->has('cliente') && request('cliente')) {
             $this->clienteSeleccionadoId = (int) request('cliente');
-        } elseif (request()->has('mascota_id') && request('mascota_id')) {
-            $pet = \App\Models\Pet::find(request('mascota_id'));
-            if ($pet) {
-                $this->clienteSeleccionadoId = (int) $pet->customer_id;
-                $this->filtroMascota = $pet->name;
-            }
         } elseif (request()->has('busqueda') && request('busqueda') && !$this->search) {
             $this->search = (string) request('busqueda');
         }
@@ -76,16 +90,26 @@ class HistoriaClinicaIndex extends Component
     public function seleccionarCliente(int $id): void
     {
         $this->clienteSeleccionadoId = $id;
+        $this->mascotaSeleccionadaId = null;
+        $this->mascota_id = null;
     }
 
     public function volver(): void
     {
         $this->clienteSeleccionadoId = null;
+        $this->mascotaSeleccionadaId = null;
+        $this->mascota_id = null;
     }
 
     public function deseleccionarCliente(): void
     {
         $this->volver();
+    }
+
+    public function limpiarFiltroMascota(): void
+    {
+        $this->mascotaSeleccionadaId = null;
+        $this->mascota_id = null;
     }
 
     public function abrirModalEliminar(int $id): void
@@ -158,9 +182,11 @@ class HistoriaClinicaIndex extends Component
 
         $clienteSeleccionado = null;
         if ($this->clienteSeleccionadoId) {
+            $targetMascotaId = $this->mascotaSeleccionadaId ?: $this->mascota_id;
             $clienteSeleccionado = \App\Models\Customer::with([
-                'mascotas' => function ($q) {
-                    $q->with([
+                'mascotas' => function ($q) use ($targetMascotaId) {
+                    $q->when($targetMascotaId, fn ($sq) => $sq->where('id', $targetMascotaId))
+                      ->with([
                         'historiasClinicas' => function ($q2) {
                             $q2->orderByDesc('date')->with('veterinario');
                         },

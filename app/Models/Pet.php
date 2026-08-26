@@ -37,6 +37,26 @@ class Pet extends Model
         };
     }
 
+    public function getWeightAttribute()
+    {
+        return $this->current_weight;
+    }
+
+    public function getEdadTextoAttribute(): string
+    {
+        if (!$this->birth_date) {
+            return 'Edad no especificada';
+        }
+        $diff = \Carbon\Carbon::parse($this->birth_date)->diff(now());
+        if ($diff->y > 0) {
+            return $diff->y . ' ' . ($diff->y === 1 ? 'año' : 'años');
+        } elseif ($diff->m > 0) {
+            return $diff->m . ' ' . ($diff->m === 1 ? 'mes' : 'meses');
+        } else {
+            return $diff->d . ' ' . ($diff->d === 1 ? 'día' : 'días');
+        }
+    }
+
     public function clinica(): BelongsTo
     {
         return $this->belongsTo(Clinic::class, 'clinic_id');

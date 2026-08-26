@@ -204,7 +204,11 @@
                         <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1 flex flex-wrap items-center gap-3">
                             <span class="flex items-center gap-1">
                                 <span class="material-symbols-outlined text-[14px]">call</span>
-                                {{ $clienteSeleccionado->phone ?: 'Sin teléfono' }}
+                                @if($clienteSeleccionado->phone)
+                                    <span>{{ $clienteSeleccionado->phone }}</span>
+                                @else
+                                    <span x-text="$store.i18n.t('misc.noPhone') || 'Sin teléfono'">Sin teléfono</span>
+                                @endif
                             </span>
                             @if($clienteSeleccionado->email)
                                 <span class="flex items-center gap-1">
@@ -223,6 +227,13 @@
                 </div>
 
                 <div class="flex items-center gap-2">
+                    @if($mascotaSeleccionadaId || $mascota_id)
+                        <button type="button" wire:click="limpiarFiltroMascota" class="px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/40 hover:bg-blue-100 flex items-center gap-1 transition-all" title="Ver todas las mascotas del propietario">
+                            <span class="material-symbols-outlined text-xs">filter_alt</span>
+                            <span x-text="$store.i18n.t('misc.filteredPet') || 'Mascota filtrada'">Mascota filtrada</span>
+                            <span class="material-symbols-outlined text-xs ml-0.5">close</span>
+                        </button>
+                    @endif
                     <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/40">
                         <span x-text="{{ $clienteSeleccionado->mascotas->count() }} + ' ' + ({{ $clienteSeleccionado->mascotas->count() }} === 1 ? ($store.i18n.locale === 'en' ? 'Pet' : 'Mascota') : ($store.i18n.locale === 'en' ? 'Pets' : 'Mascotas'))">{{ $clienteSeleccionado->mascotas->count() }} Mascotas</span>
                     </span>
@@ -245,7 +256,7 @@
                                         <span class="badge badge-emerald text-[10px]">
                                             {{ $mascota->especie->name ?? 'Mascota' }}
                                         </span>
-                                        <span class="badge badge-gray text-[10px]" x-text="{{ $mascota->gender === 'M' ? 'true' : 'false' }} ? ($store.i18n.t('form.male') || 'Macho') : ($store.i18n.t('form.female') || 'Hembra')">
+                                        <span class="badge badge-gray text-[10px]" x-text="{{ $mascota->gender === 'M' ? 'true' : 'false' }} ? ($store.i18n.t('form.genderMale') || 'Male') : ($store.i18n.t('form.genderFemale') || 'Female')">
                                             {{ $mascota->gender === 'M' ? 'Macho' : 'Hembra' }}
                                         </span>
                                     </div>
@@ -262,9 +273,9 @@
                             </div>
 
                             <div class="flex items-center gap-2">
-                                <a x-bind:href="'{{ route('mascotas.historial.pdf', $mascota->id) }}?lang=' + ($store.i18n?.locale || localStorage.getItem('vc_locale') || 'es')" target="_blank" class="px-3 py-1.5 rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 dark:text-emerald-300 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 border border-emerald-200/50 dark:border-emerald-800/40 transition-all flex items-center gap-1.5 shadow-xs" x-bind:title="$store.i18n.t('report.downloadHistoryPDF') || 'Descargar Historial (PDF)'">
+                                <a x-bind:href="'{{ route('mascotas.historial.pdf', $mascota->id) }}?lang=' + ($store.i18n?.locale || localStorage.getItem('vc_locale') || 'es')" target="_blank" class="px-3 py-1.5 rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 dark:text-emerald-300 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 border border-emerald-200/50 dark:border-emerald-800/40 transition-all flex items-center gap-1.5 shadow-xs" x-bind:title="$store.i18n.t('report.downloadHistoryPDF') || 'Download History (PDF)'">
                                     <span class="material-symbols-outlined text-[16px]">picture_as_pdf</span>
-                                    <span x-text="$store.i18n.t('report.downloadHistoryPDF') || 'Download History (PDF)'">Download History (PDF)</span>
+                                    <span x-text="$store.i18n.t('report.downloadHistoryPDF') || 'Download PDF'">Download PDF</span>
                                 </a>
                             </div>
                         </div>
@@ -360,7 +371,10 @@
                                                             <span x-text="$store.i18n.t('report.diagnosis') || 'Diagnóstico Presuntivo'">Diagnóstico Presuntivo</span>
                                                         </h4>
                                                         <p class="text-zinc-600 dark:text-zinc-400 leading-relaxed bg-zinc-50 dark:bg-zinc-800/30 p-2.5 rounded-lg border border-zinc-100 dark:border-zinc-800">
-                                                            {{ $historia->diagnostico_presuntivo ?? 'No especificado' }}
+                                                            {{ $historia->diagnostico_presuntivo }}
+                                                            @if(!$historia->diagnostico_presuntivo)
+                                                                <span x-text="$store.i18n.t('misc.notSpecified') || 'No especificado'">No especificado</span>
+                                                            @endif
                                                         </p>
                                                     </div>
                                                     <div>
@@ -369,7 +383,10 @@
                                                             <span x-text="$store.i18n.t('report.treatmentIndications') || 'Tratamiento e Indicaciones'">Tratamiento e Indicaciones</span>
                                                         </h4>
                                                         <p class="text-zinc-600 dark:text-zinc-400 leading-relaxed bg-zinc-50 dark:bg-zinc-800/30 p-2.5 rounded-lg border border-zinc-100 dark:border-zinc-800">
-                                                            {{ $historia->tratamiento_indicaciones ?? $historia->treatment ?? 'No especificado' }}
+                                                            {{ $historia->tratamiento_indicaciones ?? $historia->treatment }}
+                                                            @if(!($historia->tratamiento_indicaciones ?? $historia->treatment))
+                                                                <span x-text="$store.i18n.t('misc.notSpecified') || 'No especificado'">No especificado</span>
+                                                            @endif
                                                         </p>
                                                     </div>
                                                     @if($historia->notas_aclaratorias)

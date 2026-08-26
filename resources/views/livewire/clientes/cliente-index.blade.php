@@ -169,11 +169,11 @@
             <div class="flex flex-col-reverse sm:flex-row gap-3 w-full mt-6">
                 <flux:spacer class="hidden sm:block" />
                 <flux:modal.close class="w-full sm:w-auto">
-                    <button type="button" class="btn-secondary w-full sm:w-auto text-xs px-4 py-2 flex items-center justify-center gap-1.5">
+                    <button type="button" class="btn-secondary w-full sm:w-auto text-xs px-5 py-2.5 rounded-xl font-bold flex items-center justify-center gap-1.5 h-10">
                         <span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'">Cancelar</span>
                     </button>
                 </flux:modal.close>
-                <button type="button" class="w-full sm:w-auto btn-danger text-xs px-4 py-2 flex items-center justify-center gap-1.5" wire:click="eliminar" x-on:click="$dispatch('modal-close', { name: 'confirmar-eliminar' })">
+                <button type="button" class="w-full sm:w-auto btn-danger text-xs px-5 py-2.5 rounded-xl font-bold flex items-center justify-center gap-1.5 h-10" wire:click="eliminar" x-on:click="$dispatch('modal-close', { name: 'confirmar-eliminar' })">
                     <span x-text="$store.i18n.t('btn.delete') || 'Eliminar'">Eliminar</span>
                 </button>
             </div>
@@ -248,14 +248,14 @@
             </div>
             @endif
 
-            <div class="flex flex-col-reverse sm:flex-row justify-end gap-2.5 mt-6 pt-4 border-t border-zinc-100 dark:border-zinc-800 w-full">
+            <div class="flex flex-col-reverse sm:flex-row justify-end gap-3 mt-6 pt-4 border-t border-zinc-100 dark:border-zinc-800 w-full">
                 <flux:modal.close class="w-full sm:w-auto">
-                    <button type="button" class="btn-secondary text-xs px-4 py-2 flex items-center justify-center gap-1.5 w-full sm:w-auto">
+                    <button type="button" class="btn-secondary text-xs px-5 py-2.5 rounded-xl font-bold flex items-center justify-center gap-1.5 w-full sm:w-auto h-10">
                         <span x-text="$store.i18n.t('btn.close') || 'Cerrar'">Cerrar</span>
                     </button>
                 </flux:modal.close>
-                <a href="{{ route('historias.index', ['clienteSeleccionadoId' => $clienteVer->id]) }}" wire:navigate class="btn-primary text-xs px-4 py-2 flex items-center justify-center gap-1.5 shadow-sm w-full sm:w-auto">
-                    <span class="material-symbols-outlined text-[16px]">clinical_notes</span>
+                <a href="{{ route('historias.index', ['clienteSeleccionadoId' => $clienteVer->id]) }}" wire:navigate class="btn-primary text-xs px-5 py-2.5 rounded-xl font-bold flex items-center justify-center gap-1.5 shadow-sm w-full sm:w-auto h-10">
+                    <span class="material-symbols-outlined text-[18px]">clinical_notes</span>
                     <span x-text="$store.i18n.t('records.title') || 'Historias Clínicas'">Historias Clínicas</span>
                 </a>
             </div>

@@ -49,22 +49,40 @@ document.addEventListener("alpine:init", () => {
 
         t(key, fallback = null) {
             this.locale; // Ensure Alpine tracks this dependency for reactivity
-            if (!key) return fallback !== null ? fallback : '';
+            if (!key || typeof key !== 'string') return fallback !== null ? fallback : (key || '');
             
+            const isDottedKey = /^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/.test(key);
+
             if (this.loaded && this.dict) {
-                const keys = key.split(".");
-                let result = this.dict;
-                let found = true;
-                for (const k of keys) {
-                    if (result && typeof result === "object" && k in result) {
-                        result = result[k];
-                    } else {
-                        found = false;
-                        break;
+                if (isDottedKey) {
+                    const keys = key.split(".");
+                    let result = this.dict;
+                    let found = true;
+                    for (const k of keys) {
+                        if (result && typeof result === "object") {
+                            if (k in result) {
+                                result = result[k];
+                            } else if (k.toLowerCase() in result) {
+                                result = result[k.toLowerCase()];
+                            } else {
+                                found = false;
+                                break;
+                            }
+                        } else {
+                            found = false;
+                            break;
+                        }
                     }
-                }
-                if (found && result !== undefined && result !== null && result !== '') {
-                    return result;
+                    if (found && result !== undefined && result !== null && result !== '') {
+                        return result;
+                    }
+                } else {
+                    if (key in this.dict) {
+                        return this.dict[key];
+                    }
+                    if (key.toLowerCase() in this.dict) {
+                        return this.dict[key.toLowerCase()];
+                    }
                 }
             }
 
@@ -72,8 +90,17 @@ document.addEventListener("alpine:init", () => {
                 return fallback;
             }
 
-            // Auto-formatear clave camelCase a texto con mayúscula inicial
-            const lastKey = key.includes('.') ? key.split('.').pop() : key;
+            // Si no es una clave con notación de punto válida (ej: nombres de productos con decimales como 6.8kg), devolver tal cual
+            if (!isDottedKey) {
+                return key;
+            }
+
+            // Auto-formatear clave camelCase a texto con mayúscula inicial solo si es una clave i18n
+            const lastKey = key.split('.').pop();
+            if (/^[A-Z0-9_]+$/.test(lastKey)) {
+                const clean = lastKey.replace(/_/g, ' ').toLowerCase();
+                return clean.charAt(0).toUpperCase() + clean.slice(1);
+            }
             const formatted = lastKey.replace(/([A-Z])/g, ' $1').trim();
             return formatted.charAt(0).toUpperCase() + formatted.slice(1);
         }

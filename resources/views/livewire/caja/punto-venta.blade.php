@@ -364,10 +364,10 @@
                                 
                                 {{-- Quick Action Buttons --}}
                                 <div class="mt-2 flex flex-wrap gap-1.5">
-                                    <button type="button" wire:click="$set('monto_recibido', {{ $total }})" class="px-2 py-1 text-xs bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 rounded text-zinc-700 dark:text-zinc-300 font-medium transition-colors" x-text="$store.i18n.t('form.exact') || 'Exacto'">Exacto</button>
-                                    <button type="button" wire:click="$set('monto_recibido', 20)" class="px-2 py-1 text-xs bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 rounded text-zinc-700 dark:text-zinc-300 font-medium transition-colors">S/ 20</button>
-                                    <button type="button" wire:click="$set('monto_recibido', 50)" class="px-2 py-1 text-xs bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 rounded text-zinc-700 dark:text-zinc-300 font-medium transition-colors">S/ 50</button>
-                                    <button type="button" wire:click="$set('monto_recibido', 100)" class="px-2 py-1 text-xs bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 rounded text-zinc-700 dark:text-zinc-300 font-medium transition-colors">S/ 100</button>
+                                    <button type="button" wire:click="$set('monto_recibido', {{ number_format($total, 2, '.', '') }})" class="px-2.5 py-1 text-xs bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 rounded-lg text-zinc-700 dark:text-zinc-300 font-medium transition-colors" x-text="$store.i18n.t('form.exact') || 'Exacto'">Exacto</button>
+                                    <button type="button" wire:click="$set('monto_recibido', 20)" class="px-2.5 py-1 text-xs bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 rounded-lg text-zinc-700 dark:text-zinc-300 font-medium transition-colors">S/ 20</button>
+                                    <button type="button" wire:click="$set('monto_recibido', 50)" class="px-2.5 py-1 text-xs bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 rounded-lg text-zinc-700 dark:text-zinc-300 font-medium transition-colors">S/ 50</button>
+                                    <button type="button" wire:click="$set('monto_recibido', 100)" class="px-2.5 py-1 text-xs bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 rounded-lg text-zinc-700 dark:text-zinc-300 font-medium transition-colors">S/ 100</button>
                                 </div>
                             </flux:field>
                             <flux:field>

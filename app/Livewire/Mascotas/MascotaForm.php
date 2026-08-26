@@ -46,22 +46,24 @@ class MascotaForm extends Component
         ];
     }
 
-    public function mount(?int $id = null): void
+    public function mount(?int $id = null, ?int $customer_id = null): void
     {
+        if ($customer_id) {
+            $this->customer_id = (string) $customer_id;
+        }
         if ($id) {
             $mascota = Pet::with('cliente')->findOrFail($id);
             $this->mascotaId = $mascota->id;
             $this->customer_id = (string) $mascota->customer_id;
             $this->name = $mascota->name;
             $this->especie_id = $mascota->species_id ? (int) $mascota->species_id : null;
-            $this->raza_id = $mascota->raza_id ? (string) $mascota->raza_id : null;
+            $this->raza_id = $mascota->raza_id ? (int) $mascota->raza_id : null;
             $this->gender = match ($mascota->gender) { 'Macho' => 'M', 'Hembra' => 'H', default => $mascota->gender ?? 'M' };
             $this->color = $mascota->color ?? '';
             $this->birth_date = $mascota->birth_date?->format('Y-m-d') ?? '';
             $this->peso_actual = $mascota->current_weight ? (string) $mascota->current_weight : '';
-            $this->esterilizado = $mascota->esterilizado;
+            $this->esterilizado = (bool) $mascota->esterilizado;
             $this->medical_notes = $mascota->medical_notes ?? '';
-            $this->busquedaCliente = $mascota->cliente?->nombre_completo ?? '';
         }
     }
 
@@ -94,16 +96,16 @@ class MascotaForm extends Component
 
         $datos = [
             'clinic_id'       => 1,
-            'customer_id'       => $this->customer_id,
-            'name'           => $this->name,
-            'species_id'       => $this->especie_id,
-            'raza_id'          => $this->raza_id ?: null,
-            'gender'             => $sexoNormalizado,
-            'color'            => $this->color ?: null,
-            'birth_date' => $this->birth_date ?: null,
-            'current_weight'      => $this->peso_actual ?: null,
-            'esterilizado'     => $this->esterilizado,
-            'medical_notes'    => $this->medical_notes ?: null,
+            'customer_id'     => $this->customer_id,
+            'name'            => $this->name,
+            'species_id'      => $this->especie_id,
+            'raza_id'         => $this->raza_id ?: null,
+            'gender'          => $sexoNormalizado,
+            'color'           => $this->color ?: null,
+            'birth_date'      => $this->birth_date ?: null,
+            'current_weight'  => $this->peso_actual ?: null,
+            'esterilizado'    => $this->esterilizado,
+            'medical_notes'   => $this->medical_notes ?: null,
         ];
 
         if ($this->mascotaId) {
@@ -120,11 +122,7 @@ class MascotaForm extends Component
     public function render()
     {
         $clientesDisponibles = Customer::where('is_active', true)
-            ->when($this->busquedaCliente, fn ($q) =>
-                $q->where('first_name', 'like', "%{$this->busquedaCliente}%")
-                  ->orWhere('last_name', 'like', "%{$this->busquedaCliente}%")
-                  ->orWhere('numero_documento', 'like', "%{$this->busquedaCliente}%")
-            )
+            ->when($this->customer_id, fn ($q) => $q->orWhere('id', $this->customer_id))
             ->orderBy('first_name')
             ->orderBy('last_name')
             ->get();

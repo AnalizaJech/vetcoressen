@@ -189,31 +189,35 @@ class PuntoVenta extends Component
         $this->recalcularTotales();
     }
 
-    // Recalcular subtotal, IGV y total
+    // Recalcular subtotal, IGV y total con redondeo estricto a 2 decimales
     public function recalcularTotales(): void
     {
         $this->subtotal = 0;
         $this->igv = 0;
 
         foreach ($this->carrito as $item) {
+            $subItem = round((float) $item['subtotal'], 2);
             if ($item['afecto_igv']) {
-                // El precio base ya no incluye IGV, lo sumamos encima
-                $baseItem = $item['subtotal'];
-                $igvItem = $item['subtotal'] * self::IGV_TASA;
+                $baseItem = $subItem;
+                $igvItem = round($subItem * self::IGV_TASA, 2);
                 $this->subtotal += $baseItem;
                 $this->igv += $igvItem;
             } else {
-                // Exonerado de IGV
-                $this->subtotal += $item['subtotal'];
+                $this->subtotal += $subItem;
             }
         }
 
-        $this->total = $this->subtotal + $this->igv;
+        $this->subtotal = round($this->subtotal, 2);
+        $this->igv = round($this->igv, 2);
+        $this->total = round($this->subtotal + $this->igv, 2);
         $this->calcularVuelto();
     }
 
     public function updatedMontoRecibido()
     {
+        if ($this->monto_recibido !== '' && is_numeric($this->monto_recibido)) {
+            $this->monto_recibido = (string) round((float) $this->monto_recibido, 2);
+        }
         $this->calcularVuelto();
     }
 
@@ -228,8 +232,8 @@ class PuntoVenta extends Component
     public function calcularVuelto()
     {
         if ($this->metodo_pago === 'EFECTIVO') {
-            $monto = (float) $this->monto_recibido;
-            $this->vuelto = max(0, $monto - $this->total);
+            $monto = ($this->monto_recibido !== '' && is_numeric($this->monto_recibido)) ? round((float) $this->monto_recibido, 2) : 0;
+            $this->vuelto = round(max(0, $monto - $this->total), 2);
         } else {
             $this->vuelto = 0;
         }

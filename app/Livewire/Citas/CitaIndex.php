@@ -43,6 +43,7 @@ class CitaIndex extends Component
     public string $vistaActiva = 'calendario';
 
     // ID de la cita pendiente de eliminar (modal de confirmación)
+    public ?int $citaEliminarId = null;
     public ?Appointment $citaVer = null;
 
     public function ver(int $id): void

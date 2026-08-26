@@ -128,7 +128,7 @@
                                     default => 'badge-amber',
                                 };
                             @endphp
-                            <span class="badge {{ $estadoClase }} text-[10px] px-1.5 py-0 mt-1" x-text="$store.i18n.t('status.{{ $venta->status }}')">{{ $venta->status }}</span>
+                            <span class="badge {{ $estadoClase }} text-[10px] px-2 py-0.5 mt-1 font-semibold tracking-normal" x-text="$store.i18n.t('status.{{ strtolower($venta->status) }}')">{{ $venta->status }}</span>
                         </div>
                     </div>
 

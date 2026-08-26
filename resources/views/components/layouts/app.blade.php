@@ -25,38 +25,49 @@
             'panel' => 'dashboard',
             'pets' => 'pets',
             'mascotas' => 'pets',
+            'mascota' => 'nueva_mascota',
             'nueva mascota' => 'nueva_mascota',
             'new pet' => 'nueva_mascota',
             'editar mascota' => 'editar_mascota',
             'edit pet' => 'editar_mascota',
             'clients' => 'clients',
             'clientes' => 'clients',
+            'cliente' => 'nuevo_cliente',
             'nuevo cliente' => 'nuevo_cliente',
             'new client' => 'nuevo_cliente',
             'editar cliente' => 'editar_cliente',
             'edit client' => 'editar_cliente',
             'appointments' => 'appointments',
             'citas' => 'appointments',
+            'cita' => 'nueva_cita',
             'nueva cita' => 'nueva_cita',
             'new appointment' => 'nueva_cita',
             'editar cita' => 'editar_cita',
             'edit appointment' => 'editar_cita',
             'inventory' => 'inventory',
             'inventario' => 'inventory',
+            'producto' => 'nuevo_producto',
             'nuevo producto' => 'nuevo_producto',
             'new product' => 'nuevo_producto',
             'editar producto' => 'editar_producto',
             'edit product' => 'editar_producto',
             'recepcionar pedido (entrada de stock)' => 'entrada_productos',
             'entrada de productos' => 'entrada_productos',
+            'entrada de stock' => 'entrada_productos',
             'stock entry' => 'entrada_productos',
             'historias clínicas' => 'records',
             'historias clinicas' => 'records',
             'historial clínico' => 'records',
+            'historial clinico' => 'records',
             'medical records' => 'records',
+            'historia clínica' => 'nueva_historia',
+            'historia clinica' => 'nueva_historia',
+            'medical record' => 'nueva_historia',
             'nueva historia clínica' => 'nueva_historia',
+            'nueva historia' => 'nueva_historia',
             'new medical record' => 'nueva_historia',
             'editar historia clínica' => 'editar_historia',
+            'editar historia' => 'editar_historia',
             'edit medical record' => 'editar_historia',
             'ver_historia' => 'ver_historia',
             'historial_mascota' => 'historial_mascota',
@@ -67,18 +78,21 @@
             'arqueo de caja' => 'arqueo_caja',
             'cash count' => 'arqueo_caja',
             'proveedores' => 'suppliers',
+            'proveedor' => 'nuevo_proveedor',
             'suppliers' => 'suppliers',
             'nuevo proveedor' => 'nuevo_proveedor',
             'new supplier' => 'nuevo_proveedor',
             'editar proveedor' => 'editar_proveedor',
             'edit supplier' => 'editar_proveedor',
             'sucursales' => 'branches',
+            'sucursal' => 'nueva_sucursal',
             'branches' => 'branches',
             'nueva sucursal' => 'nueva_sucursal',
             'new branch' => 'nueva_sucursal',
             'editar sucursal' => 'editar_sucursal',
             'edit branch' => 'editar_sucursal',
             'usuarios' => 'users',
+            'usuario' => 'nuevo_usuario',
             'users' => 'users',
             'nuevo usuario' => 'nuevo_usuario',
             'new user' => 'nuevo_usuario',
@@ -87,6 +101,7 @@
             'roles y permisos' => 'roles_and_permissions',
             'roles & permissions' => 'roles_and_permissions',
             'roles' => 'roles_and_permissions',
+            'rol' => 'nuevo_rol',
             'nuevo rol' => 'nuevo_rol',
             'new role' => 'nuevo_rol',
             'editar rol' => 'editar_rol',
@@ -98,6 +113,7 @@
             'ajustes' => 'settings',
             'configuración' => 'settings',
             'configuracion' => 'settings',
+            'settings' => 'settings',
         ];
 
         $titleKey = $titleAliases[$lowerTitle] ?? null;
@@ -484,21 +500,23 @@
     <script>
         window.updateDocumentTitle = function() {
             const meta = document.querySelector('meta[name="current-title-key"]');
-            if (meta && window.Alpine && Alpine.store('i18n')) {
+            const suffixMeta = document.querySelector('meta[name="current-title-suffix"]');
+            const suffix = suffixMeta ? suffixMeta.content : '';
+            if (meta && meta.content && window.Alpine && Alpine.store('i18n')) {
                 const key = 'title.' + meta.content;
                 const translated = Alpine.store('i18n').t(key);
                 if (translated && translated !== key) {
-                    document.title = translated + ' - VETCORESSEN';
+                    document.title = translated + (suffix || '') + ' - VETCORESSEN';
                 }
             }
         };
 
-        document.addEventListener('livewire:navigated', () => { updateDocumentTitle(); });
+        document.addEventListener('livewire:navigated', () => { setTimeout(updateDocumentTitle, 50); });
         window.addEventListener('language-changed', () => { updateDocumentTitle(); });
         document.addEventListener('alpine:init', () => {
-            setTimeout(updateDocumentTitle, 300);
+            setTimeout(updateDocumentTitle, 150);
         });
-        setTimeout(updateDocumentTitle, 300);
+        setTimeout(updateDocumentTitle, 150);
     </script>
 </body>
 </html>

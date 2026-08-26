@@ -521,12 +521,14 @@
                 </div>
             </div>
             @if($citaVer->notes)
-            <div class="mt-4 p-4 rounded-xl bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/30">
+            <div class="mt-4 mb-6 p-4 rounded-xl bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/30">
                 <p class="text-[10px] font-bold text-amber-600 dark:text-amber-500 mb-2 uppercase tracking-wider flex items-center gap-2">
                     <span class="material-symbols-outlined text-sm">sticky_note_2</span> <span x-text="$store.i18n.t('form.additionalNotes') || 'Notas adicionales'">Notas adicionales</span>
                 </p>
                 <p class="text-sm text-amber-900 dark:text-amber-200 whitespace-pre-line">{{ $citaVer->notes }}</p>
             </div>
+            @else
+            <div class="mb-4"></div>
             @endif
             
             <div class="flex flex-col sm:flex-row flex-wrap justify-between items-center gap-3 pt-6 border-t border-zinc-200 dark:border-zinc-700">
@@ -560,7 +562,7 @@
                         <span class="material-symbols-outlined icon-sm">edit</span>
                     </a>
                     
-                    <button type="button" @click="$wire.citaEliminarId = {{ $citaVer->id }}; Flux.modal('ver-cita').close(); Flux.modal('confirmar-eliminar').show()" class="w-full sm:w-auto px-3.5 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl shadow-sm hover:shadow text-xs font-bold flex items-center justify-center transition-all">
+                    <button type="button" @click="$wire.set('citaEliminarId', {{ $citaVer->id }}); Flux.modal('ver-cita').close(); Flux.modal('confirmar-eliminar').show()" class="w-full sm:w-auto px-3.5 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl shadow-sm hover:shadow text-xs font-bold flex items-center justify-center transition-all">
                         <span class="material-symbols-outlined icon-sm">delete</span>
                     </button>
                 </div>
@@ -585,11 +587,11 @@
             <div class="flex flex-col-reverse sm:flex-row gap-3 w-full mt-6">
                 <flux:spacer class="hidden sm:block" />
                 <flux:modal.close class="w-full sm:w-auto">
-                    <button type="button" class="btn-secondary w-full sm:w-auto text-xs px-4 py-2 flex items-center justify-center gap-1.5">
+                    <button type="button" class="btn-secondary w-full sm:w-auto text-xs px-4 py-2.5 rounded-xl font-bold flex items-center justify-center gap-1.5">
                         <span x-text="$store.i18n.t('btn.cancel') || 'Cancel'">Cancel</span>
                     </button>
                 </flux:modal.close>
-                <button type="button" class="w-full sm:w-auto btn-danger text-xs px-4 py-2 font-medium justify-center" wire:click="eliminar" x-on:click="$dispatch('modal-close', { name: 'confirmar-eliminar' })">
+                <button type="button" class="w-full sm:w-auto btn-danger text-xs px-4 py-2.5 rounded-xl font-bold justify-center" wire:click="eliminar" x-on:click="$dispatch('modal-close', { name: 'confirmar-eliminar' })">
                     <span x-text="$store.i18n.t('btn.delete') || 'Delete'">Delete</span>
                 </button>
             </div>

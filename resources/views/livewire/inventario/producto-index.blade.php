@@ -72,19 +72,18 @@
                 <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5" x-text="$store.i18n.t('filter.stockStatus') || 'Stock Status'">
                     Stock Status
                 </label>
-                <div class="vc-dropdown-trigger flex items-center justify-between gap-3 cursor-pointer select-none"
-                     x-data="{ active: @entangle('soloStockBajo') }"
-                     @click="active = !active">
+                <div class="vc-dropdown-trigger flex items-center justify-between gap-3 cursor-pointer select-none h-[42px]"
+                     @click="$wire.set('soloStockBajo', !$wire.soloStockBajo)">
                     <div class="flex items-center gap-2 truncate">
                         <span class="material-symbols-outlined text-[18px] text-zinc-400 dark:text-zinc-500 shrink-0">inventory</span>
                         <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300" x-text="$store.i18n.t('misc.lowStockOnly') || 'Low Stock Only'">Low Stock Only</span>
                     </div>
                     <button type="button" role="switch" 
-                            :aria-checked="active ? 'true' : 'false'"
+                            :aria-checked="$wire.soloStockBajo ? 'true' : 'false'"
                             class="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
-                            :class="active ? 'bg-emerald-500' : 'bg-zinc-300 dark:bg-zinc-600'">
+                            :class="$wire.soloStockBajo ? 'bg-emerald-500' : 'bg-zinc-300 dark:bg-zinc-600'">
                         <span class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out"
-                              :class="active ? 'translate-x-4' : 'translate-x-0'"></span>
+                              :class="$wire.soloStockBajo ? 'translate-x-4' : 'translate-x-0'"></span>
                     </button>
                 </div>
             </div>
@@ -242,11 +241,11 @@
             <div class="flex flex-col-reverse sm:flex-row gap-3 w-full mt-6">
                 <flux:spacer class="hidden sm:block" />
                 <flux:modal.close class="w-full sm:w-auto">
-                    <button type="button" class="btn-secondary w-full sm:w-auto text-xs px-4 py-2 flex items-center justify-center gap-1.5">
+                    <button type="button" class="btn-secondary w-full sm:w-auto text-xs px-4 py-2.5 rounded-xl font-bold flex items-center justify-center gap-1.5">
                         <span x-text="$store.i18n.t('btn.cancel') || 'Cancelar'">Cancelar</span>
                     </button>
                 </flux:modal.close>
-                <button type="button" class="w-full sm:w-auto btn-danger text-xs px-4 py-2 flex items-center justify-center gap-1.5" wire:click="eliminar" x-on:click="$dispatch('modal-close', { name: 'confirmar-eliminar' })">
+                <button type="button" class="w-full sm:w-auto btn-danger text-xs px-4 py-2.5 rounded-xl font-bold flex items-center justify-center gap-1.5" wire:click="eliminar" x-on:click="$dispatch('modal-close', { name: 'confirmar-eliminar' })">
                     <span x-text="$store.i18n.t('btn.delete') || 'Eliminar'">Eliminar</span>
                 </button>
             </div>
