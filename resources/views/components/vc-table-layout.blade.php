@@ -58,12 +58,12 @@
 
     {{-- Content --}}
     @if(isset($data) && $data->isEmpty())
-        <div class="vc-empty-state my-8">
-            <div class="vc-empty-icon">
-                <span class="material-symbols-outlined">{{ $icon }}</span>
+        <div class="vc-empty-state my-6 w-full flex flex-col items-center justify-center text-center p-12 bg-white dark:bg-vc-surface border border-zinc-200/80 dark:border-zinc-800 rounded-2xl shadow-xs">
+            <div class="vc-empty-icon w-16 h-16 rounded-2xl bg-zinc-100 dark:bg-zinc-800/80 flex items-center justify-center text-zinc-400 dark:text-zinc-500 mb-4 shadow-xs">
+                <span class="material-symbols-outlined text-3xl">{{ $icon }}</span>
             </div>
-            <p class="vc-empty-title" {!! $emptyTitleKey ? 'x-text="$store.i18n.t(\''.$emptyTitleKey.'\') || \''.$emptyTitle.'\'"' : '' !!}>{{ $emptyTitle }}</p>
-            <p class="vc-empty-text" {!! $emptyTextKey ? 'x-text="$store.i18n.t(\''.$emptyTextKey.'\') || \''.$emptyText.'\'"' : '' !!}>{{ $emptyText }}</p>
+            <p class="vc-empty-title text-base font-bold text-zinc-800 dark:text-zinc-200 mb-1" {!! $emptyTitleKey ? 'x-text="$store.i18n.t(\''.$emptyTitleKey.'\') || \''.$emptyTitle.'\'"' : '' !!}>{{ $emptyTitle }}</p>
+            <p class="vc-empty-text text-xs text-zinc-500 dark:text-zinc-400 max-w-sm" {!! $emptyTextKey ? 'x-text="$store.i18n.t(\''.$emptyTextKey.'\') || \''.$emptyText.'\'"' : '' !!}>{{ $emptyText }}</p>
         </div>
     @else
         <div class="vc-responsive-table-container">

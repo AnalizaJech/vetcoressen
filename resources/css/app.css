@@ -439,6 +439,61 @@ select,
     font-weight: 700;
 }
 
+/* ── Estado Vacío (Empty State) ── */
+.vc-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 3.5rem 1.5rem;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+.dark .vc-empty-state, html.dark .vc-empty-state {
+    background-color: #18181b;
+    border-color: rgba(255, 255, 255, 0.08);
+}
+.vc-empty-icon {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 1rem;
+    background-color: #f1f5f9;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+.dark .vc-empty-icon, html.dark .vc-empty-icon {
+    background-color: #27272a;
+    color: #71717a;
+}
+.vc-empty-icon span {
+    font-size: 2rem;
+}
+.vc-empty-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 0.25rem 0;
+}
+.dark .vc-empty-title, html.dark .vc-empty-title {
+    color: #f4f4f5;
+}
+.vc-empty-text {
+    font-size: 0.8125rem;
+    color: #64748b;
+    max-width: 24rem;
+    margin: 0;
+    line-height: 1.4;
+}
+.dark .vc-empty-text, html.dark .vc-empty-text {
+    color: #a1a1aa;
+}
+
 /* ── Paneles y Tarjetas Base ── */
 .vc-panel {
     background-color: #ffffff;

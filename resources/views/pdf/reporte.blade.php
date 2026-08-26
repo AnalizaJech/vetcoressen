@@ -472,21 +472,21 @@
                             {{-- Detalle Estado --}}
                             <div class="bar-row">
                                 <div class="bar-label-line">
-                                    <span class="bar-label-left" style="color: #059669;">● {{ $t('status.completed', 'Completed') }}</span>
+                                    <span class="bar-label-left" style="color: #059669;"><span style="display:inline-block; width:5px; height:5px; border-radius:3px; background-color:#10b981; margin-right:3px; vertical-align:middle;"></span>{{ $t('status.completed', 'Completed') }}</span>
                                     <span class="bar-label-right">{{ $citasCompletadas }} ({{ $pctComp }}%)</span>
                                     <div class="clear"></div>
                                 </div>
                             </div>
                             <div class="bar-row">
                                 <div class="bar-label-line">
-                                    <span class="bar-label-left" style="color: #7c3aed;">● {{ $t('status.pending', 'Pending / In Progress') }}</span>
+                                    <span class="bar-label-left" style="color: #7c3aed;"><span style="display:inline-block; width:5px; height:5px; border-radius:3px; background-color:#8b5cf6; margin-right:3px; vertical-align:middle;"></span>{{ $t('status.pending', 'Pending / In Progress') }}</span>
                                     <span class="bar-label-right">{{ $citasPendientes }} ({{ $pctPend }}%)</span>
                                     <div class="clear"></div>
                                 </div>
                             </div>
                             <div class="bar-row">
                                 <div class="bar-label-line">
-                                    <span class="bar-label-left" style="color: #dc2626;">● {{ $t('status.cancelled', 'Cancelled') }}</span>
+                                    <span class="bar-label-left" style="color: #dc2626;"><span style="display:inline-block; width:5px; height:5px; border-radius:3px; background-color:#ef4444; margin-right:3px; vertical-align:middle;"></span>{{ $t('status.cancelled', 'Cancelled') }}</span>
                                     <span class="bar-label-right">{{ $citasCanceladas }} ({{ $pctCanc }}%)</span>
                                     <div class="clear"></div>
                                 </div>

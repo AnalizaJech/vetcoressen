@@ -72,7 +72,7 @@
                 <label class="block text-xs font-semibold text-zinc-600 dark:text-zinc-400 mb-1.5" x-text="$store.i18n.t('filter.stockStatus') || 'Stock Status'">
                     Stock Status
                 </label>
-                <div class="vc-dropdown-trigger flex items-center justify-between gap-3 cursor-pointer select-none h-[42px]"
+                <div class="vc-dropdown-trigger flex items-center justify-between gap-3 cursor-pointer select-none"
                      @click="$wire.set('soloStockBajo', !$wire.soloStockBajo)">
                     <div class="flex items-center gap-2 truncate">
                         <span class="material-symbols-outlined text-[18px] text-zinc-400 dark:text-zinc-500 shrink-0">inventory</span>

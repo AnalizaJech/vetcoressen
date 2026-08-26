@@ -30,6 +30,7 @@ class ProductoIndex extends Component
 
     public function updatedFiltroProducto(): void { $this->resetPage(); }
     public function updatedFiltroTipo(): void { $this->resetPage(); }
+    public function updatedFiltroStock(): void { $this->resetPage(); }
     public function updatedSoloStockBajo(): void { $this->resetPage(); }
 
     public function ver(int $id): void
