@@ -12,9 +12,9 @@
 
 ## 📌 About the Project
 
-**VetCoressen** is a modern, scalable, and fully automated management system designed specifically for veterinary clinics. Built on top of the robust **Laravel** framework and the reactive **Livewire** stack, the system optimizes and streamlines daily clinical operations.
+**VetCoressen** is a web application designed to streamline the management of veterinary medical records through a unified digital environment. It centralizes the information generated during veterinary care and supports the traceability of each patient's health for clinical decision-making.
 
-From managing electronic health records and automating client reminders to comprehensive Point of Sale (POS) operations with integrated electronic invoicing (direct integration with SUNAT via Nubefact), VetCoressen ensures that veterinary professionals can focus entirely on patient care instead of administrative burdens.
+The application manages client records, pets, appointments, and medical records through interoperable modules. Its user-experience-oriented interface is designed to facilitate efficient access to clinical information and support agile veterinary-care workflows.
 
 ---
 
@@ -23,9 +23,6 @@ From managing electronic health records and automating client reminders to compr
 - 🏥 **Electronic Medical Records**: Maintain highly detailed electronic medical records for each pet. Keep continuous track of diagnoses, treatments, vaccines, prescriptions, and medical evolution.
 - 📅 **Smart Appointment Management**: Schedule, reschedule, and manage veterinary appointments using an interactive calendar interface. Clients receive automated email reminders to reduce no-shows.
 - 🐶 **Client & Pet Management**: Organize detailed profiles of owners and their pets. Instantly access medical histories, upcoming appointments, and complete billing histories.
-- 📦 **Advanced Inventory Control**: Maintain absolute control over your stock of products, medicines, and food. The system automatically tracks **product batches** and **expiration dates**, generating critical alerts to ensure patient safety.
-- 💳 **Cashier & Point of Sale (POS)**: A complete Point of Sale system with a dynamic cart, real-time tax (IGV) calculation, cash register management (openings and closings), and detailed receipt generation.
-- 🧾 **Electronic Invoicing**: Native and direct integration with **Nubefact** to issue legally valid electronic receipts (boletas and facturas) for SUNAT.
 - 🏢 **Multi-Branch Support**: Ready to scale. Manage operations, inventory, and staff across multiple physical locations from a centralized control panel.
 - 📊 **Dynamic Reports & Analytics**: Monitor business health through interactive charts, check top recurring diseases/symptoms with predictive stock planning, and manage user roles/permissions.
 - 🌐 **Native Bilingual Support**: Fully internationalized with on-the-fly language switching between **English (`en`)** and **Spanish (`es`)**.
@@ -38,24 +35,21 @@ From managing electronic health records and automating client reminders to compr
 
 - **Backend Architecture**: PHP 8.2+, Laravel 11.x, Livewire 3.x, Livewire Flux 2.x
 - **Frontend & UI**: Tailwind CSS 4.0, Vite 7.0, AlpineJS, FullCalendar 6.1
-- **Third-Party Integrations**: 
-  - 📧 **Resend**: For transactional emails and appointment reminders.
-  - 🧾 **Nubefact**: For seamless electronic invoicing with SUNAT.
-  - 🔎 **PeruAPI**: Automatic real-time DNI and RUC verification.
-  - 📱 **Twilio**: SMS and WhatsApp messaging capabilities.
-- **Development Tools**: Laravel Pail, Sail, Pint, and PestPHP.
 
 ---
 
 ## 🛠️ Installation Guide
 
-### Prerequisites
+VETCORESSEN is designed to run locally or in the cloud.
 
-Ensure your local development environment meets the following requirements:
-- **PHP** >= 8.2
-- **Composer** (PHP dependency manager)
-- **Node.js** & **npm**
-- **MySQL** or MariaDB
+### Minimum system requirements
+
+- **Web server:** Apache 2.4.58
+- **Programming language:** PHP 8.2.12
+- **Database:** MariaDB 10.4.32
+- **Storage:** 500 MB or more
+- **Web browser:** Google Chrome, Mozilla Firefox, or Opera
+
 
 ### Fast Installation
 
@@ -106,7 +100,8 @@ If you prefer setting up the environment step-by-step:
 To start the local development environment (which runs the PHP server, queue worker, log viewer, and Vite server with Hot-Module Replacement simultaneously), execute:
 
 ```bash
-composer run dev
+php artisan serve
+npm run dev
 ```
 
 ---
@@ -118,7 +113,6 @@ A summary of the main directories driving the application logic:
 - `app/Livewire/` – Contains all interactive and reactive frontend components (e.g., POS, Inventory, Appointments).
 - `app/Models/` – Eloquent ORM models representing the database schema.
 - `app/Services/` – Service classes for business logic and third-party integrations (e.g., `InventoryService`, `NubefactService`).
-- `app/Mail/` – Mailable classes responsible for sending email notifications and digital receipts.
 - `app/Jobs/` – Asynchronous queued jobs for background processing.
 - `resources/views/` – Blade views and UI components (integrated with AlpineJS i18n for internationalization).
 - `public/locales/` – Dynamic translation dictionaries for bilingual support.
@@ -142,10 +136,9 @@ A summary of the main directories driving the application logic:
 **Academic Advisor**:  
 **Alex Abelardo Pacheco-Pumaleque**
 
-*This software was developed within the framework of the research project **"Innovation in Veterinary Management: Automated Reminder System to Optimize Clinical Record Management in San Vicente de Cañete, 2025"**.*
 
 ### 🏛️ Funding
-This project was proudly funded by the **Vice-Presidency of Research** of the UNDC, awarded during the *I Research Contest for the Development of Innovations and Intellectual Property*, under grant contract **N° 021-2024-UNDC/CO/P/DGA**.
+This project funded by the **Vice-Presidency of Research** of the UNDC, awarded during the *"I Research Contest for the Development of Innovations and Intellectual Property"*, under grant contract **N° 021-2024-UNDC/CO/P/DGA**.
 
 ---
 
