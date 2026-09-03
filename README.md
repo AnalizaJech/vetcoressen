@@ -4,7 +4,7 @@
   <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
   <img src="https://img.shields.io/badge/MySQL-00000F?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL" />
   <br>
-  <h1>🐾 VetCoressen</h1>
+  <h1>🐾 VETCORESSEN</h1>
   <p><strong>Comprehensive Veterinary Clinic Management System</strong></p>
 </div>
 
@@ -130,7 +130,7 @@ A summary of the main directories driving the application logic:
 ## 🎓 Academic Context & Development
 
 **Project Author & Coordinator**:  
-**Jorge Enrique Caceres Hernandez**  
+**Jorge Enrique Caceres-Hernandez**  
 *Systems Engineering Student, Universidad Nacional de Cañete*
 
 **Academic Advisor**:  
