@@ -19,7 +19,7 @@ class UserSeeder extends Seeder
             'clinic_id'  => $clinica->id,
             'branch_id'  => $sucursal->id,
             'name'       => 'VETCORESSEN Administrator',
-            'email'      => 'admin@vetcoressen.pe',
+            'email'      => 'admin@vetcoressen.health',
             'password'   => bcrypt('Vetcoressen2026!'),
             'phone'      => '999888777',
             'dni'        => '12345678',
