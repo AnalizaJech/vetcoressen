@@ -12,7 +12,7 @@
 
 ## 📌 About the Project
 
-**VetCoressen** is a web application designed to streamline the management of veterinary medical records through a unified digital environment. It centralizes the information generated during veterinary care and supports the traceability of each patient's health for clinical decision-making.
+**VETCORESSEN** is a web application designed to streamline the management of veterinary medical records through a unified digital environment. It centralizes the information generated during veterinary care and supports the traceability of each patient's health for clinical decision-making.
 
 The application manages client records, pets, appointments, and medical records through interoperable modules. Its user-experience-oriented interface is designed to facilitate efficient access to clinical information and support agile veterinary-care workflows.
 
@@ -31,7 +31,7 @@ The application manages client records, pets, appointments, and medical records 
 
 ## 💻 Technological Stack
 
-**VetCoressen** is developed using a modern, high-performance tech stack:
+**VETCORESSEN** is developed using a modern, high-performance tech stack:
 
 - **Backend Architecture**: PHP 8.2+, Laravel 11.x, Livewire 3.x, Livewire Flux 2.x
 - **Frontend & UI**: Tailwind CSS 4.0, Vite 7.0, AlpineJS, FullCalendar 6.1
