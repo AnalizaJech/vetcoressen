@@ -22,7 +22,7 @@ The application manages client records, pets, appointments, and medical records 
 
 - 🏥 **Electronic Medical Records**: Maintain highly detailed electronic medical records for each pet. Keep continuous track of diagnoses, treatments, vaccines, prescriptions, and medical evolution.
 - 📅 **Smart Appointment Management**: Schedule, reschedule, and manage veterinary appointments using an interactive calendar interface. 
-- 🐶 **Client & Pet Management**: Organize detailed profiles of owners and their pets. Instantly access medical histories, upcoming appointments.
+- 🐶 **Client & Pet Management**: Organize detailed profiles of owners and their pets. Instantly access medical histories, scheduled appointments.
 - 🌐 **Native Bilingual Support**: Fully internationalized with on-the-fly language switching between **English (`en`)** and **Spanish (`es`)**.
 
 ---
@@ -108,7 +108,7 @@ npm run dev
 
 A summary of the main directories driving the application logic:
 
-- `app/Livewire/` – Contains all interactive and reactive frontend components (e.g., Clients, Pets, Appointments, Medical Records).
+- `app/Livewire/` – Contains all interactive and reactive frontend components (e.g., clients, pets, appointments and medical records).
 - `app/Models/` – Eloquent ORM models representing the database schema.
 - `app/Jobs/` – Asynchronous queued jobs for background processing.
 - `resources/views/` – Blade views and UI components (integrated with AlpineJS i18n for internationalization).
