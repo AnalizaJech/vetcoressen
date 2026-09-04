@@ -2,17 +2,17 @@
   <img src="https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel" />
   <img src="https://img.shields.io/badge/Livewire-4e56a6?style=for-the-badge&logo=livewire&logoColor=white" alt="Livewire" />
   <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
-  <img src="https://img.shields.io/badge/MySQL-00000F?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL" />
+  <img src="https://img.shields.io/badge/MariaDB-00000F?style=for-the-badge&logo=mariadb&logoColor=white" alt="MariaDB" />
   <br>
   <h1>🐾 VETCORESSEN</h1>
-  <p><strong>Comprehensive Veterinary Clinic Management System</strong></p>
+  <p><strong>A web application to streamline the management of veterinary medical records</strong></p>
 </div>
 
 <br>
 
 ## 📌 About the Project
 
-**VETCORESSEN** is a web application designed to streamline the management of veterinary medical records through a unified digital environment. It centralizes the information generated during veterinary care and supports the traceability of each patient's health for clinical decision-making.
+**VETCORESSEN** is a web application designed to streamline the management of veterinary medical records through a unified digital environment. It centralizes the information generated during veterinary care and facilitates the tracking of patient health for better medical decision-making..
 
 The application manages client records, pets, appointments, and medical records through interoperable modules. Its user-experience-oriented interface is designed to facilitate efficient access to clinical information and support agile veterinary-care workflows.
 
