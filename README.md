@@ -21,9 +21,8 @@ The application manages client records, pets, appointments, and medical records 
 ## 🚀 Key Features
 
 - 🏥 **Electronic Medical Records**: Maintain highly detailed electronic medical records for each pet. Keep continuous track of diagnoses, treatments, vaccines, prescriptions, and medical evolution.
-- 📅 **Smart Appointment Management**: Schedule, reschedule, and manage veterinary appointments using an interactive calendar interface. Clients receive automated email reminders to reduce no-shows.
-- 🐶 **Client & Pet Management**: Organize detailed profiles of owners and their pets. Instantly access medical histories, upcoming appointments, and complete billing histories.
-- 📊 **Dynamic Reports & Analytics**: Monitor business health through interactive charts, check top recurring diseases/symptoms with predictive stock planning, and manage user roles/permissions.
+- 📅 **Smart Appointment Management**: Schedule, reschedule, and manage veterinary appointments using an interactive calendar interface. 
+- 🐶 **Client & Pet Management**: Organize detailed profiles of owners and their pets. Instantly access medical histories, upcoming appointments.
 - 🌐 **Native Bilingual Support**: Fully internationalized with on-the-fly language switching between **English (`en`)** and **Spanish (`es`)**.
 
 ---
