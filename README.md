@@ -108,7 +108,7 @@ npm run dev
 
 A summary of the main directories driving the application logic:
 
-- `app/Livewire/` – Contains all interactive and reactive frontend components (e.g., POS, Inventory, Appointments).
+- `app/Livewire/` – Contains all interactive and reactive frontend components (e.g., Clients, Pets, Appointments, Medical Records).
 - `app/Models/` – Eloquent ORM models representing the database schema.
 - `app/Jobs/` – Asynchronous queued jobs for background processing.
 - `resources/views/` – Blade views and UI components (integrated with AlpineJS i18n for internationalization).
