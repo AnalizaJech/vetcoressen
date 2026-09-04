@@ -23,7 +23,6 @@ The application manages client records, pets, appointments, and medical records 
 - 🏥 **Electronic Medical Records**: Maintain highly detailed electronic medical records for each pet. Keep continuous track of diagnoses, treatments, vaccines, prescriptions, and medical evolution.
 - 📅 **Smart Appointment Management**: Schedule, reschedule, and manage veterinary appointments using an interactive calendar interface. Clients receive automated email reminders to reduce no-shows.
 - 🐶 **Client & Pet Management**: Organize detailed profiles of owners and their pets. Instantly access medical histories, upcoming appointments, and complete billing histories.
-- 🏢 **Multi-Branch Support**: Ready to scale. Manage operations, inventory, and staff across multiple physical locations from a centralized control panel.
 - 📊 **Dynamic Reports & Analytics**: Monitor business health through interactive charts, check top recurring diseases/symptoms with predictive stock planning, and manage user roles/permissions.
 - 🌐 **Native Bilingual Support**: Fully internationalized with on-the-fly language switching between **English (`en`)** and **Spanish (`es`)**.
 
@@ -112,7 +111,6 @@ A summary of the main directories driving the application logic:
 
 - `app/Livewire/` – Contains all interactive and reactive frontend components (e.g., POS, Inventory, Appointments).
 - `app/Models/` – Eloquent ORM models representing the database schema.
-- `app/Services/` – Service classes for business logic and third-party integrations (e.g., `InventoryService`, `NubefactService`).
 - `app/Jobs/` – Asynchronous queued jobs for background processing.
 - `resources/views/` – Blade views and UI components (integrated with AlpineJS i18n for internationalization).
 - `public/locales/` – Dynamic translation dictionaries for bilingual support.
@@ -131,14 +129,14 @@ A summary of the main directories driving the application logic:
 
 **Project Author & Coordinator**:  
 **Jorge Enrique Caceres-Hernandez**  
-*Systems Engineering Student, Universidad Nacional de Cañete*
+*Systems Engineering, Universidad Nacional de Cañete*
 
 **Academic Advisor**:  
 **Alex Abelardo Pacheco-Pumaleque**
 
 
 ### 🏛️ Funding
-This project funded by the **Vice-Presidency of Research** of the UNDC, awarded during the *"I Research Contest for the Development of Innovations and Intellectual Property"*, under grant contract **N° 021-2024-UNDC/CO/P/DGA**.
+This project funded by the **Vice-Presidency of Research** of the UNDC, through the *"I Research Contest for the Development of Innovations and Intellectual Property"*, under grant contract **N° 021-2024-UNDC/CO/P/DGA**.
 
 ---
 
